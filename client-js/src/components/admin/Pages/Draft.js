@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import util from "../../../lib/forms";
 import { ROOT_URL } from "../../../lib/keys";
 import Alert from "../../partials/Alert";
+import PageThumbnail from "../../partials/page-thumbnail";
+import Loading from "../../partials/loading";
 import Header from "./Header";
 
 class Draft extends Component {
@@ -91,22 +93,7 @@ class Draft extends Component {
     if (this.state.confirmModalStatus === "loading") {
       element = (
         <div className="center-content margin-bottom-1">
-          <div className="lds-css ng-scope">
-            <div className="lds-spinner">
-              <div />
-              <div />
-              <div />
-              <div />
-              <div />
-              <div />
-              <div />
-              <div />
-              <div />
-              <div />
-              <div />
-              <div />
-            </div>
-          </div>
+          <Loading />
         </div>
       );
     } else {
@@ -185,22 +172,7 @@ class Draft extends Component {
       return (
         <div>
           <div className="center-content margin-top-2">
-            <div className="lds-css ng-scope">
-              <div className="lds-spinner">
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-              </div>
-            </div>
+            <Loading />
           </div>
         </div>
       );
@@ -243,19 +215,16 @@ class Draft extends Component {
             key={page._id}
             className="col-lg-1-of-5 col-md-1-of-4 col-sm-1-of-3 col-xs-1-of-2 col-xxs-1-of-1"
           >
-            <div
+            <PageThumbnail
               className={pageClass}
+              noPhoto={true}
               onClick={e => {
                 this.onPageClicked(page._id);
               }}
-            >
-              <a href={pageUrl} target="_blank">
-                <div className="page-thumbnail__details">
-                  <h4>{page.contents.title}</h4>
-                  <p>{page.contents.briefDes}</p>
-                </div>
-              </a>
-            </div>
+              url={pageUrl}
+              title={page.contents.title}
+              briefDes={page.contents.briefDes}
+            />
           </div>
         );
       });

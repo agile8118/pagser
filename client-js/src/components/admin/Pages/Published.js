@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import util from "../../../lib/forms";
 import { ROOT_URL } from "../../../lib/keys";
 import Alert from "../../partials/Alert";
+import PageThumbnail from "../../partials/page-thumbnail";
+import Loading from "../../partials/loading";
 import Header from "./Header";
 
 class Pages extends Component {
@@ -40,22 +42,7 @@ class Pages extends Component {
       return (
         <div>
           <div className="center-content margin-top-2">
-            <div className="lds-css ng-scope">
-              <div className="lds-spinner">
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-              </div>
-            </div>
+            <Loading />
           </div>
         </div>
       );
@@ -92,23 +79,14 @@ class Pages extends Component {
             className="col-lg-1-of-5 col-md-1-of-4 col-sm-1-of-3 col-xs-1-of-2 col-xxs-1-of-1"
             key={page._id}
           >
-            <div className="page-thumbnail">
-              <a href={pageUrl} target="_blank">
-                <div className="page-thumbnail__photo">
-                  <img
-                    src={page.cropedPhoto.secure_url}
-                    onError={e => {
-                      e.target.src = "/images/pages/placeholder.svg";
-                    }}
-                  />
-                </div>
-                <div className="page-thumbnail__details">
-                  <h4>{page.contents.title}</h4>
-                  <p>{page.contents.briefDes}</p>
-                </div>
-                <span className="page-thumbnail__type">{page.type}</span>
-              </a>
-            </div>
+            <PageThumbnail
+              className="page-thumbnail"
+              url={pageUrl}
+              image={page.cropedPhoto.secure_url}
+              title={page.contents.title}
+              briefDes={page.contents.briefDes}
+              type={page.type}
+            />
           </div>
         );
       });
