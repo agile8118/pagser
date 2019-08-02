@@ -1,0 +1,29 @@
+.pagination {
+	text-align: center;
+	font-size: $default-font-size;
+	margin-top: 4.5rem;
+	margin-bottom: 3rem;
+
+	&__number,
+	&__arrow {
+		color: $color-text;
+		margin: 0 1.7rem;
+		padding: 5px 10px;
+		cursor: pointer;
+
+		&:hover {
+			color: $color-blue;
+		}
+	}
+
+	&__number {
+		&--active {
+			background-color: $color-blue;
+			color: #fff !important;
+			border-radius: 500px;
+		}
+	}
+
+	&__arrow {
+	}
+}

@@ -1,0 +1,258 @@
+.page {
+  color: $color-text;
+  padding: 2rem 10rem 0 0rem;
+  font-size: $default-font-size;
+
+  @include respond(l) {
+    padding-right: 0rem;
+  }
+
+  @media only screen and (max-width: 45em) {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+
+  &__header {
+    &__actions {
+      display: block;
+      width: 100%;
+      font-size: 1.7rem;
+      text-align: right;
+      margin-bottom: 1rem;
+    }
+
+    &__title {
+      letter-spacing: 0.1rem;
+      font-weight: 300;
+      word-spacing: 0.2rem;
+      font-size: 3.6rem;
+    }
+
+    &__time {
+      display: block;
+      font-style: italic;
+      font-size: 1.5rem;
+      margin-left: 5px;
+    }
+  }
+
+  &__information {
+    font-style: italic;
+    font-size: 2rem;
+
+    & h3 {
+      font-weight: 300;
+      font-size: 2.3rem;
+    }
+
+    & div {
+      margin-bottom: 2rem;
+    }
+  }
+
+  &__body {
+    padding: 1rem 0;
+    overflow-x: hidden;
+
+    & p {
+      padding-bottom: 1.8rem;
+      line-height: 3.4rem;
+      font-size: 1.7rem;
+      word-spacing: 0.2rem;
+    }
+
+    & ul {
+      margin-left: 2rem;
+    }
+
+    & ol {
+      margin-left: 2rem;
+    }
+  }
+
+  &__tags {
+    display: block;
+    margin: 1rem 0 0rem 0;
+
+    span {
+      font-size: 1.4rem;
+      margin: 1rem 0.8rem 0 0;
+      display: inline-block;
+      border-radius: 4px;
+      background: #ececec;
+      padding: 0.4rem 1rem;
+      color: $color-text;
+      transition: background 0.1s;
+
+      &:hover {
+        background: #dcdcdc;
+      }
+    }
+  }
+
+  &__author {
+    margin-top: 6rem;
+    margin-bottom: 0;
+    padding: 1.2rem 0;
+    font-size: 1.6rem;
+    border-top: 1px solid #e8e8e8;
+    border-bottom: 1px solid #e8e8e8;
+    display: flex;
+    align-items: center;
+
+    img {
+      height: 5rem;
+      width: 5rem;
+      border-radius: 50%;
+      margin-right: 1.4rem;
+    }
+
+    &__details {
+      display: inline-block;
+      font-size: 1.5rem;
+      position: relative;
+    }
+  }
+
+  &__rating {
+    margin-top: 6rem;
+    margin-bottom: 0;
+    font-size: 1.7rem;
+
+    button {
+      font-size: 2rem;
+      margin: 0 0.5rem;
+    }
+
+    div {
+      display: inline-block;
+      padding: 0.8rem 0.4rem 0.8rem 0;
+    }
+  }
+
+  &__links {
+    margin-bottom: 5rem;
+    background: #f7f7f7;
+    width: 100%;
+    padding: 5rem 0rem;
+  }
+
+  &__comments {
+    margin-top: 6rem;
+    padding-top: 3rem;
+    border-top: 1px solid;
+
+    h2 {
+      margin-bottom: 5rem;
+    }
+
+    &__add {
+      padding-top: 3rem;
+      display: block;
+    }
+  }
+}
+
+.comment {
+  border: 1px solid $color-grey-light-3;
+  background-color: #fdfdfd;
+  border-radius: 5px;
+  padding: 2rem 4rem;
+  margin: 4rem 0;
+  display: flex;
+  flex-direction: column;
+  color: $color-text;
+
+  .comment-reply {
+    margin: 1rem 0;
+    margin-left: 3rem;
+    background-color: #f9f9f9;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+
+    &__name-and-date {
+      font-size: 1.4rem;
+      margin-left: 1rem;
+      display: flex;
+      flex-direction: column;
+      margin-top: 3px;
+
+      .a-2 {
+        font-style: italic;
+      }
+    }
+
+    &__image {
+      border-radius: 50%;
+      width: 5rem;
+      align-self: flex-start;
+    }
+
+    &__actions {
+    }
+  }
+
+  &__body {
+    font-size: 1.4rem;
+    line-height: 2.5rem;
+    padding-bottom: 0.5rem;
+  }
+}
+
+.comment-in-reply-to-label {
+  font-size: 1.4rem;
+  color: #fff;
+  background: #333;
+  display: inline-block;
+  padding: 0px 7px;
+  border-radius: 5px;
+  margin-left: 0.2rem;
+}
+
+.no-comment-message {
+  color: $color-text;
+  font-size: 1.6rem;
+  text-align: center;
+  margin-bottom: 1.6rem;
+  margin-top: -1.6rem;
+}
+
+.disabled-message {
+  font-style: italic;
+  margin-top: 6rem;
+}
+
+.disabled-message-comments {
+  padding-top: 6rem;
+  border-top: 1px solid rgb(238, 238, 238);
+  font-style: italic;
+  margin-top: 6rem;
+}
+
+.page__attach-files {
+  margin-top: -2rem;
+}
+
+.file-links {
+  margin-bottom: 2rem;
+}
+
+.file-link {
+  color: $color-text;
+  font-size: 1.4rem;
+  margin-right: 1rem;
+  margin-top: 1rem;
+  border-radius: 500px;
+  background-color: #f3f3f3;
+  padding: 0.5rem 1.5rem;
+  transition: all 0.2s;
+  display: inline-block;
+
+  &:hover {
+    background-color: #f1f1f1;
+  }
+}

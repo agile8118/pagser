@@ -1,0 +1,45 @@
+{
+  "name": "pagher",
+  "version": "1.0.0",
+  "description": "",
+  "engines": {
+    "node": "10.15.3"
+  },
+  "main": "server/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@liara/sdk": "^0.2.2",
+    "aws-sdk": "^2.441.0",
+    "axios": "^0.18.0",
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.18.3",
+    "cloudinary": "^1.14.0",
+    "compression": "^1.7.4",
+    "connect-mongo": "^2.0.3",
+    "cors": "^2.8.5",
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
+    "express-session": "^1.16.1",
+    "file-type": "^7.7.1",
+    "helmet": "^3.16.0",
+    "jimp": "^0.2.28",
+    "jwt-simple": "^0.5.6",
+    "method-override": "^2.3.10",
+    "mongoose": "^4.13.18",
+    "mongoose-paginate": "^5.0.3",
+    "multer": "^1.4.1",
+    "nodemailer": "^4.7.0",
+    "nodemon": "^1.18.11",
+    "passport": "^0.3.2",
+    "passport-jwt": "^2.2.1",
+    "passport-local": "^1.0.0",
+    "sanitize-html": "^1.20.0",
+    "validator": "^8.2.0"
+  }
+}

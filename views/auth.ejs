@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <link href="https://fonts.googleapis.com/css?family=Lato:100,300,300i,400" rel="stylesheet">
+  <link rel="stylesheet" href="/fonts/font-awesome.min.css">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="stylesheet" href="/style.css">
+  <title>Create Account | Pagher</title>
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="apple-mobile-web-app-title" content="Pagher">
+  <meta name="application-name" content="Pagher">
+  <meta name="msapplication-TileColor" content="#2d89ef">
+  <meta name="theme-color" content="#ffffff">
+</head>
+<body style="background: #f9f9f9">
+
+  <nav class="navigation">
+    <a href="/" class="navigation__logo--single"><div><img src="/images/pagher-logo.svg" alt="Pagher logo"><span>PAGHER</span></div></a>
+    <a class="navigation__right-link" id="js--login-btn" href="/login">Login</a>
+  </nav>
+
+  <div id="particles-js">
+    <div class="" >
+      <div class="react-container" name="auth"></div>
+    </div>
+  </div>
+  <div id="snackbar"></div>
+
+<script src="/bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script async>
+/* ---- particles.js config ---- */
+
+particlesJS("particles-js", {
+	particles: {
+		number: {
+			value: 80,
+			density: {
+				enable: true,
+				value_area: 800
+			}
+		},
+		color: {
+			value: "#2980b9"
+		},
+		shape: {
+			type: "circle",
+			stroke: {
+				width: 0,
+				color: "#2980b9"
+			},
+			polygon: {
+				nb_sides: 5
+			},
+			image: {
+				src: "img/github.svg",
+				width: 100,
+				height: 100
+			}
+		},
+		opacity: {
+			value: 0.5,
+			random: false,
+			anim: {
+				enable: false,
+				speed: 1,
+				opacity_min: 0.1,
+				sync: false
+			}
+		},
+		size: {
+			value: 3,
+			random: true,
+			anim: {
+				enable: false,
+				speed: 40,
+				size_min: 0.1,
+				sync: false
+			}
+		},
+		line_linked: {
+			enable: true,
+			distance: 150,
+			color: "#2980b9",
+			opacity: 0.4,
+			width: 1
+		},
+		move: {
+			enable: true,
+			speed: 6,
+			direction: "none",
+			random: false,
+			straight: false,
+			out_mode: "out",
+			bounce: false,
+			attract: {
+				enable: false,
+				rotateX: 600,
+				rotateY: 1200
+			}
+		}
+	},
+	interactivity: {
+		detect_on: "canvas",
+		events: {
+			onhover: {
+				enable: true,
+				mode: "repulse"
+			},
+			onclick: {
+				enable: true,
+				mode: "push"
+			},
+			resize: true
+		},
+		modes: {
+			grab: {
+				distance: 400,
+				line_linked: {
+					opacity: 1
+				}
+			},
+			bubble: {
+				distance: 400,
+				size: 40,
+				duration: 2,
+				opacity: 8,
+				speed: 3
+			},
+			repulse: {
+				distance: 200,
+				duration: 0.4
+			},
+			push: {
+				particles_nb: 4
+			},
+			remove: {
+				particles_nb: 2
+			}
+		}
+	},
+	retina_detect: true
+});
+
+/* ---- stats.js config ---- */
+</script>
+<script async>
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+	if (this.status === 200) {
+		window.location.href = "/admin";
+	}
+};
+xhttp.open("POST", "/auth", true);
+xhttp.setRequestHeader("authorization", localStorage.getItem("token"));
+xhttp.send();
+</script>
+
+</body>
+</html>

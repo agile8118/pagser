@@ -1,0 +1,321 @@
+.btn-round {
+  color: $color-blue;
+  background-color: transparent;
+  border: 1px solid $color-blue;
+  border-radius: 500px;
+  cursor: pointer;
+  padding: 1.1rem 3rem;
+  transition: all 0.2s;
+  font-size: 2rem;
+  font-weight: 300;
+  margin-top: 1.5rem;
+
+  &:hover:enabled,
+  &:active:enabled,
+  &:focus:enabled {
+    color: #fff;
+    outline: none;
+    background-color: $color-blue;
+  }
+
+  &-full {
+    color: #fff;
+    background-color: $color-blue;
+    border: 1px solid $color-dark-blue;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: $color-dark-blue !important;
+    }
+  }
+
+  &-normal {
+    padding: 1.1rem 1.8rem;
+    margin-top: 0;
+    font-size: 1.6rem;
+  }
+
+  &-sm {
+    font-size: 1.6rem;
+    padding: 0.6rem 1.8rem;
+    margin-top: 0;
+
+    &:hover,
+    &:active,
+    &:focus {
+      color: #fff;
+      background-color: $color-blue;
+    }
+  }
+
+  &-danger {
+    color: #fff;
+    background: $color-red;
+    border: 1px solid $color-red;
+
+    &:hover:enabled,
+    &:active:enabled,
+    &:focus {
+      background-color: $color-red-dark !important;
+      border: 1px solid $color-red-dark;
+    }
+  }
+}
+
+.btn-link {
+  color: $color-blue;
+  font-size: 1.5rem;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s;
+
+  &:hover,
+  &:active {
+    color: $color-dark-blue;
+    border-bottom: 1px solid $color-blue;
+  }
+}
+
+.btn-small {
+  text-decoration: none;
+  background-color: $color-blue;
+  color: #fff;
+  padding: 0.3em 0.7rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+  font-size: 1.2rem;
+  border-radius: 5px;
+  transition: all 0.3s;
+
+  &:hover,
+  :active {
+    background-color: $color-dark-blue;
+  }
+}
+
+.btn-action {
+  color: $color-red;
+  background-color: transparent;
+  border: 1px solid $color-red;
+  text-transform: uppercase;
+  border-radius: 500px;
+  cursor: pointer;
+  padding: 0.8rem 3.2rem;
+  transition: all 0.2s;
+  font-size: 1.8rem;
+  font-weight: 300;
+  margin: 1.5rem 0;
+  display: inline-block;
+
+  &:hover,
+  &:active,
+  &:focus {
+    color: #fff;
+    outline: none;
+    background-color: $color-red;
+  }
+}
+
+.btn-normal {
+  color: #fff;
+  background-color: $color-blue;
+  border-radius: 5px;
+  border: 1px solid $color-blue;
+  font-size: 1.8rem;
+  padding: 1rem 2rem;
+  margin: 1rem 0 0.5rem 0;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &-link {
+    padding: 0.5rem 2rem;
+    display: inline-block;
+  }
+
+  &-not-active {
+    background: transparent;
+    color: $color-blue;
+    border: 1px solid $color-blue;
+  }
+
+  &-not-active:hover,
+  &-not-active:active,
+  &-not-active:focus {
+    outline: none !important;
+    background: $color-blue;
+    color: #fff;
+  }
+
+  &-sm {
+    font-size: 1.5rem;
+    padding: 0.8rem 1.3rem;
+  }
+
+  &-xs {
+    font-size: 1.4rem;
+    padding: 0.4rem 1.2rem;
+    border-radius: 500px;
+
+    &:focus {
+      outline: none !important;
+      background-color: $color-dark-blue;
+    }
+  }
+
+  &:hover:enabled {
+    background-color: $color-dark-blue;
+    border: 1px solid $color-dark-blue;
+  }
+
+  &-danger {
+    background-color: $color-red;
+    border: 1px solid $color-red;
+
+    &:hover,
+    &:focus {
+      background-color: $color-red-dark !important;
+      border: 1px solid $color-red-dark !important;
+    }
+  }
+}
+
+.btn-icon {
+  cursor: pointer;
+  color: $color-blue;
+  background: transparent;
+  border: none;
+  font-size: 2.1rem;
+
+  &:hover,
+  &:focus {
+    color: $color-dark-blue;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.btn-text {
+  cursor: pointer;
+  color: $color-blue;
+  background: transparent;
+  border: none;
+  font-size: 1.6rem;
+  transition: all 0.2s;
+
+  &:hover,
+  &:focus {
+    color: $color-dark-blue-2;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &--red {
+    color: $color-red;
+
+    &:hover,
+    &:focus {
+      color: $color-red-dark;
+    }
+  }
+
+  &:disabled {
+    background: transparent;
+    border: none;
+    color: #757575 !important;
+  }
+}
+
+button:disabled {
+  cursor: not-allowed;
+  background: #ebebe4;
+  border: 1px solid #ccc;
+  color: #757575;
+}
+
+.inline-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 2rem 0;
+
+  @media (max-width: 500px) {
+    flex-direction: column;
+  }
+}
+
+.back-button {
+  background-color: transparent;
+  border: none;
+  color: #2980b9;
+  font-size: $default-font-size;
+  cursor: pointer;
+}
+
+.back-button--new-page {
+  top: 1.7rem;
+  position: absolute;
+  left: 1rem;
+}
+
+.btn-lined {
+  font-size: 1.6rem;
+  border-bottom: 4px solid rgba($color-blue, 0.9);
+  padding-bottom: 0.7rem;
+  padding-right: 0.4rem;
+  transition: all 0.2s;
+  margin-bottom: 3rem;
+
+  &:hover {
+  }
+}
+
+.btn-lined-not-active {
+  border-bottom: 4px solid rgba($color-blue, 0.2);
+
+  &:hover {
+    border-bottom: 4px solid rgba($color-blue, 0.5);
+  }
+}
+
+.delete-x-button {
+  border: none;
+  background-color: transparent;
+  margin-left: 0.6rem;
+  font-size: 1.6rem;
+  color: #ccc;
+  cursor: pointer;
+  transition: all 0.1s;
+
+  &:hover {
+    color: $color-text;
+  }
+
+  &:focus {
+    outline: none;
+    color: $color-text;
+  }
+}
+
+.delete-x-button-white {
+  border: none;
+  background-color: transparent;
+  margin-left: 0.3rem;
+  font-size: 1.6rem;
+  color: #e6e6e6;
+  cursor: pointer;
+  transition: all 0.1s;
+
+  &:hover {
+    color: #fff;
+  }
+
+  &:focus {
+    outline: none;
+    color: #fff;
+  }
+}

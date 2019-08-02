@@ -1,0 +1,53 @@
+.message-box {
+  border-radius: 5px;
+  padding: 1rem 2rem;
+  font-size: $default-font-size;
+  text-align: left;
+  color: #fff;
+  display: none;
+  transition: animation 1s;
+  animation: fadein 1s;
+
+  &--redirect-to-login {
+    margin: 5rem 0 -4rem 0;
+    font-size: 1.7rem;
+    padding: 1.8rem 2rem;
+  }
+
+  &--normall {
+    background-color: #5f6063;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  &--animated {
+    animation: fadein 1s;
+  }
+
+  &--error {
+    background-color: $color-red;
+    display: flex;
+    align-items: center;
+  }
+
+  &--success {
+    background-color: $color-green;
+    display: flex;
+    align-items: center;
+  }
+
+  &__dismiss {
+    font-size: 1.6rem;
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+
+    &:hover,
+    &:focus {
+      outline: none;
+      color: #cecece;
+    }
+  }
+}

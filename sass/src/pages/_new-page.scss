@@ -1,0 +1,100 @@
+.page-new {
+	background-color: #fff;
+	border-radius: 5px;
+	margin: 4rem auto;
+	padding: 5rem 4.5rem 3rem 4.5rem;
+	border: 1px solid #dbe2e8;
+	box-shadow: $default-box-shadow;
+	margin-top: 3rem;
+	position: relative;
+
+	@include respond(xs) {
+		padding: 5rem 2rem 3rem 2rem;
+	}
+
+	@media (max-width: 26.25em) {
+		margin: 4rem 0.4rem;
+		box-shadow: none;
+	}
+
+	&__types {
+		margin: 6rem 2rem 2rem 2rem;
+
+		&__details {
+			margin-bottom: 1rem;
+			padding: 0 1rem 2rem 2.5rem;
+			color: #636363 !important;
+			font-size: $default-font-size;
+		}
+	}
+
+	&__contents {
+		margin-top: 4rem;
+	}
+
+	&__final-step {
+		margin-top: 3rem;
+
+		&__text {
+			font-size: $default-font-size;
+			color: $color-text;
+			margin-bottom: 2rem;
+			margin-top: -1rem;
+		}
+	}
+}
+
+.url {
+	&__display {
+		font-size: 1.7rem;
+		padding: 0.5rem 0;
+		color: $color-text;
+		font-weight: 300;
+	}
+
+	&__note {
+		& strong {
+			font-size: 1.7rem;
+			font-weight: 400;
+		}
+		font-size: 1.6rem;
+		padding: 1rem 0;
+		font-weight: 300;
+		color: $color-text;
+	}
+}
+
+.switches {
+	margin-top: 4rem;
+	margin-bottom: 3.5rem;
+	color: $color-text;
+	font-size: $default-font-size;
+
+	&__entity {
+		border-bottom: 1px solid #f7f7f7;
+		padding: 2rem 0;
+
+		&:first-child {
+			border-top: 1px solid #f7f7f7;
+		}
+
+		i {
+			color: #2980b9;
+			position: relative;
+			font-size: 2.4rem;
+			top: 4px;
+			float: right;
+
+			&:hover {
+				cursor: pointer;
+			}
+		}
+	}
+}
+
+#js--tags-url-error-message,
+#js--url-error-message,
+#js--tags-error-message {
+	font-size: 1.4rem;
+	color: $color-red;
+}

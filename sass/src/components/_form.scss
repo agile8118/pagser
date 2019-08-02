@@ -1,0 +1,146 @@
+.form {
+  @include clearfix;
+  &__group {
+    margin: 2rem 0;
+
+    &--sm {
+      margin: 1rem 0;
+    }
+
+    &--error {
+      & input,
+      & textarea {
+        border-color: $color-red;
+      }
+
+      & .form__input--message {
+        color: $color-red;
+      }
+    }
+
+    &--success {
+      & input,
+      & textarea {
+        border-color: $color-green;
+      }
+    }
+
+    & input {
+      margin-top: 0.5rem;
+    }
+  }
+
+  &__input,
+  &__textarea {
+    display: block;
+    resize: none;
+    color: $color-text;
+    font-size: $default-font-size;
+    width: 100%;
+    padding: 1.1rem 1.2rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ccc;
+    font-family: inherit;
+
+    &:focus {
+      border-color: rgba(41, 128, 185, 0.57);
+      outline: 0 none;
+    }
+  }
+
+  &__input {
+    &--message {
+      text-align: left;
+      font-size: 1.3rem;
+      margin-top: 0.5rem;
+    }
+
+    &--disabled {
+      cursor: not-allowed;
+      background: #ebebe4;
+    }
+  }
+
+  &__textarea {
+  }
+
+  &__label {
+    color: $color-text;
+    font-size: 1.7rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  &__len-display {
+    background: #888;
+    border-radius: 500px;
+    padding: 0 0.6rem;
+    display: inline-block;
+    color: #fff;
+    margin-top: 0.6rem;
+    float: right;
+    @include clearfix;
+  }
+}
+
+.input__group {
+  position: relative;
+  display: table;
+  border-collapse: separate;
+
+  & input {
+    display: table-cell;
+    position: relative;
+    float: left;
+    width: 100%;
+    margin-bottom: 0;
+    margin-top: 0;
+
+    &:first-child {
+      border-bottom-right-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    &:last-child {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  }
+
+  & div {
+    border-radius: 4px;
+    padding: 0.6rem 1.2rem;
+    font-size: $default-font-size;
+    font-weight: 400;
+    line-height: 1;
+    color: #555;
+    text-align: center;
+    background-color: #fafafa;
+    width: 1%;
+    display: table-cell;
+    white-space: nowrap;
+    vertical-align: middle;
+    border: 1px solid #ccc;
+
+    &:first-child {
+      border-top-right-radius: 0;
+      border-right: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    &:last-child {
+      border-left: 0;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  }
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}

@@ -1,0 +1,16 @@
+.box {
+  &__to-action {
+    background-color: #fff;
+    margin-top: 2rem;
+    border-radius: 5px;
+    padding: 2.5rem 3rem;
+    text-align: center;
+    box-shadow: 1px 2px 5px 1px rgba(0, 0, 0, 0.1);
+
+    p {
+      color: $color-text;
+      font-size: 1.4rem;
+      margin: 1rem 0;
+    }
+  }
+}

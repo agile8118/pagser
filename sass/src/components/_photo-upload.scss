@@ -1,0 +1,42 @@
+#img-preview {
+  max-width: 100%;
+}
+
+.image__upload--options a {
+  margin-right: 0.8rem;
+  display: none;
+}
+
+.image__upload--options {
+  width: 100%;
+  text-align: right;
+  margin: 1rem 0;
+}
+
+.image__upload--error {
+  color: $color-red;
+  font-size: 1.6rem;
+  padding-bottom: 0.5rem;
+}
+
+.image__upload--label {
+  border: 1px solid $color-grey-light-3;
+  border-radius: 5px;
+  width: 100%;
+  text-align: center;
+  font-size: 1.7rem;
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  background: transparent;
+  transition: all 0.2s;
+  margin-bottom: 2rem;
+}
+
+.image__upload--label:hover {
+  background: #fbfbfb;
+}
+
+input[type="file"] {
+  display: none;
+}

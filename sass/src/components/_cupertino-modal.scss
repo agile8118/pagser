@@ -1,0 +1,79 @@
+.cupertino-modal-container {
+  position: fixed;
+  display: block;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+
+  &--light {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+}
+
+.cupertino-modal {
+  background-color: #fff;
+  border-radius: 1rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: $default-font-size;
+  color: $color-text;
+  transform: translate(-50%, -50%);
+  width: 40rem;
+  animation: name 0.2s ease-out;
+
+  &__content {
+    padding: 2rem 3rem;
+    text-align: center;
+  }
+
+  &--loading {
+    width: 26rem;
+
+    & .cupertino-modal__content {
+      padding: 1rem 0 0 0;
+    }
+  }
+
+  &__actions {
+    display: block;
+    width: 100%;
+
+    @include clearfix;
+
+    & button {
+      border: none;
+      background: #fff;
+      font-size: $default-font-size;
+      text-align: center;
+      padding: 1.8rem 1rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+
+      &:hover,
+      &:focus {
+        outline: none;
+        background: rgba(0, 0, 0, 0.01);
+      }
+    }
+
+    & button:first-child {
+      float: left;
+      width: 50%;
+      border-bottom-left-radius: 1rem;
+      border-right: 1px solid rgba(0, 0, 0, 0.2);
+    }
+
+    & button:last-child {
+      color: $color-red;
+      width: 50%;
+      float: right;
+      border-bottom-right-radius: 1rem;
+    }
+  }
+}

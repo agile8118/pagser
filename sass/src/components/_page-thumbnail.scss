@@ -1,0 +1,116 @@
+.page-thumbnail {
+  color: $color-text;
+  margin: 1rem 2rem 4.4rem 0;
+  background-color: #fff;
+  position: relative;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  display: inline-block;
+  box-shadow: 2px 2px 3px 0 hsla(205, 5%, 48%, 0.12);
+  font-size: $default-font-size;
+  height: 28rem;
+  width: 100%;
+  transition: all 0.2s;
+
+  &--shaking {
+    animation: shake 2s infinite;
+    cursor: pointer;
+  }
+
+  &--selected {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+
+    &::after {
+      content: "";
+      display: inline-block;
+      height: 100%;
+      width: 100%;
+      border-radius: 0.5rem;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: scale(1.04);
+      border: 6px solid $color-blue;
+    }
+  }
+
+  @media (max-width: 23.5em) {
+    width: 100%;
+    margin: 1rem 0rem 4.4rem 0rem;
+  }
+
+  &-no-photo {
+    border-radius: 5px;
+    padding-top: 1rem;
+    margin-right: 2rem;
+    width: 100%;
+    height: 15rem;
+  }
+
+  &-no-photo-long {
+    padding: 2rem 0 1rem 1.4rem;
+    margin: 0 2rem 1.9rem 0;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  &__details {
+    padding: 0 1rem 1rem 1rem;
+    word-break: break-word;
+
+    h4 {
+      font-size: 2.2rem;
+      font-weight: 400;
+      line-height: 3rem;
+    }
+
+    .a-1 {
+      font-size: 1.5rem;
+      font-weight: 300;
+      margin-bottom: 1rem;
+    }
+  }
+
+  &__author {
+    display: flex;
+    font-size: 1.4rem;
+
+    .a-2 {
+      font-weight: 300;
+      font-style: italic;
+      line-height: 250%;
+    }
+
+    img {
+      height: 35px;
+      width: 35px;
+      border-radius: 500px;
+      margin-right: 8px;
+    }
+  }
+
+  &__time {
+    font-weight: 300;
+    font-size: 1.2rem;
+  }
+
+  &__type {
+    background-color: $color-grey-dark;
+    border-radius: 25px;
+    padding: 0 0.6rem;
+    position: absolute;
+    right: 0;
+    bottom: -3rem;
+    margin-top: 0.7rem;
+    font-size: 1.2rem;
+    color: #fff;
+  }
+}
+
+.page-thumbnail:hover,
+.page-thumbnail:visited {
+  box-shadow: 2px 2px 3px 0 rgba(169, 170, 170, 0.52);
+}

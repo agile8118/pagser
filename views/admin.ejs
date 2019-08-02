@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Lato:100,300,300i,400" rel="stylesheet">
+  <link rel="stylesheet" href="/fonts/font-awesome.min.css">
+  <link rel="stylesheet" href="/style.css">
+  <title>Admin | Pagher</title>
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="apple-mobile-web-app-title" content="Pagher">
+  <meta name="application-name" content="Pagher">
+  <meta name="msapplication-TileColor" content="#2d89ef">
+  <meta name="theme-color" content="#ffffff">
+  <link href="/cropper.min.css" type="text/css" rel="stylesheet">
+</head>
+<body class="body-grey">
+
+<div class="react-container" name="admin"></div>
+<div id="snackbar"></div>
+
+
+<script>
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+	if (this.status === 401) {
+		window.location.href = "/login?redirected=admin";
+	}
+};
+xhttp.open("POST", "/auth", true);
+xhttp.setRequestHeader("authorization", localStorage.getItem("token"));
+xhttp.send();
+</script>
+
+<script src="/bundle.js"></script>
+</body>
+</html>

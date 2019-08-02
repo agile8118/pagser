@@ -1,0 +1,33 @@
+*,
+*::after,
+*::before {
+	margin: 0;
+	padding: 0;
+	box-sizing: inherit;
+}
+
+html {
+	font-size: 62.5%; // 1rem = 10px;
+
+	@include respond(md) {
+		font-size: 56.25%; //1rem = 9px
+	}
+
+	@include respond(sm) {
+		font-size: 50%; //1rem = 8px
+	}
+}
+
+body {
+	box-sizing: border-box;
+	min-height: 100vh;
+}
+
+.body-grey {
+	background-color: $color-grey-light-1;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+}

@@ -1,0 +1,89 @@
+body {
+  font-display: fallback;
+  font-family: "Lato", "Helvetica", "Arial", sans-serif;
+  font-weight: 400;
+  line-height: 1.7;
+  color: #eee;
+}
+
+a {
+  color: $color-blue;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 0.1rem;
+}
+
+.heading-tertiary,
+.heading-fourth,
+.heading-fifth {
+  text-transform: uppercase;
+  font-weight: 300;
+  color: $color-text;
+}
+
+.heading-tertiary {
+  font-size: 2.5rem;
+  word-spacing: 4px;
+}
+
+.heading-fourth {
+  font-size: 2.1rem;
+  font-weight: 300;
+  word-spacing: 2px;
+  letter-spacing: 3px;
+}
+
+.heading-fifth {
+  font-size: 1.9rem;
+  font-weight: 300;
+  word-spacing: 2px;
+  letter-spacing: 2px;
+
+  @media only screen and (max-width: 370px) {
+    letter-spacing: 1px;
+  }
+}
+
+.small-copy {
+  font-size: 1.6rem;
+  max-width: 70%;
+  margin: 2rem auto;
+  color: $color-text-light;
+
+  @media only screen and (max-width: 26.25em) {
+    max-width: 90%;
+  }
+}
+
+.normal-paragraph {
+  font-size: $default-font-size;
+  color: $color-text;
+}
+
+.small-paragraph {
+  font-size: 1.5rem;
+  font-weight: 300;
+  margin: 1rem 0;
+  color: $color-text;
+}
+
+// links
+.black-link {
+  color: $color-text;
+
+  &:hover {
+    color: #0f0f0f;
+  }
+}
+
+pre {
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+  background: #21252b;
+  color: #9da5b4;
+  border-radius: 6px;
+  padding: 1rem 3rem;
+}
