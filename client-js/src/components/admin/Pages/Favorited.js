@@ -44,12 +44,12 @@ class Draft extends Component {
 
   onPageClicked(pageId) {
     if (this.state.status === "editing") {
-      var selectedPages = this.state.selectedPages;
+      let selectedPages = this.state.selectedPages;
       if (selectedPages.indexOf(pageId) === -1) {
         selectedPages.push(pageId);
         this.setState({ selectedPages });
       } else {
-        var index = selectedPages.indexOf(pageId);
+        let index = selectedPages.indexOf(pageId);
         selectedPages.splice(index, 1);
         this.setState({ selectedPages });
       }
@@ -75,7 +75,7 @@ class Draft extends Component {
         config
       )
       .then(response => {
-        var newPages = this.state.pages.filter(page => {
+        let newPages = this.state.pages.filter(page => {
           return this.state.selectedPages.indexOf(page._id) === -1;
         });
         this.setState({
@@ -138,11 +138,10 @@ class Draft extends Component {
           </div>
         );
       } else {
-        if (this.state.selectedPages.length > 0) {
-          var disabled = false;
-        } else {
-          var disabled = true;
-        }
+        // If any page was selected make the button active otherwise make it disable
+        let disabled = true;
+        if (this.state.selectedPages.length > 0) disabled = false;
+
         return (
           <div className="u-two-item-row--2">
             <button
@@ -190,6 +189,9 @@ class Draft extends Component {
     }
     if (this.state.pages.length > 0) {
       return this.state.pages.map(page => {
+        let target = "";
+        let pageClass = "";
+        let pageUrl = "";
         if (page.contents.title.length > 25) {
           page.contents.title = page.contents.title.substring(0, 25) + "...";
         }
@@ -199,19 +201,21 @@ class Draft extends Component {
         }
 
         if (page.type === "specific") {
-          var pageUrl = `/${page.author.username}/${page.url}`;
+          pageUrl = `/${page.author.username}/${page.url}`;
         } else if (page.type === "public") {
-          var pageUrl = `/public-pages/${page.url}`;
+          pageUrl = `/public-pages/${page.url}`;
         }
 
         if (this.state.status === "normal") {
-          var pageClass = "page-thumbnail";
+          pageClass = "page-thumbnail";
+          target = "_blank";
         } else if (this.state.status === "editing") {
+          target = "_self";
           if (this.state.selectedPages.indexOf(page._id) !== -1) {
             pageClass =
               "page-thumbnail page-thumbnail--shaking page-thumbnail--selected";
           } else {
-            var pageClass = "page-thumbnail page-thumbnail--shaking";
+            pageClass = "page-thumbnail page-thumbnail--shaking";
           }
           pageUrl = "javascript:void(0)";
         }
@@ -225,6 +229,7 @@ class Draft extends Component {
               onClick={e => {
                 this.onPageClicked(page._id);
               }}
+              target={target}
               className={pageClass}
               url={pageUrl}
               image={page.cropedPhoto.secure_url}

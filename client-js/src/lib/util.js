@@ -22,11 +22,8 @@ export const showSnackBar = (text, className = "nothing") => {
     x.innerHTML = text;
     x.classList.add(className);
     x.classList.add("show");
-    // x.className += `${className} show`;
     setTimeout(function() {
-      // x.classList.remove(className);
       x.className = "";
-      // x.className -= " show";
       x.innerHTML = "";
     }, 2900);
   }

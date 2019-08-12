@@ -15,7 +15,7 @@ const PageThumbnail = props => {
   } else {
     return (
       <div className={props.className} onClick={props.onClick}>
-        <a href={props.url} target="_blank">
+        <a href={props.url} target={props.target}>
           <div className="page-thumbnail__photo">
             <img
               src={props.image}
