@@ -15,6 +15,7 @@ class PhotoUpload extends Component {
   _isMounted = false;
 
   componentDidMount() {
+    this._isMounted = true;
     const config = {
       headers: {
         authorization: localStorage.getItem("token")

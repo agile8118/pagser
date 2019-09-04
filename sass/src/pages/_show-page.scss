@@ -3,13 +3,16 @@
   padding: 2rem 10rem 0 0rem;
   font-size: $default-font-size;
 
-  @include respond(l) {
-    padding-right: 0rem;
+  @media only screen and (max-width: 1300px) {
+    padding-right: 6rem;
   }
 
-  @media only screen and (max-width: 45em) {
-    padding-right: 1rem;
-    padding-left: 1rem;
+  @media only screen and (max-width: 1072px) {
+    padding: 2rem 6rem 2rem 3rem;
+  }
+
+  @media only screen and (max-width: 720px) {
+    padding: 2rem 3rem;
   }
 
   &__header {
@@ -138,7 +141,7 @@
   }
 
   &__comments {
-    margin-top: 6rem;
+    margin-top: 4rem;
     padding-top: 3rem;
     border-top: 1px solid;
 
@@ -150,6 +153,18 @@
       padding-top: 3rem;
       display: block;
     }
+  }
+}
+
+.comments-wrapper {
+  padding: 0 16rem 0 0;
+
+  @media only screen and (max-width: 1210px) {
+    padding: 2rem 5rem;
+  }
+
+  @media only screen and (max-width: 590px) {
+    padding: 2rem 3rem;
   }
 }
 

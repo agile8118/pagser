@@ -68,62 +68,58 @@
 
   <div class="react-container" name="showPage">
     <div class="row">
-      <div class="col-2"></div>
-      <div class="col-7">
-        <div class="page">
-          <div class="page__header">
-            <div id="actions"></div> <!-- react container -->
-            <h2 class="page__header__title"><%= page.contents.title %></h2>
-            <span class="page__header__time"><%= timeAgo %></span>
-          </div>
+      <div class="page">
+        <div class="page__header">
+          <div id="actions"></div> <!-- react container -->
+          <h2 class="page__header__title"><%= page.contents.title %></h2>
+          <span class="page__header__time"><%= timeAgo %></span>
+        </div>
 
-          <div id="photo"></div> <!-- react container -->
+        <div id="photo"></div> <!-- react container -->
 
-          <div class="page__contents">
-            <div class="page__information">
-              <div>
-                <h3>Brief Description</h3>
-                <p><%= page.contents.briefDes %></p>
-              </div>
-              <div>
-                <h3>Who this page is for?</h3>
-                <p><%= page.contents.targets %></p>
-              </div>
+        <div class="page__contents">
+          <div class="page__information">
+            <div>
+              <h3>Brief Description</h3>
+              <p><%= page.contents.briefDes %></p>
             </div>
-            <div class="page__body">
-              <%- page.contents.body %>
+            <div>
+              <h3>Who this page is for?</h3>
+              <p><%= page.contents.targets %></p>
             </div>
           </div>
-
-
-          <div class="page__tags">
-            <% page.tags.split(',').map((tag) => { %>
-              <a href="#"><span><%= tag %></span></a>
-              <% }) %>
-            </div>
-
-            <br><br>
-
-            <div id="attachFiles"></div> <!-- react container -->
-
-
-
-            <% if (!page.configurations.anonymously) { %>
-              <div id="author"></div> <!-- react container -->
-             <% } else { %>
-               <p class="normal-paragraph disabled-message">This page has created anonymously.</p>
-             <% } %>
-
-
-            <% if (page.configurations.rating) { %>
-              <div id="rating"></div> <!-- react container -->
-              <% } else { %>
-                <p class="normal-paragraph disabled-message">Rating are unabled for this page.</p>
-              <% } %>
-
+          <div class="page__body">
+            <%- page.contents.body %>
           </div>
         </div>
-        <div class="col-3"></div>
+
+
+        <div class="page__tags">
+          <% page.tags.split(',').map((tag) => { %>
+            <a href="#"><span><%= tag %></span></a>
+            <% }) %>
+          </div>
+
+          <br><br>
+
+          <div id="attachFiles"></div> <!-- react container -->
+
+
+
+          <% if (!page.configurations.anonymously) { %>
+            <div id="author"></div> <!-- react container -->
+           <% } else { %>
+             <p class="normal-paragraph disabled-message">This page has created anonymously.</p>
+           <% } %>
+
+
+          <% if (page.configurations.rating) { %>
+            <div id="rating"></div> <!-- react container -->
+            <% } else { %>
+              <p class="normal-paragraph disabled-message">Rating are unabled for this page.</p>
+            <% } %>
+
+        </div>
       </div>
 
       <% if (page.configurations.comments) { %>

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
+import Loading from "../partials/Loading";
 import { ROOT_URL } from "../../lib/keys";
 import { showSnackBar } from "../../lib/util";
 import sendPageId from "./sendPageId";
@@ -633,15 +634,12 @@ class Comments extends Component {
         <div>
           <div className="page__comments" id="comments2">
             <div className="row">
-              <div className="col-2" />
-              <div className="col-7">
+              <div className="comments-wrapper">
                 <h2 className="heading-tertiary center-content">Comments</h2>
                 {this.renderComments.apply(this)}
                 {this.renderPagination.apply(this)}
                 {this.renderAddComment.apply(this)}
               </div>
-
-              <div className="col-3" />
             </div>
           </div>
           {this.renderModals.apply(this)}
@@ -651,32 +649,14 @@ class Comments extends Component {
       return (
         <div className="page__comments" id="comments2">
           <div className="row">
-            <div className="col-2" />
-            <div className="col-7">
+            <div className="comments-wrapper">
               <h2 className="heading-tertiary center-content">Comments</h2>
               <div>
                 <div className="center-content">
-                  <div className="lds-css ng-scope">
-                    <div className="lds-spinner">
-                      <div />
-                      <div />
-                      <div />
-                      <div />
-                      <div />
-                      <div />
-                      <div />
-                      <div />
-                      <div />
-                      <div />
-                      <div />
-                      <div />
-                    </div>
-                  </div>
+                  <Loading />
                 </div>
               </div>
             </div>
-
-            <div className="col-3" />
           </div>
         </div>
       );

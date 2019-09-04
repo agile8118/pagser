@@ -84,38 +84,34 @@ class Index extends Component {
       return (
         <div>
           <div className="row">
-            <div className="col-2" />
-            <div className="col-7">
-              <div className="page">
-                <div className="page__header">
-                  <Actions type="specific" />
-                  <h2 className="page__header__title">
-                    {this.props.contents.title}
-                  </h2>
-                  <span className="page__header__time">{this.props.date}</span>
-                </div>
-
-                <Photo />
-
-                <div className="page__contents">
-                  <div className="page__information">
-                    <div>
-                      <h3>Brief Description</h3>
-                      <p>{this.props.contents.briefDes}</p>
-                    </div>
-                    {this.renderTarget.apply(this)}
-                  </div>
-                  <div className="page__body">{this.renderBody()}</div>
-
-                  <AttachFiles />
-                </div>
-
-                {this.renderAuthor()}
-
-                {this.renderRating()}
+            <div className="page">
+              <div className="page__header">
+                <Actions type="specific" />
+                <h2 className="page__header__title">
+                  {this.props.contents.title}
+                </h2>
+                <span className="page__header__time">{this.props.date}</span>
               </div>
+
+              <Photo />
+
+              <div className="page__contents">
+                <div className="page__information">
+                  <div>
+                    <h3>Brief Description</h3>
+                    <p>{this.props.contents.briefDes}</p>
+                  </div>
+                  {this.renderTarget.apply(this)}
+                </div>
+                <div className="page__body">{this.renderBody()}</div>
+
+                <AttachFiles />
+              </div>
+
+              {this.renderAuthor()}
+
+              {this.renderRating()}
             </div>
-            <div className="col-3" />
           </div>
 
           {this.renderComment()}

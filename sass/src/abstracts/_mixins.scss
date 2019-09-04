@@ -1,9 +1,9 @@
 @mixin clearfix {
-	&::after {
-		content: "";
-		clear: both;
-		display: table;
-	}
+  &::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
 }
 
 /*
@@ -15,46 +15,58 @@
 1800px+					xl
 */
 
+@mixin res-between($max-width, $min-width) {
+  @media only screen and (min-width: $min-width) and (max-width: $max-width) {
+    @content;
+  }
+}
+
+@mixin res-max($max-width) {
+  @media only screen and (max-width: $max-width) {
+    @content;
+  }
+}
+
 @mixin respond($bp) {
-	@if $bp == xxs {
-		@media (max-width: 22.5em) {
-			//360px
-			@content;
-		}
-	}
+  @if $bp == xxs {
+    @media (max-width: 22.5em) {
+      //360px
+      @content;
+    }
+  }
 
-	@if $bp == xs {
-		@media (max-width: 37.5em) {
-			//600px
-			@content;
-		}
-	}
+  @if $bp == xs {
+    @media (max-width: 37.5em) {
+      //600px
+      @content;
+    }
+  }
 
-	@if $bp == sm {
-		@media (max-width: 56.25em) {
-			//900px
-			@content;
-		}
-	}
+  @if $bp == sm {
+    @media (max-width: 56.25em) {
+      //900px
+      @content;
+    }
+  }
 
-	@if $bp == md {
-		@media (max-width: 75em) {
-			//1200px
-			@content;
-		}
-	}
+  @if $bp == md {
+    @media (max-width: 75em) {
+      //1200px
+      @content;
+    }
+  }
 
-	@if $bp == l {
-		@media (max-width: 112.5em) {
-			//1800px
-			@content;
-		}
-	}
+  @if $bp == l {
+    @media (max-width: 112.5em) {
+      //1800px
+      @content;
+    }
+  }
 
-	@if $bp == xl {
-		@media (min-width: 112.5em) {
-			//1800px
-			@content;
-		}
-	}
+  @if $bp == xl {
+    @media (min-width: 112.5em) {
+      //1800px
+      @content;
+    }
+  }
 }

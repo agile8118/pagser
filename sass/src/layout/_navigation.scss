@@ -94,7 +94,11 @@
   box-shadow: -1px 2px 1px 0 rgba(0, 0, 0, 0.02);
   z-index: 1;
   right: 0;
-  top: 56px;
+  top: 5.6rem;
+
+  @media only screen and (max-width: 1200px) {
+    top: 6.2rem;
+  }
 
   a {
     font-weight: 300;
