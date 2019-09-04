@@ -1,52 +1,33 @@
-import React, { Component } from "react";
+import React from "react";
 
-class Alert extends Component {
-  constructor(props) {
-    super(props);
-  }
+const Alert = ({ message, type, onClose, additionalClasses }) => {
+  let className = "display-none";
+  if (message) {
+    if (type === "success") {
+      className = "alert alert--success";
+    }
 
-  // Change the message of the alert, type can be 'error' or 'success'
-  changeMessage(message, type, additionalClasses = null) {
-    var alert = document.querySelector("#alert");
-    this.hide();
+    if (type === "error") {
+      className = "alert alert--error";
+    }
+
+    if (type === "normall") {
+      className = "alert alert--normall";
+    }
 
     if (additionalClasses) {
-      alert.classList.add(additionalClasses);
+      className += ` ${additionalClasses}`;
     }
-
-    switch (type) {
-      case "error":
-        alert.classList.add("message-box--error");
-        break;
-      case "success":
-        alert.classList.add("message-box--success");
-        break;
-    }
-    alert.childNodes[0].innerHTML = message;
   }
 
-  // Hide the alert
-  hide() {
-    var alert = document.querySelector("#alert");
-    alert.classList.remove("message-box--error");
-    alert.classList.remove("message-box--success");
-    alert.childNodes[0].innerHTML = "";
-  }
-
-  render() {
-    return (
-      <div id="alert" className={`message-box`}>
-        <span />
-        <button
-          onClick={this.hide.bind(this)}
-          type="button"
-          className="message-box__dismiss"
-        >
-          <i className="fa fa-remove" />
-        </button>
-      </div>
-    );
-  }
-}
+  return (
+    <div className={className}>
+      <span>{message}</span>
+      <button onClick={onClose} type="button" className="alert__dismiss">
+        <i className="fa fa-remove" />
+      </button>
+    </div>
+  );
+};
 
 export default Alert;

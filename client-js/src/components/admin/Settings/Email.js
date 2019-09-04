@@ -3,7 +3,6 @@ import axios from "axios";
 import { ROOT_URL } from "../../../lib/keys";
 import util from "../../../lib/forms";
 import { showSnackBar } from "../../../lib/util";
-import Alert from "../../partials/Alert";
 
 class Email extends Component {
   constructor(props) {

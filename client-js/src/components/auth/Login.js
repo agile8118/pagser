@@ -2,19 +2,44 @@ import React, { Component } from "react";
 import axios from "axios";
 import { getParameterByName } from "../../lib/util";
 import Alert from "../partials/Alert";
+import Loading from "../partials/loading";
 import redirectToAdmin from "./redirectToAdmin";
 
 class Login extends Component {
-  constructor(props) {
-    super(props);
+  state = {
+    email: "",
+    password: "",
+    alertMessage: null,
+    alertType: "success",
+    loading: false
+  };
 
-    this.state = {
-      email: "",
-      password: "",
-      loading: false
-    };
-
-    this.alert = new Alert();
+  componentDidMount() {
+    const redirectedFrom = getParameterByName(
+      "redirected",
+      window.location.href
+    );
+    switch (redirectedFrom) {
+      case "new-page":
+        this.setState({
+          alertMessage:
+            "Please login in order to be able to create a new page.",
+          alertType: "normall"
+        });
+        break;
+      case "admin":
+        this.setState({
+          alertMessage: "Please login to access the admin area.",
+          alertType: "normall"
+        });
+        break;
+      case "access":
+        this.setState({
+          alertMessage: "Please login to access that page.",
+          alertType: "normall"
+        });
+        break;
+    }
   }
 
   openModal() {
@@ -37,19 +62,19 @@ class Login extends Component {
       })
       .then(response => {
         this.closeModal();
-        this.alert.changeMessage(
-          `Instructions on how to reset your password were sent to ${
+        this.setState({
+          alertMessage: `Instructions on how to reset your password were sent to ${
             this.state.email
           }`,
-          "success"
-        );
+          alertType: "success"
+        });
       })
       .catch(error => {
         this.closeModal();
-        this.alert.changeMessage(
-          `No one with email ${this.state.email} founded.`,
-          "error"
-        );
+        this.setState({
+          alertMessage: `No one with email ${this.state.email} founded.`,
+          alertType: "error"
+        });
       });
   }
 
@@ -65,44 +90,12 @@ class Login extends Component {
         window.location = `/admin`;
       })
       .catch(error => {
-        this.setState({ loading: false });
-        this.alert.changeMessage(
-          `Incorrect password or email address.`,
-          "error"
-        );
+        this.setState({
+          loading: false,
+          alertMessage: `Incorrect password or email address.`,
+          alertType: "error"
+        });
       });
-  }
-
-  renderRedirectError() {
-    const redirectedFrom = getParameterByName(
-      "redirected",
-      window.location.href
-    );
-    switch (redirectedFrom) {
-      case "new-page":
-        return (
-          <div className="message-box message-box--normall message-box--redirect-to-login">
-            Please login in order to be able to create a new page.
-          </div>
-        );
-        break;
-      case "admin":
-        return (
-          <div className="message-box message-box--normall message-box--redirect-to-login">
-            Please login to access the admin area.
-          </div>
-        );
-        break;
-      case "access":
-        return (
-          <div className="message-box message-box--normall message-box--redirect-to-login">
-            Please login to access that page.
-          </div>
-        );
-        break;
-      default:
-        return <div />;
-    }
   }
 
   renderButtons() {
@@ -129,22 +122,7 @@ class Login extends Component {
       return (
         <div className="margin-top-3">
           <div className="center-content">
-            <div className="lds-css ng-scope">
-              <div className="lds-spinner">
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-              </div>
-            </div>
+            <Loading />
           </div>
         </div>
       );
@@ -223,8 +201,13 @@ class Login extends Component {
               We are happy to see you loging in! Login to manage all of your
               pages. You can reset your password if you {"don't "} remember it.
             </p>
-            {this.renderRedirectError()}
-            <Alert />
+            <Alert
+              message={this.state.alertMessage}
+              onClose={() => {
+                this.setState({ alertMessage: null });
+              }}
+              type={this.state.alertType}
+            />
             <form
               method="post"
               onSubmit={event => {

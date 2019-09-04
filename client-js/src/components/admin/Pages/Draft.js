@@ -3,7 +3,6 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import util from "../../../lib/forms";
 import { ROOT_URL } from "../../../lib/keys";
-import Alert from "../../partials/Alert";
 import PageThumbnail from "../../partials/page-thumbnail";
 import Loading from "../../partials/loading";
 import Header from "./Header";

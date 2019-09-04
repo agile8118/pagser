@@ -3,7 +3,6 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import util from "../../../lib/forms";
 import { ROOT_URL } from "../../../lib/keys";
-import Alert from "../../partials/Alert";
 import Header from "./Header";
 
 class Draft extends Component {

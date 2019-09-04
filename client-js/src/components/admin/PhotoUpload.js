@@ -5,17 +5,13 @@ import util from "../../lib/forms";
 import Alert from "../partials/Alert";
 
 class PhotoUpload extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      error: "",
-      cropData: { x: 0, y: 0, width: 0, height: 0 },
-      photo: "/images/users/placeholder.png"
-    };
-
-    this.alert = new Alert();
-  }
+  state = {
+    error: "",
+    cropData: { x: 0, y: 0, width: 0, height: 0 },
+    alertMessage: null,
+    alertType: "success",
+    photo: "/images/users/placeholder.png"
+  };
 
   componentDidMount() {
     const config = {
@@ -199,11 +195,10 @@ class PhotoUpload extends Component {
           photo: res.data.image
         });
 
-        this.alert.changeMessage(
-          "Profile picture uploaded successfully.",
-          "success",
-          "margin-top-1"
-        );
+        this.setState({
+          alertMessage: "Profile picture uploaded successfully.",
+          alertType: "success"
+        });
 
         window.location.hash = "photo";
         window.location.hash = "";
@@ -218,11 +213,10 @@ class PhotoUpload extends Component {
           .querySelector("#js--uploader-loading")
           .classList.add("display-none");
 
-        this.alert.changeMessage(
-          "There was problem with uploading.",
-          "error",
-          "margin-top-1"
-        );
+        this.setState({
+          alertMessage: "There was problem with uploading.",
+          alertType: "error"
+        });
       });
   }
 
@@ -249,7 +243,14 @@ class PhotoUpload extends Component {
           <h3 className="heading-tertiary" id="photo">
             Photo
           </h3>
-          <Alert />
+          <Alert
+            message={this.state.alertMessage}
+            onClose={() => {
+              this.setState({ alertMessage: null });
+            }}
+            type={this.state.alertType}
+            additionalClasses="margin-top-2"
+          />
           <img
             src={this.state.photo}
             onError={() => {

@@ -17,10 +17,10 @@ class Register extends Component {
       confirmPassword: "",
       usernameIsOK: null,
       status: "showform",
+      alertMessage: null,
+      alertType: "success",
       loading: false
     };
-
-    this.alert = new Alert();
   }
 
   openModal() {
@@ -245,23 +245,24 @@ class Register extends Component {
         .post(`/api/sendcode`, user)
         .then(response => {
           this.setState({ loading: false });
-          this.alert.hide();
           this.setState({
+            alertMessage: null,
             status: "verifyemail"
           });
         })
         .catch(error => {
           this.setState({ loading: false });
           if (error.response.data.error === "email is in use") {
-            this.alert.changeMessage(
-              "This email is in use, you can login or reset your password in login tab.",
-              "error"
-            );
+            this.setState({
+              alertMessage:
+                "This email is in use, you can login or reset your password in login tab.",
+              alertType: "error"
+            });
           } else {
-            this.alert.changeMessage(
-              "Something went wrong, please try again.",
-              "error"
-            );
+            this.setState({
+              alertMessage: "Something went wrong, please try again.",
+              alertType: "error"
+            });
           }
         });
     }
@@ -277,18 +278,18 @@ class Register extends Component {
         email: this.state.email
       })
       .then(response => {
-        this.setState({ loading: false });
-        this.alert.changeMessage(
-          "New code has been sent to your email.",
-          "success"
-        );
+        this.setState({
+          loading: false,
+          alertMessage: "New code has been sent to your email.",
+          alertType: "success"
+        });
       })
       .catch(error => {
-        this.setState({ loading: false });
-        this.alert.changeMessage(
-          "Something went wrong, please try again.",
-          "error"
-        );
+        this.setState({
+          loading: false,
+          alertMessage: "Something went wrong, please try again.",
+          alertType: "error"
+        });
       });
   }
 
@@ -312,19 +313,20 @@ class Register extends Component {
             window.location = `/admin`;
           })
           .catch(error => {
-            this.setState({ loading: false });
-            this.alert.changeMessage(
-              "Something went wrong, please try again.",
-              "error"
-            );
+            this.setState({
+              loading: false,
+              alertMessage: "Something went wrong, please try again.",
+              alertType: "error"
+            });
           });
       })
       .catch(error => {
-        this.setState({ loading: false });
-        this.alert.changeMessage(
-          "The code is invalid, make sure that you put the exact code we've sent to your email. You may want to resend the code.",
-          "error"
-        );
+        this.setState({
+          loading: false,
+          alertMessage:
+            "The code is invalid, make sure that you put the exact code we've sent to your email. You may want to resend the code.",
+          alertType: "error"
+        });
       });
   }
 
@@ -339,24 +341,25 @@ class Register extends Component {
       })
       .then(response => {
         this.closeModal();
-        this.setState({ email });
-        this.alert.changeMessage(
-          "New code has been sent to your email.",
-          "success"
-        );
+        this.setState({
+          email,
+          alertMessage: "New code has been sent to your email.",
+          alertType: "success"
+        });
       })
       .catch(error => {
         this.closeModal();
         if (error.response.data.error === "email is in use") {
-          this.alert.changeMessage(
-            "This email is already in use, please login with this email or choose another one.",
-            "error"
-          );
+          this.setState({
+            alertMessage:
+              "This email is already in use, please login with this email or choose another one.",
+            alertType: "error"
+          });
         } else {
-          this.alert.changeMessage(
-            "Something went wrong, please try again.",
-            "error"
-          );
+          this.setState({
+            alertMessage: "Something went wrong, please try again.",
+            alertType: "error"
+          });
         }
       });
   }
@@ -484,7 +487,13 @@ class Register extends Component {
                 By creating an account you will be able to create pages,
                 favorite pages, comment on other pages and more.
               </p>
-              <Alert />
+              <Alert
+                message={this.state.alertMessage}
+                onClose={() => {
+                  this.setState({ alertMessage: null });
+                }}
+                type={this.state.alertType}
+              />
               <form
                 method="post"
                 onSubmit={event => {
@@ -664,7 +673,13 @@ class Register extends Component {
               {this.state.email} - The last step is to enter the code that we
               have just sent to your email to verify your email address.
             </p>
-            <Alert />
+            <Alert
+              message={this.state.alertMessage}
+              onClose={() => {
+                this.setState({ alertMessage: null });
+              }}
+              type={this.state.alertType}
+            />
             <form
               onSubmit={event => {
                 event.preventDefault();

@@ -3,18 +3,15 @@ import axios from "axios";
 import util from "../../../lib/forms";
 import { ROOT_URL } from "../../../lib/keys";
 import Alert from "../../partials/Alert";
+import Loading from "../../partials/loading";
 
 class Password extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      password: "",
-      confirmPassword: ""
-    };
-
-    this.alert = new Alert();
-  }
+  state = {
+    password: "",
+    confirmPassword: "",
+    alertMessage: null,
+    alertType: "success"
+  };
 
   onInputFocusOut(value, fieldName) {
     if (fieldName === "password") {
@@ -110,12 +107,12 @@ class Password extends Component {
         document.querySelector("#dialogModal").classList.add("display-none");
         util.confirmPasswordReset.apply(this);
         util.inputNone("password");
-        this.setState({ password: "", confirmPassword: "" });
-        this.alert.changeMessage(
-          "Password updated successfully.",
-          "success",
-          "margin-top-4"
-        );
+        this.setState({
+          password: "",
+          confirmPassword: "",
+          alertMessage: "Password updated successfully.",
+          alertType: "success"
+        });
         util.disableButton("change-password");
       })
       .catch(error => {
@@ -135,22 +132,7 @@ class Password extends Component {
             <h3>Updating your password...</h3>
           </div>
           <div className="center-content">
-            <div className="lds-css ng-scope">
-              <div className="lds-spinner">
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-              </div>
-            </div>
+            <Loading />
           </div>
         </div>
       </div>
@@ -168,7 +150,14 @@ class Password extends Component {
             this.onFormSubmit.apply(this);
           }}
         >
-          <Alert />
+          <Alert
+            message={this.state.alertMessage}
+            onClose={() => {
+              this.setState({ alertMessage: null });
+            }}
+            type={this.state.alertType}
+            additionalClasses="margin-top-4"
+          />{" "}
           <label className="form__label margin-top-2">Change password</label>
           <div className="=" id="password">
             <input
@@ -193,7 +182,6 @@ class Password extends Component {
               <span />
             </div>
           </div>
-
           <div className="margin-top-1" id="confirm-password">
             <input
               type="password"
@@ -218,7 +206,6 @@ class Password extends Component {
               <span />
             </div>
           </div>
-
           <button
             className="btn-round btn-round-normal float-right margin-top-1 btn-disabled"
             id="change-password"
