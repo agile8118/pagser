@@ -17,6 +17,7 @@ class Draft extends Component {
   _isMounted = false;
 
   componentDidMount() {
+    this._isMounted = true;
     const config = {
       headers: {
         authorization: localStorage.getItem("token")
@@ -190,6 +191,7 @@ class Draft extends Component {
 
     if (this.state.pages.length > 0) {
       return this.state.pages.map(page => {
+        let target = "";
         if (page.contents.title.length > 25) {
           page.contents.title = page.contents.title.substring(0, 25) + "...";
         }
@@ -199,9 +201,11 @@ class Draft extends Component {
         }
 
         if (this.state.status === "normal") {
+          target = "_blank";
           var pageClass = "page-thumbnail page-thumbnail-no-photo";
           var pageUrl = `/new-page/initial-step?id=${page._id}`;
         } else if (this.state.status === "editing") {
+          target = "_self";
           if (this.state.selectedPages.indexOf(page._id) !== -1) {
             pageClass =
               "page-thumbnail page-thumbnail-no-photo page-thumbnail--shaking page-thumbnail--selected";
@@ -218,6 +222,7 @@ class Draft extends Component {
             className="col-lg-1-of-5 col-md-1-of-4 col-sm-1-of-3 col-xs-1-of-2 col-xxs-1-of-1"
           >
             <PageThumbnail
+              target={target}
               className={pageClass}
               noPhoto={true}
               onClick={e => {

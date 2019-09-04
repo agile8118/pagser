@@ -8,18 +8,16 @@ import Loading from "../../partials/Loading";
 import Header from "./Header";
 
 class Draft extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      pages: null,
-      status: "normal",
-      selectedPages: [],
-      confirmModalStatus: ""
-    };
-  }
+  state = {
+    pages: null,
+    status: "normal",
+    selectedPages: [],
+    confirmModalStatus: ""
+  };
+  _isMounted = false;
 
   componentDidMount() {
+    this._isMounted = true;
     const config = {
       headers: {
         authorization: localStorage.getItem("token")
@@ -30,15 +28,21 @@ class Draft extends Component {
       .get(`/api/admin/pages/favorited`, config)
       .then(response => {
         const pages = response.data.pages;
-        this.setState({
-          pages
-        });
+        if (this._isMounted) {
+          this.setState({
+            pages
+          });
+        }
       })
       .catch(error => {
         if (error.response.status === 401) {
           window.location.href = "/login?redirected=admin";
         }
       });
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   onPageClicked(pageId) {

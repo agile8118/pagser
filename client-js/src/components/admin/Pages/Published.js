@@ -8,13 +8,11 @@ import Loading from "../../partials/Loading";
 import Header from "./Header";
 
 class Pages extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = { pages: null };
-  }
+  state = { pages: null };
+  _isMounted = false;
 
   componentDidMount() {
+    this._isMounted = true;
     const config = {
       headers: {
         authorization: localStorage.getItem("token")
@@ -25,15 +23,21 @@ class Pages extends Component {
       .get(`/api/admin/pages/published`, config)
       .then(response => {
         const pages = response.data.pages;
-        this.setState({
-          pages
-        });
+        if (this._isMounted) {
+          this.setState({
+            pages
+          });
+        }
       })
       .catch(error => {
         if (error.response.status === 401) {
           window.location.href = "/login?redirected=admin";
         }
       });
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   renderPages() {

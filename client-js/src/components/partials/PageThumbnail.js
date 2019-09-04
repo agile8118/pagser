@@ -4,7 +4,7 @@ const PageThumbnail = props => {
   if (props.noPhoto) {
     return (
       <div className={props.className} onClick={props.onClick}>
-        <a href={props.url} target="_blank">
+        <a href={props.url} target={props.target}>
           <div className="page-thumbnail__details">
             <h4>{props.title}</h4>
             <p>{props.briefDes}</p>
