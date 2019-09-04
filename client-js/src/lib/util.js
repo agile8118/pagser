@@ -28,3 +28,14 @@ export const showSnackBar = (text, className = "nothing") => {
     }, 2900);
   }
 };
+
+export const loadingModal = message => {
+  let loadingModal = document.querySelector("#loading-modal");
+  let loadingModalMessage = document.querySelector("#loading-modal-message");
+  if (message) {
+    loadingModal.classList.remove("display-none");
+    loadingModalMessage.innerHTML = message;
+  } else {
+    loadingModal.classList.add("display-none");
+  }
+};

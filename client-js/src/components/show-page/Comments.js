@@ -3,26 +3,22 @@ import axios from "axios";
 import { connect } from "react-redux";
 import Loading from "../partials/Loading";
 import { ROOT_URL } from "../../lib/keys";
-import { showSnackBar } from "../../lib/util";
+import { showSnackBar, loadingModal } from "../../lib/util";
 import sendPageId from "./sendPageId";
 
 class Comments extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      comments: null,
-      commentText: "",
-      userId: null,
-      modalCommentId: null,
-      modalUpdateCommentId: null,
-      modalCommentText: "",
-      commentPage: 1,
-      commentPages: null,
-      sendReplyToName: null,
-      sendReplyToId: null
-    };
-  }
+  state = {
+    comments: null,
+    commentText: "",
+    userId: null,
+    modalCommentId: null,
+    modalUpdateCommentId: null,
+    modalCommentText: "",
+    commentPage: 1,
+    commentPages: null,
+    sendReplyToName: null,
+    sendReplyToId: null
+  };
 
   componentDidMount() {
     this.fetchComments.apply(this);
@@ -76,6 +72,57 @@ class Comments extends Component {
   closeModal(mdl) {
     const modal = document.querySelector(mdl);
     modal.style.display = "none";
+  }
+
+  onFormSubmit() {
+    loadingModal("Adding your comment...");
+    if (this.state.commentText.length > 0) {
+      const config = {
+        headers: {
+          authorization: localStorage.getItem("token")
+        }
+      };
+      axios
+        .post(
+          `/api/pages/${this.props.id}/comments`,
+          { text: this.state.commentText, inReplyTo: this.state.sendReplyToId },
+          config
+        )
+        .then(response => {
+          loadingModal();
+          if (response.data.inReplyTo) {
+            var newComments = this.state.comments.map(c => {
+              if (c.id === response.data.inReplyTo) {
+                c.replyes.push(response.data);
+                return c;
+              } else {
+                return c;
+              }
+            });
+            this.setState({
+              comments: newComments,
+              commentText: "",
+              sendReplyToId: null,
+              sendReplyToName: null
+            });
+            showSnackBar("Your comment reply added successfully.", "success");
+          } else {
+            this.setState({
+              comments: [response.data, ...this.state.comments],
+              commentText: "",
+              sendReplyToName: null,
+              sendReplyToId: null
+            });
+            window.location.hash = "comments2";
+            window.location.hash = "comments";
+            showSnackBar("Your comment added successfully.", "success");
+          }
+        })
+        .catch(response => {
+          loadingModal();
+          showSnackBar("Sorry an unkown error occurred.", "error");
+        });
+    }
   }
 
   renderCommentActions(comment) {
@@ -281,54 +328,6 @@ class Comments extends Component {
     }
   }
 
-  onFormSubmit() {
-    if (this.state.commentText.length > 0) {
-      const config = {
-        headers: {
-          authorization: localStorage.getItem("token")
-        }
-      };
-      axios
-        .post(
-          `/api/pages/${this.props.id}/comments`,
-          { text: this.state.commentText, inReplyTo: this.state.sendReplyToId },
-          config
-        )
-        .then(response => {
-          if (response.data.inReplyTo) {
-            var newComments = this.state.comments.map(c => {
-              if (c.id === response.data.inReplyTo) {
-                c.replyes.push(response.data);
-                return c;
-              } else {
-                return c;
-              }
-            });
-            this.setState({
-              comments: newComments,
-              commentText: "",
-              sendReplyToId: null,
-              sendReplyToName: null
-            });
-            showSnackBar("Your comment reply added successfully.", "success");
-          } else {
-            this.setState({
-              comments: [response.data, ...this.state.comments],
-              commentText: "",
-              sendReplyToName: null,
-              sendReplyToId: null
-            });
-            window.location.hash = "comments2";
-            window.location.hash = "comments";
-            showSnackBar("Your comment added successfully.", "success");
-          }
-        })
-        .catch(response => {
-          showSnackBar("Sorry an unkown error occurred.", "error");
-        });
-    }
-  }
-
   renderModals() {
     return (
       <div>
@@ -357,6 +356,8 @@ class Comments extends Component {
               <form
                 onSubmit={event => {
                   event.preventDefault();
+                  this.closeModal.apply(this, ["#commentDelete"]);
+                  loadingModal("Deleting your comment...");
 
                   const config = {
                     headers: {
@@ -371,6 +372,7 @@ class Comments extends Component {
                       config
                     )
                     .then(response => {
+                      loadingModal();
                       if (response.data.reply) {
                         var array = [...this.state.comments]; // make a separate copy of the array
                         var newComments = array.map(comment => {
@@ -384,7 +386,6 @@ class Comments extends Component {
                             return comment;
                           }
                         });
-                        this.closeModal.apply(this, ["#commentDelete"]);
                         this.setState({ comments: newComments }, () => {
                           showSnackBar(
                             "Your comment deleted successfully.",
@@ -396,7 +397,6 @@ class Comments extends Component {
                         var newComments = array.filter(comment => {
                           return comment.id !== response.data.commentId;
                         });
-                        this.closeModal.apply(this, ["#commentDelete"]);
                         this.setState({ comments: newComments }, () => {
                           showSnackBar(
                             "Your comment deleted successfully.",
@@ -406,6 +406,7 @@ class Comments extends Component {
                       }
                     })
                     .catch(response => {
+                      loadingModal();
                       showSnackBar("An unknown error occurred.");
                     });
                 }}
@@ -447,6 +448,8 @@ class Comments extends Component {
               <form
                 onSubmit={event => {
                   event.preventDefault();
+                  loadingModal("Updating your comment...");
+                  this.closeModal.apply(this, ["#commentUpdate"]);
 
                   const config = {
                     headers: {
@@ -463,6 +466,7 @@ class Comments extends Component {
                       config
                     )
                     .then(response => {
+                      loadingModal();
                       if (response.data.reply) {
                         var array = [...this.state.comments]; // make a separate copy of the array
                         var newComments = array.map(comment => {
@@ -482,7 +486,6 @@ class Comments extends Component {
                             return comment;
                           }
                         });
-                        this.closeModal.apply(this, ["#commentUpdate"]);
                         this.setState({ comments: newComments }, () => {
                           showSnackBar(
                             "Your comment updated successfully.",
@@ -499,7 +502,6 @@ class Comments extends Component {
                             return comment;
                           }
                         });
-                        this.closeModal.apply(this, ["#commentUpdate"]);
                         this.setState({ comments: newComments }, () => {
                           showSnackBar(
                             "Your comment updated successfully.",
@@ -509,6 +511,7 @@ class Comments extends Component {
                       }
                     })
                     .catch(response => {
+                      loadingModal();
                       showSnackBar("An unknown error occurred.");
                     });
                 }}
@@ -629,7 +632,7 @@ class Comments extends Component {
   }
 
   render() {
-    if (this.state.comments != null) {
+    if (this.state.comments !== null) {
       return (
         <div>
           <div className="page__comments" id="comments2">

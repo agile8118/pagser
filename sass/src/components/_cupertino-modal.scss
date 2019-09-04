@@ -26,6 +26,7 @@
   transform: translate(-50%, -50%);
   width: 40rem;
   animation: name 0.2s ease-out;
+  z-index: 999;
 
   &__content {
     padding: 2rem 3rem;

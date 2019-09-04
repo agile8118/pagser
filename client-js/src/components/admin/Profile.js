@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import axios from "axios";
+import Loading from "../partials/Loading";
 import { ROOT_URL } from "../../lib/keys";
-import { showSnackBar } from "../../lib/util";
+import { showSnackBar, loadingModal } from "../../lib/util";
 import util from "../../lib/forms";
 import PhotoUpload from "./PhotoUpload";
 
@@ -159,7 +160,7 @@ class Profile extends Component {
 
   onSaveClick(e) {
     this.setState({ btnDisabled: true });
-    document.querySelector("#dialogModal").classList.toggle("display-none");
+    loadingModal("Updating your profile...");
     const config = {
       headers: {
         authorization: localStorage.getItem("token")
@@ -178,8 +179,7 @@ class Profile extends Component {
         config
       )
       .then(response => {
-        document.querySelector("#dialogModal").classList.toggle("display-none");
-
+        loadingModal();
         this.setState(
           (({ name, headline, biography, links }) => ({
             name,
@@ -193,50 +193,16 @@ class Profile extends Component {
         this.forceUpdate();
       })
       .catch(error => {
-        document.querySelector("#dialogModal").classList.toggle("display-none");
+        loadingModal();
         this.setState({ btnDisabled: false });
         showSnackBar("An unknown error occurred.", "error");
       });
-  }
-
-  renderLoadingDialog() {
-    return (
-      <div
-        className="cupertino-modal-container cupertino-modal-container--light display-none"
-        id="dialogModal"
-      >
-        <div className="cupertino-modal cupertino-modal--loading">
-          <div className="cupertino-modal__content">
-            <h3>Updating your profile...</h3>
-          </div>
-          <div className="center-content">
-            <div className="lds-css ng-scope">
-              <div className="lds-spinner">
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
   }
 
   render() {
     if (this.state.loaded) {
       return (
         <div>
-          {this.renderLoadingDialog()}
           <div className="center-content">
             <h3 className="heading-tertiary" id="information">
               Information

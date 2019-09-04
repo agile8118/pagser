@@ -2,18 +2,14 @@ import React, { Component } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
 import { ROOT_URL } from "../../lib/keys";
-import { showSnackBar } from "../../lib/util";
+import { showSnackBar, loadingModal } from "../../lib/util";
 
 import * as actions from "../../redux/specific-page/actions";
 
 class Actions extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      titleTyped: ""
-    };
-  }
+  state = {
+    titleTyped: ""
+  };
 
   componentDidMount() {
     if (this.props.type && this.props.type === "public") {
@@ -22,6 +18,7 @@ class Actions extends Component {
   }
 
   onFavoriteButtonClick() {
+    loadingModal("Loading...");
     const config = {
       headers: {
         authorization: localStorage.getItem("token")
@@ -30,9 +27,11 @@ class Actions extends Component {
     axios
       .patch(`/api/pages/${this.props.id}/favorite`, null, config)
       .then(response => {
+        loadingModal();
         this.props.pageFavorited(response.data);
       })
       .catch(error => {
+        loadingModal();
         if (error.response && error.response.status === 401) {
           showSnackBar("Please login to favorite a page.");
         } else {

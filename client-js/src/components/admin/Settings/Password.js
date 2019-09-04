@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
+import { loadingModal } from "../../../lib/util";
 import util from "../../../lib/forms";
 import { ROOT_URL } from "../../../lib/keys";
 import Alert from "../../partials/Alert";
@@ -87,8 +88,7 @@ class Password extends Component {
   }
 
   onFormSubmit() {
-    console.log("Submitted");
-    document.querySelector("#dialogModal").classList.remove("display-none");
+    loadingModal("Updating your password...");
 
     const config = {
       headers: {
@@ -104,7 +104,7 @@ class Password extends Component {
         config
       )
       .then(response => {
-        document.querySelector("#dialogModal").classList.add("display-none");
+        loadingModal();
         util.confirmPasswordReset.apply(this);
         util.inputNone("password");
         this.setState({
@@ -116,33 +116,14 @@ class Password extends Component {
         util.disableButton("change-password");
       })
       .catch(error => {
-        document.querySelector("#dialogModal").classList.add("display-none");
+        loadingModal();
         console.log("err");
       });
-  }
-
-  renderLoadingDialog() {
-    return (
-      <div
-        className="cupertino-modal-container cupertino-modal-container--light display-none"
-        id="dialogModal"
-      >
-        <div className="cupertino-modal cupertino-modal--loading">
-          <div className="cupertino-modal__content">
-            <h3>Updating your password...</h3>
-          </div>
-          <div className="center-content">
-            <Loading />
-          </div>
-        </div>
-      </div>
-    );
   }
 
   render() {
     return (
       <div>
-        {this.renderLoadingDialog()}
         <form
           method="post"
           onSubmit={event => {
