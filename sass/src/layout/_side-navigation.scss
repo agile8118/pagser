@@ -4,7 +4,7 @@
   top: 0;
   left: 0;
   bottom: 0;
-  width: 27rem;
+  width: 24rem;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
@@ -99,13 +99,13 @@
 
   &__logo {
     position: relative;
-    margin-left: 2rem;
+    margin-left: 2.5rem;
     margin-bottom: 2.3rem;
     list-style: none;
 
     span {
       font-weight: 300;
-      font-size: 2.6rem;
+      font-size: 2.4rem;
       text-transform: uppercase;
       letter-spacing: 11px;
 
@@ -116,7 +116,7 @@
   }
 
   &__item {
-    font-size: 1.7rem;
+    font-size: 1.6rem;
     margin-bottom: 4rem;
     padding: 1rem 4rem;
     display: block;

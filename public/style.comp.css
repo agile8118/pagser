@@ -662,7 +662,7 @@ pre {
   top: 0;
   left: 0;
   bottom: 0;
-  width: 27rem;
+  width: 24rem;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
@@ -735,19 +735,19 @@ pre {
       padding-top: 1.5rem; } }
   .side-nav__logo {
     position: relative;
-    margin-left: 2rem;
+    margin-left: 2.5rem;
     margin-bottom: 2.3rem;
     list-style: none; }
     .side-nav__logo span {
       font-weight: 300;
-      font-size: 2.6rem;
+      font-size: 2.4rem;
       text-transform: uppercase;
       letter-spacing: 11px; }
       @media (max-width: 62.5em) {
         .side-nav__logo span {
           color: #464646; } }
   .side-nav__item {
-    font-size: 1.7rem;
+    font-size: 1.6rem;
     margin-bottom: 4rem;
     padding: 1rem 4rem;
     display: block;
@@ -1752,7 +1752,8 @@ iframe {
   color: #555;
   transform: translate(-50%, -50%);
   width: 40rem;
-  animation: name 0.2s ease-out; }
+  animation: name 0.2s ease-out;
+  z-index: 999; }
   .cupertino-modal__content {
     padding: 2rem 3rem;
     text-align: center; }
