@@ -14,13 +14,13 @@
   box-sizing: inherit; }
 
 html {
-  font-size: 62.5%; }
+  font-size: 10px; }
   @media (max-width: 75em) {
     html {
-      font-size: 56.25%; } }
+      font-size: 9px; } }
   @media (max-width: 56.25em) {
     html {
-      font-size: 50%; } }
+      font-size: 8px; } }
 
 body {
   box-sizing: border-box;
@@ -505,7 +505,10 @@ pre {
   box-shadow: -1px 2px 1px 0 rgba(0, 0, 0, 0.02);
   z-index: 1;
   right: 0;
-  top: 56px; }
+  top: 5.6rem; }
+  @media only screen and (max-width: 1200px) {
+    .nav-dropdown__content {
+      top: 6.2rem; } }
   .nav-dropdown__content a {
     font-weight: 300;
     font-size: 1.6rem;
@@ -1262,41 +1265,32 @@ textarea {
   -moz-appearance: none;
   appearance: none; }
 
-.message-box {
+.alert {
   border-radius: 5px;
   padding: 1rem 2rem;
   font-size: 1.6rem;
-  text-align: left;
   color: #fff;
-  display: none;
-  transition: animation 1s;
-  animation: fadein 1s; }
-  .message-box--redirect-to-login {
-    margin: 5rem 0 -4rem 0;
-    font-size: 1.7rem;
-    padding: 1.8rem 2rem; }
-  .message-box--normall {
-    background-color: #5f6063;
-    margin-bottom: 1rem;
-    display: block; }
-  .message-box--animated {
-    animation: fadein 1s; }
-  .message-box--error {
+  display: none; }
+  .alert--error {
     background-color: #e74c3c;
     display: flex;
     align-items: center; }
-  .message-box--success {
+  .alert--success {
     background-color: #2ecc71;
     display: flex;
     align-items: center; }
-  .message-box__dismiss {
+  .alert--normall {
+    background-color: #5f6063;
+    display: flex;
+    align-items: center; }
+  .alert__dismiss {
     font-size: 1.6rem;
     margin-left: auto;
     background: none;
     border: none;
     color: #fff;
     cursor: pointer; }
-    .message-box__dismiss:hover, .message-box__dismiss:focus {
+    .alert__dismiss:hover, .alert__dismiss:focus {
       outline: none;
       color: #cecece; }
 
@@ -1947,13 +1941,15 @@ iframe {
   color: #555;
   padding: 2rem 10rem 0 0rem;
   font-size: 1.6rem; }
-  @media (max-width: 112.5em) {
+  @media only screen and (max-width: 1300px) {
     .page {
-      padding-right: 0rem; } }
-  @media only screen and (max-width: 45em) {
+      padding-right: 6rem; } }
+  @media only screen and (max-width: 1072px) {
     .page {
-      padding-right: 1rem;
-      padding-left: 1rem; } }
+      padding: 2rem 6rem 2rem 3rem; } }
+  @media only screen and (max-width: 720px) {
+    .page {
+      padding: 2rem 3rem; } }
   .page__header__actions {
     display: block;
     width: 100%;
@@ -2038,7 +2034,7 @@ iframe {
     width: 100%;
     padding: 5rem 0rem; }
   .page__comments {
-    margin-top: 6rem;
+    margin-top: 4rem;
     padding-top: 3rem;
     border-top: 1px solid; }
     .page__comments h2 {
@@ -2046,6 +2042,15 @@ iframe {
     .page__comments__add {
       padding-top: 3rem;
       display: block; }
+
+.comments-wrapper {
+  padding: 0 16rem 0 0; }
+  @media only screen and (max-width: 1210px) {
+    .comments-wrapper {
+      padding: 2rem 5rem; } }
+  @media only screen and (max-width: 590px) {
+    .comments-wrapper {
+      padding: 2rem 3rem; } }
 
 .comment {
   border: 1px solid #dbe2e8;
@@ -2125,37 +2130,3 @@ iframe {
   display: inline-block; }
   .file-link:hover {
     background-color: #f1f1f1; }
-
-.show-private {
-  padding: 2rem 1rem;
-  background: #fff;
-  border-radius: 5px;
-  color: #555;
-  box-shadow: 2px 2px 3px 0 rgba(116, 123, 129, 0.12);
-  overflow-x: hidden; }
-  .show-private ul {
-    margin-left: 2rem; }
-  .show-private ol {
-    margin-left: 2rem; }
-  .show-private__actions {
-    text-align: right;
-    margin-right: 2rem; }
-  .show-private__contents {
-    margin-top: -1.9rem;
-    padding-left: 1.4rem; }
-  .show-private__title {
-    letter-spacing: 0.1rem;
-    font-weight: 300;
-    word-spacing: 0.2rem;
-    font-size: 2.6rem; }
-  .show-private__time {
-    display: block;
-    font-style: italic;
-    font-size: 1.5rem; }
-  .show-private__description {
-    font-style: italic;
-    font-size: 2rem;
-    padding-top: 0.5rem; }
-  .show-private__body {
-    padding-top: 0.5rem;
-    font-size: 1.6rem; }
