@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import { getParameterByName } from "../../lib/util";
 import Alert from "../partials/Alert";
-import Loading from "../partials/loading";
+import Loading from "../partials/Loading";
 import redirectToAdmin from "./redirectToAdmin";
 
 class Login extends Component {

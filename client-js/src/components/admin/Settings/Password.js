@@ -3,7 +3,7 @@ import axios from "axios";
 import util from "../../../lib/forms";
 import { ROOT_URL } from "../../../lib/keys";
 import Alert from "../../partials/Alert";
-import Loading from "../../partials/loading";
+import Loading from "../../partials/Loading";
 
 class Password extends Component {
   state = {

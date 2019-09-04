@@ -5,13 +5,12 @@ import util from "../../../lib/forms";
 import { showSnackBar } from "../../../lib/util";
 
 class Email extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = { email: null };
-  }
+  state = { email: null };
+  _isMounted = false;
 
   componentDidMount() {
+    this._isMounted = true;
+
     const config = {
       headers: {
         authorization: localStorage.getItem("token")
@@ -21,15 +20,21 @@ class Email extends Component {
     axios
       .get(`/api/account/email`, config)
       .then(response => {
-        this.setState({
-          email: response.data.email
-        });
+        if (this._isMounted) {
+          this.setState({
+            email: response.data.email
+          });
+        }
       })
       .catch(error => {
         if (error.response.status === 401) {
           window.location.href = "/login?redirected=admin";
         }
       });
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   onInputFocusOut(value, fieldName) {}

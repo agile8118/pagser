@@ -3,7 +3,7 @@ import axios from "axios";
 import util from "../../lib/forms";
 import { ROOT_URL } from "../../lib/keys";
 import { getParameterByName, convertToUrl } from "../../lib/util";
-import ProgressBar from "../partials/progress-bar";
+import ProgressBar from "../partials/ProgressBar";
 
 class FinalStepSpecific extends Component {
   constructor(props) {

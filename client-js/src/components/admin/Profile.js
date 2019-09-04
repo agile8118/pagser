@@ -6,26 +6,25 @@ import util from "../../lib/forms";
 import PhotoUpload from "./PhotoUpload";
 
 class Profile extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      name: "",
-      loaded: false,
-      btnDisabled: false,
-      headline: "",
-      biography: "",
-      links: {
-        website: "",
-        twitter: "",
-        youtube: "",
-        linkedin: "",
-        facebook: ""
-      }
-    };
-  }
+  state = {
+    name: "",
+    loaded: false,
+    btnDisabled: false,
+    headline: "",
+    biography: "",
+    links: {
+      website: "",
+      twitter: "",
+      youtube: "",
+      linkedin: "",
+      facebook: ""
+    }
+  };
+  _isMounted = false;
 
   componentDidMount() {
+    this._isMounted = true;
+
     const config = {
       headers: {
         authorization: localStorage.getItem("token")
@@ -36,20 +35,22 @@ class Profile extends Component {
       .get(`/api/profile`, config)
       .then(response => {
         const user = response.data.user;
-        this.setState({
-          loaded: true,
-          name: user.name,
-          headline: user.headline,
-          username: user.username,
-          biography: user.biography,
-          links: {
-            website: user.links.website,
-            twitter: user.links.twitter,
-            youtube: user.links.youtube,
-            linkedin: user.links.linkedin,
-            facebook: user.links.facebook
-          }
-        });
+        if (this._isMounted) {
+          this.setState({
+            loaded: true,
+            name: user.name,
+            headline: user.headline,
+            username: user.username,
+            biography: user.biography,
+            links: {
+              website: user.links.website,
+              twitter: user.links.twitter,
+              youtube: user.links.youtube,
+              linkedin: user.links.linkedin,
+              facebook: user.links.facebook
+            }
+          });
+        }
       })
       .catch(error => {
         if (error.response.status === 401) {
@@ -133,6 +134,10 @@ class Profile extends Component {
       document.querySelector("#biography").children[3].innerHTML =
         250 - this.state.biography.length;
     }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   checkIfAllOk() {

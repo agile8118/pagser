@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import { ROOT_URL } from "../../lib/keys";
 import { getParameterByName } from "../../lib/util";
-import ProgressBar from "../partials/progress-bar";
+import ProgressBar from "../partials/ProgressBar";
 
 class InitialStep extends Component {
   constructor(props) {

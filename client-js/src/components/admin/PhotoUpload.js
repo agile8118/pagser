@@ -12,6 +12,7 @@ class PhotoUpload extends Component {
     alertType: "success",
     photo: "/images/users/placeholder.png"
   };
+  _isMounted = false;
 
   componentDidMount() {
     const config = {
@@ -24,15 +25,21 @@ class PhotoUpload extends Component {
       .get(`/api/profile`, config)
       .then(response => {
         const user = response.data.user;
-        this.setState({
-          photo: user.photo.secure_url || "/images/users/placeholder.png"
-        });
+        if (this._isMounted) {
+          this.setState({
+            photo: user.photo.secure_url || "/images/users/placeholder.png"
+          });
+        }
       })
       .catch(error => {
         if (error.response.status === 401) {
           window.location.href = "/login?redirected=admin";
         }
       });
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   crop(aspect, minW, minH) {

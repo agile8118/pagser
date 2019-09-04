@@ -1,3 +1,9 @@
+/* **
+  NAMING CONVENTIONS
+
+  For each file that returns JSX we use camel case
+ ** */
+
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
