@@ -151,7 +151,7 @@ if (container) {
               <div className="">
                 <div className="row">
                   <Switch>
-                    <Route exact path="/admin" component={Home} />
+                    <Route exact path="/admin/home" component={Home} />
                     <Route path="/admin/profile" component={Profile} />
                     <Route path="/admin/settings" component={Settings} />
                     <Route

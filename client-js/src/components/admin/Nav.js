@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { ROOT_URL } from "../../lib/keys";
 
 class Nav extends Component {
+  state = { section: window.location.pathname.split("/")[2] };
+
   openSideBar() {
     document.querySelector(".sidebar").classList.add("sidebar--open");
     document.querySelector(".sidebar").classList.remove("sidebar--close");
@@ -14,25 +16,18 @@ class Nav extends Component {
   }
 
   render() {
-    var section = window.location.pathname.split("/")[2];
-    var homeClass = "side-nav__item";
-    var settingClass = "side-nav__item";
-    var pagesClass = "side-nav__item";
-    var privatesClass = "side-nav__item";
-    var profileClass = "side-nav__item";
-    switch (section) {
-      case "settings":
-        settingClass = "side-nav__item side-nav__item--active";
-        break;
-      case "pages":
-        pagesClass = "side-nav__item side-nav__item--active";
-        break;
-      case "profile":
-        profileClass = "side-nav__item side-nav__item--active";
-        break;
-      default:
-        homeClass = "side-nav__item side-nav__item--active";
-    }
+    let homeClass = `side-nav__item ${
+      this.state.section === "home" ? "side-nav__item--active" : ""
+    }`;
+    let settingClass = `side-nav__item ${
+      this.state.section === "settings" ? "side-nav__item--active" : ""
+    }`;
+    let pagesClass = `side-nav__item ${
+      this.state.section === "pages" ? "side-nav__item--active" : ""
+    }`;
+    let profileClass = `side-nav__item ${
+      this.state.section === "profile" ? "side-nav__item--active" : ""
+    }`;
     return (
       <div>
         <div className="row">
@@ -64,10 +59,11 @@ class Nav extends Component {
             </li>
             <li className={homeClass}>
               <Link
-                to="/admin"
+                to="/admin/home"
                 className="side-nav__link"
                 onClick={() => {
                   this.closeSideBar();
+                  this.setState({ section: "home" });
                 }}
               >
                 <i className="fa fa-home" />Home
@@ -79,6 +75,7 @@ class Nav extends Component {
                 className="side-nav__link"
                 onClick={() => {
                   this.closeSideBar();
+                  this.setState({ section: "settings" });
                 }}
               >
                 <i className="fa fa-cogs" />Setting
@@ -90,6 +87,7 @@ class Nav extends Component {
                 className="side-nav__link"
                 onClick={() => {
                   this.closeSideBar();
+                  this.setState({ section: "pages" });
                 }}
               >
                 <i className="fa fa-file-text" />Pages
@@ -101,6 +99,7 @@ class Nav extends Component {
                 className="side-nav__link"
                 onClick={() => {
                   this.closeSideBar();
+                  this.setState({ section: "profile" });
                 }}
               >
                 <i className="fa fa-user" />Profile

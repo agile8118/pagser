@@ -17,12 +17,9 @@ var app = express();
 
 const publicPath = path.join(__dirname, "../public");
 
-mongoose.connect(
-  keys.mlab_url,
-  {
-    useMongoClient: true
-  }
-);
+mongoose.connect(keys.mlab_url, {
+  useMongoClient: true
+});
 
 mongoose.Promise = global.Promise;
 
@@ -113,7 +110,7 @@ app.get("/public-pages/:url/edit", (req, res) => {
   res.render("edit-page");
 });
 
-app.get("/admin", function(req, res) {
+app.get("/admin/home", function(req, res) {
   res.render("admin");
 });
 
