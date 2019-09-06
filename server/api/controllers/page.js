@@ -486,148 +486,168 @@ exports.rate = function(req, res) {
 
 // upload or update a photo to be set as page featured image
 exports.uploadPagePhoto = (req, res) => {
-  const imageFolderPath = "./public/images/pages/";
-  const pageId = req.params.id;
+  try {
+    const imageFolderPath = "./public/images/pages/";
+    const pageId = req.params.id;
 
-  upload(req, res, function(err) {
-    if (err) {
-      return res.send(err);
-    }
-    if (!req.file) {
-      return res.send("no file uploaded.");
-    }
-    const imgName = req.file.filename;
-    try {
-      var cropData = JSON.parse(req.body.cropData);
-    } catch (err) {
-      return res.status(400).send("error with data");
-    }
-    const buffer = readChunk.sync(`${imageFolderPath}${imgName}`, 0, 4100);
-    if (req.file.size > 8000000) {
-      fs.unlink(`${imageFolderPath}${imgName}`, err => {});
-      return res.send("maximum image file size is 8MB");
-    }
-    if (
-      (fileType(buffer) && fileType(buffer).mime === "image/png") ||
-      (fileType(buffer) && fileType(buffer).mime === "image/jpg") ||
-      (fileType(buffer) && fileType(buffer).mime === "image/jpeg")
-    ) {
-      var image = new Jimp(`${imageFolderPath}${imgName}`, function(
-        err,
-        image
+    upload(req, res, function(err) {
+      if (err) {
+        return res.send(err);
+      }
+      if (!req.file) {
+        return res.send("no file uploaded.");
+      }
+      const imgName = req.file.filename;
+      try {
+        var cropData = JSON.parse(req.body.cropData);
+      } catch (err) {
+        return res.status(400).send("error with data");
+      }
+      const buffer = readChunk.sync(`${imageFolderPath}${imgName}`, 0, 4100);
+      if (req.file.size > 8000000) {
+        fs.unlink(`${imageFolderPath}${imgName}`, err => {});
+        return res.send("maximum image file size is 8MB");
+      }
+      if (
+        (fileType(buffer) && fileType(buffer).mime === "image/png") ||
+        (fileType(buffer) && fileType(buffer).mime === "image/jpg") ||
+        (fileType(buffer) && fileType(buffer).mime === "image/jpeg")
       ) {
-        if (image.bitmap.width < 1200 || image.bitmap.height < 675) {
-          fs.unlink(`${imageFolderPath}${imgName}`, err => {});
-          return res.send(
-            "image dimentions must be at least 1200 * 675 pixels"
-          );
-        }
-
-        image
-          .quality(60)
-          .resize(1200, Jimp.AUTO)
-          .write(`${imageFolderPath}${imgName}`, function(err, image) {
-            if (err) {
-              fs.unlink(`${imageFolderPath}${imgName}`, err => {});
-              return res.send("error");
-            }
-
-            cloudinary.v2.uploader.upload(
-              `${imageFolderPath}${imgName}`,
-              { folder: "images/pages" },
-              function(error, result) {
-                Page.findById(pageId, (err, page) => {
-                  if (!page) {
-                    return res.status(400).send("err");
-                  }
-                  if (page.photo) {
-                    cloudinary.v2.uploader.destroy(page.photo.public_id);
-                  }
-                  try {
-                    page.photo.public_id = result.public_id;
-                    page.photo.secure_url = result.secure_url;
-                  } catch (e) {
-                    res.status(500).send({ error: "An error occurred" });
-                    fs.unlink(`${imageFolderPath}${imgName}`, err => {});
-                  }
-
-                  page.save(err => {
-                    if (!err) {
-                      try {
-                        res.send({ image: page.photo.secure_url });
-                      } catch (e) {
-                        res.status(500).send({ error: "An error occurred" });
-                        fs.unlink(`${imageFolderPath}${imgName}`, err => {});
-                      }
-                    }
-                  });
-                });
-              }
+        var image = new Jimp(`${imageFolderPath}${imgName}`, function(
+          err,
+          image
+        ) {
+          if (image.bitmap.width < 1200 || image.bitmap.height < 675) {
+            fs.unlink(`${imageFolderPath}${imgName}`, err => {});
+            return res.send(
+              "image dimentions must be at least 1200 * 675 pixels"
             );
-          });
-      });
+          }
 
-      var cropedImage = new Jimp(`${imageFolderPath}${imgName}`, function(
-        err,
-        image
-      ) {
-        var x = Number(cropData.x);
-        var y = Number(cropData.y);
-        var width = Number(cropData.width);
-        var height = Number(cropData.height);
+          image
+            .quality(60)
+            .resize(1200, Jimp.AUTO)
+            .write(`${imageFolderPath}${imgName}`, function(err, image) {
+              if (err) {
+                fs.unlink(`${imageFolderPath}${imgName}`, err => {});
+                return res.send("error");
+              }
 
-        image
-          .crop(x, y, width, height)
-          .quality(60)
-          .resize(400, 225)
-          .write(`${imageFolderPath}croped-${imgName}`, function(err, image) {
-            if (err) {
-              fs.unlink(`${imageFolderPath}croped-${imgName}`, err => {});
-            }
+              cloudinary.v2.uploader.upload(
+                `${imageFolderPath}${imgName}`,
+                { folder: "images/pages" },
+                function(error, result) {
+                  Page.findById(pageId, (err, page) => {
+                    if (!page) {
+                      return res.status(400).send("err");
+                    }
+                    if (page.photo) {
+                      cloudinary.v2.uploader.destroy(page.photo.public_id);
+                    }
+                    try {
+                      page.photo.public_id = result.public_id;
+                      page.photo.secure_url = result.secure_url;
+                    } catch (e) {
+                      res.status(500).send({ error: "An error occurred" });
+                      fs.unlink(`${imageFolderPath}${imgName}`, err => {});
+                    }
 
-            cloudinary.v2.uploader.upload(
-              `${imageFolderPath}croped-${imgName}`,
-              { folder: "images/pages/croped" },
-              function(error, result) {
-                Page.findById(pageId, (err, page) => {
-                  if (!page) {
-                  }
-                  if (page.cropedPhoto) {
-                    cloudinary.v2.uploader.destroy(page.cropedPhoto.public_id);
-                  }
-                  try {
-                    page.cropedPhoto.public_id = result.public_id;
-                    page.cropedPhoto.secure_url = result.secure_url;
-                  } catch (e) {
-                    fs.unlink(`${imageFolderPath}croped-${imgName}`, err => {});
-                  }
+                    page.save(err => {
+                      if (!err) {
+                        try {
+                          res.send({ image: page.photo.secure_url });
+                        } catch (e) {
+                          res.status(500).send({ error: "An error occurred" });
+                          fs.unlink(`${imageFolderPath}${imgName}`, err => {});
+                        }
+                      }
+                    });
+                  });
+                }
+              );
+            });
+        });
 
-                  page.save(err => {
-                    if (!err) {
-                      try {
-                        fs.unlink(
-                          `${imageFolderPath}croped-${imgName}`,
-                          err => {}
+        var cropedImage = new Jimp(`${imageFolderPath}${imgName}`, function(
+          err,
+          image
+        ) {
+          var x = Number(cropData.x);
+          var y = Number(cropData.y);
+          var width = Number(cropData.width);
+          var height = Number(cropData.height);
+
+          try {
+            image
+              .crop(x, y, width, height)
+              .quality(60)
+              .resize(400, 225)
+              .write(`${imageFolderPath}croped-${imgName}`, function(
+                err,
+                image
+              ) {
+                if (err) {
+                  fs.unlink(`${imageFolderPath}croped-${imgName}`, err => {});
+                }
+
+                cloudinary.v2.uploader.upload(
+                  `${imageFolderPath}croped-${imgName}`,
+                  { folder: "images/pages/croped" },
+                  function(error, result) {
+                    Page.findById(pageId, (err, page) => {
+                      if (!page) {
+                      }
+                      if (page.cropedPhoto) {
+                        cloudinary.v2.uploader.destroy(
+                          page.cropedPhoto.public_id
                         );
-                        fs.unlink(`${imageFolderPath}${imgName}`, err => {});
+                      }
+                      try {
+                        page.cropedPhoto.public_id = result.public_id;
+                        page.cropedPhoto.secure_url = result.secure_url;
                       } catch (e) {
                         fs.unlink(
                           `${imageFolderPath}croped-${imgName}`,
                           err => {}
                         );
                       }
-                    }
-                  });
-                });
-              }
-            );
-          });
-      });
-    } else {
-      res.send("image format is not supported");
-      fs.unlink(`${imageFolderPath}${imgName}`, err => {});
-    }
-  });
+
+                      page.save(err => {
+                        if (!err) {
+                          try {
+                            fs.unlink(
+                              `${imageFolderPath}croped-${imgName}`,
+                              err => {}
+                            );
+                            fs.unlink(
+                              `${imageFolderPath}${imgName}`,
+                              err => {}
+                            );
+                          } catch (e) {
+                            fs.unlink(
+                              `${imageFolderPath}croped-${imgName}`,
+                              err => {}
+                            );
+                          }
+                        }
+                      });
+                    });
+                  }
+                );
+              });
+          } catch (e) {
+            res.status(500).send("An unkown error occurred.");
+            fs.unlink(`${imageFolderPath}${imgName}`, err => {});
+          }
+        });
+      } else {
+        res.send("image format is not supported");
+        fs.unlink(`${imageFolderPath}${imgName}`, err => {});
+      }
+    });
+  } catch (e) {
+    res.status(500).send("An unkown error occurred.");
+  }
 };
 
 // remove page photo

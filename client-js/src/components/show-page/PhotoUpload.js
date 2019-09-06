@@ -1,19 +1,17 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { ROOT_URL } from "../../lib/keys";
+import { loadingModal, showSnackBar } from "../../lib/util";
+import Loading from "../partials/Loading";
 
 require("../../../../public/cropper.min.js");
 
 class PhotoUpload extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      error: "",
-      cropData: { x: 0, y: 0, width: 0, height: 0 },
-      photo: this.props.photo.secure_url,
-      alert: { message: "", type: "", disable: false }
-    };
-  }
+  state = {
+    error: "",
+    cropData: { x: 0, y: 0, width: 0, height: 0 },
+    photo: this.props.photo.secure_url
+  };
 
   componentDidMount() {
     const loadStyleSheet = src => {
@@ -190,13 +188,9 @@ class PhotoUpload extends Component {
           .querySelector("#js--uploader-loading")
           .classList.add("display-none");
         this.setState({
-          photo: res.data.image,
-          alert: {
-            message: "Photo uploaded successfully.",
-            type: "success margin-top-1",
-            disable: true
-          }
+          photo: res.data.image
         });
+        showSnackBar("Photo uploaded successfully.", "success");
       })
       .catch(e => {
         document.querySelector("#reset-btn").click();
@@ -207,17 +201,13 @@ class PhotoUpload extends Component {
         document
           .querySelector("#js--uploader-loading")
           .classList.add("display-none");
-        this.setState({
-          alert: {
-            message: "There was problem with uploading.",
-            type: "error margin-top-1",
-            disable: true
-          }
-        });
+        showSnackBar("There was problem with uploading.", "error");
       });
   }
 
   onRemovePhotoClick() {
+    loadingModal("Removing the photo...");
+    this.closeModal("#mdl3");
     const config = {
       headers: {
         authorization: localStorage.getItem("token")
@@ -226,24 +216,16 @@ class PhotoUpload extends Component {
     axios
       .delete(`/api/pages/${this.props.pageId}/photo`, config)
       .then(res => {
-        this.closeModal("#mdl3");
+        loadingModal();
+        showSnackBar("Photo successfully removed from your page.", "success");
+
         this.setState({
-          photo: "",
-          alert: {
-            message: "Photo removed successfully.",
-            type: "success margin-top-1",
-            disable: true
-          }
+          photo: ""
         });
       })
       .catch(e => {
-        this.setState({
-          alert: {
-            message: "There was problem with removing the photo.",
-            type: "error margin-top-1",
-            disable: true
-          }
-        });
+        loadingModal();
+        showSnackBar("There was problem with removing the photo.", "error");
       });
   }
 
@@ -436,14 +418,10 @@ class PhotoUpload extends Component {
                 </div>
 
                 <div
-                  className="image__upload--loading margin-top-2 display-none"
+                  className="image__upload--loading margin-top-2 center-content display-none"
                   id="js--uploader-loading"
                 >
-                  <div className="spinner">
-                    <div className="bounce1" />
-                    <div className="bounce2" />
-                    <div className="bounce3" />
-                  </div>
+                  <Loading />
                 </div>
               </div>
             </div>

@@ -1,18 +1,16 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import axios from "axios";
+import Loading from "../partials/Loading";
 import { ROOT_URL } from "../../lib/keys";
-import { showSnackBar } from "../../lib/util";
+import { loadingModal, showSnackBar } from "../../lib/util";
 
 import * as actions from "../../redux/specific-page/actions";
 
 class AttachFiles extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      error: ""
-    };
-  }
+  state = {
+    error: ""
+  };
 
   onFileInputChange(event) {
     const fileUrl = URL.createObjectURL(event.target.files[0]);
@@ -105,9 +103,10 @@ class AttachFiles extends Component {
       .then(response => {
         this.reset();
         this.closeModal("#mdl4");
-        this.props.fetchAttachFiles(this.props.id);
-
-        showSnackBar("File uploaded successfully.", "success");
+        this.props.fetchAttachFiles(
+          this.props.id,
+          "File uploaded successfully."
+        );
       })
       .catch(error => {
         this.reset();
@@ -133,6 +132,7 @@ class AttachFiles extends Component {
               className="delete-x-button"
               onClick={e => {
                 e.preventDefault();
+                loadingModal("Deleting the attach file...");
 
                 const config = {
                   headers: {
@@ -147,12 +147,12 @@ class AttachFiles extends Component {
                   )
                   .then(response => {
                     componentThis.props.fetchAttachFiles(
-                      componentThis.props.id
+                      componentThis.props.id,
+                      "File deleted successfully."
                     );
-                    showSnackBar("File deleted successfully.", "success");
                   })
                   .catch(error => {
-                    console.log(error);
+                    loadingModal();
                   });
               }}
             >
@@ -261,14 +261,10 @@ class AttachFiles extends Component {
                 </div>
 
                 <div
-                  className="image__upload--loading margin-top-2 display-none"
+                  className="image__upload--loading margin-top-1 center-content display-none"
                   id="js--mdl4-loading"
                 >
-                  <div className="spinner">
-                    <div className="bounce1" />
-                    <div className="bounce2" />
-                    <div className="bounce3" />
-                  </div>
+                  <Loading />
                 </div>
                 {/* END MODAL LOADING */}
               </div>

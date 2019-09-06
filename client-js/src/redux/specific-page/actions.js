@@ -1,5 +1,6 @@
 import axios from "axios";
 import { ROOT_URL } from "../../lib/keys";
+import { loadingModal, showSnackBar } from "../../lib/util";
 import {
   FETCH_PAGE_DATA_SUCCESS,
   FETCH_PAGE_DATA_PENDING,
@@ -66,7 +67,7 @@ export function fetchSpecificPageData() {
   };
 }
 
-export function fetchAttachFiles(pageId) {
+export function fetchAttachFiles(pageId, message) {
   return function(dispatch) {
     const config = {
       headers: {
@@ -77,13 +78,15 @@ export function fetchAttachFiles(pageId) {
     axios
       .get(`/api/pages/${pageId}/attach-files`, config)
       .then(response => {
+        loadingModal();
+        showSnackBar(message, "success");
         dispatch({
           type: FETCH_ATTACH_FILES,
           payload: response.data.attachFiles
         });
       })
       .catch(error => {
-        console.log(error);
+        loadingModal();
       });
   };
 }
