@@ -110,6 +110,10 @@ app.get("/public-pages/:url/edit", (req, res) => {
   res.render("edit-page");
 });
 
+app.get("/admin", function(req, res) {
+  res.render("admin");
+});
+
 app.get("/admin/home", function(req, res) {
   res.render("admin");
 });

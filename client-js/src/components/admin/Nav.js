@@ -17,7 +17,11 @@ class Nav extends Component {
 
   render() {
     let homeClass = `side-nav__item ${
-      this.state.section === "home" ? "side-nav__item--active" : ""
+      this.state.section === "home" ||
+      this.state.section === "" ||
+      this.state.section === undefined
+        ? "side-nav__item--active"
+        : ""
     }`;
     let settingClass = `side-nav__item ${
       this.state.section === "settings" ? "side-nav__item--active" : ""

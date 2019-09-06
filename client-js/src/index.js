@@ -170,6 +170,7 @@ if (container) {
                     />
                     <Route path="/admin/pages/draft" component={PagesDraft} />
                     <Route path="/admin/pages/trash" component={PagesTrash} />
+                    <Redirect from="/admin" to="/admin/home" />
                   </Switch>
                 </div>
               </div>
