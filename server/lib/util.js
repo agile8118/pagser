@@ -103,7 +103,7 @@ util.validatePage = (page, section) => {
 
   switch (section) {
     case "type":
-      if (type === "public" || type === "specific") {
+      if (type === "public" || type === "private") {
         return true;
       } else {
         return false;
@@ -124,10 +124,10 @@ util.validatePage = (page, section) => {
             return false;
           }
           break;
-        case "specific":
+        case "private":
           if (
             util.len(contents.title, 1, 50) &&
-            util.len(contents.briefDes, 1, 300) &&
+            util.len(contents.briefDes, 0, 300) &&
             util.len(contents.targets, 0, 300) &&
             util.len(cleanBody, 1, 200000)
           ) {
@@ -154,7 +154,7 @@ util.validatePage = (page, section) => {
             return false;
           }
           break;
-        case "specific":
+        case "private":
           if (
             typeof configurations.rating === "boolean" &&
             typeof configurations.comments === "boolean" &&
@@ -206,7 +206,7 @@ util.validatePage = (page, section) => {
       break;
 
     case "url":
-      if (type === "specific") {
+      if (type === "private") {
         if (url.length < 100 && url.length > 0) {
           return true;
         } else {

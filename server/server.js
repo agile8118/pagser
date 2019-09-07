@@ -126,9 +126,9 @@ app.get("/admin/settings", function(req, res) {
   res.render("admin");
 });
 
-// render a specific page
+// render a private page
 app.get("/:username/:url", (req, res) => {
-  res.render("show-page/specific");
+  res.render("show-page/private");
 });
 
 app.get("/:username/:url/edit", (req, res) => {

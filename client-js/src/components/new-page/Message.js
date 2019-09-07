@@ -44,26 +44,26 @@ class Message extends Component {
         </div>
       );
     }
-    if (type === "specific" && status === "success") {
+    if (type === "private" && status === "success") {
       return (
         <div>
           <div className="middle-box middle-box--success margin-bottom-1">
-            You have successfully published your specific page, you can view
-            that from the link below. To share this page for the persons you
-            want, you should share the link of your page (link below). Also, you
-            can <strong>edit</strong>, <strong>set a featured image</strong> or{" "}
+            You have successfully created your private page, you can view that
+            from the link below. To share this page for the persons you want,
+            you should share the link of your page (link below). Also, you can{" "}
+            <strong>edit</strong>, <strong>set a featured image</strong> or{" "}
             <strong>add attach files</strong> for your page in view section of
             your page.
           </div>
           <div className="center-content middle-box--link">
             <a className="btn-link" href={`/${username}/${url}`}>
-              View your specific page
+              View your private page
             </a>
           </div>
         </div>
       );
     }
-    if (type === "specific" && status === "error") {
+    if (type === "private" && status === "error") {
       return (
         <div>
           <div className="middle-box middle-box--error margin-bottom-1">

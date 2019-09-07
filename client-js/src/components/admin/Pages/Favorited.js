@@ -203,7 +203,7 @@ class Draft extends Component {
             page.contents.briefDes.substring(0, 35) + "...";
         }
 
-        if (page.type === "specific") {
+        if (page.type === "private") {
           pageUrl = `/${page.author.username}/${page.url}`;
         } else if (page.type === "public") {
           pageUrl = `/public-pages/${page.url}`;

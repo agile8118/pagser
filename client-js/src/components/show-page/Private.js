@@ -10,7 +10,7 @@ import Photo from "./Photo";
 import Comments from "./Comments";
 import AttachFiles from "./AttachFiles";
 
-import * as actions from "../../redux/specific-page/actions";
+import * as actions from "../../redux/private-page/actions";
 
 class Index extends Component {
   constructor(props) {
@@ -20,7 +20,7 @@ class Index extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchSpecificPageData();
+    this.props.fetchPrivatePageData();
   }
 
   renderBody() {
@@ -57,13 +57,26 @@ class Index extends Component {
     } else {
       return (
         <p className="normal-paragraph disabled-message">
-          This page has created anonymously.
+          This page has been created anonymously.
         </p>
       );
     }
   }
 
-  renderTarget() {
+  renderBriefDes = () => {
+    if (this.props.contents.briefDes.replace(/ /g, "").length > 0) {
+      return (
+        <div>
+          <h3>Brief Description</h3>
+          {this.props.contents.briefDes}
+        </div>
+      );
+    } else {
+      return <div />;
+    }
+  };
+
+  renderTarget = () => {
     if (this.props.contents.targets.replace(/ /g, "").length > 0) {
       return (
         <div>
@@ -74,7 +87,7 @@ class Index extends Component {
     } else {
       return <div />;
     }
-  }
+  };
 
   render() {
     if (this.props.isPending === false && this.props.id !== "notfound") {
@@ -86,7 +99,7 @@ class Index extends Component {
           <div className="row">
             <div className="page">
               <div className="page__header">
-                <Actions type="specific" />
+                <Actions type="private" />
                 <h2 className="page__header__title">
                   {this.props.contents.title}
                 </h2>
@@ -97,11 +110,8 @@ class Index extends Component {
 
               <div className="page__contents">
                 <div className="page__information">
-                  <div>
-                    <h3>Brief Description</h3>
-                    <p>{this.props.contents.briefDes}</p>
-                  </div>
-                  {this.renderTarget.apply(this)}
+                  {this.renderBriefDes()}
+                  {this.renderTarget()}
                 </div>
                 <div className="page__body">{this.renderBody()}</div>
 

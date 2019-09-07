@@ -127,6 +127,7 @@
   margin: 1rem 0 0.5rem 0;
   cursor: pointer;
   transition: all 0.2s;
+  outline: none;
 
   &-link {
     padding: 0.5rem 2rem;
@@ -156,11 +157,11 @@
     font-size: 1.4rem;
     padding: 0.4rem 1.2rem;
     border-radius: 500px;
+  }
 
-    &:focus {
-      outline: none !important;
-      background-color: $color-dark-blue;
-    }
+  &:focus {
+    outline: none !important;
+    background-color: $color-dark-blue;
   }
 
   &:hover:enabled {
@@ -254,6 +255,13 @@ button:disabled {
   color: #2980b9;
   font-size: $default-font-size;
   cursor: pointer;
+
+  &:hover,
+  &:active,
+  &:focus {
+    outline: none;
+    color: #2371a4;
+  }
 }
 
 .back-button--new-page {

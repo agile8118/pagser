@@ -2,29 +2,26 @@ import React, { Component } from "react";
 import axios from "axios";
 import util from "../../lib/forms";
 import { ROOT_URL } from "../../lib/keys";
-import { getParameterByName, convertToUrl } from "../../lib/util";
+import { getParameterByName, convertToUrl, loadingModal } from "../../lib/util";
 import ProgressBar from "../partials/ProgressBar";
+import Loading from "../partials/Loading";
 
-class FinalStepSpecific extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loading: false,
-      type: "specific",
-      username: "",
-      comments: "",
-      rating: "",
-      anonymously: "",
-      url: "",
-      classes: {
-        comments: "fa fa-2x fa-toggle-off",
-        rating: "fa fa-2x fa-toggle-off",
-        anonymously: "fa fa-2x fa-toggle-off"
-      },
-      btnDisabled: true,
-      loaded: false
-    };
-  }
+class FinalStepPrivate extends Component {
+  state = {
+    type: "private",
+    username: "",
+    comments: "",
+    rating: "",
+    anonymously: "",
+    url: "",
+    classes: {
+      comments: "fa fa-2x fa-toggle-off",
+      rating: "fa fa-2x fa-toggle-off",
+      anonymously: "fa fa-2x fa-toggle-off"
+    },
+    btnDisabled: true,
+    loaded: false
+  };
 
   componentDidMount() {
     const pageId = getParameterByName("id", window.location.href) || "id";
@@ -106,6 +103,7 @@ class FinalStepSpecific extends Component {
   }
 
   updatePage(callback) {
+    loadingModal("Loading...");
     const page = {
       id: getParameterByName("id", window.location.href),
       type: this.state.type,
@@ -142,7 +140,6 @@ class FinalStepSpecific extends Component {
   }
 
   onButtonClicked() {
-    this.setState({ loading: true });
     const pageId = getParameterByName("id", window.location.href);
     const config = {
       headers: {
@@ -153,20 +150,22 @@ class FinalStepSpecific extends Component {
       axios
         .post(`/api/new-page/${pageId}`, null, config)
         .then(response => {
+          loadingModal();
           this.props.history.push(
-            `/new-page/message?type=specific&status=success&url=${
+            `/new-page/message?type=private&status=success&url=${
               response.data.url
             }&username=${response.data.username}`
           );
         })
         .catch(error => {
+          loadingModal();
           if (error.response.data.error === "error with contents") {
             this.props.history.push(
-              `/new-page/message?type=specific&status=error-contents&id=${pageId}`
+              `/new-page/message?type=private&status=error-contents&id=${pageId}`
             );
           } else {
             this.props.history.push(
-              `/new-page/message?type=specific&status=error`
+              `/new-page/message?type=private&status=error`
             );
           }
         });
@@ -175,6 +174,7 @@ class FinalStepSpecific extends Component {
 
   onBackButtonClicked() {
     this.updatePage(() => {
+      loadingModal();
       this.props.history.push(
         `/new-page/page-contents?id=${getParameterByName(
           "id",
@@ -230,46 +230,19 @@ class FinalStepSpecific extends Component {
     }
   }
 
-  // Render the next button, if button get clicked it will render a loading icon
-  // instead while loading
   renderButton() {
-    if (this.state.loading) {
-      return (
-        <div>
-          <div className="center-content">
-            <div className="lds-css ng-scope">
-              <div className="lds-spinner">
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <button
-          className="btn-normal btn-normal-sm"
-          onClick={() => {
-            this.onButtonClicked.apply(this);
-          }}
-          id="publish-button"
-          disabled={this.state.btnDisabled}
-        >
-          Publish
-        </button>
-      );
-    }
+    return (
+      <button
+        className="btn-normal btn-normal-sm"
+        onClick={() => {
+          this.onButtonClicked.apply(this);
+        }}
+        id="publish-button"
+        disabled={this.state.btnDisabled}
+      >
+        Publish
+      </button>
+    );
   }
 
   render() {
@@ -423,4 +396,4 @@ class FinalStepSpecific extends Component {
   }
 }
 
-export default FinalStepSpecific;
+export default FinalStepPrivate;

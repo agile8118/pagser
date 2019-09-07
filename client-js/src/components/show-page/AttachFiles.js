@@ -5,7 +5,7 @@ import Loading from "../partials/Loading";
 import { ROOT_URL } from "../../lib/keys";
 import { loadingModal, showSnackBar } from "../../lib/util";
 
-import * as actions from "../../redux/specific-page/actions";
+import * as actions from "../../redux/private-page/actions";
 
 class AttachFiles extends Component {
   state = {

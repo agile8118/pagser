@@ -8,33 +8,29 @@ import util from "../../lib/forms";
 import sendPageData from "./sendPageData";
 
 class EditPage extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      id: this.props.page._id,
-      title: this.props.page.contents.title,
-      tags: this.props.page.tags,
-      briefDes: this.props.page.contents.briefDes,
-      targets: this.props.page.contents.targets,
-      body: this.props.page.contents.body,
-      type: this.props.page.type,
-      comments: this.props.page.configurations.comments,
-      rating: this.props.page.configurations.rating,
-      tags: this.props.page.tags,
-      links: this.props.page.configurations.links,
-      anonymously: this.props.page.configurations.anonymously,
-      url: this.props.page.url || "",
-      usedUrls: this.props.usedUrls,
-      btnDisabled: false,
-      classes: {
-        comments: "",
-        rating: "",
-        anonymously: "",
-        links: ""
-      }
-    };
-  }
+  state = {
+    id: this.props.page._id,
+    title: this.props.page.contents.title,
+    tags: this.props.page.tags,
+    briefDes: this.props.page.contents.briefDes,
+    targets: this.props.page.contents.targets,
+    body: this.props.page.contents.body,
+    type: this.props.page.type,
+    comments: this.props.page.configurations.comments,
+    rating: this.props.page.configurations.rating,
+    tags: this.props.page.tags,
+    links: this.props.page.configurations.links,
+    anonymously: this.props.page.configurations.anonymously,
+    url: this.props.page.url || "",
+    usedUrls: this.props.usedUrls,
+    btnDisabled: false,
+    classes: {
+      comments: "",
+      rating: "",
+      anonymously: "",
+      links: ""
+    }
+  };
 
   componentDidMount() {
     if (this.state.type === "public") {
@@ -56,7 +52,7 @@ class EditPage extends Component {
   // This will run by onblur and onchange event on title input
   checkTitleValidation() {
     switch (this.state.type) {
-      case "specific":
+      case "private":
         if (!util.len(this.state.title, 1, 50)) {
           util.inputError(
             "title",
@@ -85,11 +81,11 @@ class EditPage extends Component {
   // This will run by onblur and onchange event on briefDes input
   checkBriefDesValidation() {
     switch (this.state.type) {
-      case "specific":
-        if (!util.len(this.state.briefDes, 1, 300)) {
+      case "private":
+        if (!util.len(this.state.briefDes, 0, 300)) {
           util.inputError(
             "briefDes",
-            "Brief description cannot be blank and should be less that 300 characters",
+            "Brief description should be less that 300 characters",
             2
           );
         } else {
@@ -114,7 +110,7 @@ class EditPage extends Component {
   // This will run by onblur and onchange event on targets input
   checkTargetsValidation() {
     switch (this.state.type) {
-      case "specific":
+      case "private":
         if (!util.len(this.state.targets, 0, 300)) {
           util.inputError(
             "targets",
@@ -150,7 +146,7 @@ class EditPage extends Component {
     bodyText = bodyText.replace(/\s+/g, " ").trim();
 
     switch (this.state.type) {
-      case "specific":
+      case "private":
         if (
           !util.len(bodyText, 1, 200000) &&
           document.querySelector(".mce-tinymce")
@@ -219,10 +215,10 @@ class EditPage extends Component {
       }
     }
 
-    if (this.state.type === "specific") {
+    if (this.state.type === "private") {
       if (
         util.len(title, 1, 50) &&
-        util.len(briefDes, 1, 300) &&
+        util.len(briefDes, 0, 300) &&
         util.len(targets, 0, 300) &&
         util.len(bodyText, 1, 20000) &&
         this.state.url &&
@@ -490,7 +486,7 @@ class EditPage extends Component {
                 var url = `/public-pages/${
                   window.location.pathname.split("/")[2]
                 }`;
-              } else if (this.props.page.type === "specific") {
+              } else if (this.props.page.type === "private") {
                 var url = `/${window.location.pathname.split("/")[1]}/${
                   window.location.pathname.split("/")[2]
                 }`;
@@ -696,7 +692,7 @@ class EditPage extends Component {
       .then(response => {
         if (response.data.type === "public") {
           var url = `/public-pages/${response.data.url}`;
-        } else if (response.data.type === "specific") {
+        } else if (response.data.type === "private") {
           var url = `/${window.location.pathname.split("/")[1]}/${
             response.data.url
           }`;

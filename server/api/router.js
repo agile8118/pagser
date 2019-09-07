@@ -125,7 +125,7 @@ module.exports = function(app) {
   );
   app.get("/api/pages/:url/edit", requireAuth, Page.fetchEditPageData);
   app.get("/api/:username/:url/edit", requireAuth, Page.fetchEditPageData);
-  app.get("/api/:username/:url", Page.fetchSpecificPageData);
+  app.get("/api/:username/:url", Page.fetchPrivatePageData);
 
   // get attach files
   app.get("/api/pages/:id/attach-files", Page.getAttachFiles);

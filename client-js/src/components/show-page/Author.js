@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { ROOT_URL } from "../../lib/keys";
 
-import * as actions from "../../redux/specific-page/actions";
+import * as actions from "../../redux/private-page/actions";
 
 class Author extends Component {
   render() {

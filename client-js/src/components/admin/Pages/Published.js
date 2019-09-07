@@ -55,7 +55,7 @@ class Pages extends Component {
       return (
         <div className="pages-no-page-message">
           <p>
-            You have not created any public or specific page, create one by
+            You have not created any public or private page, create one by
             clicking on the red button in the navigation menu
           </p>
         </div>
@@ -71,7 +71,7 @@ class Pages extends Component {
           page.contents.briefDes =
             page.contents.briefDes.substring(0, 35) + "...";
         }
-        if (page.type === "specific") {
+        if (page.type === "private") {
           var pageUrl = `/${page.author.username}/${page.url}`;
         } else if (page.type === "public") {
           var pageUrl = `/public-pages/${page.url}`;

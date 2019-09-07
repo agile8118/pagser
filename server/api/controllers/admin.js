@@ -222,7 +222,7 @@ exports.fetchPages = (req, res) => {
         "contents.title contents.briefDes type url cropedPhoto",
         (err, publicPages) => {
           if (err) return res.status(500).send("error");
-          Page.find({ author: userId, status: "published", type: "specific" })
+          Page.find({ author: userId, status: "published", type: "private" })
             .select(
               "contents.title contents.briefDes type url cropedPhoto author"
             )
@@ -231,9 +231,9 @@ exports.fetchPages = (req, res) => {
               select: "username",
               model: "User"
             })
-            .exec((err, specificPages) => {
+            .exec((err, privatePages) => {
               if (err) return res.status(500).send("error");
-              res.send({ pages: publicPages.concat(specificPages) });
+              res.send({ pages: publicPages.concat(privatePages) });
             });
         }
       );

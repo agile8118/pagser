@@ -1,15 +1,12 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { ROOT_URL } from "../../lib/keys";
-import { getParameterByName } from "../../lib/util";
+import { getParameterByName, loadingModal } from "../../lib/util";
 import ProgressBar from "../partials/ProgressBar";
+import Loading from "../partials/Loading";
 
 class InitialStep extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = { type: undefined, loading: false };
-  }
+  state = { type: undefined, loading: false };
 
   componentDidMount() {
     const pageId = getParameterByName("id", window.location.href) || "id";
@@ -39,7 +36,7 @@ class InitialStep extends Component {
   }
 
   onNextButtonClicked() {
-    this.setState({ loading: true });
+    loadingModal("Loading...");
     const pageId = getParameterByName("id", window.location.href);
     const config = {
       headers: {
@@ -53,12 +50,13 @@ class InitialStep extends Component {
         config
       )
       .then(response => {
+        loadingModal();
         this.props.history.push(
           `/new-page/page-contents?id=${response.data.id}`
         );
       })
       .catch(response => {
-        this.setState({ loading: false });
+        loadingModal();
       });
   }
 
@@ -67,25 +65,8 @@ class InitialStep extends Component {
   renderButton() {
     if (this.state.loading) {
       return (
-        <div>
-          <div className="center-content">
-            <div className="lds-css ng-scope">
-              <div className="lds-spinner">
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-              </div>
-            </div>
-          </div>
+        <div className="center-content">
+          <Loading />
         </div>
       );
     } else {
@@ -103,7 +84,7 @@ class InitialStep extends Component {
 
   renderContent() {
     const type = this.state.type;
-    if (type === "public" || type === "specific" || type === null) {
+    if (type === "public" || type === "private" || type === null) {
       return (
         <div>
           <div className="center-content">
@@ -130,12 +111,12 @@ class InitialStep extends Component {
               deleted.
             </div>
             <label className="control control--radio font-weight-400">
-              Specific
+              Private
               <input
                 type="radio"
-                value="specific"
+                value="private"
                 name="radio"
-                defaultChecked={this.state.type === "specific"}
+                defaultChecked={this.state.type === "private"}
                 onClick={this.onRadioChange.bind(this)}
               />
               <div className="control__indicator" />
@@ -143,7 +124,7 @@ class InitialStep extends Component {
             <div className="page-new__types__details">
               Choose this if you want your page to be visible by only a specific
               kind of persons, such as your friends, workmates, students ,etc.
-              You can also set a password for it. Your specific pages will not
+              You can also set a password for it. Your private pages will not
               been shown on your public profile.
             </div>
           </div>
@@ -152,25 +133,8 @@ class InitialStep extends Component {
       );
     } else {
       return (
-        <div>
-          <div className="center-content">
-            <div className="lds-css ng-scope">
-              <div className="lds-spinner">
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-              </div>
-            </div>
-          </div>
+        <div className="center-content">
+          <Loading />
         </div>
       );
     }

@@ -2,23 +2,20 @@ import React, { Component } from "react";
 import TinyMCE from "react-tinymce";
 import axios from "axios";
 import { ROOT_URL } from "../../lib/keys";
-import { getParameterByName } from "../../lib/util";
+import { getParameterByName, loadingModal } from "../../lib/util";
 import util from "../../lib/forms";
 import ProgressBar from "../partials/ProgressBar";
+import Loading from "../partials/Loading";
 
 class PageContents extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      type: null,
-      title: "",
-      briefDes: "",
-      targets: "",
-      body: "",
-      btnDisabled: true,
-      loading: false
-    };
-  }
+  state = {
+    type: null,
+    title: "",
+    briefDes: "",
+    targets: "",
+    body: "",
+    btnDisabled: true
+  };
 
   componentDidMount() {
     const pageId = getParameterByName("id", window.location.href);
@@ -57,6 +54,7 @@ class PageContents extends Component {
   // This will run when user wants to change the current stage
   // either by going to the next or previous stage
   updatePage(to) {
+    loadingModal("Loading...");
     const pageId = getParameterByName("id", window.location.href);
     const config = {
       headers: {
@@ -79,9 +77,11 @@ class PageContents extends Component {
         config
       )
       .then(response => {
+        loadingModal();
         this.props.history.push(to);
       })
       .catch(response => {
+        loadingModal();
         this.props.history.push(`/new-page/initial-step`);
       });
   }
@@ -96,7 +96,6 @@ class PageContents extends Component {
   }
 
   onNextButtonClicked() {
-    this.setState({ loading: true });
     const type = getParameterByName("type", window.location.href);
     if (type) {
       this.updatePage(
@@ -119,7 +118,7 @@ class PageContents extends Component {
   // This will run by onblur and onchange event on title input
   checkTitleValidation() {
     switch (this.state.type) {
-      case "specific":
+      case "private":
         if (!util.len(this.state.title, 1, 50)) {
           util.inputError(
             "title",
@@ -148,11 +147,11 @@ class PageContents extends Component {
   // This will run by onblur and onchange event on briefDes input
   checkBriefDesValidation() {
     switch (this.state.type) {
-      case "specific":
-        if (!util.len(this.state.briefDes, 1, 300)) {
+      case "private":
+        if (!util.len(this.state.briefDes, 0, 300)) {
           util.inputError(
             "briefDes",
-            "Brief description cannot be blank and should be less that 300 characters",
+            "Brief description should be less that 300 characters",
             2
           );
         } else {
@@ -177,7 +176,7 @@ class PageContents extends Component {
   // This will run by onblur and onchange event on targets input
   checkTargetsValidation() {
     switch (this.state.type) {
-      case "specific":
+      case "private":
         if (!util.len(this.state.targets, 0, 300)) {
           util.inputError(
             "targets",
@@ -213,7 +212,7 @@ class PageContents extends Component {
     bodyText = bodyText.replace(/\s+/g, " ").trim();
 
     switch (this.state.type) {
-      case "specific":
+      case "private":
         if (
           !util.len(bodyText, 1, 200000) &&
           document.querySelector(".mce-tinymce")
@@ -278,10 +277,10 @@ class PageContents extends Component {
       }
     }
 
-    if (this.state.type === "specific") {
+    if (this.state.type === "private") {
       if (
         util.len(title, 1, 50) &&
-        util.len(briefDes, 1, 300) &&
+        util.len(briefDes, 0, 300) &&
         util.len(targets, 0, 300) &&
         util.len(bodyText, 1, 200000)
       ) {
@@ -295,42 +294,17 @@ class PageContents extends Component {
   // Render the next button, if button get clicked it will render a loading icon
   // instead while loading
   renderButton() {
-    if (this.state.loading) {
-      return (
-        <div>
-          <div className="center-content">
-            <div className="lds-css ng-scope">
-              <div className="lds-spinner">
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <button
-          className="btn-normal btn-normal-sm"
-          onClick={() => {
-            this.onNextButtonClicked.apply(this);
-          }}
-          disabled={this.state.btnDisabled}
-        >
-          Next
-        </button>
-      );
-    }
+    return (
+      <button
+        className="btn-normal btn-normal-sm"
+        onClick={() => {
+          this.onNextButtonClicked.apply(this);
+        }}
+        disabled={this.state.btnDisabled}
+      >
+        Next
+      </button>
+    );
   }
 
   renderContents() {
@@ -479,25 +453,8 @@ class PageContents extends Component {
       );
     } else {
       return (
-        <div>
-          <div className="center-content">
-            <div className="lds-css ng-scope">
-              <div className="lds-spinner">
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-              </div>
-            </div>
-          </div>
+        <div className="center-content">
+          <Loading />
         </div>
       );
     }

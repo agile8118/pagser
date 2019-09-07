@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
-// specific and public pges schema
+// private and public pges schema
 var pageSchema = new Schema({
   type: String,
   contents: {

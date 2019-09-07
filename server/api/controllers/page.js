@@ -148,7 +148,7 @@ exports.fetchDraftPageData = (req, res) => {
         .exec((err, page) => {
           if (err) return res.status(500).send("error");
           Page.find(
-            { author: userId, status: "published", type: "specific" },
+            { author: userId, status: "published", type: "private" },
             "url",
             (err, results) => {
               if (err) return res.status(500).send("error");
@@ -281,7 +281,7 @@ exports.create = function(req, res) {
           );
           break;
 
-        case "specific":
+        case "private":
           var page = new Page({
             type: result.type,
             url: result.url,
@@ -342,7 +342,7 @@ exports.updatePage = (req, res) => {
           res.send({ url: result.url, type: result.type });
         }
       );
-    } else if (page.type === "specific") {
+    } else if (page.type === "private") {
       Page.findByIdAndUpdate(
         pageId,
         {
@@ -842,8 +842,8 @@ exports.delete = (req, res) => {
   });
 };
 
-// fetch data for a specific page
-exports.fetchSpecificPageData = (req, res) => {
+// fetch data for a private page
+exports.fetchPrivatePageData = (req, res) => {
   const pageURl = req.params.url;
   const username = req.params.username;
   var viewer;
@@ -860,7 +860,7 @@ exports.fetchSpecificPageData = (req, res) => {
     if (!user) {
       return res.status(404).send();
     }
-    Page.findOne({ url: pageURl, author: user.id, type: "specific" })
+    Page.findOne({ url: pageURl, author: user.id, type: "private" })
       .select(
         "url dislikes likes date comments photo author configurations contents attachFiles _id"
       )
@@ -919,12 +919,12 @@ exports.fetchEditPageData = (req, res) => {
 
   if (username) {
     Page.findOne(
-      { url: pageUrl, author: userId, type: "specific" },
+      { url: pageUrl, author: userId, type: "private" },
       "contents configurations url type _id",
       (err, page) => {
         if (err) return res.status(500).send("error");
         Page.find(
-          { author: userId, status: "published", type: "specific" },
+          { author: userId, status: "published", type: "private" },
           "url",
           (err, results) => {
             if (err) return res.status(500).send("error");

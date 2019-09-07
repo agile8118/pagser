@@ -38,12 +38,12 @@ import Comments from "./components/show-page/Comments";
 import Photo from "./components/show-page/Photo";
 import AttachFiles from "./components/show-page/AttachFiles";
 
-import ShowSpecific from "./components/show-page/Specific";
+import ShowPrivate from "./components/show-page/Private";
 
 import EditPage from "./components/edit-page/EditPage";
 
 // REDUCERS
-import { fetchPageData } from "./redux/specific-page/reducers";
+import { fetchPageData } from "./redux/private-page/reducers";
 const showPageReducers = combineReducers({ fetchPageData });
 const showPageStore = createStore(
   showPageReducers,
@@ -137,10 +137,10 @@ if (container) {
     );
   }
 
-  if (containerName === "showSpecific") {
+  if (containerName === "showPrivate") {
     ReactDOM.render(
       <Provider store={showPageStore}>
-        <ShowSpecific />
+        <ShowPrivate />
       </Provider>,
       container
     );

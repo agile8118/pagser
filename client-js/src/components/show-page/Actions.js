@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { ROOT_URL } from "../../lib/keys";
 import { showSnackBar, loadingModal } from "../../lib/util";
 
-import * as actions from "../../redux/specific-page/actions";
+import * as actions from "../../redux/private-page/actions";
 
 class Actions extends Component {
   state = {
@@ -114,8 +114,12 @@ class Actions extends Component {
                             { titleTyped: event.target.value },
                             () => {
                               if (
-                                this.state.titleTyped.toLowerCase().trim() ===
-                                this.props.contents.title.toLowerCase().trim()
+                                this.state.titleTyped
+                                  .toLowerCase()
+                                  .replace(/\s/g, "") ===
+                                this.props.contents.title
+                                  .toLowerCase()
+                                  .replace(/\s/g, "")
                               ) {
                                 document.querySelector(
                                   "#deleteButton"
@@ -156,10 +160,10 @@ class Actions extends Component {
                     var url = `/public-pages/${
                       window.location.pathname.split("/")[2]
                     }/edit?t=public`;
-                  } else if (this.props.type === "specific") {
+                  } else if (this.props.type === "private") {
                     var url = `/${window.location.pathname.split("/")[1]}/${
                       window.location.pathname.split("/")[2]
-                    }/edit?t=specific`;
+                    }/edit?t=private`;
                   }
                   window.location = `${url}`;
                 }}

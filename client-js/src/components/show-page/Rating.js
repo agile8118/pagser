@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { showSnackBar, loadingModal } from "../../lib/util";
 import { ROOT_URL } from "../../lib/keys";
 
-import * as actions from "../../redux/specific-page/actions";
+import * as actions from "../../redux/private-page/actions";
 
 class Rating extends Component {
   onDislikeButtonClick() {

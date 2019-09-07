@@ -35,7 +35,7 @@ export function fetchPublicPageData() {
   };
 }
 
-export function fetchSpecificPageData() {
+export function fetchPrivatePageData() {
   return function(dispatch) {
     dispatch({ type: FETCH_PAGE_DATA_PENDING });
     const config = {

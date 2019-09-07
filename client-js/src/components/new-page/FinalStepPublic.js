@@ -2,29 +2,26 @@ import React, { Component } from "react";
 import tagsInput from "tags-input";
 import axios from "axios";
 import { ROOT_URL } from "../../lib/keys";
-import { getParameterByName } from "../../lib/util";
+import { getParameterByName, loadingModal } from "../../lib/util";
 import ProgressBar from "../partials/ProgressBar";
+import Loading from "../partials/Loading";
 
 class FinalStepPublic extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loading: false,
-      type: "public",
-      comments: "",
-      rating: "",
-      links: "",
-      anonymously: "",
-      tags: "",
-      classes: {
-        comments: "fa fa-2x fa-toggle-off",
-        rating: "fa fa-2x fa-toggle-off",
-        links: "fa fa-2x fa-toggle-off",
-        anonymously: "fa fa-2x fa-toggle-off"
-      },
-      btnDisabled: true
-    };
-  }
+  state = {
+    type: "public",
+    comments: "",
+    rating: "",
+    links: "",
+    anonymously: "",
+    tags: "",
+    classes: {
+      comments: "fa fa-2x fa-toggle-off",
+      rating: "fa fa-2x fa-toggle-off",
+      links: "fa fa-2x fa-toggle-off",
+      anonymously: "fa fa-2x fa-toggle-off"
+    },
+    btnDisabled: true
+  };
 
   componentDidMount() {
     const pageId = getParameterByName("id", window.location.href) || "id";
@@ -72,6 +69,7 @@ class FinalStepPublic extends Component {
   }
 
   updatePage(callback) {
+    loadingModal("Loading...");
     const pageId = getParameterByName("id", window.location.href);
     const page = {
       type: "public",
@@ -94,8 +92,8 @@ class FinalStepPublic extends Component {
         callback();
       })
       .catch(response => {
-        console.log(response);
-        // this.props.history.push(`/new-page/initial-step`);
+        loadingModal();
+        this.props.history.push(`/new-page/initial-step`);
       });
   }
 
@@ -141,7 +139,6 @@ class FinalStepPublic extends Component {
   }
 
   onButtonClicked() {
-    this.setState({ loading: true });
     const pageId = getParameterByName("id", window.location.href);
     const config = {
       headers: {
@@ -152,11 +149,13 @@ class FinalStepPublic extends Component {
       axios
         .post(`/api/new-page/${pageId}`, null, config)
         .then(response => {
+          loadingModal();
           this.props.history.push(
             `/new-page/message?type=public&status=success&url=${response.data}`
           );
         })
         .catch(error => {
+          loadingModal();
           if (error.response.data.error === "error with contents") {
             this.props.history.push(
               `/new-page/message?type=public&status=error-contents&id=${pageId}`
@@ -172,6 +171,7 @@ class FinalStepPublic extends Component {
 
   onBackButtonClicked() {
     this.updatePage(() => {
+      loadingModal();
       this.props.history.push(
         `/new-page/page-contents?id=${getParameterByName(
           "id",
@@ -237,54 +237,39 @@ class FinalStepPublic extends Component {
     }
   }
 
-  // Render the next button, if button get clicked it will render a loading icon
-  // instead while loading
   renderButton() {
-    if (this.state.loading) {
-      return (
-        <div>
-          <div className="center-content">
-            <div className="lds-css ng-scope">
-              <div className="lds-spinner">
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <button
-          onClick={() => {
-            this.onButtonClicked.apply(this);
-          }}
-          className="btn-normal btn-normal-sm"
-          id="publish-button"
-          disabled={this.state.btnDisabled}
-        >
-          Publish
-        </button>
-      );
-    }
+    return (
+      <button
+        onClick={() => {
+          this.onButtonClicked.apply(this);
+        }}
+        className="btn-normal btn-normal-sm"
+        id="publish-button"
+        disabled={this.state.btnDisabled}
+      >
+        Publish
+      </button>
+    );
   }
 
   render() {
+    let loadingClass = "";
+    let contentClass = "";
+    if (this.state.links === false || this.state.links === true) {
+      loadingClass = "display-none";
+      contentClass = "";
+    } else {
+      contentClass = "display-none";
+      loadingClass = "";
+    }
     return (
-      <div>
-        <div id="new-page-container">
-          <ProgressBar width={100} />
-          <div className="page-new">
+      <div id="new-page-container">
+        <ProgressBar width={100} />
+        <div className="page-new">
+          <div className={`center-content ${loadingClass}`}>
+            <Loading />
+          </div>
+          <div className={contentClass}>
             <button
               className="back-button back-button--new-page"
               onClick={this.onBackButtonClicked.bind(this)}

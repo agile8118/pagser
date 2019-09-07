@@ -2,12 +2,12 @@ import React, { Component } from "react";
 import { getParameterByName } from "../../lib/util";
 
 import FinalStepPublic from "./FinalStepPublic";
-import FinalStepSpecific from "./FinalStepSpecific";
+import FinalStepPrivate from "./FinalStepPrivate";
 
 class FinalStep extends Component {
   componentDidMount() {
     const type = getParameterByName("type", window.location.href);
-    if (type !== "public" && type !== "specific") {
+    if (type !== "public" && type !== "private") {
       this.props.history.push(`/new-page/initial-step`);
     }
   }
@@ -19,8 +19,8 @@ class FinalStep extends Component {
       return <FinalStepPublic history={this.props.history} />;
     }
 
-    if (type === "specific") {
-      return <FinalStepSpecific history={this.props.history} />;
+    if (type === "private") {
+      return <FinalStepPrivate history={this.props.history} />;
     }
   }
 }
