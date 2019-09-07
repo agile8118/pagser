@@ -309,6 +309,10 @@ class PageContents extends Component {
 
   renderContents() {
     const componentThis = this;
+    let requiredLabel = "";
+    if (this.state.type === "private") {
+      requiredLabel = <span className="form__label--required-label">*</span>;
+    }
     if (this.state.type) {
       return (
         <div>
@@ -330,6 +334,7 @@ class PageContents extends Component {
             <div className="form__group" id="title">
               <label htmlFor="titleInput" className="form__label">
                 Title
+                {requiredLabel}
               </label>
               <input
                 id="titleInput"
@@ -406,7 +411,7 @@ class PageContents extends Component {
 
             {/* Page Body input */}
             <div className="form__group" id="body">
-              <label className="form__label">Page Body</label>
+              <label className="form__label">Page Body{requiredLabel}</label>
               <TinyMCE
                 key={componentThis.state.type}
                 content={componentThis.state.body}

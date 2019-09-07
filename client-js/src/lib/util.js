@@ -9,11 +9,13 @@ export const getParameterByName = (name, url) => {
 };
 
 export const convertToUrl = text => {
-  return text
-    .toLowerCase()
-    .replace(/[^\w ]+/g, "")
-    .replace(/ +/g, "-")
-    .substring(0, 50);
+  return (
+    text
+      .toLowerCase()
+      // .replace(/ +/g, "-")
+      .replace(/[^a-z0-9+]+/gi, "-")
+      .substring(0, 50)
+  );
 };
 
 export const showSnackBar = (text, className = "nothing") => {

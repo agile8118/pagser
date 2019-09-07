@@ -1207,6 +1207,9 @@ button:disabled {
   font-size: 1.7rem;
   margin-bottom: 0.5rem;
   display: block; }
+  .form__label--required-label {
+    color: #e74c3c;
+    margin-left: 0.3rem; }
 
 .form__len-display {
   background: #888;

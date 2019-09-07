@@ -69,6 +69,11 @@
     font-size: 1.7rem;
     margin-bottom: 0.5rem;
     display: block;
+
+    &--required-label {
+      color: $color-red;
+      margin-left: 0.3rem;
+    }
   }
 
   &__len-display {
