@@ -1024,7 +1024,8 @@ pre {
   padding: 1rem 2rem;
   margin: 1rem 0 0.5rem 0;
   cursor: pointer;
-  transition: all 0.2s; }
+  transition: all 0.2s;
+  outline: none; }
   .btn-normal-link {
     padding: 0.5rem 2rem;
     display: inline-block; }
@@ -1043,9 +1044,9 @@ pre {
     font-size: 1.4rem;
     padding: 0.4rem 1.2rem;
     border-radius: 500px; }
-    .btn-normal-xs:focus {
-      outline: none !important;
-      background-color: #236d9d; }
+  .btn-normal:focus {
+    outline: none !important;
+    background-color: #236d9d; }
   .btn-normal:hover:enabled {
     background-color: #236d9d;
     border: 1px solid #236d9d; }
@@ -1108,6 +1109,9 @@ button:disabled {
   color: #2980b9;
   font-size: 1.6rem;
   cursor: pointer; }
+  .back-button:hover, .back-button:active, .back-button:focus {
+    outline: none;
+    color: #2371a4; }
 
 .back-button--new-page {
   top: 1.7rem;
