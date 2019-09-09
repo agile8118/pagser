@@ -162,7 +162,36 @@
 
     <br><br><br><br><br>
 
+
+    <footer class="footer">
+      <div class="footer__text">
+        Copyright &copy; 2019 Pagher, Inc.
+      </div>
+       <ul class="footer__nav">
+           <li class="footer__link"><a href="javascript:void(0);">Support</a></li>
+           <li class="footer__link"><a href="javascript:void(0);">Contact us</a></li>
+           <li class="footer__link"><a href="javascript:void(0);">Terms of Use</a></li>
+           <li class="footer__link"><a href="javascript:void(0);">Privacy Policy</a></li>
+       </ul>
+       <div class="footer__right">
+         <span class="footer__theme-text">Dark Theme:</span>
+         <span class="footer__theme-light"></span>
+         <label class="switch">
+            <input type="checkbox" onchange="changeTheme()">
+            <span class="slider round"></span>
+          </label>
+          <span class="footer__theme-dark"></span>
+       </div>
+    </footer>
+
 <script>
+
+// On change theme swith changed
+function changeTheme() {
+  var lightThemeStyles = document.querySelectorAll("link[href='/light-theme-style.css']")[0];
+  stylesLink.href = "/dark-theme-style.css";
+}
+
 // If user profile image couldn't render, then show user placeholer default image
 var userImages = document.querySelectorAll(".js--user-image")
 for (var i = 0; i < userImages.length; i++) {
