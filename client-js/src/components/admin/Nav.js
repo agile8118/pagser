@@ -52,7 +52,7 @@ class Nav extends Component {
             onClick={() => {
               this.closeSideBar();
             }}
-            className="sidebar__closer a-6"
+            className="sidebar__closer"
           >
             &times;
           </button>

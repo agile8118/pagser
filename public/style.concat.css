@@ -24,7 +24,8 @@ html {
 
 body {
   box-sizing: border-box;
-  min-height: 100vh; }
+  min-height: 100vh;
+  position: relative; }
 
 .body-grey {
   background-color: #f7f7f7; }
@@ -130,6 +131,11 @@ pre {
 
 .a-5 {
   padding-top: 0.1rem; }
+
+.a-6 {
+  position: absolute;
+  width: 100%;
+  bottom: 0; }
 
 .right-content {
   width: 100%;
@@ -787,6 +793,61 @@ pre {
   text-align: center;
   margin-bottom: 1rem; }
 
+.footer {
+  margin-top: 9rem;
+  background: #f2f2f2;
+  padding: 1.2rem 6rem;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid #e5e5e5; }
+  @media only screen and (max-width: 790px) {
+    .footer {
+      flex-direction: column;
+      padding: 1.6rem 1rem; } }
+  .footer__text {
+    display: inline-block;
+    color: #888; }
+  .footer__nav {
+    display: inline-block; }
+    @media only screen and (max-width: 790px) {
+      .footer__nav {
+        margin: 1rem 0; } }
+  .footer__link {
+    display: inline-block;
+    list-style-type: none;
+    margin-left: 2rem; }
+    .footer__link a {
+      color: #555; }
+      .footer__link a:hover {
+        text-decoration: underline; }
+  .footer__right {
+    display: flex;
+    align-items: center;
+    margin-left: auto; }
+    @media only screen and (max-width: 790px) {
+      .footer__right {
+        margin-left: unset; } }
+  .footer__theme-text {
+    font-weight: 600;
+    color: #555;
+    padding-right: 0rem;
+    font-size: 1.5rem; }
+  .footer__theme-light {
+    display: inline-block;
+    width: 3.2rem;
+    height: 3.2rem;
+    background: #fff;
+    border-radius: 500px;
+    margin: 0 1rem; }
+  .footer__theme-dark {
+    display: inline-block;
+    width: 3.2rem;
+    height: 3.2rem;
+    background: #2d3133;
+    border-radius: 500px;
+    margin: 0 1rem; }
+
 #particles-js {
   height: 100vh !important;
   background: #f9f9f9; }
@@ -1062,7 +1123,7 @@ pre {
   color: #2980b9;
   background: transparent;
   border: none;
-  font-size: 2.1rem; }
+  font-size: 1.9rem; }
   .btn-icon:hover, .btn-icon:focus {
     color: #236d9d; }
   .btn-icon:focus {
@@ -1360,8 +1421,6 @@ input[type="file"] {
 
 #myBar {
   height: 3rem;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
   background-color: #2980b9; }
 
 .control {
@@ -1374,7 +1433,7 @@ input[type="file"] {
   cursor: pointer; }
   .control__indicator {
     position: absolute;
-    top: 0.3rem;
+    top: 0.4rem;
     left: 0;
     width: 2rem;
     height: 2rem;
@@ -1797,6 +1856,54 @@ iframe {
       float: right;
       border-bottom-right-radius: 1rem; }
 
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 5rem;
+  height: 2.6rem; }
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0; }
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s; }
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 2.4rem;
+  width: 2.4rem;
+  left: 0.1rem;
+  bottom: 0.1rem;
+  background: #fff;
+  -webkit-transition: 0.4s;
+  transition: 0.4s; }
+
+input:checked + .slider {
+  background-color: #2196f3; }
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(2.4rem);
+  -ms-transform: translateX(2.4rem);
+  transform: translateX(2.4rem); }
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 3.4rem; }
+
+.slider.round:before {
+  border-radius: 50%; }
+
 .middle-box {
   padding: 2.5rem 2rem;
   margin: 6rem auto;
@@ -1954,7 +2061,7 @@ iframe {
       padding-right: 6rem; } }
   @media only screen and (max-width: 1072px) {
     .page {
-      padding: 2rem 6rem 2rem 3rem; } }
+      padding: 2rem 3rem 2rem 3rem; } }
   @media only screen and (max-width: 720px) {
     .page {
       padding: 2rem 3rem; } }
