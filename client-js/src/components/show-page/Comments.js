@@ -17,7 +17,8 @@ class Comments extends Component {
     commentPage: 1,
     commentPages: null,
     sendReplyToName: null,
-    sendReplyToId: null
+    sendReplyToId: null,
+    btnDisabled: true
   };
 
   componentDidMount() {
@@ -285,13 +286,24 @@ class Comments extends Component {
               rows="5"
               placeholder="Type your opinion..."
               onChange={e => {
-                this.setState({ commentText: e.target.value });
+                this.setState({ commentText: e.target.value }, () => {
+                  if (this.state.commentText.length > 0) {
+                    this.setState({ btnDisabled: false });
+                  } else {
+                    this.setState({ btnDisabled: true });
+                  }
+                });
               }}
             />
             <br />
 
             <div className="right-content">
-              <button className="btn-round btn-round-normal">Submit</button>
+              <button
+                className="btn-round btn-round-normal"
+                disabled={this.state.btnDisabled}
+              >
+                Submit
+              </button>
             </div>
           </form>
         </div>
