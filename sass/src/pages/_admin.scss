@@ -2,7 +2,7 @@
   display: flex;
 
   &__empty {
-    width: 28rem;
+    width: 24rem;
     flex-shrink: 0;
 
     @media (max-width: 62.5em) {
@@ -10,9 +10,17 @@
     }
   }
 
+  &__footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
   &__content {
     padding: 4rem 24rem 4rem 8rem;
     width: 100%;
+    position: relative;
 
     @media (max-width: 1745px) {
       padding: 4rem 5rem;

@@ -153,10 +153,11 @@ a {
 .auth {
   background: #424047;
   border-color: #000;
+  box-shadow: none;
 }
 
 #particles-js {
-  background: #ccc;
+  background: #333;
 }
 
 .auth__options--register {
@@ -359,14 +360,14 @@ a {
 }
 
 .btn-link {
-  color: #155fd0;
+  color: #fff;
 }
 
 .btn-link:hover,
 .btn-link:active,
 .btn-link:focus {
-  color: #165ac2;
-  border-color: #165ac2;
+  color: #fff;
+  border-color: #fff;
 }
 
 .btn-normal-danger {
@@ -444,4 +445,50 @@ input:checked + .slider {
 .pagination__number--active {
   background: #155fd0;
   color: #dcdcdd;
+}
+
+/* ADMIN */
+.box__to-action {
+  background: #333;
+  border-color: #000;
+}
+
+.box__to-action p {
+  color: #ebebec;
+}
+
+.recent-comments p,
+.recent-likes p {
+  color: #ebebec;
+}
+
+.input__group div {
+  background: #666666;
+  color: #fff;
+}
+
+.sidebar {
+  background: #333;
+  border-right: 1px solid #000;
+}
+
+.btn-lined-not-active {
+  border-color: #eee !important;
+  color: #eee !important;
+}
+
+.btn-lined {
+  border-color: #155fd0;
+  color: #155fd0;
+}
+
+.page-thumbnail {
+  color: #ebebec;
+  background-color: #555;
+  box-shadow: none !important;
+  border: 1px solid #000;
+}
+
+.page-thumbnail__type {
+  color: #ebebec;
 }

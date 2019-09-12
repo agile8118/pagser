@@ -21,6 +21,7 @@ import Home from "./components/admin/Home";
 import Profile from "./components/admin/Profile";
 import Settings from "./components/admin/Settings/Settings";
 import Nav from "./components/admin/Nav";
+import Footer from "./components/admin/Footer";
 import PagesPublished from "./components/admin/Pages/Published";
 import PagesFavorited from "./components/admin/Pages/Favorited";
 import PagesTrash from "./components/admin/Pages/Trash";
@@ -152,29 +153,28 @@ if (container) {
         <div className="admin">
           <Nav />
           <div className="admin__empty" />
-          <div className="admin__content">
+          <div className="admin__content a-8">
             <div className="row">
-              <div className="">
-                <div className="row">
-                  <Switch>
-                    <Route exact path="/admin/home" component={Home} />
-                    <Route path="/admin/profile" component={Profile} />
-                    <Route path="/admin/settings" component={Settings} />
-                    <Route
-                      path="/admin/pages/published"
-                      component={PagesPublished}
-                    />
-                    <Route
-                      path="/admin/pages/favorited"
-                      component={PagesFavorited}
-                    />
-                    <Route path="/admin/pages/draft" component={PagesDraft} />
-                    <Route path="/admin/pages/trash" component={PagesTrash} />
-                    <Redirect from="/admin" to="/admin/home" />
-                  </Switch>
-                </div>
+              <div className="row">
+                <Switch>
+                  <Route exact path="/admin/home" component={Home} />
+                  <Route path="/admin/profile" component={Profile} />
+                  <Route path="/admin/settings" component={Settings} />
+                  <Route
+                    path="/admin/pages/published"
+                    component={PagesPublished}
+                  />
+                  <Route
+                    path="/admin/pages/favorited"
+                    component={PagesFavorited}
+                  />
+                  <Route path="/admin/pages/draft" component={PagesDraft} />
+                  <Route path="/admin/pages/trash" component={PagesTrash} />
+                  <Redirect from="/admin" to="/admin/home" />
+                </Switch>
               </div>
             </div>
+            <Footer />
           </div>
         </div>
       </BrowserRouter>,
