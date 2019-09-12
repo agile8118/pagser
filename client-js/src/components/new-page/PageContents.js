@@ -428,6 +428,18 @@ class PageContents extends Component {
                     "rotateleft rotateright | flipv fliph | imageoptions",
                   height: 350
                 }}
+                onInit={() => {
+                  if (localStorage.getItem("theme") === "dark") {
+                    document.querySelector(
+                      "iframe"
+                    ).contentDocument.children[0].children[1].style.background =
+                      "#555";
+                    document.querySelector(
+                      "iframe"
+                    ).contentDocument.children[0].children[1].style.color =
+                      "#fff";
+                  }
+                }}
                 onChange={e => {
                   this.setState({ body: e.target.getContent() }, () => {
                     this.checkPageBodyValidation.apply(this);

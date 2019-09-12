@@ -12,6 +12,10 @@ body,
   color: #e4e4e5;
 }
 
+a {
+  color: #fff;
+}
+
 .black-link:hover,
 .black-link:focus,
 .black-link:active {
@@ -30,6 +34,123 @@ body,
 
 .small-copy {
   color: #e4e4e5;
+}
+
+.small-paragraph {
+  color: #e4e4e5;
+}
+
+/* TINYMCE */
+/* color: #e4e4e5; */
+/* background: #555;
+border-color: #bababa; */
+.mce-panel {
+  background-color: #494646 !important;
+}
+
+.mce-btn i {
+  text-shadow: none !important;
+}
+
+.mce-label {
+  text-shadow: none !important;
+  color: #e4e4e5 !important;
+}
+
+.mce-window-head .mce-title {
+  color: #e4e4e5;
+}
+
+.mce-textbox {
+  background: #555 !important;
+  color: #e4e4e5 !important;
+}
+
+.mce-listbox button {
+  background: #555 !important;
+  color: #fff !important;
+}
+
+.mce-combobox input {
+  background: #555 !important;
+  color: #e4e4e5 !important;
+}
+
+.mce-combobox input:focus {
+  outline: none;
+}
+
+#tinymce {
+  background: #555 !important;
+}
+
+/* NEW PAGE */
+.control {
+  color: #e4e4e5;
+}
+
+.url__note {
+  color: #e4e4e5;
+}
+
+.page-new__types__details {
+  color: #e4e4e5 !important;
+}
+
+#myBar {
+  background: #155fd0;
+}
+
+#myProgress {
+  background: #b3b2b2;
+}
+
+.control input:checked ~ .control__indicator {
+  background: #155fd0;
+}
+
+.control__indicator {
+  border-color: #155fd0;
+}
+
+.tags-input .tag {
+  background: #eee;
+  border-color: transparent;
+  color: #555;
+}
+
+.tags-input {
+  background: #555;
+}
+
+/* EDIT PAGE */
+.page-new {
+  background-color: #3a383e;
+  border-color: #000;
+}
+
+.url__display {
+  color: #e4e4e5;
+}
+
+.switches {
+  color: #e4e4e5;
+}
+
+.switches__entity {
+  border-color: #000 !important;
+}
+
+.switches__entity i {
+  color: #155fd0;
+}
+
+.back-button {
+  color: #155fd0;
+}
+
+.back-button:hover {
+  color: #165ac2;
 }
 
 /* AUTH */
@@ -85,6 +206,10 @@ body,
 
 .nav-dropdown:hover .nav-dropdown__button {
   background-color: #2c2c33 !important;
+}
+
+.navigation__link--active {
+  background-color: #2c2c33;
 }
 
 .nav-dropdown__content {
@@ -259,7 +384,9 @@ body,
   background: #c0392b;
 }
 
-.btn-round-danger:hover:enabled {
+.btn-round-danger:hover:enabled,
+.btn-round-danger:focus:enabled,
+.btn-round-danger:active:enabled {
   border: 1px solid #c0392b !important;
   background: #c0392b !important;
 }

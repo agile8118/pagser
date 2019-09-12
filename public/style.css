@@ -1421,8 +1421,6 @@ input[type="file"] {
 
 #myBar {
   height: 3rem;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
   background-color: #2980b9; }
 
 .control {
@@ -1435,7 +1433,7 @@ input[type="file"] {
   cursor: pointer; }
   .control__indicator {
     position: absolute;
-    top: 0.3rem;
+    top: 0.4rem;
     left: 0;
     width: 2rem;
     height: 2rem;
@@ -2063,7 +2061,7 @@ input:checked + .slider:before {
       padding-right: 6rem; } }
   @media only screen and (max-width: 1072px) {
     .page {
-      padding: 2rem 6rem 2rem 3rem; } }
+      padding: 2rem 3rem 2rem 3rem; } }
   @media only screen and (max-width: 720px) {
     .page {
       padding: 2rem 3rem; } }
