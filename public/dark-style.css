@@ -99,6 +99,18 @@ body,
   background-color: #2c2c33;
 }
 
+.navigation-sm__hidden a:hover {
+  background-color: #2c2c33;
+}
+
+.nav-dropdown-slider__content {
+  background-color: #373740;
+}
+
+.nav-dropdown-slider__button--active {
+  background-color: #2c2c33;
+}
+
 /* FOOTER */
 .footer {
   background: #373740;
