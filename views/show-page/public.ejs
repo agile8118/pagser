@@ -9,8 +9,6 @@
   <link href="https://fonts.googleapis.com/css?family=Lato:100,300,300i,400,300b" rel="stylesheet">
   <link rel="stylesheet" href="/fonts/font-awesome.min.css">
   <link rel="stylesheet" href="/style.css">
-  <!-- <link rel="stylesheet" href="/dark-style.css"> -->
-  <link rel="stylesheet" href="/light-style.css">
   <title><%= page.contents.title %> | Pagher</title>
 
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -189,34 +187,39 @@
 <script>
 
 if (localStorage.getItem("theme") === "dark") {
-  var lightThemeStyles = document.querySelectorAll("link[href='/light-style.css']")[0];
-  lightThemeStyles.href = "/dark-style.css";
-  document.getElementById('themeSwitch').checked = true;
-  document.querySelector("#pagherLogo").src = "/images/pagher-logo-light.svg"
+  changeTheme("dark");
 } else {
-  var lightThemeStyles = document.querySelectorAll("link[href='/dark-style.css']")[0];
-  if (lightThemeStyles) {
-    lightThemeStyles.href = "/light-style.css";
-    document.querySelector("#pagherLogo").src = "/images/pagher-logo.svg"
-  }
-  document.getElementById('themeSwitch').checked = false;
+  changeTheme("light");
 }
 
-
 document.getElementById('themeSwitch').addEventListener('change', (event) => {
-  document.querySelector("*").style.transition = "all .8s";
   if (event.target.checked) {
-    var lightThemeStyles = document.querySelectorAll("link[href='/light-style.css']")[0];
-    lightThemeStyles.href = "/dark-style.css";
-    document.querySelector("#pagherLogo").src = "/images/pagher-logo-light.svg"
-    localStorage.setItem("theme", "dark")
+    changeTheme("dark");
   } else {
-    var lightThemeStyles = document.querySelectorAll("link[href='/dark-style.css']")[0];
-    lightThemeStyles.href = "/light-style.css";
-    document.querySelector("#pagherLogo").src = "/images/pagher-logo.svg"
-    localStorage.setItem("theme", "light")
+    changeTheme("light");
   }
 })
+
+function changeTheme(theme) {
+  if (theme === "dark") {
+    var link = document.createElement("link");
+    link.setAttribute("rel", "stylesheet");
+    link.setAttribute("href", "/dark-style.css");
+    document.querySelector("head").appendChild(link)
+    document.querySelector("#themeSwitch").checked = true;
+    document.querySelector("#pagherLogo").src = "/images/pagher-logo-light.svg"
+    localStorage.setItem("theme", "dark")
+  }
+
+  if (theme === "light") {
+    if (document.querySelectorAll("link[href='/dark-style.css']")[0]) {
+      document.querySelector("head").removeChild(document.querySelectorAll("link[href='/dark-style.css']")[0]);
+      document.querySelector("#themeSwitch").checked = false;
+      document.querySelector("#pagherLogo").src = "/images/pagher-logo.svg"
+      localStorage.setItem("theme", "light")
+    }
+  }
+}
 
 
 // If user profile image couldn't render, then show user placeholer default image
