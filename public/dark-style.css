@@ -1,6 +1,11 @@
 /* GENERAL */
-body {
+body,
+.body-grey {
   background-color: #424047;
+}
+
+.a-1 {
+  color: #e4e4e5;
 }
 
 .black-link {
@@ -19,11 +24,51 @@ body {
   color: #e4e4e5;
 }
 
+.normal-paragraph {
+  color: #e4e4e5;
+}
+
+.small-copy {
+  color: #e4e4e5;
+}
+
+/* AUTH */
+.auth {
+  background: #424047;
+  border-color: #000;
+}
+
+#particles-js {
+  background: #ccc;
+}
+
+.auth__options--register {
+  background-color: #2d2b30;
+  border-color: #000;
+}
+
+.auth__options--login {
+  background-color: #2d2b30;
+  border-color: #000;
+}
+
+.auth__options--register--active {
+  border-color: #000;
+}
+
+.auth__options {
+  color: #e4e4e5;
+}
+
 /* NAVIGATION */
 .navigation {
   background-color: #373740;
   border-bottom: 1px solid #000000;
   border-top: 1px solid #000000;
+}
+
+.navigation a {
+  color: #fff;
 }
 
 .navigation__link {
@@ -180,6 +225,17 @@ body {
   color: #fff;
 }
 
+.btn-link {
+  color: #155fd0;
+}
+
+.btn-link:hover,
+.btn-link:active,
+.btn-link:focus {
+  color: #165ac2;
+  border-color: #165ac2;
+}
+
 .btn-normal-danger {
   color: #fff;
   background: #e74c3c;
@@ -240,6 +296,14 @@ input:checked + .slider {
   color: #ebebec;
   background-color: #727176;
   border: 1px solid #818085;
+}
+
+.no-comment-message {
+  color: #ebebec;
+}
+
+.disabled-message-comments {
+  border-color: #000000;
 }
 
 .pagination__number--active {

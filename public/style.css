@@ -24,7 +24,8 @@ html {
 
 body {
   box-sizing: border-box;
-  min-height: 100vh; }
+  min-height: 100vh;
+  position: relative; }
 
 .body-grey {
   background-color: #f7f7f7; }
@@ -130,6 +131,11 @@ pre {
 
 .a-5 {
   padding-top: 0.1rem; }
+
+.a-6 {
+  position: absolute;
+  width: 100%;
+  bottom: 0; }
 
 .right-content {
   width: 100%;
@@ -1877,9 +1883,6 @@ iframe {
 
 input:checked + .slider {
   background-color: #2196f3; }
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196f3; }
 
 input:checked + .slider:before {
   -webkit-transform: translateX(24px);

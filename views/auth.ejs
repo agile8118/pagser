@@ -19,10 +19,10 @@
   <meta name="msapplication-TileColor" content="#2d89ef">
   <meta name="theme-color" content="#ffffff">
 </head>
-<body style="background: #f9f9f9">
+<body>
 
   <nav class="navigation">
-    <a href="/" class="navigation__logo--single"><div><img src="/images/pagher-logo.svg" alt="Pagher logo"><span>PAGHER</span></div></a>
+    <a href="/" class="navigation__logo--single"><div><img id="pagherLogo" src="/images/pagher-logo.svg" alt="Pagher logo"><span>PAGHER</span></div></a>
     <a class="navigation__right-link" id="js--login-btn" href="/login">Login</a>
   </nav>
 
@@ -32,7 +32,7 @@
     </div>
   </div>
   <div id="snackbar"></div>
-
+  <br><br><br>
   <footer class="footer">
     <div class="footer__text">
       Copyright &copy; 2019 Pagher, Inc.
@@ -47,7 +47,7 @@
        <span class="footer__theme-text">Dark Theme:</span>
        <span class="footer__theme-light"></span>
        <label class="switch">
-          <input type="checkbox" onchange="changeTheme()">
+          <input type="checkbox" id="themeSwitch">
           <span class="slider round"></span>
         </label>
         <span class="footer__theme-dark"></span>
@@ -173,6 +173,43 @@ particlesJS("particles-js", {
 /* ---- stats.js config ---- */
 </script>
 <script async>
+if (localStorage.getItem("theme") === "dark") {
+  changeTheme("dark");
+} else {
+  changeTheme("light");
+}
+
+document.getElementById('themeSwitch').addEventListener('change', (event) => {
+  if (event.target.checked) {
+    changeTheme("dark");
+  } else {
+    changeTheme("light");
+  }
+})
+
+function changeTheme(theme) {
+  if (theme === "dark") {
+    var link = document.createElement("link");
+    link.setAttribute("rel", "stylesheet");
+    link.setAttribute("href", "/dark-style.css");
+    document.querySelector("head").appendChild(link);
+    document.querySelector("body").style.background = "#ccc";
+    document.querySelector("#themeSwitch").checked = true;
+    document.querySelector("#pagherLogo").src = "/images/pagher-logo-light.svg";
+    localStorage.setItem("theme", "dark")
+  }
+
+  if (theme === "light") {
+    if (document.querySelectorAll("link[href='/dark-style.css']")[0]) {
+      document.querySelector("head").removeChild(document.querySelectorAll("link[href='/dark-style.css']")[0]);
+      document.querySelector("#themeSwitch").checked = false;
+      document.querySelector("body").style.background = "#f9f9f9";
+      document.querySelector("#pagherLogo").src = "/images/pagher-logo.svg"
+      localStorage.setItem("theme", "light")
+    }
+  }
+}
+
 var xhttp = new XMLHttpRequest();
 xhttp.onreadystatechange = function() {
 	if (this.status === 200) {
