@@ -478,11 +478,11 @@ pre {
   display: inline-block;
   color: #555;
   font-weight: 300;
-  padding: 1.2rem 0;
+  padding: 1.2rem 1rem;
   border-bottom: 2px solid transparent;
   transition: all 0.2s; }
   .navigation__right-link:hover {
-    border-bottom: 2px solid #2980b9; }
+    background-color: #fcfcfc; }
 
 .nav-dropdown {
   margin-left: auto;

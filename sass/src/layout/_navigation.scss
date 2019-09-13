@@ -49,12 +49,12 @@
   display: inline-block;
   color: $color-text;
   font-weight: 300;
-  padding: 1.2rem 0;
+  padding: 1.2rem 1rem;
   border-bottom: 2px solid transparent;
   transition: all 0.2s;
 
   &:hover {
-    border-bottom: 2px solid $color-blue;
+    background-color: #fcfcfc;
   }
 }
 
