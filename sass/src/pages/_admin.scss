@@ -26,6 +26,10 @@
       padding: 4rem 5rem;
     }
 
+    @media (max-width: 62.5em) {
+      position: unset;
+    }
+
     @media (max-width: 87.5em) {
       padding: 6rem 4rem;
     }

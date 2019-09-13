@@ -21,7 +21,7 @@
 <body>
 
   <nav class="navigation navigation-md">
-    <a href="/" class="navigation__logo"><img src="/images/pagher-logo.svg" alt="Pagher logo"></a>
+    <a href="/" class="navigation__logo"><img id="pagherLogo" src="/images/pagher-logo.svg" alt="Pagher logo"></a>
     <a href="/public-pages" class="navigation__link">Public Pages</a>
     <a href="/new-page/initial-step" class="navigation__link js--create-page">Create Your Page</a>
     <a href="/login" class="navigation__right-link display-none" id="js--login-md">Login</a>
@@ -40,8 +40,8 @@
 
   <nav class="navigation navigation-sm">
     <div class="navigation-sm__visible">
-      <a href="/" class="navigation__logo"><img src="/images/pagher-logo.svg" alt="Pagher logo"></a>
-      <button class="navigation__bar-button" onclick="navOpenerClicked()"><i class="fa fa-bars" aria-hidden="true"></i></button><br>
+      <a href="/" class="navigation__logo"><img id="pagherLogoMd" src="/images/pagher-logo.svg" alt="Pagher logo"></a>
+      <button class="navigation__bar-button" onclick="navOpenerClicked()"><i id="navigationBar" class="fa fa-bars" aria-hidden="true"></i></button><br>
     </div>
     <div class="navigation-sm__hidden display-none">
         <a href="/public-pages">Public Pages</a>
@@ -66,9 +66,69 @@
   <div class="container">
     <h3 class="a-4 center-content">This part is comming soon where you can view a user pages, activities and informations. Stay tuned!</h3>
   </div>
-</div>
+  <footer class="footer a-6">
+    <div class="footer__text">
+      Copyright &copy; 2019 Pagher, Inc.
+    </div>
+     <ul class="footer__nav">
+         <li class="footer__link"><a href="javascript:void(0);">Support</a></li>
+         <li class="footer__link"><a href="javascript:void(0);">Contact us</a></li>
+         <li class="footer__link"><a href="javascript:void(0);">Terms of Use</a></li>
+         <li class="footer__link"><a href="javascript:void(0);">Privacy Policy</a></li>
+     </ul>
+     <div class="footer__right">
+       <span class="footer__theme-text">Dark Theme:</span>
+       <span class="footer__theme-light"></span>
+       <label class="switch">
+          <input type="checkbox" id="themeSwitch">
+          <span class="slider round"></span>
+        </label>
+        <span class="footer__theme-dark"></span>
+     </div>
+  </footer>
+
 
 <script>
+
+if (localStorage.getItem("theme") === "dark") {
+  changeTheme("dark");
+} else {
+  changeTheme("light");
+}
+
+document.getElementById('themeSwitch').addEventListener('change', (event) => {
+  if (event.target.checked) {
+    changeTheme("dark");
+  } else {
+    changeTheme("light");
+  }
+})
+
+function changeTheme(theme) {
+  if (theme === "dark") {
+    var link = document.createElement("link");
+    link.setAttribute("rel", "stylesheet");
+    link.setAttribute("href", "/dark-style.css");
+    document.querySelector("head").appendChild(link)
+    document.querySelector("#themeSwitch").checked = true;
+    document.querySelector("#navigationBar").style.color = "#fff";
+    document.querySelector("#pagherLogo").src = "/images/pagher-logo-light.svg";
+    document.querySelector("#pagherLogoMd").src = "/images/pagher-logo-light.svg";
+    localStorage.setItem("theme", "dark");
+  }
+
+  if (theme === "light") {
+    if (document.querySelectorAll("link[href='/dark-style.css']")[0]) {
+      document.querySelector("head").removeChild(document.querySelectorAll("link[href='/dark-style.css']")[0]);
+      document.querySelector("#themeSwitch").checked = false;
+      document.querySelector("#navigationBar").style.color = "";
+      document.querySelector("#pagherLogo").src = "/images/pagher-logo.svg";
+      document.querySelector("#pagherLogoMd").src = "/images/pagher-logo.svg";
+      localStorage.setItem("theme", "light");
+    }
+  }
+}
+
 // If user profile image couldn't render, then show user placeholer default image
 var userImages = document.querySelectorAll(".js--user-image")
 for (var i = 0; i < userImages.length; i++) {
