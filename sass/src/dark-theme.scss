@@ -549,6 +549,10 @@ input:checked + .slider {
   background: #fff;
 }
 
+.pages-no-page-message {
+  color: #ebebec;
+}
+
 @media (max-width: 62.5em) {
   .side-nav__logo span {
     color: #ebebec;
