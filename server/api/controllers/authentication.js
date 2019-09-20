@@ -140,6 +140,7 @@ exports.sendCode = (req, res) => {
   req.session.codesent = code;
 
   sendEmail(email, "Verify your email address", html, (msg, info) => {
+    console.log(info);
     if (msg === "success") {
       res.status(200).send("code sent");
     } else {
