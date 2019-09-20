@@ -9,6 +9,12 @@ class Register extends Component {
   constructor(props) {
     super(props);
 
+    this.firstDigit = React.createRef();
+    this.secondDigit = React.createRef();
+    this.thirdDigit = React.createRef();
+    this.fourthDigit = React.createRef();
+    this.fifthDigit = React.createRef();
+
     this.state = {
       name: "",
       username: "",
@@ -19,6 +25,13 @@ class Register extends Component {
       status: "showform",
       alertMessage: null,
       alertType: "success",
+      digits: {
+        first: "",
+        second: "",
+        third: "",
+        fourth: "",
+        fifth: ""
+      },
       loading: false
     };
   }
@@ -283,6 +296,7 @@ class Register extends Component {
           alertMessage: "New code has been sent to your email.",
           alertType: "success"
         });
+        this.resetDigits();
       })
       .catch(error => {
         this.setState({
@@ -290,14 +304,20 @@ class Register extends Component {
           alertMessage: "Something went wrong, please try again.",
           alertType: "error"
         });
+        this.resetDigits();
       });
   }
 
   onVerifyCodeSubmit() {
     this.setState({ loading: true });
+
+    const code = `${this.state.digits.first}${this.state.digits.second}${
+      this.state.digits.third
+    }${this.state.digits.fourth}${this.state.digits.fifth}`;
+
     axios
       .post(`/register/validatecode`, {
-        code: this.state.code
+        code: Number(code)
       })
       .then(response => {
         axios
@@ -306,7 +326,7 @@ class Register extends Component {
             username: this.state.username,
             password: this.state.password,
             email: this.state.email,
-            code: this.state.code
+            code: Number(code)
           })
           .then(response => {
             localStorage.setItem("token", response.data.token);
@@ -318,6 +338,7 @@ class Register extends Component {
               alertMessage: "Something went wrong, please try again.",
               alertType: "error"
             });
+            this.resetDigits();
           });
       })
       .catch(error => {
@@ -327,6 +348,7 @@ class Register extends Component {
             "The code is invalid, make sure that you put the exact code we've sent to your email. You may want to resend the code.",
           alertType: "error"
         });
+        this.resetDigits();
       });
   }
 
@@ -346,6 +368,7 @@ class Register extends Component {
           alertMessage: "New code has been sent to your email.",
           alertType: "success"
         });
+        this.resetDigits();
       })
       .catch(error => {
         this.closeModal();
@@ -355,13 +378,211 @@ class Register extends Component {
               "This email is already in use, please login with this email or choose another one.",
             alertType: "error"
           });
+          this.resetDigits();
         } else {
           this.setState({
             alertMessage: "Something went wrong, please try again.",
             alertType: "error"
           });
+          this.resetDigits();
         }
       });
+  }
+
+  // Reset the digts code
+  resetDigits() {
+    this.setState({
+      digits: {
+        first: "",
+        second: "",
+        third: "",
+        fourth: "",
+        fifth: ""
+      }
+    });
+    this.firstDigit.current.focus();
+  }
+
+  // Move to the specified diget
+  moveDigit(number) {}
+
+  checkDigits() {
+    if (
+      this.state.digits.first > 0 &&
+      this.state.digits.second > 0 &&
+      this.state.digits.third > 0 &&
+      this.state.digits.fourth > 0 &&
+      this.state.digits.fifth > 0
+    ) {
+      this.onVerifyCodeSubmit();
+    }
+  }
+
+  // When a digit is changed
+  onDigitChanged(event, number) {
+    const valueEntered = event.target.value;
+    if (/^\d+$/.test(valueEntered)) {
+      switch (number) {
+        case "first":
+          this.setState(
+            prevState => ({
+              digits: {
+                ...prevState.digits,
+                first: valueEntered
+              }
+            }),
+            () => {
+              this.checkDigits();
+            }
+          );
+          this.secondDigit.current.focus();
+          break;
+        case "second":
+          this.setState(
+            prevState => ({
+              digits: {
+                ...prevState.digits,
+                second: valueEntered
+              }
+            }),
+            () => {
+              this.checkDigits();
+            }
+          );
+          this.thirdDigit.current.focus();
+          break;
+        case "third":
+          this.setState(
+            prevState => ({
+              digits: {
+                ...prevState.digits,
+                third: valueEntered
+              }
+            }),
+            () => {
+              this.checkDigits();
+            }
+          );
+          this.fourthDigit.current.focus();
+          break;
+        case "fourth":
+          this.setState(
+            prevState => ({
+              digits: {
+                ...prevState.digits,
+                fourth: valueEntered
+              }
+            }),
+            () => {
+              this.checkDigits();
+            }
+          );
+          this.fifthDigit.current.focus();
+          break;
+        case "fifth":
+          this.setState(
+            prevState => ({
+              digits: {
+                ...prevState.digits,
+                fifth: valueEntered
+              }
+            }),
+            () => {
+              this.checkDigits();
+            }
+          );
+          break;
+      }
+    }
+  }
+
+  // When user presses a key in a digit
+  onDigitKeyDown(event, number) {
+    // Backspace key pressed
+    if (event.keyCode === 8) {
+      switch (number) {
+        case "first":
+          this.setState(prevState => ({
+            digits: {
+              ...prevState.digits,
+              first: ""
+            }
+          }));
+          break;
+        case "second":
+          this.setState(prevState => ({
+            digits: {
+              ...prevState.digits,
+              second: ""
+            }
+          }));
+          this.firstDigit.current.focus();
+          break;
+        case "third":
+          this.setState(prevState => ({
+            digits: {
+              ...prevState.digits,
+              third: ""
+            }
+          }));
+          this.secondDigit.current.focus();
+          break;
+        case "fourth":
+          this.setState(prevState => ({
+            digits: {
+              ...prevState.digits,
+              fourth: ""
+            }
+          }));
+          this.thirdDigit.current.focus();
+          break;
+        case "fifth":
+          this.setState(prevState => ({
+            digits: {
+              ...prevState.digits,
+              fifth: ""
+            }
+          }));
+          this.fourthDigit.current.focus();
+          break;
+      }
+    }
+
+    // Left arrow key pressed
+    if (event.keyCode === 37) {
+      switch (number) {
+        case "second":
+          this.firstDigit.current.focus();
+          break;
+        case "third":
+          this.secondDigit.current.focus();
+          break;
+        case "fourth":
+          this.thirdDigit.current.focus();
+          break;
+        case "fifth":
+          this.fourthDigit.current.focus();
+          break;
+      }
+    }
+
+    // Right arrow key pressed
+    if (event.keyCode === 39) {
+      switch (number) {
+        case "first":
+          this.secondDigit.current.focus();
+          break;
+        case "second":
+          this.thirdDigit.current.focus();
+          break;
+        case "third":
+          this.fourthDigit.current.focus();
+          break;
+        case "fourth":
+          this.fifthDigit.current.focus();
+          break;
+      }
+    }
   }
 
   // Render the submit button for registeration section
@@ -404,12 +625,7 @@ class Register extends Component {
   renderButtons() {
     if (this.state.loading === false) {
       return (
-        <div>
-          <div className="form__group">
-            <button type="submit" className="btn-round">
-              Verify
-            </button>
-          </div>
+        <div className="margin-top-3">
           <a
             href="javascript:void(0)"
             onClick={() => {
@@ -670,8 +886,8 @@ class Register extends Component {
           <div className="auth">
             <h3 className="heading-tertiary">Verify your email address</h3>
             <p className="small-copy">
-              {this.state.email} - The last step is to enter the code that we
-              have just sent to your email to verify your email address.
+              {this.state.email} - The last step is to enter the 5 digits code
+              we have just sent to your email to verify your email address.
             </p>
             <Alert
               message={this.state.alertMessage}
@@ -687,16 +903,74 @@ class Register extends Component {
               }}
             >
               <div className="form__group">
-                <input
-                  type="text"
-                  placeholder="Enter the code here"
-                  className="form__input"
-                  onChange={event => {
-                    this.setState({ code: event.target.value });
-                  }}
-                  value={this.state.code}
-                  required
-                />
+                <div className="input-digits">
+                  <input
+                    type="text"
+                    autoFocus
+                    value={this.state.digits.first}
+                    ref={this.firstDigit}
+                    onKeyDown={event => {
+                      this.onDigitKeyDown(event, "first");
+                    }}
+                    onChange={event => {
+                      this.onDigitChanged(event, "first");
+                    }}
+                    disabled={this.state.loading}
+                    maxLength="1"
+                  />
+                  <input
+                    type="text"
+                    value={this.state.digits.second}
+                    ref={this.secondDigit}
+                    onKeyDown={event => {
+                      this.onDigitKeyDown(event, "second");
+                    }}
+                    onChange={event => {
+                      this.onDigitChanged(event, "second");
+                    }}
+                    disabled={this.state.loading}
+                    maxLength="1"
+                  />
+                  <input
+                    type="text"
+                    value={this.state.digits.third}
+                    ref={this.thirdDigit}
+                    onKeyDown={event => {
+                      this.onDigitKeyDown(event, "third");
+                    }}
+                    onChange={event => {
+                      this.onDigitChanged(event, "third");
+                    }}
+                    disabled={this.state.loading}
+                    maxLength="1"
+                  />
+                  <input
+                    type="text"
+                    value={this.state.digits.fourth}
+                    ref={this.fourthDigit}
+                    onKeyDown={event => {
+                      this.onDigitKeyDown(event, "fourth");
+                    }}
+                    onChange={event => {
+                      this.onDigitChanged(event, "fourth");
+                    }}
+                    disabled={this.state.loading}
+                    maxLength="1"
+                  />
+                  <input
+                    type="text"
+                    value={this.state.digits.fifth}
+                    ref={this.fifthDigit}
+                    onKeyDown={event => {
+                      this.onDigitKeyDown(event, "fifth");
+                    }}
+                    onChange={event => {
+                      this.onDigitChanged(event, "fifth");
+                    }}
+                    disabled={this.state.loading}
+                    maxLength="1"
+                  />
+                </div>
               </div>
               {this.renderButtons.apply(this)}
             </form>

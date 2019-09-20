@@ -557,6 +557,15 @@ input:checked + .slider {
   color: #ebebec;
 }
 
+.input-digits input {
+  color: #fff;
+  background: transparent;
+}
+
+.input-digits input:disabled {
+  color: #333;
+}
+
 @media (max-width: 62.5em) {
   .side-nav__logo span {
     color: #ebebec;

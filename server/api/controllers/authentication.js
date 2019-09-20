@@ -21,7 +21,6 @@ exports.signup = function(req, res, next) {
   const password = req.body.password;
   const username = req.body.username;
   const name = req.body.name;
-  const code = crypto.randomBytes(6).toString("hex");
   var user = new User({
     email,
     username,
@@ -136,8 +135,8 @@ exports.resetPassword = (req, res) => {
 // send a code to user email address to verify that user own the email
 exports.sendCode = (req, res) => {
   const email = req.body.email;
-  const code = crypto.randomBytes(4).toString("hex");
-  const html = `<p>Please verify your email address by entering this code:</p><strong>${code}</strong><p>`;
+  const code = Math.floor(Math.random() * 90000) + 10000;
+  const html = `<p>Please verify your email address by entering this code:</p><h1 style="letter-spacing: 4px;">${code}</h1><p>`;
   req.session.codesent = code;
 
   sendEmail(email, "Verify your email address", html, (msg, info) => {

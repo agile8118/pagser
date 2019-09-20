@@ -1336,6 +1336,24 @@ textarea {
   -moz-appearance: none;
   appearance: none; }
 
+.input-digits input {
+  display: inline-block;
+  height: 4.5rem;
+  width: 4.5rem;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 2rem;
+  color: #333;
+  border: 1px solid #d6d6d6; }
+  .input-digits input:disabled {
+    background-color: #eee;
+    cursor: not-allowed; }
+  .input-digits input:focus {
+    outline: none;
+    border: 3px solid #479ed7; }
+  .input-digits input:not(:last-child) {
+    margin-right: 2.5rem; }
+
 .alert {
   border-radius: 5px;
   padding: 1rem 2rem;
