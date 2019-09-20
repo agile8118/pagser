@@ -406,13 +406,19 @@ class Register extends Component {
   // Move to the specified diget
   moveDigit(number) {}
 
+  // Check if all digits are entered
   checkDigits() {
+    const first = this.state.digits.first;
+    const second = this.state.digits.second;
+    const third = this.state.digits.third;
+    const fourth = this.state.digits.fourth;
+    const fifth = this.state.digits.fifth;
     if (
-      this.state.digits.first > 0 &&
-      this.state.digits.second > 0 &&
-      this.state.digits.third > 0 &&
-      this.state.digits.fourth > 0 &&
-      this.state.digits.fifth > 0
+      first.length === 1 &&
+      second.length === 1 &&
+      third.length === 1 &&
+      fourth.length === 1 &&
+      fifth.length === 1
     ) {
       this.onVerifyCodeSubmit();
     }
