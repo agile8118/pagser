@@ -57,6 +57,9 @@ a {
 .heading-tertiary {
   font-size: 2.5rem;
   word-spacing: 4px; }
+  @media only screen and (max-width: 405px) {
+    .heading-tertiary {
+      font-size: 2.3rem; } }
 
 .heading-fourth {
   font-size: 2.1rem;
@@ -1330,6 +1333,7 @@ button:disabled {
 
 input[type="text"],
 input[type="email"],
+input[type="tel"],
 input[type="password"],
 textarea {
   -webkit-appearance: none;
@@ -1353,6 +1357,12 @@ textarea {
     border: 3px solid #479ed7; }
   .input-digits input:not(:last-child) {
     margin-right: 2.5rem; }
+    @media only screen and (max-width: 405px) {
+      .input-digits input:not(:last-child) {
+        margin-right: 2rem; } }
+    @media only screen and (max-width: 360px) {
+      .input-digits input:not(:last-child) {
+        margin-right: 1rem; } }
 
 .alert {
   border-radius: 5px;

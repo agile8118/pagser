@@ -911,7 +911,7 @@ class Register extends Component {
               <div className="form__group">
                 <div className="input-digits">
                   <input
-                    type="text"
+                    type="tel"
                     autoFocus
                     value={this.state.digits.first}
                     ref={this.firstDigit}
@@ -925,7 +925,7 @@ class Register extends Component {
                     maxLength="1"
                   />
                   <input
-                    type="text"
+                    type="tel"
                     value={this.state.digits.second}
                     ref={this.secondDigit}
                     onKeyDown={event => {
@@ -938,7 +938,7 @@ class Register extends Component {
                     maxLength="1"
                   />
                   <input
-                    type="text"
+                    type="tel"
                     value={this.state.digits.third}
                     ref={this.thirdDigit}
                     onKeyDown={event => {
@@ -951,7 +951,7 @@ class Register extends Component {
                     maxLength="1"
                   />
                   <input
-                    type="text"
+                    type="tel"
                     value={this.state.digits.fourth}
                     ref={this.fourthDigit}
                     onKeyDown={event => {
@@ -964,7 +964,7 @@ class Register extends Component {
                     maxLength="1"
                   />
                   <input
-                    type="text"
+                    type="tel"
                     value={this.state.digits.fifth}
                     ref={this.fifthDigit}
                     onKeyDown={event => {

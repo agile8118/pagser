@@ -143,6 +143,7 @@
 
 input[type="text"],
 input[type="email"],
+input[type="tel"],
 input[type="password"],
 textarea {
   -webkit-appearance: none;
@@ -173,6 +174,14 @@ textarea {
 
     &:not(:last-child) {
       margin-right: 2.5rem;
+
+      @include res-max(405px) {
+        margin-right: 2rem;
+      }
+
+      @include res-max(360px) {
+        margin-right: 1rem;
+      }
     }
   }
 }
