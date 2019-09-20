@@ -60,13 +60,11 @@ if (container) {
   if (containerName === "auth") {
     ReactDOM.render(
       <BrowserRouter>
-        <div>
-          <Switch>
-            <Route path="/login" component={Login} />
-            <Route path="/register" component={Register} />
-            <Route path="/forgotpassword" component={ForgotPassword} />
-          </Switch>
-        </div>
+        <Switch>
+          <Route path="/login" component={Login} />
+          <Route path="/register" component={Register} />
+          <Route path="/forgotpassword" component={ForgotPassword} />
+        </Switch>
       </BrowserRouter>,
       container
     );
@@ -75,15 +73,13 @@ if (container) {
   if (containerName === "newPage") {
     ReactDOM.render(
       <BrowserRouter>
-        <div>
-          <Switch>
-            <Route path="/new-page/initial-step" component={InitialStep} />
-            <Route path="/new-page/page-contents" component={PageContents} />
-            <Route path="/new-page/final-step" component={FinalStep} />
-            <Route path="/new-page/message" component={Message} />
-            <Redirect from="/new-page" to="/new-page/initial-step" />
-          </Switch>
-        </div>
+        <Switch>
+          <Route path="/new-page/initial-step" component={InitialStep} />
+          <Route path="/new-page/page-contents" component={PageContents} />
+          <Route path="/new-page/final-step" component={FinalStep} />
+          <Route path="/new-page/message" component={Message} />
+          <Redirect from="/new-page" to="/new-page/initial-step" />
+        </Switch>
       </BrowserRouter>,
       container
     );
