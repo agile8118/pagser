@@ -595,7 +595,17 @@ class Register extends Component {
   renderButton() {
     if (this.state.loading === false) {
       return (
-        <div className="form__group">
+        <div className="form__group margin-bottom-0">
+          <p className="a-9">
+            By clicking Sign Up, you agree to our{" "}
+            <a href="/terms-of-use" target="_blank">
+              Terms
+            </a>{" "}
+            and{" "}
+            <a href="/privacy-policy" target="_blank">
+              Privacy Policy
+            </a>.
+          </p>
           <button action="submit" className="btn-round">
             Sign Up
           </button>

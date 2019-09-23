@@ -154,6 +154,11 @@ pre {
 .a-8 {
   min-height: 100vh; }
 
+.a-9 {
+  font-size: 1.4rem;
+  color: #555;
+  margin: 2.5rem 0 0.5rem 0; }
+
 .right-content {
   width: 100%;
   text-align: right !important; }
@@ -229,6 +234,9 @@ pre {
 
 .italic {
   font-style: italic !important; }
+
+.margin-bottom-0 {
+  margin-bottom: 0 !important; }
 
 .u-two-item-row {
   display: block; }
