@@ -139,6 +139,14 @@ app.get("/admin/pages/*", function(req, res) {
   res.render("admin");
 });
 
+app.get("/privacy-policy", function(req, res) {
+  res.render("privacy-policy");
+});
+
+app.get("/terms-of-use", function(req, res) {
+  res.render("terms-of-use");
+});
+
 app.get("*", function(req, res) {
   res.send("Page Not Found!");
 });

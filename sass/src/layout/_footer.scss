@@ -7,7 +7,7 @@
   align-items: center;
   border-top: 1px solid #e5e5e5;
 
-  @include res-max(790px) {
+  @include res-max(850px) {
     flex-direction: column;
     padding: 1.6rem 1rem;
   }
@@ -15,12 +15,13 @@
   &__text {
     display: inline-block;
     color: #888;
+    word-spacing: 1px;
   }
 
   &__nav {
     display: inline-block;
 
-    @include res-max(790px) {
+    @include res-max(850px) {
       margin: 1rem 0;
     }
   }
@@ -44,7 +45,7 @@
     align-items: center;
     margin-left: auto;
 
-    @include res-max(790px) {
+    @include res-max(850px) {
       margin-left: unset;
     }
   }

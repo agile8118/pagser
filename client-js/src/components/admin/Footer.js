@@ -61,10 +61,10 @@ class Footer extends Component {
               <a href="javascript:void(0);">Contact us</a>
             </li>
             <li className="footer__link">
-              <a href="javascript:void(0);">Terms of Use</a>
+              <a href="/terms-of-use">Terms of Use</a>
             </li>
             <li className="footer__link">
-              <a href="javascript:void(0);">Privacy Policy</a>
+              <a href="/privacy-policy">Privacy Policy</a>
             </li>
           </ul>
           <div className="footer__right">

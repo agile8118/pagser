@@ -11,7 +11,7 @@
   justify-content: space-between;
   z-index: 999;
 
-  @media (max-width: 62.5em) {
+  @media (max-width: 1020px) {
     left: -35rem;
     border-right: 1px solid rgb(190, 190, 190);
     background: rgb(240, 240, 240);
@@ -46,7 +46,7 @@
     color: #1c262f;
   }
 
-  @media (max-width: 62.5em) {
+  @media (max-width: 1020px) {
     display: inline-block;
   }
 }
@@ -69,7 +69,7 @@
     color: rgb(20, 20, 20);
   }
 
-  @media (max-width: 62.5em) {
+  @media (max-width: 1020px) {
     display: inline-block;
     color: rgb(70, 70, 70);
     &:hover {
@@ -84,7 +84,7 @@
 }
 
 .sidebar--close {
-  @media (max-width: 62.5em) {
+  @media (max-width: 1020px) {
     animation: moveLeft 0.3s linear;
     left: -35rem !important;
   }
@@ -93,7 +93,7 @@
 .side-nav {
   padding-top: 3rem;
 
-  @media (max-width: 62.5em) {
+  @media (max-width: 1020px) {
     padding-top: 1.5rem;
   }
 
@@ -109,7 +109,7 @@
       text-transform: uppercase;
       letter-spacing: 11px;
 
-      @media (max-width: 62.5em) {
+      @media (max-width: 1020px) {
         color: rgb(70, 70, 70);
       }
     }
@@ -123,7 +123,7 @@
     transition: all 0.2s;
 
     a {
-      @media (max-width: 62.5em) {
+      @media (max-width: 1020px) {
         color: rgb(70, 70, 70);
 
         &:hover {
@@ -137,7 +137,7 @@
       border-right: 1px solid #1c262f;
       border-left: 1px solid #1c262f;
 
-      @media (max-width: 62.5em) {
+      @media (max-width: 1020px) {
         border: none;
       }
 

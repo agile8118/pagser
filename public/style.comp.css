@@ -47,6 +47,10 @@ a {
   border-bottom: 1px solid transparent;
   padding-bottom: 0.1rem; }
 
+.heading-secondary {
+  font-size: 3rem; }
+
+.heading-secondary,
 .heading-tertiary,
 .heading-fourth,
 .heading-fifth {
@@ -84,6 +88,13 @@ a {
   @media only screen and (max-width: 26.25em) {
     .small-copy {
       max-width: 90%; } }
+
+ol {
+  font-size: 1.6rem;
+  color: #555;
+  margin-left: 3rem; }
+  ol li:not(:last-child) {
+    margin-bottom: 2rem; }
 
 .normal-paragraph {
   font-size: 1.6rem;
@@ -335,12 +346,14 @@ pre {
   to {
     opacity: 1; } }
 
-.container {
+.container,
+.container-big {
   width: 90%;
   margin-left: auto;
   margin-right: auto; }
   @media only screen and (max-width: 26.25em) {
-    .container {
+    .container,
+    .container-big {
       width: 100%; } }
 
 @media only screen and (min-width: 33.75em) {
@@ -680,7 +693,7 @@ pre {
   flex-direction: column;
   justify-content: space-between;
   z-index: 999; }
-  @media (max-width: 62.5em) {
+  @media (max-width: 1020px) {
     .sidebar {
       left: -35rem;
       border-right: 1px solid #bebebe;
@@ -705,7 +718,7 @@ pre {
       outline: none; }
   .sidebar__opener i {
     color: #1c262f; }
-  @media (max-width: 62.5em) {
+  @media (max-width: 1020px) {
     .sidebar__opener {
       display: inline-block; } }
 
@@ -724,7 +737,7 @@ pre {
   .sidebar__closer:focus {
     outline: none;
     color: #141414; }
-  @media (max-width: 62.5em) {
+  @media (max-width: 1020px) {
     .sidebar__closer {
       display: inline-block;
       color: #464646; }
@@ -735,14 +748,14 @@ pre {
   left: 0 !important;
   animation: moveRight 0.3s ease-out; }
 
-@media (max-width: 62.5em) {
+@media (max-width: 1020px) {
   .sidebar--close {
     animation: moveLeft 0.3s linear;
     left: -35rem !important; } }
 
 .side-nav {
   padding-top: 3rem; }
-  @media (max-width: 62.5em) {
+  @media (max-width: 1020px) {
     .side-nav {
       padding-top: 1.5rem; } }
   .side-nav__logo {
@@ -755,7 +768,7 @@ pre {
       font-size: 2.4rem;
       text-transform: uppercase;
       letter-spacing: 11px; }
-      @media (max-width: 62.5em) {
+      @media (max-width: 1020px) {
         .side-nav__logo span {
           color: #464646; } }
   .side-nav__item {
@@ -764,7 +777,7 @@ pre {
     padding: 1rem 4rem;
     display: block;
     transition: all 0.2s; }
-    @media (max-width: 62.5em) {
+    @media (max-width: 1020px) {
       .side-nav__item a {
         color: #464646; }
         .side-nav__item a:hover {
@@ -773,7 +786,7 @@ pre {
       background: #fff;
       border-right: 1px solid #1c262f;
       border-left: 1px solid #1c262f; }
-      @media (max-width: 62.5em) {
+      @media (max-width: 1020px) {
         .side-nav__item--active {
           border: none; } }
       .side-nav__item--active a {
@@ -807,16 +820,17 @@ pre {
   display: flex;
   align-items: center;
   border-top: 1px solid #e5e5e5; }
-  @media only screen and (max-width: 790px) {
+  @media only screen and (max-width: 850px) {
     .footer {
       flex-direction: column;
       padding: 1.6rem 1rem; } }
   .footer__text {
     display: inline-block;
-    color: #888; }
+    color: #888;
+    word-spacing: 1px; }
   .footer__nav {
     display: inline-block; }
-    @media only screen and (max-width: 790px) {
+    @media only screen and (max-width: 850px) {
       .footer__nav {
         margin: 1rem 0; } }
   .footer__link {
@@ -831,7 +845,7 @@ pre {
     display: flex;
     align-items: center;
     margin-left: auto; }
-    @media only screen and (max-width: 790px) {
+    @media only screen and (max-width: 850px) {
       .footer__right {
         margin-left: unset; } }
   .footer__theme-text {
@@ -1959,7 +1973,7 @@ input:checked + .slider:before {
   .admin__empty {
     width: 24rem;
     flex-shrink: 0; }
-    @media (max-width: 62.5em) {
+    @media (max-width: 1020px) {
       .admin__empty {
         width: 0; } }
   .admin__footer {
@@ -1974,7 +1988,7 @@ input:checked + .slider:before {
     @media (max-width: 1745px) {
       .admin__content {
         padding: 4rem 5rem; } }
-    @media (max-width: 62.5em) {
+    @media (max-width: 1020px) {
       .admin__content {
         position: unset; } }
     @media (max-width: 87.5em) {

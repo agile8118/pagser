@@ -13,6 +13,11 @@ a {
   padding-bottom: 0.1rem;
 }
 
+.heading-secondary {
+  font-size: 3rem;
+}
+
+.heading-secondary,
 .heading-tertiary,
 .heading-fourth,
 .heading-fifth {
@@ -56,6 +61,17 @@ a {
 
   @media only screen and (max-width: 26.25em) {
     max-width: 90%;
+  }
+}
+
+ol {
+  font-size: $default-font-size;
+  color: $color-text;
+  margin-left: 3rem;
+  li {
+    &:not(:last-child) {
+      margin-bottom: 2rem;
+    }
   }
 }
 
