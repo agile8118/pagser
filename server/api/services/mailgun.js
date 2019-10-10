@@ -1,8 +1,9 @@
 const mailgun = require("mailgun-js");
-const DOMAIN = "sandbox39848b9913124df4adc3bca6ca11e196.mailgun.org";
+const keys = require("../../config/keys");
+const DOMAIN = "email.pagher.com";
 
 const mg = mailgun({
-  apiKey: "7425816db4a5201bd14e404f89753913-bbbc8336-908cf395",
+  apiKey: keys.mailgunApiKey,
   domain: DOMAIN
 });
 
