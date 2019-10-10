@@ -1,5 +1,5 @@
 const jwt = require("jwt-simple");
-const sendEmail = require("../services/nodemailer");
+const sendEmail = require("../services/mailgun");
 const User = require("../../models/user");
 const keys = require("../../config/keys");
 const crypto = require("crypto");
@@ -80,7 +80,7 @@ exports.forgotPasswordRequest = (req, res) => {
       const code = crypto.randomBytes(18).toString("hex");
       const userId = user.id;
       const link = `${keys.domain}/forgotpassword?t=${code}&i=${userId}`;
-      const html = `<p>Please click on the link below to reset your password: </p> </br> ${link} </br> <em>Link is valid for just 10 minutes.</em>`;
+      const html = `<h3>Please click on the link below to reset your password: </h3>${link}<div style="margin-top: 0.5rem;"><em>Link is valid for just 10 minutes.</em></div>`;
 
       user.token.code = code;
       user.token.time = Date.now();
@@ -132,11 +132,11 @@ exports.resetPassword = (req, res) => {
   });
 };
 
-// send a code to user email address to verify that user own the email
+// Send a code to user email address to verify that user own the email
 exports.sendCode = (req, res) => {
   const email = req.body.email;
   const code = Math.floor(Math.random() * 90000) + 10000;
-  const html = `<p>Please verify your email address by entering this code:</p><h1 style="letter-spacing: 4px;">${code}</h1><p>`;
+  const html = `<p>Please verify your email address by entering this code:</p><h1 style="letter-spacing: 4px;">${code}</h1>`;
   req.session.codesent = code;
 
   sendEmail(email, "Verify your email address", html, (msg, info) => {
