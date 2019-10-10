@@ -80,7 +80,15 @@ exports.forgotPasswordRequest = (req, res) => {
       const code = crypto.randomBytes(18).toString("hex");
       const userId = user.id;
       const link = `${keys.domain}/forgotpassword?t=${code}&i=${userId}`;
-      const html = `<h3>Please click on the link below to reset your password: </h3>${link}<div style="margin-top: 0.5rem;"><em>Link is valid for just 10 minutes.</em></div>`;
+      const html = `
+      <h3>Please click on the link below to reset your password: </h3>
+      ${link}
+      <div style="margin-top: 0.5rem;">
+        <em>Link is valid for just 10 minutes.</em>
+      </div>
+      <div style="text-align:center;margin-top: 20px;font-size: 12px;color: #555;">
+        If you didn't request for a password reset, feel free to ignore this email.
+      </div>`;
 
       user.token.code = code;
       user.token.time = Date.now();
@@ -136,7 +144,10 @@ exports.resetPassword = (req, res) => {
 exports.sendCode = (req, res) => {
   const email = req.body.email;
   const code = Math.floor(Math.random() * 90000) + 10000;
-  const html = `<p>Please verify your email address by entering this code:</p><h1 style="letter-spacing: 4px;">${code}</h1>`;
+  const html = `
+  <p>Please verify your email address by entering this code:</p>
+  <h1 style="letter-spacing: 4px;">${code}</h1>
+  `;
   req.session.codesent = code;
 
   sendEmail(email, "Verify your email address", html, (msg, info) => {

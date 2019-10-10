@@ -2,11 +2,13 @@ const mailgun = require("mailgun-js");
 const keys = require("../../config/keys");
 const DOMAIN = "email.pagher.com";
 
+// Mailgun configuration
 const mg = mailgun({
   apiKey: keys.mailgunApiKey,
   domain: DOMAIN
 });
 
+// Function to send emails
 var sendEmail = (to, subject, html, callback) => {
   const data = {
     from: "Pagher <noreply@email.pagher.com>",
@@ -16,7 +18,6 @@ var sendEmail = (to, subject, html, callback) => {
   };
 
   mg.messages().send(data, function(error, body) {
-    console.log(error);
     if (error) callback("error", error);
     else callback("success", body);
   });
