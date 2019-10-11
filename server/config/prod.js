@@ -6,6 +6,6 @@ module.exports = {
   cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
   cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
   accessKeyId: process.env.ACCESS_KEY_ID,
-  secretAccessKey: process.env.SECRET_ACCESS_KEY
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
   mailgunApiKey: process.env.MAILGUN_API_KEY
 };
