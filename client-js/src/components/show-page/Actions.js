@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
-import { ROOT_URL } from "../../lib/keys";
 import { showSnackBar, loadingModal } from "../../lib/util";
 
-import * as actions from "../../redux/private-page/actions";
+import {
+  fetchPublicPageData,
+  favoritePage
+} from "../../redux/show-page/actions";
 
 class Actions extends Component {
   state = {
@@ -28,7 +30,7 @@ class Actions extends Component {
       .patch(`/api/pages/${this.props.id}/favorite`, null, config)
       .then(response => {
         loadingModal();
-        this.props.pageFavorited(response.data);
+        this.props.favoritePage(response.data);
       })
       .catch(error => {
         loadingModal();
@@ -205,17 +207,16 @@ class Actions extends Component {
 
 const mapStateToProps = state => {
   return {
-    id: state.fetchPageData.id,
+    id: state.pageData.id,
     viewer: {
-      favorited: state.fetchPageData.favorited,
-      status: state.fetchPageData.status
+      favorited: state.pageData.favorited,
+      status: state.pageData.status
     },
-    contents: state.fetchPageData.contents,
-    isPending: state.fetchPageData.isPending
+    contents: state.pageData.contents,
+    isPending: state.pageData.isPending
   };
 };
 
-export default connect(
-  mapStateToProps,
-  actions
-)(Actions);
+export default connect(mapStateToProps, { fetchPublicPageData, favoritePage })(
+  Actions
+);

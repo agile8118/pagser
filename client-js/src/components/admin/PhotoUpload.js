@@ -12,6 +12,7 @@ class PhotoUpload extends Component {
     alertType: "success",
     photo: "/images/users/placeholder.png"
   };
+  // Is used to avoid memory leak
   _isMounted = false;
 
   componentDidMount() {
@@ -22,6 +23,7 @@ class PhotoUpload extends Component {
       }
     };
 
+    // Get the user photo from server
     axios
       .get(`/api/profile`, config)
       .then(response => {
@@ -39,10 +41,12 @@ class PhotoUpload extends Component {
       });
   }
 
+  // Set the _isMounted as false so that no ajax request will be made after the unmount
   componentWillUnmount() {
     this._isMounted = false;
   }
 
+  // Crop the photo
   crop(aspect, minW, minH) {
     var image = document.getElementById("img-preview");
     var componentThis = this;
@@ -85,6 +89,7 @@ class PhotoUpload extends Component {
     });
   }
 
+  // Check if the size is valid
   sizeValid(componentThis, size) {
     const imgSize = document.querySelector("#image__upload--input").files[0]
       .size;
@@ -97,6 +102,7 @@ class PhotoUpload extends Component {
     }
   }
 
+  // Check if the type is valid
   typeValid(componentThis) {
     const type = document.querySelector("#image__upload--input").files[0].type;
 
@@ -108,6 +114,7 @@ class PhotoUpload extends Component {
     }
   }
 
+  // Check if height and width of the slected photo is valid
   heightAndWidthValid(componentThis, imgUrl, height, width, callback) {
     var image, file;
     if ((file = document.querySelector("#image__upload--input").files[0])) {
@@ -119,6 +126,7 @@ class PhotoUpload extends Component {
           );
           callback("err");
         } else {
+          // If all valid, callback null as error
           callback(null);
         }
       };
@@ -126,16 +134,20 @@ class PhotoUpload extends Component {
     }
   }
 
+  // Show error as for the wrong file selected
   displayErr(msg) {
     this.setState({ error: msg });
     this.reset();
   }
 
+  // When user selects a photo
   onFileInputChange(event) {
     const imgUrl = URL.createObjectURL(event.target.files[0]);
+    // Check the size, type, height and width
     if (this.sizeValid(this, 5000000) && this.typeValid(this)) {
       this.heightAndWidthValid(this, imgUrl, 250, 250, err => {
         if (!err) {
+          // If no error, hide all errors and show the image with cropper
           this.setState({ error: "" });
           document.querySelector("#img-preview").src = imgUrl;
           this.hide("image__upload--label");
@@ -147,11 +159,13 @@ class PhotoUpload extends Component {
     }
   }
 
+  // Show an element
   show(id, display) {
     const el = document.querySelector(`#${id}`);
     el.style.display = display;
   }
 
+  // Hide an element
   hide(id) {
     const el = document.querySelector(`#${id}`);
     el.style.display = "none";
@@ -171,6 +185,7 @@ class PhotoUpload extends Component {
     document
       .querySelector("#js--uploader-loading")
       .classList.remove("display-none");
+    // Prepare the form data to be sent to server
     var formData = new FormData();
     var imagefile = document.querySelector("#image__upload--input");
     formData.append("img", imagefile.files[0]);
@@ -228,16 +243,19 @@ class PhotoUpload extends Component {
       });
   }
 
+  // Open the modal
   openModal() {
     const modal = document.querySelector(".mdl");
     modal.style.display = "block";
   }
 
+  // Close the modal
   closeModal() {
     const modal = document.querySelector(".mdl");
     modal.style.display = "none";
   }
 
+  // Reset the input file value before choose a new image
   onInputFileClick() {
     document.querySelector("#image__upload--input").value = null;
   }

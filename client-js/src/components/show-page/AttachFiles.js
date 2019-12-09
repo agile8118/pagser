@@ -2,10 +2,9 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import axios from "axios";
 import Loading from "../partials/Loading";
-import { ROOT_URL } from "../../lib/keys";
 import { loadingModal, showSnackBar } from "../../lib/util";
 
-import * as actions from "../../redux/private-page/actions";
+import * as actions from "../../redux/show-page/actions";
 
 class AttachFiles extends Component {
   state = {
@@ -296,16 +295,13 @@ class AttachFiles extends Component {
 
 const mapStateToProps = state => {
   return {
-    id: state.fetchPageData.id,
-    attachFiles: state.fetchPageData.attachFiles || "",
+    id: state.pageData.id,
+    attachFiles: state.pageData.attachFiles || "",
     viewer: {
-      status: state.fetchPageData.status
+      status: state.pageData.status
     },
-    isPending: state.fetchPageData.isPending
+    isPending: state.pageData.isPending
   };
 };
 
-export default connect(
-  mapStateToProps,
-  actions
-)(AttachFiles);
+export default connect(mapStateToProps, actions)(AttachFiles);

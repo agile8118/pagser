@@ -1,7 +1,5 @@
 import React, { Component } from "react";
-import axios from "axios";
 import { connect } from "react-redux";
-import { ROOT_URL } from "../../lib/keys";
 
 import Actions from "./Actions";
 import Author from "./Author";
@@ -10,7 +8,7 @@ import Photo from "./Photo";
 import Comments from "./Comments";
 import AttachFiles from "./AttachFiles";
 
-import * as actions from "../../redux/private-page/actions";
+import * as actions from "../../redux/show-page/actions";
 
 class Index extends Component {
   constructor(props) {
@@ -53,7 +51,7 @@ class Index extends Component {
 
   renderAuthor() {
     if (!this.props.configurations.anonymously) {
-      return <Author className="margin-top-3" />;
+      return <Author />;
     } else {
       return (
         <p className="normal-paragraph disabled-message">
@@ -91,9 +89,9 @@ class Index extends Component {
 
   render() {
     if (this.props.isPending === false && this.props.id !== "notfound") {
-      document.querySelector("title").innerHTML = `${
-        this.props.contents.title
-      } | Pagher`;
+      document.querySelector(
+        "title"
+      ).innerHTML = `${this.props.contents.title} | Pagher`;
       return (
         <div>
           <div className="row">
@@ -171,19 +169,16 @@ class Index extends Component {
 
 const mapStateToProps = state => {
   return {
-    id: state.fetchPageData.id,
+    id: state.pageData.id,
     viewer: {
-      favorited: state.fetchPageData.favorited,
-      status: state.fetchPageData.status
+      favorited: state.pageData.favorited,
+      status: state.pageData.status
     },
-    configurations: state.fetchPageData.configurations,
-    date: state.fetchPageData.date,
-    contents: state.fetchPageData.contents,
-    isPending: state.fetchPageData.isPending
+    configurations: state.pageData.configurations,
+    date: state.pageData.date,
+    contents: state.pageData.contents,
+    isPending: state.pageData.isPending
   };
 };
 
-export default connect(
-  mapStateToProps,
-  actions
-)(Index);
+export default connect(mapStateToProps, actions)(Index);

@@ -17,7 +17,7 @@ var app = express();
 
 const publicPath = path.join(__dirname, "../public");
 
-mongoose.connect(keys.mlab_url, {
+mongoose.connect(keys.mlab_local_url, {
   useMongoClient: true
 });
 

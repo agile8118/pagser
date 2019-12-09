@@ -1,10 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import axios from "axios";
-import { ROOT_URL } from "../../lib/keys";
 import PhotoUpload from "./PhotoUpload";
 
-import * as actions from "../../redux/private-page/actions";
+import * as actions from "../../redux/show-page/actions";
 
 class Photo extends Component {
   render() {
@@ -45,14 +43,11 @@ class Photo extends Component {
 
 const mapStateToProps = state => {
   return {
-    id: state.fetchPageData.id,
-    photo: state.fetchPageData.photo,
-    status: state.fetchPageData.status,
-    isPending: state.fetchPageData.isPending
+    id: state.pageData.id,
+    photo: state.pageData.photo,
+    status: state.pageData.status,
+    isPending: state.pageData.isPending
   };
 };
 
-export default connect(
-  mapStateToProps,
-  actions
-)(Photo);
+export default connect(mapStateToProps, actions)(Photo);

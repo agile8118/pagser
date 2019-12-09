@@ -2,9 +2,8 @@ import React, { Component } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
 import { showSnackBar, loadingModal } from "../../lib/util";
-import { ROOT_URL } from "../../lib/keys";
 
-import * as actions from "../../redux/private-page/actions";
+import * as actions from "../../redux/show-page/actions";
 
 class Rating extends Component {
   onDislikeButtonClick() {
@@ -92,13 +91,10 @@ class Rating extends Component {
 
 const mapStateToProps = state => {
   return {
-    id: state.fetchPageData.id,
-    rating: state.fetchPageData.rating,
-    isPending: state.fetchPageData.isPending
+    id: state.pageData.id,
+    rating: state.pageData.rating,
+    isPending: state.pageData.isPending
   };
 };
 
-export default connect(
-  mapStateToProps,
-  actions
-)(Rating);
+export default connect(mapStateToProps, actions)(Rating);

@@ -130,27 +130,35 @@ exports.uploadUserImage = function(req, res) {
     if (!req.file) {
       return res.send("no file uploaded.");
     }
+
     const userid = req.user.id;
     const imgName = req.file.filename;
+
+    // Get the crop data
     try {
       var cropData = JSON.parse(req.body.cropData);
     } catch (err) {
       return res.status(400).send("error with data");
     }
+
     const buffer = readChunk.sync(`${imageFolderPath}${imgName}`, 0, 4100);
+    // Check if size is valid
     if (req.file.size > 5000000) {
       fs.unlink(`${imageFolderPath}${imgName}`, err => {});
       return res.send("maximum image file size is 5MB");
     }
+    // Check if file type is valid
     if (
       (fileType(buffer) && fileType(buffer).mime === "image/png") ||
       (fileType(buffer) && fileType(buffer).mime === "image/jpg") ||
       (fileType(buffer) && fileType(buffer).mime === "image/jpeg")
     ) {
+      // If all size and type validations are passed...
       var image = new Jimp(`${imageFolderPath}${imgName}`, function(
         err,
         image
       ) {
+        // Check the height and width
         if (image.bitmap.width < 250 || image.bitmap.height < 250) {
           fs.unlink(`${imageFolderPath}{imgName}`, err => {});
           return res.send("image dimentions must be at least 250 * 250 pixels");
@@ -159,6 +167,7 @@ exports.uploadUserImage = function(req, res) {
         var y = Number(cropData.y);
         var width = Number(cropData.width);
         var height = Number(cropData.height);
+        // Crop the image
         image
           .crop(x, y, width, height)
           .quality(60)
@@ -169,6 +178,7 @@ exports.uploadUserImage = function(req, res) {
               return res.send("error 2");
             }
 
+            // Upload the final photo to cloudinary
             cloudinary.v2.uploader.upload(
               `${imageFolderPath}${imgName}`,
               { folder: "images/users" },
@@ -177,9 +187,11 @@ exports.uploadUserImage = function(req, res) {
                   if (!user) {
                     return res.status(400).send("err");
                   }
+                  // If user has already a photo remove it
                   if (user.photo) {
                     cloudinary.v2.uploader.destroy(user.photo.public_id);
                   }
+
                   try {
                     user.photo.public_id = result.public_id;
                     user.photo.secure_url = result.secure_url;
@@ -188,10 +200,13 @@ exports.uploadUserImage = function(req, res) {
                     fs.unlink(`${imageFolderPath}${imgName}`, err => {});
                   }
 
+                  // Save the user after updating
                   user.save(err => {
                     if (!err) {
                       try {
+                        // Send the uploaded photo url to user
                         res.send({ image: user.photo.secure_url });
+                        // Delete the photo on Disk after all went OK
                         fs.unlink(`${imageFolderPath}${imgName}`, err => {});
                       } catch (e) {
                         res.status(500).send({ error: "An error occurred" });

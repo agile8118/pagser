@@ -7,10 +7,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
-import axios from "axios";
-import { createStore, applyMiddleware, combineReducers } from "redux";
 import { Provider } from "react-redux";
-import reduxThunk from "redux-thunk";
 
 // COMPONENTS
 import Login from "./components/auth/Login";
@@ -43,14 +40,8 @@ import ShowPrivate from "./components/show-page/Private";
 
 import EditPage from "./components/edit-page/EditPage";
 
-// REDUCERS
-import { fetchPageData } from "./redux/private-page/reducers";
-const showPageReducers = combineReducers({ fetchPageData });
-const showPageStore = createStore(
-  showPageReducers,
-  {},
-  applyMiddleware(reduxThunk)
-);
+// Stores
+import showPageStore from "./redux/show-page/store";
 
 const container = document.querySelector(".react-container");
 

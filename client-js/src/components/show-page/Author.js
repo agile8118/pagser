@@ -1,56 +1,44 @@
-import React, { Component } from "react";
+import React from "react";
 import { connect } from "react-redux";
-import { ROOT_URL } from "../../lib/keys";
 
-import * as actions from "../../redux/private-page/actions";
+const Author = ({ isPending, author }) => {
+  if (isPending) return <div />;
 
-class Author extends Component {
-  render() {
-    if (this.props.isPending === false) {
-      if (this.props.author.biography.length > 0) {
-        var userBio = this.props.author.biography;
-        var bioClassName = "";
-      } else {
-        var userBio = "This user has not add any biography.";
-        var bioClassName = "italic";
-      }
-      return (
-        <div className={`page__author ${this.props.class}`}>
-          <img
-            src={this.props.author.photo.secure_url}
-            id="user-photo"
-            alt="Author image"
-            onError={() => {
-              document.querySelector("#user-photo").src =
-                "/images/users/placeholder.png";
-            }}
-          />
-          <div className="page__author__details">
-            <a
-              href={`/users/${this.props.author.username}`}
-              target="_blank"
-              className="black-link"
-            >
-              {this.props.author.name}
-            </a>
-            <p className={bioClassName}>{userBio}</p>
-          </div>
-        </div>
-      );
-    } else {
-      return <div />;
-    }
-  }
-}
+  let userBio = author.biography.length
+    ? author.biography
+    : "This user has not added a biography.";
+  let bioClassName = author.biography.length ? "" : "italic";
 
-const mapStateToProps = state => {
+  return (
+    <div className="page__author">
+      <img
+        src={author.photo.secure_url}
+        id="user-photo"
+        alt="Author image"
+        onError={() => {
+          document.querySelector("#user-photo").src =
+            "/images/users/placeholder.png";
+        }}
+      />
+      <div className="page__author__details">
+        <a
+          href={`/users/${author.username}`}
+          target="_blank"
+          className="black-link"
+        >
+          {author.name}
+        </a>
+        <p className={bioClassName}>{userBio}</p>
+      </div>
+    </div>
+  );
+};
+
+const mapStateToProps = ({ pageData }) => {
   return {
-    author: state.fetchPageData.author,
-    isPending: state.fetchPageData.isPending
+    isPending: pageData.isPending,
+    author: pageData.author
   };
 };
 
-export default connect(
-  mapStateToProps,
-  actions
-)(Author);
+export default connect(mapStateToProps)(Author);
