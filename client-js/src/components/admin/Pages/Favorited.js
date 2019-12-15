@@ -1,8 +1,5 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import util from "../../../lib/forms";
-import { ROOT_URL } from "../../../lib/keys";
 import PageThumbnail from "../../partials/PageThumbnail";
 import Loading from "../../partials/Loading";
 import Header from "./Header";
