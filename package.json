@@ -8,6 +8,7 @@
   "main": "server/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build-statics": "cd ./client-js && npm run build && cd .. && cd ./sass && npm run build && cd ..",
     "start": "node server/server.js",
     "dev": "nodemon server/server.js"
   },
