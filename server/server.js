@@ -17,9 +17,12 @@ var app = express();
 
 const publicPath = path.join(__dirname, "../public");
 
-mongoose.connect(keys.mlab_local_url, {
-  useMongoClient: true
-});
+mongoose.connect(
+  process.env.NODE_ENV === "production" ? keys.mlab_url : keys.mlab_local_url,
+  {
+    useMongoClient: true
+  }
+);
 
 mongoose.Promise = global.Promise;
 
