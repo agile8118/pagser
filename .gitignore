@@ -2,3 +2,4 @@ node_modules/
 dev.js
 note.txt
 .DS_Store
+ecosystem.config.js
