@@ -3,3 +3,4 @@ dev.js
 note.txt
 .DS_Store
 ecosystem.config.js
+deploy.sh
