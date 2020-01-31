@@ -737,9 +737,8 @@ exports.addAttachFile = (req, res) => {
               err => {}
             );
 
-            if (err) {
+            if (err)
               return res.status(500).send({ message: "An error occurred" });
-            }
 
             const url = `https://${BUCKET_NAME}.s3.amazonaws.com/${key}`;
 

@@ -130,7 +130,7 @@ class AttachFiles extends Component {
       .catch(error => {
         this.reset();
         document.querySelector("#js--mdl4-modal-error").innerHTML =
-          error.response.data.error;
+          "Sorry and unexpected error happened, please try again.";
       });
   }
 
@@ -185,8 +185,7 @@ class AttachFiles extends Component {
           <a
             className="file-link"
             key={file.name}
-            href={file.url}
-            target="_blank"
+            href={`/api/pages/${this.props.id}/attach-files/${file.name}`}
           >
             <i className="fa fa-download" />
             {" " + file.name}
