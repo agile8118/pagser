@@ -11,6 +11,26 @@ class AttachFiles extends Component {
     error: ""
   };
 
+  componentDidMount() {
+    // const config = {
+    //   headers: {
+    //     authorization: localStorage.getItem("token")
+    //   }
+    // };
+    // axios
+    //   .get(`/api/pages/5dedf1009bdd0aca3b1574df/attach-files/`, config)
+    //   .then(response => {
+    //     console.log(response);
+    //     // componentThis.props.fetchAttachFiles(
+    //     //   componentThis.props.id,
+    //     //   "File deleted successfully."
+    //     // );
+    //   })
+    //   .catch(error => {
+    //     loadingModal();
+    //   });
+  }
+
   onFileInputChange(event) {
     const fileUrl = URL.createObjectURL(event.target.files[0]);
     if (this.sizeValid(this, 10000000)) {
@@ -122,8 +142,7 @@ class AttachFiles extends Component {
           <a
             className="file-link"
             key={file.name}
-            href={file.url}
-            target="_blank"
+            href={`/api/pages/${this.props.id}/attach-files/${file.name}`}
           >
             <i className="fa fa-download" />
             {" " + file.name}

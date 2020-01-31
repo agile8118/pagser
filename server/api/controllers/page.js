@@ -4,7 +4,6 @@ const User = require("../../models/user");
 const Comment = require("../../models/comment");
 const util = require("../../lib/util");
 const crypto = require("crypto");
-const axios = require("axios");
 const multer = require("multer");
 const readChunk = require("read-chunk");
 const fileType = require("file-type");
@@ -17,9 +16,15 @@ const path = require("path");
 const keys = require("../../config/keys");
 
 // Configurations for AWS S3
-const BUCKET_NAME = "pagher-attach-files";
+const BUCKET_NAME = "pagher-attach-files-2341";
 const IAM_USER_KEY = keys.accessKeyId;
 const IAM_USER_SECRET = keys.secretAccessKey;
+
+let S3 = new AWS.S3({
+  accessKeyId: IAM_USER_KEY,
+  secretAccessKey: IAM_USER_SECRET,
+  Bucket: BUCKET_NAME
+});
 
 var storage = multer.diskStorage({
   destination: function(req, file, cb) {
@@ -667,6 +672,23 @@ exports.removePagePhoto = (req, res) => {
   });
 };
 
+// get attach file
+exports.getAttachFile = (req, res) => {
+  const pageId = req.params.id;
+  const fileName = req.params.name;
+
+  const key = `${pageId}/${fileName}`;
+
+  const options = {
+    Bucket: BUCKET_NAME,
+    Key: key
+  };
+
+  res.attachment(key);
+  const fileStream = S3.getObject(options).createReadStream();
+  fileStream.pipe(res);
+};
+
 // get attach files
 exports.getAttachFiles = (req, res) => {
   const pageId = req.params.id;
@@ -703,19 +725,13 @@ exports.addAttachFile = (req, res) => {
 
         const key = `${pageId}/${file.originalname}`;
 
-        let s3bucket = new AWS.S3({
-          accessKeyId: IAM_USER_KEY,
-          secretAccessKey: IAM_USER_SECRET,
-          Bucket: BUCKET_NAME
-        });
-
-        s3bucket.createBucket(function() {
-          var params = {
+        S3.createBucket(function() {
+          const params = {
             Bucket: BUCKET_NAME,
             Key: key,
             Body: fileStream
           };
-          s3bucket.upload(params, function(err, data) {
+          S3.upload(params, function(err, data) {
             fs.unlink(
               path.join(__dirname, "../../../storage/" + file.originalname),
               err => {}
@@ -725,7 +741,7 @@ exports.addAttachFile = (req, res) => {
               return res.status(500).send({ message: "An error occurred" });
             }
 
-            var url = `https://${BUCKET_NAME}.s3.amazonaws.com/${key}`;
+            const url = `https://${BUCKET_NAME}.s3.amazonaws.com/${key}`;
 
             Page.findByIdAndUpdate(
               pageId,
@@ -784,17 +800,12 @@ exports.deleteAttachFile = (req, res) => {
         return file._id.equals(fileId);
       });
 
-      var s3 = new AWS.S3({
-        accessKeyId: IAM_USER_KEY,
-        secretAccessKey: IAM_USER_SECRET,
-        Bucket: BUCKET_NAME
-      });
-
-      var params = {
+      const params = {
         Bucket: BUCKET_NAME,
         Key: `${pageId}/${removedFile[0].name}`
       };
-      s3.deleteObject(params, function(err, data) {
+
+      S3.deleteObject(params, function(err, data) {
         if (err) return res.status(500).send("error");
         res.send({ message: "file deleted" });
       });

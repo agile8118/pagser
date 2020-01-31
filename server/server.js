@@ -28,8 +28,10 @@ mongoose.Promise = global.Promise;
 
 app.use(helmet());
 app.use(cors());
+
 app.use(compression());
 app.use(express.static(publicPath));
+
 app.set("view engine", "ejs");
 app.use(bodyParser.json()).use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
