@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
+import GuestBoxMsg from "./GuestBoxMsg";
 import util from "../../lib/forms";
 import { ROOT_URL } from "../../lib/keys";
 import Alert from "../partials/Alert";
@@ -311,9 +312,7 @@ class Register extends Component {
   onVerifyCodeSubmit() {
     this.setState({ loading: true });
 
-    const code = `${this.state.digits.first}${this.state.digits.second}${
-      this.state.digits.third
-    }${this.state.digits.fourth}${this.state.digits.fifth}`;
+    const code = `${this.state.digits.first}${this.state.digits.second}${this.state.digits.third}${this.state.digits.fourth}${this.state.digits.fifth}`;
 
     axios
       .post(`/register/validatecode`, {
@@ -604,7 +603,8 @@ class Register extends Component {
             and{" "}
             <a href="/privacy-policy" target="_blank">
               Privacy Policy
-            </a>.
+            </a>
+            .
           </p>
           <button action="submit" className="btn-round">
             Sign Up
@@ -848,6 +848,7 @@ class Register extends Component {
                 {this.renderButton.apply(this)}
               </form>
             </div>
+            <GuestBoxMsg />
           </div>
         </div>
       );

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { getParameterByName } from "../../lib/util";
+import GuestBoxMsg from "./GuestBoxMsg";
 import Alert from "../partials/Alert";
 import Loading from "../partials/Loading";
 import redirectToAdmin from "./redirectToAdmin";
@@ -63,9 +64,7 @@ class Login extends Component {
       .then(response => {
         this.closeModal();
         this.setState({
-          alertMessage: `Instructions on how to reset your password were sent to ${
-            this.state.email
-          }`,
+          alertMessage: `Instructions on how to reset your password were sent to ${this.state.email}`,
           alertType: "success"
         });
       })
@@ -242,6 +241,7 @@ class Login extends Component {
               {this.renderButtons.apply(this)}
             </form>
           </div>
+          <GuestBoxMsg />
         </div>
       </div>
     );

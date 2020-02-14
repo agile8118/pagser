@@ -1,30 +1,54 @@
 .middle-box {
-	padding: 2.5rem 2rem;
-	margin: 6rem auto;
-	box-shadow: 2px 2px 3px 0 hsla(205, 5%, 48%, 0.12);
-	max-width: 52rem;
-	border: 1px solid #dbe2e8;
-	text-align: center;
-	border-radius: 5px;
-	position: relative;
-	font-size: 1.8rem;
-	color: #fff;
+  padding: 2.5rem 2rem;
+  margin: 6rem auto;
+  box-shadow: 2px 2px 3px 0 hsla(205, 5%, 48%, 0.12);
+  max-width: 52rem;
+  border: 1px solid #dbe2e8;
+  text-align: center;
+  border-radius: 5px;
+  position: relative;
+  font-size: 1.8rem;
+  color: #fff;
 
-	&--absolute {
-		position: absolute;
-		transform: translate(-50%, 0%);
-		left: 50%;
-	}
+  &--absolute {
+    position: absolute;
+    transform: translate(-50%, 0%);
+    left: 50%;
+  }
 
-	&--success {
-		background: $color-green;
-	}
+  &--success {
+    background: $color-green;
+  }
 
-	&--error {
-		background: $color-red;
-	}
+  &--error {
+    background: $color-red;
+  }
 
-	&--link {
-		font-size: 1.6rem;
-	}
+  &--link {
+    font-size: 1.6rem;
+  }
+}
+
+.guest-box-msg {
+  padding: 4rem 3rem 3rem 3rem;
+  background: #fff;
+  margin: 7rem auto;
+  box-shadow: 6px 7px 30px 7px rgba(116, 123, 129, 0.14);
+  width: 62rem;
+  border: 1px solid #d0d9e1;
+  text-align: center;
+  border-radius: 7px;
+  position: absolute;
+  -webkit-transform: translate(-50%, 0%);
+  transform: translate(-50%, 0%);
+  left: 50%;
+
+  ul {
+    margin-top: -1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+    color: $color-text-light;
+    font-size: $default-font-size;
+    display: inline-block;
+  }
 }
