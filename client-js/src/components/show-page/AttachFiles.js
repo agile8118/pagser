@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import axios from "axios";
 import Loading from "../partials/Loading";
 import InputFile from "../partials/InputFile";
-import { loadingModal, showSnackBar } from "../../lib/util";
+import { loadingModal } from "../../lib/util";
 
 import * as actions from "../../redux/show-page/actions";
 

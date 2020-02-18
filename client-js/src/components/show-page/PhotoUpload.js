@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { ROOT_URL } from "../../lib/keys";
 import { loadingModal, showSnackBar } from "../../lib/util";
+import InputFile from "../partials/InputFile";
 import Loading from "../partials/Loading";
 
 require("../../../../public/cropper.min.js");
@@ -10,7 +10,9 @@ class PhotoUpload extends Component {
   state = {
     error: "",
     cropData: { x: 0, y: 0, width: 0, height: 0 },
-    photo: this.props.photo.secure_url
+    photo: this.props.photo.secure_url,
+    inputLabelName: "Upload a Photo",
+    inputLabelHide: false
   };
 
   componentDidMount() {
@@ -71,67 +73,18 @@ class PhotoUpload extends Component {
     });
   }
 
-  sizeValid(componentThis, size) {
-    const imgSize = document.querySelector("#image__upload--input").files[0]
-      .size;
-
-    if (imgSize > size) {
-      componentThis.displayErr("Image should be less than 8MB.");
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  typeValid(componentThis) {
-    const type = document.querySelector("#image__upload--input").files[0].type;
-
-    if (type !== "image/jpg" && type !== "image/png" && type !== "image/jpeg") {
-      componentThis.displayErr("Only jpeg/jpg/png images are allowed.");
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  heightAndWidthValid(componentThis, imgUrl, width, height, callback) {
-    var image, file;
-    if ((file = document.querySelector("#image__upload--input").files[0])) {
-      image = new Image();
-      image.onload = function() {
-        if (this.height < height || this.width < width) {
-          componentThis.displayErr(
-            "Please upload an image with minimal dimention of at least 1200 * 675 pixels."
-          );
-          callback("err");
-        } else {
-          callback(null);
-        }
-      };
-      image.src = imgUrl;
-    }
-  }
+  onFileInputChange = (e, fileName, imgUrl) => {
+    this.setState({ error: "", inputLabelHide: true });
+    document.querySelector("#img-preview").src = imgUrl;
+    this.show("upload-btn", "inline-block");
+    this.show("reset-btn", "inline-block");
+    this.show("crop-message", "inline-block");
+    this.crop(48 / 27, 1200, 675);
+  };
 
   displayErr(msg) {
     this.setState({ error: msg });
     this.reset();
-  }
-
-  onFileInputChange(event) {
-    const imgUrl = URL.createObjectURL(event.target.files[0]);
-    if (this.sizeValid(this, 8000000) && this.typeValid(this)) {
-      this.heightAndWidthValid(this, imgUrl, 1200, 675, err => {
-        if (!err) {
-          this.setState({ error: "" });
-          document.querySelector("#img-preview").src = imgUrl;
-          this.hide("image__upload--label");
-          this.show("upload-btn", "inline-block");
-          this.show("reset-btn", "inline-block");
-          this.show("crop-message", "inline-block");
-          this.crop(48 / 27, 1200, 675);
-        }
-      });
-    }
   }
 
   show(id, display) {
@@ -146,7 +99,7 @@ class PhotoUpload extends Component {
 
   reset() {
     document.querySelector("#img-preview").src = "";
-    this.show("image__upload--label", "inline-block");
+    this.setState({ inputLabelHide: false });
     this.hide("upload-btn");
     this.hide("crop-message");
     this.hide("reset-btn");
@@ -160,15 +113,11 @@ class PhotoUpload extends Component {
       .querySelector("#js--uploader-loading")
       .classList.remove("display-none");
     var formData = new FormData();
-    var imagefile = document.querySelector("#image__upload--input");
+    var imagefile = document.querySelector("#image-input");
     formData.append("img", imagefile.files[0]);
     formData.set(
       "cropData",
-      `{ "x": "${this.state.cropData.x}", "y": "${
-        this.state.cropData.y
-      }", "width": "${this.state.cropData.width}", "height": "${
-        this.state.cropData.height
-      }" }`
+      `{ "x": "${this.state.cropData.x}", "y": "${this.state.cropData.y}", "width": "${this.state.cropData.width}", "height": "${this.state.cropData.height}" }`
     );
 
     axios
@@ -237,10 +186,6 @@ class PhotoUpload extends Component {
   closeModal(id) {
     const modal = document.querySelector(id);
     modal.style.display = "none";
-  }
-
-  onInputFileClick() {
-    document.querySelector("#image__upload--input").value = null;
   }
 
   renderButtons() {
@@ -374,23 +319,21 @@ class PhotoUpload extends Component {
                 <div className="left-content">
                   <p className="image__upload--error">{this.state.error}</p>
                 </div>
-                <label
-                  id="image__upload--label"
-                  htmlFor="image__upload--input"
-                  className="image__upload--label"
-                >
-                  <i className="fa fa-cloud-upload" aria-hidden="true" /> Upload
-                  a photo
-                </label>
-                <input
-                  id="image__upload--input"
-                  onChange={event => {
-                    this.onFileInputChange.apply(this, [event]);
+
+                <InputFile
+                  addClass="margin-bottom-2"
+                  hide={this.state.inputLabelHide}
+                  label={this.state.inputLabelName}
+                  id="image-input"
+                  size={8000000}
+                  type="image"
+                  minWidth={1200}
+                  minHeight={675}
+                  onChange={this.onFileInputChange}
+                  onClick={e => {}}
+                  onError={msg => {
+                    this.displayErr(msg);
                   }}
-                  onClick={e => this.onInputFileClick(e)}
-                  type="file"
-                  name="img"
-                  placeholder="Upload Your Picture"
                 />
 
                 <img id="img-preview" src="" />

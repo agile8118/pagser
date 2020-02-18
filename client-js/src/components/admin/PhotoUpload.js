@@ -3,6 +3,7 @@ import axios from "axios";
 import { ROOT_URL } from "../../lib/keys";
 import util from "../../lib/forms";
 import Alert from "../partials/Alert";
+import InputFile from "../partials/InputFile";
 
 class PhotoUpload extends Component {
   state = {
@@ -10,7 +11,9 @@ class PhotoUpload extends Component {
     cropData: { x: 0, y: 0, width: 0, height: 0 },
     alertMessage: null,
     alertType: "success",
-    photo: "/images/users/placeholder.png"
+    photo: "/images/users/placeholder.png",
+    inputLabelName: "Upload Your Picture",
+    inputLabelHide: false
   };
   // Is used to avoid memory leak
   _isMounted = false;
@@ -89,74 +92,19 @@ class PhotoUpload extends Component {
     });
   }
 
-  // Check if the size is valid
-  sizeValid(componentThis, size) {
-    const imgSize = document.querySelector("#image__upload--input").files[0]
-      .size;
-
-    if (imgSize > size) {
-      componentThis.displayErr("Image should be less than 5MB.");
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  // Check if the type is valid
-  typeValid(componentThis) {
-    const type = document.querySelector("#image__upload--input").files[0].type;
-
-    if (type !== "image/jpg" && type !== "image/png" && type !== "image/jpeg") {
-      componentThis.displayErr("Only jpeg/jpg/png images are allowed.");
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  // Check if height and width of the slected photo is valid
-  heightAndWidthValid(componentThis, imgUrl, height, width, callback) {
-    var image, file;
-    if ((file = document.querySelector("#image__upload--input").files[0])) {
-      image = new Image();
-      image.onload = function() {
-        if (this.height < height || this.width < width) {
-          componentThis.displayErr(
-            "Please upload an image with minilam dimention of at least 250 * 250 pixels."
-          );
-          callback("err");
-        } else {
-          // If all valid, callback null as error
-          callback(null);
-        }
-      };
-      image.src = imgUrl;
-    }
-  }
+  // When user selects a photo
+  onFileInputChange = (e, fileName, imgUrl) => {
+    this.setState({ error: "", inputLabelHide: true });
+    document.querySelector("#img-preview").src = imgUrl;
+    this.show("upload-btn", "inline-block");
+    this.show("reset-btn", "inline-block");
+    this.crop(1 / 1, 250, 250);
+  };
 
   // Show error as for the wrong file selected
   displayErr(msg) {
     this.setState({ error: msg });
     this.reset();
-  }
-
-  // When user selects a photo
-  onFileInputChange(event) {
-    const imgUrl = URL.createObjectURL(event.target.files[0]);
-    // Check the size, type, height and width
-    if (this.sizeValid(this, 5000000) && this.typeValid(this)) {
-      this.heightAndWidthValid(this, imgUrl, 250, 250, err => {
-        if (!err) {
-          // If no error, hide all errors and show the image with cropper
-          this.setState({ error: "" });
-          document.querySelector("#img-preview").src = imgUrl;
-          this.hide("image__upload--label");
-          this.show("upload-btn", "inline-block");
-          this.show("reset-btn", "inline-block");
-          this.crop(1 / 1, 250, 250);
-        }
-      });
-    }
   }
 
   // Show an element
@@ -173,7 +121,7 @@ class PhotoUpload extends Component {
 
   reset() {
     document.querySelector("#img-preview").src = "";
-    this.show("image__upload--label", "inline-block");
+    this.setState({ inputLabelHide: false });
     this.hide("upload-btn");
     this.hide("reset-btn");
   }
@@ -186,16 +134,12 @@ class PhotoUpload extends Component {
       .querySelector("#js--uploader-loading")
       .classList.remove("display-none");
     // Prepare the form data to be sent to server
-    var formData = new FormData();
-    var imagefile = document.querySelector("#image__upload--input");
+    let formData = new FormData();
+    const imagefile = document.querySelector("#image-input");
     formData.append("img", imagefile.files[0]);
     formData.set(
       "cropData",
-      `{ "x": "${this.state.cropData.x}", "y": "${
-        this.state.cropData.y
-      }", "width": "${this.state.cropData.width}", "height": "${
-        this.state.cropData.height
-      }" }`
+      `{ "x": "${this.state.cropData.x}", "y": "${this.state.cropData.y}", "width": "${this.state.cropData.width}", "height": "${this.state.cropData.height}" }`
     );
 
     axios
@@ -255,11 +199,6 @@ class PhotoUpload extends Component {
     modal.style.display = "none";
   }
 
-  // Reset the input file value before choose a new image
-  onInputFileClick() {
-    document.querySelector("#image__upload--input").value = null;
-  }
-
   render() {
     return (
       <div>
@@ -316,23 +255,21 @@ class PhotoUpload extends Component {
                 <div className="left-content">
                   <p className="image__upload--error">{this.state.error}</p>
                 </div>
-                <label
-                  id="image__upload--label"
-                  htmlFor="image__upload--input"
-                  className="image__upload--label"
-                >
-                  <i className="fa fa-cloud-upload" aria-hidden="true" /> Upload
-                  Your picture
-                </label>
-                <input
-                  id="image__upload--input"
-                  onChange={event => {
-                    this.onFileInputChange.apply(this, [event]);
+
+                <InputFile
+                  addClass="margin-bottom-2"
+                  hide={this.state.inputLabelHide}
+                  label={this.state.inputLabelName}
+                  id="image-input"
+                  size={5000000}
+                  type="image"
+                  minWidth={250}
+                  minHeight={250}
+                  onChange={this.onFileInputChange}
+                  onClick={e => {}}
+                  onError={msg => {
+                    this.displayErr(msg);
                   }}
-                  onClick={e => this.onInputFileClick(e)}
-                  type="file"
-                  name="img"
-                  placeholder="Upload Your Picture"
                 />
 
                 <img id="img-preview" src="" />
