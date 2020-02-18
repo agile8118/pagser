@@ -24,7 +24,7 @@ class Login extends Component {
       case "new-page":
         this.setState({
           alertMessage:
-            "Please login in order to be able to create a new page.",
+            "Please login in order to be able to create a new page, or you can create a page as a guest, scroll down for more information.",
           alertType: "normall"
         });
         break;

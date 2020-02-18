@@ -19,7 +19,8 @@
   padding-bottom: 0.5rem;
 }
 
-.image__upload--label {
+.image__upload--label,
+.file__upload--label {
   border: 1px solid $color-grey-light-3;
   border-radius: 5px;
   width: 100%;
@@ -31,9 +32,15 @@
   background: transparent;
   transition: all 0.2s;
   margin-bottom: 2rem;
+  color: $color-text;
 }
 
-.image__upload--label:hover {
+.file__upload--label {
+  margin: 0;
+}
+
+.image__upload--label:hover,
+.file__upload--label:hover {
   background: #fbfbfb;
 }
 

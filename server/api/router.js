@@ -80,6 +80,7 @@ module.exports = function(app) {
   app.put("/api/photo", requireAuth, Admin.uploadUserImage);
 
   // *********** NEW PAGE ROUTES *********** //
+
   app.get(
     "/api/new-page/:stage/:id",
     requireAuth,

@@ -2,46 +2,26 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import axios from "axios";
 import Loading from "../partials/Loading";
+import InputFile from "../partials/InputFile";
 import { loadingModal, showSnackBar } from "../../lib/util";
 
 import * as actions from "../../redux/show-page/actions";
 
 class AttachFiles extends Component {
   state = {
+    inputLabelName: "Upload a File",
     error: ""
   };
 
-  componentDidMount() {
-    // const config = {
-    //   headers: {
-    //     authorization: localStorage.getItem("token")
-    //   }
-    // };
-    // axios
-    //   .get(`/api/pages/5dedf1009bdd0aca3b1574df/attach-files/`, config)
-    //   .then(response => {
-    //     console.log(response);
-    //     // componentThis.props.fetchAttachFiles(
-    //     //   componentThis.props.id,
-    //     //   "File deleted successfully."
-    //     // );
-    //   })
-    //   .catch(error => {
-    //     loadingModal();
-    //   });
-  }
+  onFileInputChange = (e, fileName) => {
+    this.setState({ inputLabelName: fileName, error: "" });
+    this.show("upload-btn-file", "inline-block");
+    this.show("reset-btn-file", "inline-block");
+  };
 
-  onFileInputChange(event) {
-    const fileUrl = URL.createObjectURL(event.target.files[0]);
-    if (this.sizeValid(this, 10000000)) {
-      this.setState({ error: "" });
-      var fileName = document.querySelector("#file__upload--input").files[0]
-        .name;
-      document.querySelector("#js--upload-text").innerHTML = " " + fileName;
-      this.show("upload-btn-file", "inline-block");
-      this.show("reset-btn-file", "inline-block");
-    }
-  }
+  onInputFileClick = () => {
+    this.setState({ error: "" });
+  };
 
   show(id, display) {
     const el = document.querySelector(`#${id}`);
@@ -53,37 +33,18 @@ class AttachFiles extends Component {
     el.style.display = "none";
   }
 
-  onInputFileClick() {
-    document.querySelector("#file__upload--input").value = null;
-    document.querySelector("#js--mdl4-modal-error").innerHTML = "";
-  }
-
-  sizeValid(componentThis, size) {
-    const fileSize = document.querySelector("#file__upload--input").files[0]
-      .size;
-
-    if (fileSize > size) {
-      componentThis.displayErr("File should be less than 10MB.");
-      return false;
-    } else {
-      return true;
-    }
-  }
-
   reset() {
     document
       .querySelector("#js--mdl4-options")
       .classList.remove("display-none");
     document.querySelector("#js--mdl4-loading").classList.add("display-none");
-    document.querySelector("#js--mdl4-modal-error").innerHTML = "";
-    document.querySelector("#js--upload-text").innerHTML = " Upload a file";
+    this.setState({ inputLabelName: "Upload a File", error: "" });
     this.hide("upload-btn-file");
     this.hide("reset-btn-file");
   }
 
   displayErr(msg) {
-    this.setState({ error: msg });
-    document.querySelector("#js--upload-text").innerHTML = " Upload a file";
+    this.setState({ error: msg, inputLabelName: "Upload a File" });
     this.hide("upload-btn-file");
     this.hide("reset-btn-file");
   }
@@ -94,13 +55,13 @@ class AttachFiles extends Component {
   }
 
   closeModal(id) {
-    document.querySelector("#js--mdl4-modal-error").innerHTML = "";
+    this.setState({ error: "" });
     const modal = document.querySelector(id);
     modal.style.display = "none";
   }
 
   onUploadClick() {
-    document.querySelector("#js--mdl4-modal-error").innerHTML = "";
+    this.setState({ error: "" });
     document.querySelector("#js--mdl4-options").classList.add("display-none");
     document
       .querySelector("#js--mdl4-loading")
@@ -113,8 +74,8 @@ class AttachFiles extends Component {
       }
     };
 
-    var formData = new FormData();
-    var file = document.querySelector("#file__upload--input").files[0];
+    let formData = new FormData();
+    const file = document.querySelector("#file-input").files[0];
     formData.append("file", file);
 
     axios
@@ -129,8 +90,9 @@ class AttachFiles extends Component {
       })
       .catch(error => {
         this.reset();
-        document.querySelector("#js--mdl4-modal-error").innerHTML =
-          "Sorry and unexpected error happened, please try again.";
+        this.setState({
+          error: "Sorry and unexpected error happened, please try again."
+        });
       });
   }
 
@@ -228,28 +190,20 @@ class AttachFiles extends Component {
                   You can upload maximum of 5 files 10MB each for every page.
                 </p>
                 <br />
-                <p className="image__upload--error" id="js--mdl4-modal-error" />
                 <div className="left-content">
                   <p className="image__upload--error">{this.state.error}</p>
                 </div>
 
-                <label
-                  id="file__upload--label"
-                  htmlFor="file__upload--input"
-                  className="image__upload--label margin-bottom-2"
-                >
-                  <i className="fa fa-cloud-upload" aria-hidden="true" />
-                  <span id="js--upload-text"> Upload a file</span>
-                </label>
-                <input
-                  id="file__upload--input"
-                  onChange={event => {
-                    this.onFileInputChange.apply(this, [event]);
+                <InputFile
+                  addClass="margin-bottom-2"
+                  label={this.state.inputLabelName}
+                  id="file-input"
+                  size={10000000}
+                  onChange={this.onFileInputChange}
+                  onClick={this.onInputFileClick}
+                  onError={msg => {
+                    this.displayErr(msg);
                   }}
-                  onClick={e => this.onInputFileClick(e)}
-                  type="file"
-                  name="file"
-                  placeholder="Upload A File"
                 />
 
                 <div

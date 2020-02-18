@@ -26,6 +26,7 @@ import PagesDraft from "./components/admin/Pages/Draft";
 
 import InitialStep from "./components/new-page/InitialStep";
 import PageContents from "./components/new-page/PageContents";
+import GuestPageContents from "./components/new-page/GuestPageContents";
 import FinalStep from "./components/new-page/FinalStep";
 import Message from "./components/new-page/Message";
 
@@ -65,6 +66,7 @@ if (container) {
     ReactDOM.render(
       <BrowserRouter>
         <Switch>
+          <Route path="/new-page/guest" component={GuestPageContents} />
           <Route path="/new-page/initial-step" component={InitialStep} />
           <Route path="/new-page/page-contents" component={PageContents} />
           <Route path="/new-page/final-step" component={FinalStep} />
