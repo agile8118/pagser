@@ -44,3 +44,11 @@
   color: $color-text;
   margin: 2.5rem 0 0.5rem 0;
 }
+
+// Error message in choosing a url
+.a-10 {
+  font-size: 1.4rem;
+  color: $color-red;
+  margin-top: 0.3rem;
+  display: inline-block;
+}
