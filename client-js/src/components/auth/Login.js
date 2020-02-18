@@ -3,7 +3,6 @@ import axios from "axios";
 import { getParameterByName } from "../../lib/util";
 import Alert from "../partials/Alert";
 import Loading from "../partials/Loading";
-import redirectToAdmin from "./redirectToAdmin";
 
 class Login extends Component {
   state = {
@@ -63,9 +62,7 @@ class Login extends Component {
       .then(response => {
         this.closeModal();
         this.setState({
-          alertMessage: `Instructions on how to reset your password were sent to ${
-            this.state.email
-          }`,
+          alertMessage: `Instructions on how to reset your password were sent to ${this.state.email}`,
           alertType: "success"
         });
       })
@@ -130,7 +127,7 @@ class Login extends Component {
   }
 
   render() {
-    document.querySelector("#js--login-btn").innerHTML = "";
+    document.querySelector("#js--login-btn").classList.add("display-none");
     document.querySelector("title").innerHTML = "Login | Pagher";
     return (
       <div>

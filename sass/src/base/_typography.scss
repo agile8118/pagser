@@ -15,13 +15,13 @@ a {
 
 .heading-secondary {
   font-size: 3rem;
+  text-transform: uppercase;
 }
 
 .heading-secondary,
 .heading-tertiary,
 .heading-fourth,
 .heading-fifth {
-  text-transform: uppercase;
   font-weight: 300;
   color: $color-text;
 }
@@ -29,6 +29,7 @@ a {
 .heading-tertiary {
   font-size: 2.5rem;
   word-spacing: 4px;
+  text-transform: uppercase;
 
   @include res-max(405px) {
     font-size: 2.3rem;

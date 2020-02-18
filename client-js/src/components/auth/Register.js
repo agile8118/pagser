@@ -3,7 +3,6 @@ import axios from "axios";
 import util from "../../lib/forms";
 import { ROOT_URL } from "../../lib/keys";
 import Alert from "../partials/Alert";
-import redirectToAdmin from "./redirectToAdmin";
 
 class Register extends Component {
   constructor(props) {
@@ -311,9 +310,7 @@ class Register extends Component {
   onVerifyCodeSubmit() {
     this.setState({ loading: true });
 
-    const code = `${this.state.digits.first}${this.state.digits.second}${
-      this.state.digits.third
-    }${this.state.digits.fourth}${this.state.digits.fifth}`;
+    const code = `${this.state.digits.first}${this.state.digits.second}${this.state.digits.third}${this.state.digits.fourth}${this.state.digits.fifth}`;
 
     axios
       .post(`/register/validatecode`, {
@@ -604,7 +601,8 @@ class Register extends Component {
             and{" "}
             <a href="/privacy-policy" target="_blank">
               Privacy Policy
-            </a>.
+            </a>
+            .
           </p>
           <button action="submit" className="btn-round">
             Sign Up
@@ -690,7 +688,7 @@ class Register extends Component {
   }
 
   render() {
-    document.querySelector("#js--login-btn").innerHTML = "";
+    document.querySelector("#js--login-btn").classList.add("display-none");
     if (this.state.status === "showform") {
       document.querySelector("title").innerHTML = "Register | Pagher";
       return (

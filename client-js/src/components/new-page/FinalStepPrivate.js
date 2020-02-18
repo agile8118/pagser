@@ -1,10 +1,8 @@
 import React, { Component } from "react";
 import axios from "axios";
-import util from "../../lib/forms";
-import { ROOT_URL } from "../../lib/keys";
-import { getParameterByName, convertToUrl, loadingModal } from "../../lib/util";
+import { getParameterByName, loadingModal } from "../../lib/util";
 import ProgressBar from "../partials/ProgressBar";
-import Loading from "../partials/Loading";
+import ChooseUrl from "../partials/ChooseUrl";
 
 class FinalStepPrivate extends Component {
   state = {
@@ -14,11 +12,7 @@ class FinalStepPrivate extends Component {
     rating: "",
     anonymously: "",
     url: "",
-    classes: {
-      comments: "fa fa-2x fa-toggle-off",
-      rating: "fa fa-2x fa-toggle-off",
-      anonymously: "fa fa-2x fa-toggle-off"
-    },
+    usedUrls: [],
     btnDisabled: true,
     loaded: false
   };
@@ -35,21 +29,16 @@ class FinalStepPrivate extends Component {
       .get(`/api/new-page/final-step/${pageId}`, config)
       .then(response => {
         const page = response.data.page;
-        this.setState(
-          {
-            type: page.type,
-            comments: page.configurations.comments,
-            rating: page.configurations.rating,
-            anonymously: page.configurations.anonymously,
-            username: page.author.username,
-            url: page.url || "",
-            usedUrls: response.data.urls,
-            loaded: true
-          },
-          () => {
-            this.stateChanged("classes");
-          }
-        );
+        this.setState({
+          type: page.type,
+          comments: page.configurations.comments,
+          rating: page.configurations.rating,
+          anonymously: page.configurations.anonymously,
+          username: page.author.username,
+          url: page.url || "",
+          usedUrls: response.data.urls,
+          loaded: true
+        });
       })
       .catch(error => {
         if (error.response.status === 401) {
@@ -60,48 +49,21 @@ class FinalStepPrivate extends Component {
       });
   }
 
-  stateChanged() {
-    // decide wether the publish button should be disabled or not
-    var urlError = document.querySelector("#js--tags-url-error-message");
-    if (
-      this.state.url &&
-      this.state.url.length > 0 &&
-      this.state.usedUrls.indexOf(this.state.url) === -1
-    ) {
-      this.setState({ btnDisabled: false });
-      urlError.innerText = "";
-      urlError.classList.add("display-none");
-    } else if (this.state.usedUrls.indexOf(this.state.url) !== -1) {
-      this.setState({ btnDisabled: true });
-      urlError.innerText = `You have already used "${
-        this.state.url
-      }" url, choose something else.`;
-      urlError.classList.remove("display-none");
-    } else {
-      this.setState({ btnDisabled: true });
+  onSwithClicked = e => {
+    switch (e.target.getAttribute("role")) {
+      case "comments":
+        this.setState({ comments: !this.state.comments });
+        break;
+      case "rating":
+        this.setState({ rating: !this.state.rating });
+        break;
+      case "anonymously":
+        this.setState({ anonymously: !this.state.anonymously });
+        break;
     }
+  };
 
-    var classes = {};
-    if (this.state.comments === true) {
-      classes.comments = "fa fa-2x fa-toggle-off";
-    } else {
-      classes.comments = "fa fa-2x fa-toggle-on";
-    }
-
-    if (this.state.anonymously === true) {
-      classes.anonymously = "fa fa-2x fa-toggle-on";
-    } else {
-      classes.anonymously = "fa fa-2x fa-toggle-off";
-    }
-
-    if (this.state.rating === true) {
-      classes.rating = "fa fa-2x fa-toggle-off";
-    } else {
-      classes.rating = "fa fa-2x fa-toggle-on";
-    }
-    this.setState({ classes });
-  }
-
+  // Sends a request to server to update the draft page
   updatePage(callback) {
     loadingModal("Loading...");
     const page = {
@@ -139,7 +101,7 @@ class FinalStepPrivate extends Component {
       });
   }
 
-  onButtonClicked() {
+  onSubmitButtonClicked = () => {
     const pageId = getParameterByName("id", window.location.href);
     const config = {
       headers: {
@@ -152,9 +114,7 @@ class FinalStepPrivate extends Component {
         .then(response => {
           loadingModal();
           this.props.history.push(
-            `/new-page/message?type=private&status=success&url=${
-              response.data.url
-            }&username=${response.data.username}`
+            `/new-page/message?type=private&status=success&url=${response.data.url}&username=${response.data.username}`
           );
         })
         .catch(error => {
@@ -170,7 +130,7 @@ class FinalStepPrivate extends Component {
           }
         });
     });
-  }
+  };
 
   onBackButtonClicked() {
     this.updatePage(() => {
@@ -184,60 +144,11 @@ class FinalStepPrivate extends Component {
     });
   }
 
-  onSwithClicked(e) {
-    if (e.target.classList.contains("fa-toggle-off")) {
-      e.target.classList.remove("fa-toggle-off");
-      e.target.classList.add("fa-toggle-on");
-
-      switch (e.target.getAttribute("role")) {
-        case "comments":
-          this.setState({ comments: false }, () => {
-            this.stateChanged();
-          });
-          break;
-        case "rating":
-          this.setState({ rating: false }, () => {
-            this.stateChanged();
-          });
-          break;
-        case "anonymously":
-          this.setState({ anonymously: true }, () => {
-            this.stateChanged();
-          });
-          break;
-      }
-    } else {
-      e.target.classList.remove("fa-toggle-on");
-      e.target.classList.add("fa-toggle-off");
-
-      switch (e.target.getAttribute("role")) {
-        case "comments":
-          this.setState({ comments: true }, () => {
-            this.stateChanged();
-          });
-          break;
-        case "rating":
-          this.setState({ rating: true }, () => {
-            this.stateChanged();
-          });
-          break;
-        case "anonymously":
-          this.setState({ anonymously: false }, () => {
-            this.stateChanged();
-          });
-          break;
-      }
-    }
-  }
-
   renderButton() {
     return (
       <button
         className="btn-normal btn-normal-sm"
-        onClick={() => {
-          this.onButtonClicked.apply(this);
-        }}
-        id="publish-button"
+        onClick={this.onSubmitButtonClicked}
         disabled={this.state.btnDisabled}
       >
         Publish
@@ -267,47 +178,47 @@ class FinalStepPrivate extends Component {
 
               <div className="page-new__final-step">
                 <div className="switches">
-                  <div
-                    className="form__group"
-                    id="swith-on-off"
-                    className="switches__entity"
-                  >
+                  <div className="form__group" className="switches__entity">
                     <label>Disable Comments</label>
                     <i
-                      className={this.state.classes.comments}
+                      className={
+                        !this.state.comments
+                          ? "fa fa-2x fa-toggle-on"
+                          : "fa fa-2x fa-toggle-off"
+                      }
                       role="comments"
                       aria-hidden="true"
-                      onClick={this.onSwithClicked.bind(this)}
+                      onClick={this.onSwithClicked}
                     />
                     <input type="hidden" value="false" />
                   </div>
 
-                  <div
-                    className="form__group"
-                    id="swith-on-off"
-                    className="switches__entity"
-                  >
+                  <div className="form__group" className="switches__entity">
                     <label>Disable Rating</label>
                     <i
-                      className={this.state.classes.rating}
+                      className={
+                        !this.state.rating
+                          ? "fa fa-2x fa-toggle-on"
+                          : "fa fa-2x fa-toggle-off"
+                      }
                       role="rating"
                       aria-hidden="true"
-                      onClick={this.onSwithClicked.bind(this)}
+                      onClick={this.onSwithClicked}
                     />
                     <input type="hidden" value="false" />
                   </div>
 
-                  <div
-                    className="form__group"
-                    id="swith-on-off"
-                    className="switches__entity"
-                  >
+                  <div className="form__group" className="switches__entity">
                     <label>Create This Page Anonymously</label>
                     <i
-                      className={this.state.classes.anonymously}
+                      className={
+                        this.state.anonymously
+                          ? "fa fa-2x fa-toggle-on"
+                          : "fa fa-2x fa-toggle-off"
+                      }
                       role="anonymously"
                       aria-hidden="true"
-                      onClick={this.onSwithClicked.bind(this)}
+                      onClick={this.onSwithClicked}
                     />
                     <input type="hidden" value="false" />
                   </div>
@@ -324,38 +235,17 @@ class FinalStepPrivate extends Component {
                 </div>
 
                 <div className="form__group url">
-                  <label htmlFor="url" className="form__label">
-                    URL
-                  </label>
-                  <input
-                    id="url"
-                    type="text"
-                    value={this.state.url}
-                    className="form__input"
-                    onBlur={e => {
-                      this.stateChanged("update");
+                  <ChooseUrl
+                    url={this.state.url}
+                    username={this.state.username}
+                    usedUrls={this.state.usedUrls}
+                    onError={() => {
+                      this.setState({ btnDisabled: true });
                     }}
-                    onChange={e => {
-                      var url = convertToUrl(e.target.value);
-                      this.setState({ url });
+                    onSuccess={url => {
+                      this.setState({ btnDisabled: false, url });
                     }}
                   />
-                  <span
-                    id="js--tags-url-error-message"
-                    className="display-none"
-                  />
-                  <p className="url__display">
-                    pagher.com/{this.state.username}/{this.state.url}
-                  </p>
-                  <div className="url__note">
-                    <strong>Important note about URL:</strong>
-                    <p>
-                      This URL will be for your page, please copy this becasue
-                      the only way other persons can view this page is to have
-                      this URL. <br /> You should share this URl in order for
-                      others to view it.
-                    </p>
-                  </div>
                 </div>
               </div>
 
