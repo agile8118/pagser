@@ -4,7 +4,6 @@
 
 .image__upload--options a {
   margin-right: 0.8rem;
-  display: none;
 }
 
 .image__upload--options {
@@ -19,7 +18,6 @@
   padding-bottom: 0.5rem;
 }
 
-.image__upload--label,
 .file__upload--label {
   border: 1px solid $color-grey-light-3;
   border-radius: 5px;
@@ -39,7 +37,6 @@
   margin: 0;
 }
 
-.image__upload--label:hover,
 .file__upload--label:hover {
   background: #fbfbfb;
 }

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { loadingModal, showSnackBar } from "../../lib/util";
+import { loadingModal, showSnackBar, show, hide } from "../../lib/util";
 import InputFile from "../partials/InputFile";
 import Loading from "../partials/Loading";
 
@@ -31,6 +31,87 @@ class PhotoUpload extends Component {
     loadStyleSheet("/cropper.min.css");
   }
 
+  onFileInputChange = (e, fileName, imgUrl) => {
+    this.setState({ error: "", inputLabelHide: true });
+    document.querySelector("#img-preview").src = imgUrl;
+    show("#upload-btn");
+    show("#reset-btn");
+    show("#crop-message");
+    this.crop(48 / 27, 1200, 675);
+  };
+
+  onUploadClick() {
+    hide("#js--uploader-options");
+    show("#js--uploader-loading");
+    let formData = new FormData();
+    formData.append("img", document.querySelector("#image-input").files[0]);
+    formData.set(
+      "cropData",
+      `{ "x": "${this.state.cropData.x}", "y": "${this.state.cropData.y}", "width": "${this.state.cropData.width}", "height": "${this.state.cropData.height}" }`
+    );
+
+    axios
+      .put(`/api/pages/${this.props.pageId}/photo`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          authorization: localStorage.getItem("token")
+        }
+      })
+      .then(res => {
+        document.querySelector("#reset-btn").click();
+        hide("#mdl2");
+        show("#js--uploader-options");
+        hide("#js--uploader-loading");
+        this.setState({
+          photo: res.data.image
+        });
+        showSnackBar("Photo uploaded successfully.", "success");
+      })
+      .catch(e => {
+        document.querySelector("#reset-btn").click();
+        hide("#mdl2");
+        show("#js--uploader-options");
+        hide("#js--uploader-loading");
+        showSnackBar(
+          "There was a problem with uploading, please try again.",
+          "error"
+        );
+      });
+  }
+
+  onRemovePhotoClick() {
+    loadingModal("Removing the photo...");
+    hide("#mdl3");
+    const config = {
+      headers: {
+        authorization: localStorage.getItem("token")
+      }
+    };
+    axios
+      .delete(`/api/pages/${this.props.pageId}/photo`, config)
+      .then(res => {
+        loadingModal();
+        showSnackBar("Photo successfully removed from your page.", "success");
+
+        this.setState({
+          photo: ""
+        });
+      })
+      .catch(e => {
+        loadingModal();
+        showSnackBar("There was problem with removing the photo.", "error");
+      });
+  }
+
+  reset() {
+    document.querySelector("#img-preview").src = "";
+    this.setState({ inputLabelHide: false });
+    hide("#upload-btn");
+    hide("#reset-btn");
+    hide("#crop-message");
+  }
+
+  // Start the cropper on the image preview
   crop(aspect, minW, minH) {
     var image = document.getElementById("img-preview");
     var componentThis = this;
@@ -73,121 +154,6 @@ class PhotoUpload extends Component {
     });
   }
 
-  onFileInputChange = (e, fileName, imgUrl) => {
-    this.setState({ error: "", inputLabelHide: true });
-    document.querySelector("#img-preview").src = imgUrl;
-    this.show("upload-btn", "inline-block");
-    this.show("reset-btn", "inline-block");
-    this.show("crop-message", "inline-block");
-    this.crop(48 / 27, 1200, 675);
-  };
-
-  displayErr(msg) {
-    this.setState({ error: msg });
-    this.reset();
-  }
-
-  show(id, display) {
-    const el = document.querySelector(`#${id}`);
-    el.style.display = display;
-  }
-
-  hide(id) {
-    const el = document.querySelector(`#${id}`);
-    el.style.display = "none";
-  }
-
-  reset() {
-    document.querySelector("#img-preview").src = "";
-    this.setState({ inputLabelHide: false });
-    this.hide("upload-btn");
-    this.hide("crop-message");
-    this.hide("reset-btn");
-  }
-
-  onUploadClick() {
-    document
-      .querySelector("#js--uploader-options")
-      .classList.add("display-none");
-    document
-      .querySelector("#js--uploader-loading")
-      .classList.remove("display-none");
-    var formData = new FormData();
-    var imagefile = document.querySelector("#image-input");
-    formData.append("img", imagefile.files[0]);
-    formData.set(
-      "cropData",
-      `{ "x": "${this.state.cropData.x}", "y": "${this.state.cropData.y}", "width": "${this.state.cropData.width}", "height": "${this.state.cropData.height}" }`
-    );
-
-    axios
-      .put(`/api/pages/${this.props.pageId}/photo`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          authorization: localStorage.getItem("token")
-        }
-      })
-      .then(res => {
-        document.querySelector("#reset-btn").click();
-        this.closeModal("#mdl2");
-        document
-          .querySelector("#js--uploader-options")
-          .classList.remove("display-none");
-        document
-          .querySelector("#js--uploader-loading")
-          .classList.add("display-none");
-        this.setState({
-          photo: res.data.image
-        });
-        showSnackBar("Photo uploaded successfully.", "success");
-      })
-      .catch(e => {
-        document.querySelector("#reset-btn").click();
-        this.closeModal("#mdl2");
-        document
-          .querySelector("#js--uploader-options")
-          .classList.remove("display-none");
-        document
-          .querySelector("#js--uploader-loading")
-          .classList.add("display-none");
-        showSnackBar("There was problem with uploading.", "error");
-      });
-  }
-
-  onRemovePhotoClick() {
-    loadingModal("Removing the photo...");
-    this.closeModal("#mdl3");
-    const config = {
-      headers: {
-        authorization: localStorage.getItem("token")
-      }
-    };
-    axios
-      .delete(`/api/pages/${this.props.pageId}/photo`, config)
-      .then(res => {
-        loadingModal();
-        showSnackBar("Photo successfully removed from your page.", "success");
-
-        this.setState({
-          photo: ""
-        });
-      })
-      .catch(e => {
-        loadingModal();
-        showSnackBar("There was problem with removing the photo.", "error");
-      });
-  }
-
-  openModal(id) {
-    const modal = document.querySelector(id);
-    modal.style.display = "block";
-  }
-
-  closeModal(id) {
-    const modal = document.querySelector(id);
-    modal.style.display = "none";
-  }
-
   renderButtons() {
     if (this.state.photo.length > 0) {
       return (
@@ -195,7 +161,7 @@ class PhotoUpload extends Component {
           <button
             className="btn-normal btn-normal-xs margin-right-1"
             onClick={() => {
-              this.openModal.apply(this, ["#mdl2"]);
+              show("#mdl2");
             }}
           >
             Change Page Photo
@@ -203,7 +169,7 @@ class PhotoUpload extends Component {
           <button
             className="btn-normal btn-normal-xs btn-normal-danger"
             onClick={() => {
-              this.openModal.apply(this, ["#mdl3"]);
+              show("#mdl3");
             }}
           >
             Remove Page Photo
@@ -215,7 +181,7 @@ class PhotoUpload extends Component {
         <button
           className="btn-normal btn-normal-xs"
           onClick={() => {
-            this.openModal.apply(this, ["#mdl2"]);
+            show("#mdl2");
           }}
         >
           Upload Page Photo
@@ -251,7 +217,7 @@ class PhotoUpload extends Component {
               <span
                 className="mdl__close"
                 onClick={() => {
-                  this.closeModal.apply(this, ["#mdl3"]);
+                  hide("#mdl3");
                 }}
               >
                 &times;
@@ -292,7 +258,7 @@ class PhotoUpload extends Component {
               <span
                 className="mdl__close"
                 onClick={() => {
-                  this.closeModal.apply(this, ["#mdl2"]);
+                  hide("#mdl2");
                 }}
               >
                 &times;
@@ -306,10 +272,7 @@ class PhotoUpload extends Component {
                 page
               </p>
               <br />
-              <em
-                id="crop-message"
-                className="display-none-normall margin-bottom-1 "
-              >
+              <em id="crop-message" className="display-none margin-bottom-1">
                 Choose an area to be shown as for the page thumbnail, this won't
                 crop your image, this is just the area that will be shown as the
                 thubmnail.
@@ -332,7 +295,8 @@ class PhotoUpload extends Component {
                   onChange={this.onFileInputChange}
                   onClick={e => {}}
                   onError={msg => {
-                    this.displayErr(msg);
+                    this.setState({ error: msg });
+                    this.reset();
                   }}
                 />
 
@@ -344,7 +308,7 @@ class PhotoUpload extends Component {
                 >
                   <a
                     id="reset-btn"
-                    className="btn-round btn-round-sm"
+                    className="btn-round btn-round-sm display-none"
                     onClick={() => {
                       this.reset();
                     }}
@@ -353,7 +317,7 @@ class PhotoUpload extends Component {
                   </a>
                   <a
                     id="upload-btn"
-                    className="btn-round btn-round-sm btn-round-full"
+                    className="btn-round btn-round-sm btn-round-full display-none"
                     onClick={this.onUploadClick.bind(this)}
                   >
                     Upload

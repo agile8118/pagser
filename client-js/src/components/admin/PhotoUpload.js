@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { ROOT_URL } from "../../lib/keys";
-import util from "../../lib/forms";
+import { show, hide } from "../../lib/util";
 import Alert from "../partials/Alert";
 import InputFile from "../partials/InputFile";
 
@@ -15,6 +14,7 @@ class PhotoUpload extends Component {
     inputLabelName: "Upload Your Picture",
     inputLabelHide: false
   };
+
   // Is used to avoid memory leak
   _isMounted = false;
 
@@ -49,7 +49,67 @@ class PhotoUpload extends Component {
     this._isMounted = false;
   }
 
-  // Crop the photo
+  // When user selects a photo
+  onFileInputChange = (e, fileName, imgUrl) => {
+    this.setState({ error: "", inputLabelHide: true });
+    document.querySelector("#img-preview").src = imgUrl;
+    show("#upload-btn");
+    show("#reset-btn");
+    this.crop(1 / 1, 250, 250);
+  };
+
+  onUploadClick = async () => {
+    hide("#js--uploader-options");
+    show("#js--uploader-loading");
+    // Prepare the form data to be sent to server
+    let formData = new FormData();
+    formData.append("img", document.querySelector("#image-input").files[0]);
+    formData.set(
+      "cropData",
+      `{ "x": "${this.state.cropData.x}", "y": "${this.state.cropData.y}", "width": "${this.state.cropData.width}", "height": "${this.state.cropData.height}" }`
+    );
+
+    try {
+      const { data } = await axios.put(`/api/photo`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          authorization: localStorage.getItem("token")
+        }
+      });
+
+      document.querySelector("#reset-btn").click();
+      hide(".mdl");
+      show("#js--uploader-options");
+      hide("#js--uploader-loading");
+      window.location.hash = "photo";
+      window.location.hash = "";
+
+      this.setState({
+        photo: data.image,
+        alertMessage: "Profile picture uploaded successfully.",
+        alertType: "success"
+      });
+    } catch (error) {
+      document.querySelector("#reset-btn").click();
+      hide(".mdl");
+      show("#js--uploader-options");
+      hide("#js--uploader-loading");
+
+      this.setState({
+        alertMessage: "There was problem with uploading.",
+        alertType: "error"
+      });
+    }
+  };
+
+  reset() {
+    this.setState({ inputLabelHide: false });
+    document.querySelector("#img-preview").src = "";
+    hide("#upload-btn");
+    hide("#reset-btn");
+  }
+
+  // Start the cropper on the image preview
   crop(aspect, minW, minH) {
     var image = document.getElementById("img-preview");
     var componentThis = this;
@@ -92,113 +152,6 @@ class PhotoUpload extends Component {
     });
   }
 
-  // When user selects a photo
-  onFileInputChange = (e, fileName, imgUrl) => {
-    this.setState({ error: "", inputLabelHide: true });
-    document.querySelector("#img-preview").src = imgUrl;
-    this.show("upload-btn", "inline-block");
-    this.show("reset-btn", "inline-block");
-    this.crop(1 / 1, 250, 250);
-  };
-
-  // Show error as for the wrong file selected
-  displayErr(msg) {
-    this.setState({ error: msg });
-    this.reset();
-  }
-
-  // Show an element
-  show(id, display) {
-    const el = document.querySelector(`#${id}`);
-    el.style.display = display;
-  }
-
-  // Hide an element
-  hide(id) {
-    const el = document.querySelector(`#${id}`);
-    el.style.display = "none";
-  }
-
-  reset() {
-    document.querySelector("#img-preview").src = "";
-    this.setState({ inputLabelHide: false });
-    this.hide("upload-btn");
-    this.hide("reset-btn");
-  }
-
-  onUploadClick() {
-    document
-      .querySelector("#js--uploader-options")
-      .classList.add("display-none");
-    document
-      .querySelector("#js--uploader-loading")
-      .classList.remove("display-none");
-    // Prepare the form data to be sent to server
-    let formData = new FormData();
-    const imagefile = document.querySelector("#image-input");
-    formData.append("img", imagefile.files[0]);
-    formData.set(
-      "cropData",
-      `{ "x": "${this.state.cropData.x}", "y": "${this.state.cropData.y}", "width": "${this.state.cropData.width}", "height": "${this.state.cropData.height}" }`
-    );
-
-    axios
-      .put(`/api/photo`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          authorization: localStorage.getItem("token")
-        }
-      })
-      .then(res => {
-        document.querySelector("#reset-btn").click();
-        this.closeModal();
-        document
-          .querySelector("#js--uploader-options")
-          .classList.remove("display-none");
-        document
-          .querySelector("#js--uploader-loading")
-          .classList.add("display-none");
-        this.setState({
-          photo: res.data.image
-        });
-
-        this.setState({
-          alertMessage: "Profile picture uploaded successfully.",
-          alertType: "success"
-        });
-
-        window.location.hash = "photo";
-        window.location.hash = "";
-      })
-      .catch(e => {
-        document.querySelector("#reset-btn").click();
-        this.closeModal();
-        document
-          .querySelector("#js--uploader-options")
-          .classList.remove("display-none");
-        document
-          .querySelector("#js--uploader-loading")
-          .classList.add("display-none");
-
-        this.setState({
-          alertMessage: "There was problem with uploading.",
-          alertType: "error"
-        });
-      });
-  }
-
-  // Open the modal
-  openModal() {
-    const modal = document.querySelector(".mdl");
-    modal.style.display = "block";
-  }
-
-  // Close the modal
-  closeModal() {
-    const modal = document.querySelector(".mdl");
-    modal.style.display = "none";
-  }
-
   render() {
     return (
       <div>
@@ -226,7 +179,7 @@ class PhotoUpload extends Component {
           <a
             href="javascript:void(0)"
             onClick={() => {
-              this.openModal.apply(this);
+              show(".mdl");
             }}
             className="btn-link"
           >
@@ -239,7 +192,7 @@ class PhotoUpload extends Component {
               <span
                 className="mdl__close"
                 onClick={() => {
-                  this.closeModal.apply(this);
+                  hide(".mdl");
                 }}
               >
                 &times;
@@ -268,7 +221,8 @@ class PhotoUpload extends Component {
                   onChange={this.onFileInputChange}
                   onClick={e => {}}
                   onError={msg => {
-                    this.displayErr(msg);
+                    this.setState({ error: msg });
+                    this.reset();
                   }}
                 />
 
@@ -280,7 +234,7 @@ class PhotoUpload extends Component {
                 >
                   <a
                     id="reset-btn"
-                    className="btn-round btn-round-sm"
+                    className="btn-round btn-round-sm display-none"
                     onClick={() => {
                       this.reset();
                     }}
@@ -289,8 +243,8 @@ class PhotoUpload extends Component {
                   </a>
                   <a
                     id="upload-btn"
-                    className="btn-round btn-round-sm btn-round-full"
-                    onClick={this.onUploadClick.bind(this)}
+                    className="btn-round btn-round-sm btn-round-full display-none"
+                    onClick={this.onUploadClick}
                   >
                     Upload
                   </a>

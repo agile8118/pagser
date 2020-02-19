@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import axios from "axios";
 import Loading from "../partials/Loading";
 import InputFile from "../partials/InputFile";
-import { loadingModal } from "../../lib/util";
+import { loadingModal, show, hide } from "../../lib/util";
 
 import * as actions from "../../redux/show-page/actions";
 
@@ -15,57 +15,18 @@ class AttachFiles extends Component {
 
   onFileInputChange = (e, fileName) => {
     this.setState({ inputLabelName: fileName, error: "" });
-    this.show("upload-btn-file", "inline-block");
-    this.show("reset-btn-file", "inline-block");
+    show("#upload-btn-file");
+    show("#reset-btn-file");
   };
 
   onInputFileClick = () => {
     this.setState({ error: "" });
   };
 
-  show(id, display) {
-    const el = document.querySelector(`#${id}`);
-    el.style.display = display;
-  }
-
-  hide(id) {
-    const el = document.querySelector(`#${id}`);
-    el.style.display = "none";
-  }
-
-  reset() {
-    document
-      .querySelector("#js--mdl4-options")
-      .classList.remove("display-none");
-    document.querySelector("#js--mdl4-loading").classList.add("display-none");
-    this.setState({ inputLabelName: "Upload a File", error: "" });
-    this.hide("upload-btn-file");
-    this.hide("reset-btn-file");
-  }
-
-  displayErr(msg) {
-    this.setState({ error: msg, inputLabelName: "Upload a File" });
-    this.hide("upload-btn-file");
-    this.hide("reset-btn-file");
-  }
-
-  openModal(id) {
-    const modal = document.querySelector(id);
-    modal.style.display = "block";
-  }
-
-  closeModal(id) {
-    this.setState({ error: "" });
-    const modal = document.querySelector(id);
-    modal.style.display = "none";
-  }
-
   onUploadClick() {
     this.setState({ error: "" });
-    document.querySelector("#js--mdl4-options").classList.add("display-none");
-    document
-      .querySelector("#js--mdl4-loading")
-      .classList.remove("display-none");
+    hide("#js--mdl4-options");
+    show("#js--mdl4-loading");
 
     const config = {
       headers: {
@@ -82,7 +43,7 @@ class AttachFiles extends Component {
       .post(`/api/pages/${this.props.id}/attach-files`, formData, config)
       .then(response => {
         this.reset();
-        this.closeModal("#mdl4");
+        hide("#mdl4");
         this.props.fetchAttachFiles(
           this.props.id,
           "File uploaded successfully."
@@ -94,6 +55,14 @@ class AttachFiles extends Component {
           error: "Sorry and unexpected error happened, please try again."
         });
       });
+  }
+
+  reset() {
+    show("#js--mdl4-options");
+    hode("#js--mdl4-loading");
+    hide("#upload-btn-file");
+    hide("#reset-btn-file");
+    this.setState({ inputLabelName: "Upload a File", error: "" });
   }
 
   renderFiles() {
@@ -165,7 +134,7 @@ class AttachFiles extends Component {
             <button
               className="btn-normal btn-normal-xs"
               onClick={() => {
-                this.openModal("#mdl4");
+                show("#mdl4");
               }}
             >
               <i className="fa fa-upload" /> Add an attach file
@@ -177,7 +146,7 @@ class AttachFiles extends Component {
                 <span
                   className="mdl__close"
                   onClick={() => {
-                    this.closeModal.apply(this, ["#mdl4"]);
+                    hide("#mdl4");
                   }}
                 >
                   &times;
@@ -202,7 +171,12 @@ class AttachFiles extends Component {
                   onChange={this.onFileInputChange}
                   onClick={this.onInputFileClick}
                   onError={msg => {
-                    this.displayErr(msg);
+                    this.setState({
+                      error: msg,
+                      inputLabelName: "Upload a File"
+                    });
+                    hide("#upload-btn-file");
+                    hide("#reset-btn-file");
                   }}
                 />
 
@@ -212,17 +186,17 @@ class AttachFiles extends Component {
                 >
                   <a
                     id="reset-btn-file"
-                    className="btn-round btn-round-sm"
+                    className="btn-round btn-round-sm display-none"
                     onClick={() => {
                       this.reset();
-                      this.closeModal("#mdl4");
+                      hide("#mdl4");
                     }}
                   >
                     Cancel
                   </a>
                   <a
                     id="upload-btn-file"
-                    className="btn-round btn-round-sm btn-round-full"
+                    className="btn-round btn-round-sm btn-round-full display-none"
                     onClick={() => {
                       this.onUploadClick.apply(this);
                     }}

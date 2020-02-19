@@ -41,3 +41,21 @@ export const loadingModal = message => {
     loadingModal.classList.add("display-none");
   }
 };
+
+export const hide = selector => {
+  // If the element is a modal
+  if (selector.match(/mdl/)) {
+    document.querySelector(selector).style.display = "none";
+  } else {
+    document.querySelector(selector).classList.add("display-none");
+  }
+};
+
+export const show = selector => {
+  // If the element is a modal
+  if (selector.match(/mdl/)) {
+    document.querySelector(selector).style.display = "block";
+  } else {
+    document.querySelector(selector).classList.remove("display-none");
+  }
+};
