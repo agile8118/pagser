@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import { getParameterByName } from "../../lib/util";
 import Alert from "../partials/Alert";
+import { Modal } from "../partials/Modals";
 import Loading from "../partials/Loading";
 
 class Login extends Component {
@@ -10,7 +11,8 @@ class Login extends Component {
     password: "",
     alertMessage: null,
     alertType: "success",
-    loading: false
+    loading: false,
+    forgotPassMdl: false
   };
 
   componentDidMount() {
@@ -41,16 +43,6 @@ class Login extends Component {
     }
   }
 
-  openModal() {
-    const modal = document.querySelector(".mdl");
-    modal.style.display = "block";
-  }
-
-  closeModal() {
-    const modal = document.querySelector(".mdl");
-    modal.style.display = "none";
-  }
-
   // Call server to send an email to reset the password
   onForgotPasswordSubmit() {
     const email = document.querySelector("#forgotpassword-email").children[0]
@@ -60,17 +52,17 @@ class Login extends Component {
         email
       })
       .then(response => {
-        this.closeModal();
         this.setState({
           alertMessage: `Instructions on how to reset your password were sent to ${this.state.email}`,
-          alertType: "success"
+          alertType: "success",
+          forgotPassMdl: false
         });
       })
       .catch(error => {
-        this.closeModal();
         this.setState({
           alertMessage: `No one with email ${this.state.email} founded.`,
-          alertType: "error"
+          alertType: "error",
+          forgotPassMdl: false
         });
       });
   }
@@ -107,7 +99,7 @@ class Login extends Component {
           <a
             href="javascript:void(0)"
             onClick={() => {
-              this.openModal.apply(this);
+              this.setState({ forgotPassMdl: true });
             }}
             className="btn-link"
           >
@@ -130,54 +122,40 @@ class Login extends Component {
     document.querySelector("#js--login-btn").classList.add("display-none");
     document.querySelector("title").innerHTML = "Login | Pagher";
     return (
-      <div>
-        {/* Modal forgot password */}
-        <div className="mdl">
-          <div className="mdl__content">
-            <div className="mdl__header">
-              <span
-                className="mdl__close"
-                onClick={() => {
-                  this.closeModal.apply(this);
+      <React.Fragment>
+        <Modal
+          header="Reset your password"
+          open={this.state.forgotPassMdl}
+          onClose={() => {
+            this.setState({ forgotPassMdl: false });
+          }}
+        >
+          <p>Put your email address here and we will send you instructions.</p>
+          <form
+            onSubmit={event => {
+              event.preventDefault();
+              this.onForgotPasswordSubmit.apply(this);
+            }}
+          >
+            <div className="form__group" id="forgotpassword-email">
+              <input
+                type="email"
+                placeholder="Email"
+                className="form__input"
+                onChange={event => {
+                  this.setState({ email: event.target.value });
                 }}
-              >
-                &times;
-              </span>
-              <h3 className="heading-tertiary">Reset your password</h3>
+                value={this.state.email}
+                required
+              />
             </div>
-
-            <div className="mdl__body">
-              <p>
-                Put your email address here and we will send you instructions.
-              </p>
-              <form
-                onSubmit={event => {
-                  event.preventDefault();
-                  this.onForgotPasswordSubmit.apply(this);
-                }}
-              >
-                <div className="form__group" id="forgotpassword-email">
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    className="form__input"
-                    onChange={event => {
-                      this.setState({ email: event.target.value });
-                    }}
-                    value={this.state.email}
-                    required
-                  />
-                </div>
-                <div className="right-content">
-                  <button type="submit" className="btn-round">
-                    Send
-                  </button>
-                </div>
-              </form>
+            <div className="right-content">
+              <button type="submit" className="btn-round">
+                Send
+              </button>
             </div>
-          </div>
-        </div>
-        {/* End modal forgot password */}
+          </form>
+        </Modal>
 
         <div className="auth">
           <div className="auth__options">
@@ -240,7 +218,7 @@ class Login extends Component {
             </form>
           </div>
         </div>
-      </div>
+      </React.Fragment>
     );
   }
 }

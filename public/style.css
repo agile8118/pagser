@@ -960,7 +960,6 @@ pre {
   padding: 5rem 0 0 0; }
 
 .mdl {
-  display: none;
   position: fixed;
   z-index: 3000;
   padding: 10rem 0;
@@ -1440,8 +1439,7 @@ textarea {
   max-width: 100%; }
 
 .image__upload--options a {
-  margin-right: 0.8rem;
-  display: none; }
+  margin-right: 0.8rem; }
 
 .image__upload--options {
   width: 100%;
@@ -1453,7 +1451,6 @@ textarea {
   font-size: 1.6rem;
   padding-bottom: 0.5rem; }
 
-.image__upload--label,
 .file__upload--label {
   border: 1px solid #dbe2e8;
   border-radius: 5px;
@@ -1471,7 +1468,6 @@ textarea {
 .file__upload--label {
   margin: 0; }
 
-.image__upload--label:hover,
 .file__upload--label:hover {
   background: #fbfbfb; }
 
