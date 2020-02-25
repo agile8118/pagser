@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { loadingModal, showSnackBar, show, hide } from "../../lib/util";
+import { ConfirmModal, Modal } from "../partials/Modals";
 import InputFile from "../partials/InputFile";
 import Loading from "../partials/Loading";
 
@@ -12,7 +13,9 @@ class PhotoUpload extends Component {
     cropData: { x: 0, y: 0, width: 0, height: 0 },
     photo: this.props.photo.secure_url,
     inputLabelName: "Upload a Photo",
-    inputLabelHide: false
+    inputLabelHide: false,
+    rmPhotoConfMdl: false,
+    uploadPhotoMdl: false
   };
 
   componentDidMount() {
@@ -59,17 +62,17 @@ class PhotoUpload extends Component {
       })
       .then(res => {
         document.querySelector("#reset-btn").click();
-        hide("#mdl2");
         show("#js--uploader-options");
         hide("#js--uploader-loading");
         this.setState({
-          photo: res.data.image
+          photo: res.data.image,
+          uploadPhotoMdl: false
         });
         showSnackBar("Photo uploaded successfully.", "success");
       })
       .catch(e => {
         document.querySelector("#reset-btn").click();
-        hide("#mdl2");
+        this.setState({ uploadPhotoMdl: false });
         show("#js--uploader-options");
         hide("#js--uploader-loading");
         showSnackBar(
@@ -79,9 +82,10 @@ class PhotoUpload extends Component {
       });
   }
 
-  onRemovePhotoClick() {
+  onRemovePhotoClick = () => {
     loadingModal("Removing the photo...");
-    hide("#mdl3");
+    this.setState({ rmPhotoConfMdl: false });
+
     const config = {
       headers: {
         authorization: localStorage.getItem("token")
@@ -101,7 +105,7 @@ class PhotoUpload extends Component {
         loadingModal();
         showSnackBar("There was problem with removing the photo.", "error");
       });
-  }
+  };
 
   reset() {
     document.querySelector("#img-preview").src = "";
@@ -161,7 +165,7 @@ class PhotoUpload extends Component {
           <button
             className="btn-normal btn-normal-xs margin-right-1"
             onClick={() => {
-              show("#mdl2");
+              this.setState({ uploadPhotoMdl: true });
             }}
           >
             Change Page Photo
@@ -169,7 +173,7 @@ class PhotoUpload extends Component {
           <button
             className="btn-normal btn-normal-xs btn-normal-danger"
             onClick={() => {
-              show("#mdl3");
+              this.setState({ rmPhotoConfMdl: true });
             }}
           >
             Remove Page Photo
@@ -181,7 +185,7 @@ class PhotoUpload extends Component {
         <button
           className="btn-normal btn-normal-xs"
           onClick={() => {
-            show("#mdl2");
+            this.setState({ uploadPhotoMdl: true });
           }}
         >
           Upload Page Photo
@@ -211,130 +215,89 @@ class PhotoUpload extends Component {
       <div>
         {this.renderPhoto.apply(this)}
 
-        <div className="mdl" id="mdl3">
-          <div className="mdl__content">
-            <div className="mdl__header">
-              <span
-                className="mdl__close"
-                onClick={() => {
-                  hide("#mdl3");
-                }}
-              >
-                &times;
-              </span>
-              <h3 className="heading-tertiary">Remove your page photo</h3>
+        <ConfirmModal
+          header="Remove your page photo"
+          message="Are you really sure that you want to delete your page photo?
+                This cannot be undo."
+          open={this.state.rmPhotoConfMdl}
+          onConfirm={this.onRemovePhotoClick}
+          onCancel={() => {
+            this.setState({ rmPhotoConfMdl: false });
+          }}
+        />
+
+        <Modal
+          header="Upload a photo for your page"
+          open={this.state.uploadPhotoMdl}
+          onClose={() => {
+            this.setState({ uploadPhotoMdl: false });
+          }}
+        >
+          <p>
+            Upload a beautiful photo to be set as a featured image of your page
+          </p>
+          <br />
+          <em id="crop-message" className="display-none margin-bottom-1">
+            Choose an area to be shown as for the page thumbnail, this won't
+            crop your image, this is just the area that will be shown as the
+            thubmnail.
+          </em>
+
+          <div>
+            <div className="left-content">
+              <p className="image__upload--error">{this.state.error}</p>
             </div>
 
-            <div className="mdl__body">
-              <p>
-                Are you really sure that you want to delete your page photo?
-                This cannot be undo.
-              </p>
+            <InputFile
+              addClass="margin-bottom-2"
+              hide={this.state.inputLabelHide}
+              label={this.state.inputLabelName}
+              id="image-input"
+              size={8000000}
+              type="image"
+              minWidth={1200}
+              minHeight={675}
+              onChange={this.onFileInputChange}
+              onClick={e => {}}
+              onError={msg => {
+                this.setState({ error: msg });
+                this.reset();
+              }}
+            />
 
-              <form
-                onSubmit={event => {
-                  event.preventDefault();
-                  this.onRemovePhotoClick.apply(this);
+            <img id="img-preview" src="" />
+
+            <div
+              className="image__upload--options margin-top-2"
+              id="js--uploader-options"
+            >
+              <a
+                id="reset-btn"
+                className="btn-round btn-round-sm display-none"
+                onClick={() => {
+                  this.reset();
                 }}
               >
-                <div className="right-content">
-                  <button
-                    type="submit"
-                    id="deleteButton"
-                    className="btn-round btn-round-danger"
-                  >
-                    Remove
-                  </button>
-                </div>
-              </form>
+                Choose another photo
+              </a>
+              <a
+                id="upload-btn"
+                className="btn-round btn-round-sm btn-round-full display-none"
+                onClick={this.onUploadClick.bind(this)}
+              >
+                Upload
+              </a>
+            </div>
+
+            <div
+              className="image__upload--loading margin-top-2 center-content display-none"
+              id="js--uploader-loading"
+            >
+              <Loading />
             </div>
           </div>
-        </div>
-        {/* END MODAL REMOVE PAGE PHOTO */}
+        </Modal>
 
-        <div className="mdl" id="mdl2">
-          <div className="mdl__content">
-            <div className="mdl__header">
-              <span
-                className="mdl__close"
-                onClick={() => {
-                  hide("#mdl2");
-                }}
-              >
-                &times;
-              </span>
-              <h3 className="heading-tertiary">Upload a photo for your page</h3>
-            </div>
-
-            <div className="mdl__body">
-              <p>
-                Upload a beautiful photo to be set as a featured image of your
-                page
-              </p>
-              <br />
-              <em id="crop-message" className="display-none margin-bottom-1">
-                Choose an area to be shown as for the page thumbnail, this won't
-                crop your image, this is just the area that will be shown as the
-                thubmnail.
-              </em>
-
-              <div>
-                <div className="left-content">
-                  <p className="image__upload--error">{this.state.error}</p>
-                </div>
-
-                <InputFile
-                  addClass="margin-bottom-2"
-                  hide={this.state.inputLabelHide}
-                  label={this.state.inputLabelName}
-                  id="image-input"
-                  size={8000000}
-                  type="image"
-                  minWidth={1200}
-                  minHeight={675}
-                  onChange={this.onFileInputChange}
-                  onClick={e => {}}
-                  onError={msg => {
-                    this.setState({ error: msg });
-                    this.reset();
-                  }}
-                />
-
-                <img id="img-preview" src="" />
-
-                <div
-                  className="image__upload--options margin-top-2"
-                  id="js--uploader-options"
-                >
-                  <a
-                    id="reset-btn"
-                    className="btn-round btn-round-sm display-none"
-                    onClick={() => {
-                      this.reset();
-                    }}
-                  >
-                    Choose another photo
-                  </a>
-                  <a
-                    id="upload-btn"
-                    className="btn-round btn-round-sm btn-round-full display-none"
-                    onClick={this.onUploadClick.bind(this)}
-                  >
-                    Upload
-                  </a>
-                </div>
-
-                <div
-                  className="image__upload--loading margin-top-2 center-content display-none"
-                  id="js--uploader-loading"
-                >
-                  <Loading />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* END MODAL */}
         <div className="form__group">{this.renderButtons.apply(this)}</div>
       </div>
     );

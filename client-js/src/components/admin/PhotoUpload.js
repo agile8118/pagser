@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { show, hide } from "../../lib/util";
+import { Modal } from "../partials/Modals";
+import Loading from "../partials/Loading";
 import Alert from "../partials/Alert";
 import InputFile from "../partials/InputFile";
 
@@ -12,7 +14,8 @@ class PhotoUpload extends Component {
     alertType: "success",
     photo: "/images/users/placeholder.png",
     inputLabelName: "Upload Your Picture",
-    inputLabelHide: false
+    inputLabelHide: false,
+    uploadPhotoMdl: false
   };
 
   // Is used to avoid memory leak
@@ -78,7 +81,6 @@ class PhotoUpload extends Component {
       });
 
       document.querySelector("#reset-btn").click();
-      hide(".mdl");
       show("#js--uploader-options");
       hide("#js--uploader-loading");
       window.location.hash = "photo";
@@ -87,17 +89,18 @@ class PhotoUpload extends Component {
       this.setState({
         photo: data.image,
         alertMessage: "Profile picture uploaded successfully.",
-        alertType: "success"
+        alertType: "success",
+        uploadPhotoMdl: false
       });
     } catch (error) {
       document.querySelector("#reset-btn").click();
-      hide(".mdl");
       show("#js--uploader-options");
       hide("#js--uploader-loading");
 
       this.setState({
         alertMessage: "There was problem with uploading.",
-        alertType: "error"
+        alertType: "error",
+        uploadPhotoMdl: false
       });
     }
   };
@@ -179,105 +182,82 @@ class PhotoUpload extends Component {
           <a
             href="javascript:void(0)"
             onClick={() => {
-              show(".mdl");
+              this.setState({
+                uploadPhotoMdl: true
+              });
             }}
             className="btn-link"
           >
             Change or upload a new photo
           </a>
         </div>
-        <div className="mdl">
-          <div className="mdl__content">
-            <div className="mdl__header">
-              <span
-                className="mdl__close"
-                onClick={() => {
-                  hide(".mdl");
-                }}
-              >
-                &times;
-              </span>
-              <h3 className="heading-tertiary">Upload a profile photo</h3>
+
+        <Modal
+          header="Upload a profile photo"
+          open={this.state.uploadPhotoMdl}
+          onClose={() => {
+            this.setState({ uploadPhotoMdl: false });
+          }}
+        >
+          <p>Upload a beautiful non-pixled photo of yourself</p>
+          <br />
+
+          <div>
+            <div className="left-content">
+              <p className="image__upload--error">{this.state.error}</p>
             </div>
 
-            <div className="mdl__body">
-              <p>Upload a beautiful non-pixled photo of yourself</p>
-              <br />
+            <InputFile
+              addClass="margin-bottom-2"
+              hide={this.state.inputLabelHide}
+              label={this.state.inputLabelName}
+              id="image-input"
+              size={5000000}
+              type="image"
+              minWidth={250}
+              minHeight={250}
+              onChange={this.onFileInputChange}
+              onClick={e => {}}
+              onError={msg => {
+                this.setState({ error: msg });
+                this.reset();
+              }}
+            />
 
-              <div>
-                <div className="left-content">
-                  <p className="image__upload--error">{this.state.error}</p>
-                </div>
+            <img id="img-preview" src="" />
 
-                <InputFile
-                  addClass="margin-bottom-2"
-                  hide={this.state.inputLabelHide}
-                  label={this.state.inputLabelName}
-                  id="image-input"
-                  size={5000000}
-                  type="image"
-                  minWidth={250}
-                  minHeight={250}
-                  onChange={this.onFileInputChange}
-                  onClick={e => {}}
-                  onError={msg => {
-                    this.setState({ error: msg });
-                    this.reset();
-                  }}
-                />
+            <div
+              className="image__upload--options margin-top-2"
+              id="js--uploader-options"
+            >
+              <a
+                id="reset-btn"
+                className="btn-round btn-round-sm display-none"
+                onClick={() => {
+                  this.reset();
+                }}
+              >
+                Choose another photo
+              </a>
+              <a
+                id="upload-btn"
+                className="btn-round btn-round-sm btn-round-full display-none"
+                onClick={this.onUploadClick}
+              >
+                Upload
+              </a>
+            </div>
 
-                <img id="img-preview" src="" />
-
-                <div
-                  className="image__upload--options margin-top-2"
-                  id="js--uploader-options"
-                >
-                  <a
-                    id="reset-btn"
-                    className="btn-round btn-round-sm display-none"
-                    onClick={() => {
-                      this.reset();
-                    }}
-                  >
-                    Choose another photo
-                  </a>
-                  <a
-                    id="upload-btn"
-                    className="btn-round btn-round-sm btn-round-full display-none"
-                    onClick={this.onUploadClick}
-                  >
-                    Upload
-                  </a>
-                </div>
-
-                <div
-                  className="image__upload--loading margin-top-2 display-none"
-                  id="js--uploader-loading"
-                >
-                  <div className="center-content">
-                    <div className="lds-css ng-scope">
-                      <div className="lds-spinner">
-                        <div />
-                        <div />
-                        <div />
-                        <div />
-                        <div />
-                        <div />
-                        <div />
-                        <div />
-                        <div />
-                        <div />
-                        <div />
-                        <div />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            <div
+              className="image__upload--loading margin-top-2 display-none"
+              id="js--uploader-loading"
+            >
+              <div className="center-content">
+                <Loading />
               </div>
             </div>
           </div>
-        </div>
-        {/* END MODAL */}
+        </Modal>
       </div>
     );
   }

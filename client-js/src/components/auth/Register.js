@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import util from "../../lib/forms";
-import { ROOT_URL } from "../../lib/keys";
+import { Modal } from "../partials/Modals";
 import Alert from "../partials/Alert";
 
 class Register extends Component {
@@ -31,18 +31,9 @@ class Register extends Component {
         fourth: "",
         fifth: ""
       },
-      loading: false
+      loading: false,
+      changeEmailMdl: false
     };
-  }
-
-  openModal() {
-    const modal = document.querySelector(".mdl");
-    modal.style.display = "block";
-  }
-
-  closeModal() {
-    const modal = document.querySelector(".mdl");
-    modal.style.display = "none";
   }
 
   onUsernameChange() {
@@ -359,21 +350,21 @@ class Register extends Component {
         email
       })
       .then(response => {
-        this.closeModal();
         this.setState({
           email,
           alertMessage: "New code has been sent to your email.",
-          alertType: "success"
+          alertType: "success",
+          changeEmailMdl: false
         });
         this.resetDigits();
       })
       .catch(error => {
-        this.closeModal();
         if (error.response.data.error === "email is in use") {
           this.setState({
             alertMessage:
               "This email is already in use, please login with this email or choose another one.",
-            alertType: "error"
+            alertType: "error",
+            changeEmailMdl: false
           });
           this.resetDigits();
         } else {
@@ -643,7 +634,7 @@ class Register extends Component {
           <a
             href="javascript:void(0)"
             onClick={() => {
-              this.openModal();
+              this.setState({ changeEmailMdl: true });
             }}
             className="btn-link"
           >
@@ -853,49 +844,38 @@ class Register extends Component {
     if (this.state.status === "verifyemail") {
       return (
         <div>
-          <div className="mdl">
-            <div className="mdl__content">
-              <div className="mdl__header">
-                <span
-                  className="mdl__close"
-                  onClick={() => {
-                    this.closeModal.apply(this);
-                  }}
-                >
-                  &times;
-                </span>
-                <h3 className="heading-tertiary">Change your email</h3>
+          <Modal
+            header="Change your email"
+            open={this.state.changeEmailMdl}
+            onClose={() => {
+              this.setState({ changeEmailMdl: false });
+            }}
+          >
+            <p>
+              Put your email address here and we will send a new code to that.
+            </p>
+            <form
+              onSubmit={event => {
+                event.preventDefault();
+                this.onChangeEmailSubmit.apply(this);
+              }}
+            >
+              <div className="form__group">
+                <input
+                  type="email"
+                  placeholder="Email"
+                  className="form__input"
+                  id="change-email-input"
+                  required
+                />
               </div>
-
-              <div className="mdl__body">
-                <p>
-                  Put your email address here and we will send a new code to
-                  that.
-                </p>
-                <form
-                  onSubmit={event => {
-                    event.preventDefault();
-                    this.onChangeEmailSubmit.apply(this);
-                  }}
-                >
-                  <div className="form__group">
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      className="form__input"
-                      id="change-email-input"
-                      required
-                    />
-                  </div>
-                  <div className="right-content">
-                    <button type="submit" className="btn-round">
-                      Change
-                    </button>
-                  </div>
-                </form>
+              <div className="right-content">
+                <button type="submit" className="btn-round">
+                  Change
+                </button>
               </div>
-            </div>
-          </div>
+            </form>
+          </Modal>
 
           <div className="auth">
             <h3 className="heading-tertiary">Verify your email address</h3>

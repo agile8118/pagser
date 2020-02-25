@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
+import { Modal } from "../partials/Modals";
 import { showSnackBar, loadingModal } from "../../lib/util";
 
 import {
@@ -10,7 +11,8 @@ import {
 
 class Actions extends Component {
   state = {
-    titleTyped: ""
+    titleTyped: "",
+    deletePageMdl: false
   };
 
   componentDidMount() {
@@ -42,16 +44,6 @@ class Actions extends Component {
       });
   }
 
-  openModal() {
-    const modal = document.querySelector(".mdl");
-    modal.style.display = "block";
-  }
-
-  closeModal() {
-    const modal = document.querySelector(".mdl");
-    modal.style.display = "none";
-  }
-
   onDeletePageSubmit() {
     const config = {
       headers: {
@@ -80,79 +72,66 @@ class Actions extends Component {
       if (this.props.viewer.status === "owner") {
         return (
           <div>
-            <div className="mdl">
-              <div className="mdl__content">
-                <div className="mdl__header">
-                  <span
-                    className="mdl__close"
-                    onClick={() => {
-                      this.closeModal.apply(this);
-                    }}
-                  >
-                    &times;
-                  </span>
-                  <h3 className="heading-tertiary">Delete your page</h3>
-                </div>
+            <Modal
+              header="Delete your page"
+              open={this.state.deletePageMdl}
+              onClose={() => {
+                this.setState({ deletePageMdl: false });
+              }}
+            >
+              <p>
+                Are you really sure that you want to delete your page? All of
+                the comments and likes will be deleted.
+              </p>
 
-                <div className="mdl__body">
-                  <p>
-                    Are you really sure that you want to delete your page? All
-                    of the comments and likes will be deleted.
-                  </p>
-
-                  <form
-                    onSubmit={event => {
-                      event.preventDefault();
-                      this.onDeletePageSubmit.apply(this);
+              <form
+                onSubmit={event => {
+                  event.preventDefault();
+                  this.onDeletePageSubmit.apply(this);
+                }}
+              >
+                <div className="form__group">
+                  <input
+                    type="text"
+                    placeholder="Type in your page title to confirm to delete it"
+                    className="form__input"
+                    onChange={event => {
+                      this.setState({ titleTyped: event.target.value }, () => {
+                        if (
+                          this.state.titleTyped
+                            .toLowerCase()
+                            .replace(/\s/g, "") ===
+                          this.props.contents.title
+                            .toLowerCase()
+                            .replace(/\s/g, "")
+                        ) {
+                          document.querySelector(
+                            "#deleteButton"
+                          ).disabled = false;
+                        } else {
+                          document.querySelector(
+                            "#deleteButton"
+                          ).disabled = true;
+                        }
+                      });
                     }}
-                  >
-                    <div className="form__group">
-                      <input
-                        type="text"
-                        placeholder="Type in your page title to confirm to delete it"
-                        className="form__input"
-                        onChange={event => {
-                          this.setState(
-                            { titleTyped: event.target.value },
-                            () => {
-                              if (
-                                this.state.titleTyped
-                                  .toLowerCase()
-                                  .replace(/\s/g, "") ===
-                                this.props.contents.title
-                                  .toLowerCase()
-                                  .replace(/\s/g, "")
-                              ) {
-                                document.querySelector(
-                                  "#deleteButton"
-                                ).disabled = false;
-                              } else {
-                                document.querySelector(
-                                  "#deleteButton"
-                                ).disabled = true;
-                              }
-                            }
-                          );
-                        }}
-                        value={this.state.titleTyped}
-                        required
-                      />
-                    </div>
-                    <strong>{this.props.contents.title.toLowerCase()}</strong>
-                    <div className="right-content">
-                      <button
-                        type="submit"
-                        id="deleteButton"
-                        className="btn-round btn-round-danger"
-                        disabled
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </form>
+                    value={this.state.titleTyped}
+                    required
+                  />
                 </div>
-              </div>
-            </div>
+                <strong>{this.props.contents.title.toLowerCase()}</strong>
+                <div className="right-content">
+                  <button
+                    type="submit"
+                    id="deleteButton"
+                    className="btn-round btn-round-danger"
+                    disabled
+                  >
+                    Delete
+                  </button>
+                </div>
+              </form>
+            </Modal>
 
             <div className="page__header__actions">
               <button
@@ -174,7 +153,9 @@ class Actions extends Component {
               </button>
               <button
                 className="btn-icon margin-left-07"
-                onClick={() => this.openModal.apply(this)}
+                onClick={() => {
+                  this.setState({ deletePageMdl: true });
+                }}
               >
                 <i className="fa fa-trash-o" />
               </button>

@@ -3,71 +3,74 @@ import { connect } from "react-redux";
 import axios from "axios";
 import Loading from "../partials/Loading";
 import InputFile from "../partials/InputFile";
-import { loadingModal, show, hide } from "../../lib/util";
+import { Modal } from "../partials/Modals";
+import { loadingModal } from "../../lib/util";
 
 import * as actions from "../../redux/show-page/actions";
 
 class AttachFiles extends Component {
-  state = {
-    inputLabelName: "Upload a File",
-    error: ""
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      inputLabelName: "Upload a File",
+      attachFileMdl: false,
+      error: ""
+    };
+
+    this.uploadBtn = React.createRef();
+    this.cancelBtn = React.createRef();
+    this.mdlLoading = React.createRef();
+    this.mdlOptions = React.createRef();
+  }
 
   onFileInputChange = (e, fileName) => {
     this.setState({ inputLabelName: fileName, error: "" });
-    show("#upload-btn-file");
-    show("#reset-btn-file");
+    this.cancelBtn.current.classList.remove("display-none");
+    this.uploadBtn.current.classList.remove("display-none");
   };
 
-  onInputFileClick = () => {
+  onUploadClick = async () => {
     this.setState({ error: "" });
-  };
-
-  onUploadClick() {
-    this.setState({ error: "" });
-    hide("#js--mdl4-options");
-    show("#js--mdl4-loading");
-
-    const config = {
-      headers: {
-        authorization: localStorage.getItem("token"),
-        "Content-Type": "multipart/form-data"
-      }
-    };
+    this.mdlOptions.current.classList.add("display-none");
+    this.mdlLoading.current.classList.remove("display-none");
 
     let formData = new FormData();
     const file = document.querySelector("#file-input").files[0];
     formData.append("file", file);
 
-    axios
-      .post(`/api/pages/${this.props.id}/attach-files`, formData, config)
-      .then(response => {
-        this.reset();
-        hide("#mdl4");
-        this.props.fetchAttachFiles(
-          this.props.id,
-          "File uploaded successfully."
-        );
-      })
-      .catch(error => {
-        this.reset();
-        this.setState({
-          error: "Sorry and unexpected error happened, please try again."
-        });
+    try {
+      await axios.post(`/api/pages/${this.props.id}/attach-files`, formData, {
+        headers: {
+          authorization: localStorage.getItem("token"),
+          "Content-Type": "multipart/form-data"
+        }
       });
-  }
+
+      this.reset();
+      this.setState({ attachFileMdl: false });
+      this.props.fetchAttachFiles(this.props.id, "File uploaded successfully.");
+    } catch ({ response }) {
+      this.reset();
+      this.setState({
+        error: response.data.error
+      });
+    }
+  };
 
   reset() {
-    show("#js--mdl4-options");
-    hode("#js--mdl4-loading");
-    hide("#upload-btn-file");
-    hide("#reset-btn-file");
+    this.mdlOptions.current.classList.remove("display-none");
+    this.mdlLoading.current.classList.add("display-none");
+    this.uploadBtn.current.classList.add("display-none");
+    this.cancelBtn.current.classList.add("display-none");
+
     this.setState({ inputLabelName: "Upload a File", error: "" });
   }
 
+  // Render all attach files of the page
   renderFiles() {
-    var componentThis = this;
-    if (this.props.viewer.status === "owner") {
+    if (this.props.viewer.status === "owner")
+      // If user is the owner of the page
       return this.props.attachFiles.map(file => {
         return (
           <a
@@ -79,30 +82,23 @@ class AttachFiles extends Component {
             {" " + file.name}
             <button
               className="delete-x-button"
-              onClick={e => {
+              onClick={async e => {
                 e.preventDefault();
                 loadingModal("Deleting the attach file...");
 
-                const config = {
-                  headers: {
-                    authorization: localStorage.getItem("token")
+                await axios.delete(
+                  `/api/pages/${this.props.id}/attach-files/${file._id}`,
+                  {
+                    headers: {
+                      authorization: localStorage.getItem("token")
+                    }
                   }
-                };
+                );
 
-                axios
-                  .delete(
-                    `/api/pages/${this.props.id}/attach-files/${file._id}`,
-                    config
-                  )
-                  .then(response => {
-                    componentThis.props.fetchAttachFiles(
-                      componentThis.props.id,
-                      "File deleted successfully."
-                    );
-                  })
-                  .catch(error => {
-                    loadingModal();
-                  });
+                this.props.fetchAttachFiles(
+                  this.props.id,
+                  "File deleted successfully."
+                );
               }}
             >
               <i className="fa fa-times" aria-hidden="true" />
@@ -110,132 +106,116 @@ class AttachFiles extends Component {
           </a>
         );
       });
-    } else {
-      return this.props.attachFiles.map(file => {
-        return (
-          <a
-            className="file-link"
-            key={file.name}
-            href={`/api/pages/${this.props.id}/attach-files/${file.name}`}
-          >
-            <i className="fa fa-download" />
-            {" " + file.name}
-          </a>
-        );
-      });
-    }
+    // If user is not the owner of the page
+    return this.props.attachFiles.map(file => {
+      return (
+        <a
+          className="file-link"
+          key={file.name}
+          href={`/api/pages/${this.props.id}/attach-files/${file.name}`}
+        >
+          <i className="fa fa-download" />
+          {" " + file.name}
+        </a>
+      );
+    });
   }
 
+  // Render the add an attach file buttton
   renderButton() {
-    if (this.props.viewer.status === "owner") {
+    if (this.props.viewer.status === "owner")
+      // If user is the owner of the page
       return (
         <div>
           <div>
             <button
               className="btn-normal btn-normal-xs"
               onClick={() => {
-                show("#mdl4");
+                this.setState({ attachFileMdl: true });
               }}
             >
               <i className="fa fa-upload" /> Add an attach file
             </button>
           </div>
-          <div className="mdl" id="mdl4">
-            <div className="mdl__content">
-              <div className="mdl__header">
-                <span
-                  className="mdl__close"
-                  onClick={() => {
-                    hide("#mdl4");
-                  }}
-                >
-                  &times;
-                </span>
-                <h3 className="heading-tertiary">Add an attach file</h3>
-              </div>
 
-              <div className="mdl__body">
-                <p>
-                  You can upload maximum of 5 files 10MB each for every page.
-                </p>
-                <br />
-                <div className="left-content">
-                  <p className="image__upload--error">{this.state.error}</p>
-                </div>
-
-                <InputFile
-                  addClass="margin-bottom-2"
-                  label={this.state.inputLabelName}
-                  id="file-input"
-                  size={10000000}
-                  onChange={this.onFileInputChange}
-                  onClick={this.onInputFileClick}
-                  onError={msg => {
-                    this.setState({
-                      error: msg,
-                      inputLabelName: "Upload a File"
-                    });
-                    hide("#upload-btn-file");
-                    hide("#reset-btn-file");
-                  }}
-                />
-
-                <div
-                  className="image__upload--options right-content"
-                  id="js--mdl4-options"
-                >
-                  <a
-                    id="reset-btn-file"
-                    className="btn-round btn-round-sm display-none"
-                    onClick={() => {
-                      this.reset();
-                      hide("#mdl4");
-                    }}
-                  >
-                    Cancel
-                  </a>
-                  <a
-                    id="upload-btn-file"
-                    className="btn-round btn-round-sm btn-round-full display-none"
-                    onClick={() => {
-                      this.onUploadClick.apply(this);
-                    }}
-                  >
-                    Upload
-                  </a>
-                </div>
-
-                <div
-                  className="image__upload--loading margin-top-1 center-content display-none"
-                  id="js--mdl4-loading"
-                >
-                  <Loading />
-                </div>
-                {/* END MODAL LOADING */}
-              </div>
+          <Modal
+            header="Add an attach file"
+            open={this.state.attachFileMdl}
+            onClose={() => {
+              this.setState({ attachFileMdl: false });
+            }}
+          >
+            <p>You can upload maximum of 5 files 10MB each for every page.</p>
+            <br />
+            <div className="left-content">
+              <p className="image__upload--error">{this.state.error}</p>
             </div>
-          </div>
-          {/* END MODAL ADD ATTACH FILE */}
+
+            <InputFile
+              addClass="margin-bottom-2"
+              label={this.state.inputLabelName}
+              id="file-input"
+              size={10000000}
+              onChange={this.onFileInputChange}
+              onClick={() => {
+                this.setState({ error: "" });
+              }}
+              onError={msg => {
+                this.setState({
+                  error: msg,
+                  inputLabelName: "Upload a File"
+                });
+                this.cancelBtn.current.classList.add("display-none");
+                this.uploadBtn.current.classList.add("display-none");
+              }}
+            />
+
+            <div
+              ref={this.mdlOptions}
+              className="image__upload--options right-content"
+            >
+              <a
+                ref={this.cancelBtn}
+                className="btn-round btn-round-sm display-none"
+                onClick={() => {
+                  this.reset();
+                  this.setState({ attachFileMdl: false });
+                }}
+              >
+                Cancel
+              </a>
+              <a
+                ref={this.uploadBtn}
+                className="btn-round btn-round-sm btn-round-full display-none"
+                onClick={this.onUploadClick}
+              >
+                Upload
+              </a>
+            </div>
+
+            <div
+              ref={this.mdlLoading}
+              className="image__upload--loading margin-top-1 center-content display-none"
+            >
+              <Loading />
+            </div>
+          </Modal>
         </div>
       );
-    } else {
-      return <div />;
-    }
+    // If viewer is not the owner of the page just return a simple div
+    return <div />;
   }
 
   render() {
-    if (!this.props.isPending) {
+    if (!this.props.isPending)
       return (
         <div className="page__attach-files">
-          <div className="file-links" id="js--file-links">
-            {this.renderFiles.apply(this)}
-          </div>
+          <div className="file-links">{this.renderFiles.apply(this)}</div>
           {this.renderButton.apply(this)}
         </div>
       );
-    } else {
-      return <div />;
-    }
+    // If it is still loading...
+    return <div />;
   }
 }
 

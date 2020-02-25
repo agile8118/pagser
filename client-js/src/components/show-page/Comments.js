@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { connect } from "react-redux";
+import { ConfirmModal, Modal } from "../partials/Modals";
 import Loading from "../partials/Loading";
-import { ROOT_URL } from "../../lib/keys";
 import { showSnackBar, loadingModal } from "../../lib/util";
 import sendPageId from "./sendPageId";
 
@@ -18,7 +17,9 @@ class Comments extends Component {
     commentPages: null,
     sendReplyToName: null,
     sendReplyToId: null,
-    btnDisabled: true
+    btnDisabled: true,
+    rmCommentConfMdl: false,
+    updateCommentMdl: false
   };
 
   componentDidMount() {
@@ -63,16 +64,6 @@ class Comments extends Component {
         this.fetchComments.apply(this);
       });
     }
-  }
-
-  openModal(mdl) {
-    const modal = document.querySelector(mdl);
-    modal.style.display = "block";
-  }
-
-  closeModal(mdl) {
-    const modal = document.querySelector(mdl);
-    modal.style.display = "none";
   }
 
   onFormSubmit() {
@@ -141,7 +132,7 @@ class Comments extends Component {
                   modalUpdateCommentId: comment.id
                 },
                 () => {
-                  this.openModal.apply(this, ["#commentUpdate"]);
+                  this.setState({ updateCommentMdl: true });
                 }
               );
             }}
@@ -152,8 +143,9 @@ class Comments extends Component {
           <button
             className="btn-icon margin-left-07"
             onClick={() => {
-              this.setState({ modalCommentId: comment.id }, () => {
-                this.openModal.apply(this, ["#commentDelete"]);
+              this.setState({
+                modalCommentId: comment.id,
+                rmCommentConfMdl: true
               });
             }}
           >
@@ -342,215 +334,174 @@ class Comments extends Component {
 
   renderModals() {
     return (
-      <div>
-        <div className="mdl" id="commentDelete">
-          <div className="mdl__content">
-            <div className="mdl__header">
-              <span
-                className="mdl__close"
-                onClick={() => {
-                  this.setState({ modalCommentId: null }, () => {
-                    this.closeModal.apply(this, ["#commentDelete"]);
+      <React.Fragment>
+        <ConfirmModal
+          header="Remove your comment"
+          message="Are you sure that you want to remove your comment? You cannot
+                undo this."
+          open={this.state.rmCommentConfMdl}
+          onConfirm={() => {
+            this.setState({ rmCommentConfMdl: false });
+            loadingModal("Deleting your comment...");
+
+            const config = {
+              headers: {
+                authorization: localStorage.getItem("token")
+              }
+            };
+            axios
+              .delete(
+                `/api/pages/${this.props.id}/comments/${this.state.modalCommentId}`,
+                config
+              )
+              .then(response => {
+                loadingModal();
+                if (response.data.reply) {
+                  var array = [...this.state.comments]; // make a separate copy of the array
+                  var newComments = array.map(comment => {
+                    if (comment.id === response.data.commentId) {
+                      const newReplys = comment.replyes.filter(c => {
+                        return c.id !== response.data.deletedCommentId;
+                      });
+                      comment.replyes = newReplys;
+                      return comment;
+                    } else {
+                      return comment;
+                    }
                   });
-                }}
-              >
-                &times;
-              </span>
-              <h3 className="heading-tertiary">Delete your comment</h3>
-            </div>
+                  this.setState({ comments: newComments }, () => {
+                    showSnackBar(
+                      "Your comment deleted successfully.",
+                      "success"
+                    );
+                  });
+                } else {
+                  var array = [...this.state.comments]; // make a separate copy of the array
+                  var newComments = array.filter(comment => {
+                    return comment.id !== response.data.commentId;
+                  });
+                  this.setState({ comments: newComments }, () => {
+                    showSnackBar(
+                      "Your comment deleted successfully.",
+                      "success"
+                    );
+                  });
+                }
+              })
+              .catch(response => {
+                loadingModal();
+                showSnackBar("An unknown error occurred.");
+              });
+          }}
+          onCancel={() => {
+            this.setState({ rmCommentConfMdl: false, modalCommentId: null });
+          }}
+        />
 
-            <div className="mdl__body">
-              <p className="margin-bottom-1">
-                Are you sure that you want to delete your comment? You cannot
-                undo this.
-              </p>
+        <Modal
+          header="Update your comment"
+          open={this.state.updateCommentMdl}
+          onClose={() =>
+            this.setState({
+              updateCommentMdl: false,
+              modalCommentText: "",
+              modalUpdateCommentId: null
+            })
+          }
+        >
+          <form
+            onSubmit={event => {
+              event.preventDefault();
+              loadingModal("Updating your comment...");
 
-              <form
-                onSubmit={event => {
-                  event.preventDefault();
-                  this.closeModal.apply(this, ["#commentDelete"]);
-                  loadingModal("Deleting your comment...");
+              this.setState({
+                updateCommentMdl: false
+              });
 
-                  const config = {
-                    headers: {
-                      authorization: localStorage.getItem("token")
-                    }
-                  };
-                  axios
-                    .delete(
-                      `/api/pages/${this.props.id}/comments/${
-                        this.state.modalCommentId
-                      }`,
-                      config
-                    )
-                    .then(response => {
-                      loadingModal();
-                      if (response.data.reply) {
-                        var array = [...this.state.comments]; // make a separate copy of the array
-                        var newComments = array.map(comment => {
-                          if (comment.id === response.data.commentId) {
-                            const newReplys = comment.replyes.filter(c => {
-                              return c.id !== response.data.deletedCommentId;
-                            });
-                            comment.replyes = newReplys;
-                            return comment;
-                          } else {
-                            return comment;
-                          }
-                        });
-                        this.setState({ comments: newComments }, () => {
-                          showSnackBar(
-                            "Your comment deleted successfully.",
-                            "success"
-                          );
-                        });
+              const config = {
+                headers: {
+                  authorization: localStorage.getItem("token")
+                }
+              };
+
+              axios
+                .put(
+                  `/api/pages/${this.props.id}/comments/${this.state.modalUpdateCommentId}`,
+                  { text: this.state.modalCommentText },
+                  config
+                )
+                .then(response => {
+                  loadingModal();
+                  if (response.data.reply) {
+                    var array = [...this.state.comments]; // make a separate copy of the array
+                    var newComments = array.map(comment => {
+                      if (comment.id !== response.data.comment.inReplyTo) {
+                        return comment;
                       } else {
-                        var array = [...this.state.comments]; // make a separate copy of the array
-                        var newComments = array.filter(comment => {
-                          return comment.id !== response.data.commentId;
-                        });
-                        this.setState({ comments: newComments }, () => {
-                          showSnackBar(
-                            "Your comment deleted successfully.",
-                            "success"
-                          );
-                        });
-                      }
-                    })
-                    .catch(response => {
-                      loadingModal();
-                      showSnackBar("An unknown error occurred.");
-                    });
-                }}
-              >
-                <div className="right-content">
-                  <button
-                    type="submit"
-                    id="deleteButton"
-                    className="btn-round btn-round-danger"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-
-        <div className="mdl" id="commentUpdate">
-          <div className="mdl__content">
-            <div className="mdl__header">
-              <span
-                className="mdl__close"
-                onClick={() => {
-                  this.setState(
-                    { modalCommentText: "", modalUpdateCommentId: null },
-                    () => {
-                      this.closeModal.apply(this, ["#commentUpdate"]);
-                    }
-                  );
-                }}
-              >
-                &times;
-              </span>
-              <h3 className="heading-tertiary">Update your comment</h3>
-            </div>
-
-            <div className="mdl__body">
-              <form
-                onSubmit={event => {
-                  event.preventDefault();
-                  loadingModal("Updating your comment...");
-                  this.closeModal.apply(this, ["#commentUpdate"]);
-
-                  const config = {
-                    headers: {
-                      authorization: localStorage.getItem("token")
-                    }
-                  };
-
-                  axios
-                    .put(
-                      `/api/pages/${this.props.id}/comments/${
-                        this.state.modalUpdateCommentId
-                      }`,
-                      { text: this.state.modalCommentText },
-                      config
-                    )
-                    .then(response => {
-                      loadingModal();
-                      if (response.data.reply) {
-                        var array = [...this.state.comments]; // make a separate copy of the array
-                        var newComments = array.map(comment => {
-                          if (comment.id !== response.data.comment.inReplyTo) {
-                            return comment;
+                        const newReplyes = comment.replyes.map(c => {
+                          if (c.id === response.data.comment._id) {
+                            c.text = response.data.comment.text;
+                            return c;
                           } else {
-                            const newReplyes = comment.replyes.map(c => {
-                              if (c.id === response.data.comment._id) {
-                                c.text = response.data.comment.text;
-                                return c;
-                              } else {
-                                return c;
-                              }
-                            });
-
-                            comment.replyes = newReplyes;
-                            return comment;
+                            return c;
                           }
                         });
-                        this.setState({ comments: newComments }, () => {
-                          showSnackBar(
-                            "Your comment updated successfully.",
-                            "success"
-                          );
-                        });
+
+                        comment.replyes = newReplyes;
+                        return comment;
+                      }
+                    });
+                    this.setState({ comments: newComments }, () => {
+                      showSnackBar(
+                        "Your comment updated successfully.",
+                        "success"
+                      );
+                    });
+                  } else {
+                    var array = [...this.state.comments]; // make a separate copy of the array
+                    var newComments = array.filter(comment => {
+                      if (comment.id !== this.state.modalUpdateCommentId) {
+                        return comment;
                       } else {
-                        var array = [...this.state.comments]; // make a separate copy of the array
-                        var newComments = array.filter(comment => {
-                          if (comment.id !== this.state.modalUpdateCommentId) {
-                            return comment;
-                          } else {
-                            comment.text = response.data.text;
-                            return comment;
-                          }
-                        });
-                        this.setState({ comments: newComments }, () => {
-                          showSnackBar(
-                            "Your comment updated successfully.",
-                            "success"
-                          );
-                        });
+                        comment.text = response.data.text;
+                        return comment;
                       }
-                    })
-                    .catch(response => {
-                      loadingModal();
-                      showSnackBar("An unknown error occurred.");
                     });
+                    this.setState({ comments: newComments }, () => {
+                      showSnackBar(
+                        "Your comment updated successfully.",
+                        "success"
+                      );
+                    });
+                  }
+                })
+                .catch(response => {
+                  loadingModal();
+                  showSnackBar("An unknown error occurred.");
+                });
+            }}
+          >
+            <div>
+              <label className="form__label">Edit your comment</label>
+              <textarea
+                required
+                value={this.state.modalCommentText}
+                className="form__textarea"
+                rows="5"
+                onChange={e => {
+                  this.setState({ modalCommentText: e.target.value });
                 }}
-              >
-                <div>
-                  <label className="form__label">Edit your comment</label>
-                  <textarea
-                    required
-                    value={this.state.modalCommentText}
-                    className="form__textarea"
-                    rows="5"
-                    onChange={e => {
-                      this.setState({ modalCommentText: e.target.value });
-                    }}
-                  />
-                  <br />
-                </div>
-                <div className="right-content">
-                  <button type="submit" className="btn-round">
-                    Update
-                  </button>
-                </div>
-              </form>
+              />
+              <br />
             </div>
-          </div>
-        </div>
-      </div>
+            <div className="right-content">
+              <button type="submit" className="btn-round">
+                Update
+              </button>
+            </div>
+          </form>
+        </Modal>
+      </React.Fragment>
     );
   }
 

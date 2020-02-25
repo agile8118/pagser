@@ -960,7 +960,6 @@ pre {
   padding: 5rem 0 0 0; }
 
 .mdl {
-  display: none;
   position: fixed;
   z-index: 3000;
   padding: 10rem 0;
