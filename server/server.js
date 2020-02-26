@@ -53,8 +53,8 @@ const port = process.env.PORT || 3080;
 const { Page } = require("./models/page");
 const { Trash } = require("./models/trash");
 
-app.get("/public-pages", function(req, res) {
-  res.render("public-pages");
+app.get("/home", function(req, res) {
+  res.render("home");
 });
 
 app.get("/users/:username", function(req, res) {

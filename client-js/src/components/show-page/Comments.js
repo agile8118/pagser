@@ -214,8 +214,8 @@ class Comments extends Component {
       });
     } else if (this.state.comments && this.state.comments.length === 0) {
       return (
-        <div className="no-comment-message">
-          <p>No comments yet. Be the first one to comment on this page.</p>
+        <div className="no-comment-message margin-top-2">
+          <p>No comment yet. Be the first one to comment on this page.</p>
         </div>
       );
     }
@@ -265,18 +265,16 @@ class Comments extends Component {
               this.onFormSubmit.apply(this);
             }}
           >
-            <div>
-              <label className="form__label display-inline-block">
-                Add a new comment
-              </label>
-              {this.renderWhomSendReplyTo()}
-            </div>
+            <label className="form__label display-inline-block">
+              Add a new comment
+            </label>
+            {this.renderWhomSendReplyTo()}
 
             <textarea
               value={this.state.commentText}
               className="form__textarea"
               rows="5"
-              placeholder="Type your opinion..."
+              placeholder="Type your comment about the page..."
               onChange={e => {
                 this.setState({ commentText: e.target.value }, () => {
                   if (this.state.commentText.length > 0) {
@@ -481,19 +479,17 @@ class Comments extends Component {
                 });
             }}
           >
-            <div>
-              <label className="form__label">Edit your comment</label>
-              <textarea
-                required
-                value={this.state.modalCommentText}
-                className="form__textarea"
-                rows="5"
-                onChange={e => {
-                  this.setState({ modalCommentText: e.target.value });
-                }}
-              />
-              <br />
-            </div>
+            <label className="form__label">Edit your comment</label>
+            <textarea
+              required
+              value={this.state.modalCommentText}
+              className="form__textarea"
+              rows="5"
+              onChange={e => {
+                this.setState({ modalCommentText: e.target.value });
+              }}
+            />
+            <br />
             <div className="right-content">
               <button type="submit" className="btn-round">
                 Update
@@ -582,6 +578,9 @@ class Comments extends Component {
         }
       });
 
+      // Don't display the pagination if we have only 1 page
+      if (numbers.length === 1) numbers = <div></div>;
+
       return (
         <div className="pagination">
           {previousButton}
@@ -597,19 +596,19 @@ class Comments extends Component {
   render() {
     if (this.state.comments !== null) {
       return (
-        <div>
+        <React.Fragment>
           <div className="page__comments" id="comments2">
             <div className="row">
               <div className="comments-wrapper">
                 <h2 className="heading-tertiary center-content">Comments</h2>
+                {this.renderAddComment.apply(this)}
                 {this.renderComments.apply(this)}
                 {this.renderPagination.apply(this)}
-                {this.renderAddComment.apply(this)}
               </div>
             </div>
           </div>
           {this.renderModals.apply(this)}
-        </div>
+        </React.Fragment>
       );
     } else {
       return (
@@ -617,10 +616,8 @@ class Comments extends Component {
           <div className="row">
             <div className="comments-wrapper">
               <h2 className="heading-tertiary center-content">Comments</h2>
-              <div>
-                <div className="center-content">
-                  <Loading />
-                </div>
+              <div className="center-content">
+                <Loading />
               </div>
             </div>
           </div>

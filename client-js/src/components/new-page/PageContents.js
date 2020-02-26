@@ -420,7 +420,8 @@ class PageContents extends Component {
                   plugins:
                     "preview link lists advlist codesample image imagetools",
                   toolbar:
-                    "bold italic underline | link codesample image | alignleft aligncenter alignright | bullist numlist | outdent indent",
+                    "formatselect | bold italic underline | link codesample image | alignleft aligncenter alignright | bullist numlist | outdent indent",
+                  block_formats: "Paragraph=p; Header=h2;",
                   menubar: false,
                   statusbar: false,
                   image_dimensions: false,

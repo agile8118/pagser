@@ -1,6 +1,6 @@
 .page {
   color: $color-text;
-  padding: 2rem 10rem 0 0rem;
+  padding: 2rem 16rem 0 0rem;
   font-size: $default-font-size;
 
   @media only screen and (max-width: 1300px) {
@@ -15,18 +15,28 @@
     padding: 2rem 3rem;
   }
 
+  hr {
+    border: 1px solid #dfe5e7;
+    margin: 3rem 0;
+  }
+
+  &__photo {
+    margin: 2rem 0 1rem 0;
+  }
+
   &__header {
     &__actions {
-      display: block;
-      width: 100%;
-      font-size: 1.7rem;
       text-align: right;
-      margin-bottom: 1rem;
+      margin: 1rem 0;
+
+      button {
+        font-size: 2.2rem;
+      }
     }
 
     &__title {
       letter-spacing: 0.1rem;
-      font-weight: 300;
+      font-weight: 400;
       word-spacing: 0.2rem;
       font-size: 3.6rem;
     }
@@ -34,51 +44,70 @@
     &__time {
       display: block;
       font-style: italic;
-      font-size: 1.5rem;
-      margin-left: 5px;
+      font-size: 1.6rem;
+      margin-left: 0.3rem;
+      margin-top: 0.5rem;
     }
   }
 
   &__information {
-    font-style: italic;
     font-size: 2rem;
+    font-weight: 300;
 
-    & h3 {
-      font-weight: 300;
-      font-size: 2.3rem;
+    & strong {
+      font-weight: 400;
+      display: block;
+      margin-bottom: 0.3rem;
     }
 
-    & div {
+    & div:not(:last-child) {
       margin-bottom: 2rem;
     }
   }
 
   &__body {
-    padding: 1rem 0;
     overflow-x: hidden;
 
+    & p,
+    strong,
+    ul,
+    ol {
+      line-height: 1.45;
+      font-size: 2rem;
+    }
+
+    h2 {
+      margin-bottom: 1.5rem;
+      font-size: 3rem;
+      font-weight: 400;
+    }
+
+    h2 * {
+      font-size: 3rem;
+      font-weight: 400;
+    }
+
     & p {
-      padding-bottom: 1.8rem;
-      line-height: 3.4rem;
-      font-size: 1.7rem;
-      word-spacing: 0.2rem;
+      margin-bottom: 2.8rem;
     }
 
     & ul {
       margin-left: 2rem;
+      margin-bottom: 2.8rem;
     }
 
     & ol {
       margin-left: 2rem;
+      margin-bottom: 2.8rem;
     }
   }
 
   &__tags {
     display: block;
-    margin: 1rem 0 0rem 0;
+    margin-top: 1.2rem;
 
     span {
-      font-size: 1.4rem;
+      font-size: 1.6rem;
       margin: 1rem 0.8rem 0 0;
       display: inline-block;
       border-radius: 4px;
@@ -112,7 +141,7 @@
 
     &__details {
       display: inline-block;
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       position: relative;
     }
   }
@@ -120,7 +149,7 @@
   &__rating {
     margin-top: 6rem;
     margin-bottom: 0;
-    font-size: 1.7rem;
+    font-size: 1.6rem;
 
     button {
       font-size: 2rem;
@@ -146,12 +175,11 @@
     border-top: 1px solid;
 
     h2 {
-      margin-bottom: 5rem;
+      margin-bottom: 3.5rem;
     }
 
     &__add {
-      padding-top: 3rem;
-      display: block;
+      padding: 2rem 0;
     }
   }
 }
@@ -206,9 +234,6 @@
       width: 5rem;
       align-self: flex-start;
     }
-
-    &__actions {
-    }
   }
 
   &__body {
@@ -231,9 +256,7 @@
 .no-comment-message {
   color: $color-text;
   font-size: 1.6rem;
-  text-align: center;
   margin-bottom: 1.6rem;
-  margin-top: -1.6rem;
 }
 
 .disabled-message {
@@ -249,7 +272,7 @@
 }
 
 .page__attach-files {
-  margin-top: -2rem;
+  margin-top: 5.2rem;
 }
 
 .file-links {

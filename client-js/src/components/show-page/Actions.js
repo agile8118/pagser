@@ -71,7 +71,7 @@ class Actions extends Component {
 
       if (this.props.viewer.status === "owner") {
         return (
-          <div>
+          <React.Fragment>
             <Modal
               header="Delete your page"
               open={this.state.deletePageMdl}
@@ -160,7 +160,7 @@ class Actions extends Component {
                 <i className="fa fa-trash-o" />
               </button>
             </div>
-          </div>
+          </React.Fragment>
         );
       }
       if (

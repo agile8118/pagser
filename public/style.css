@@ -2124,7 +2124,7 @@ input:checked + .slider:before {
 
 .page {
   color: #555;
-  padding: 2rem 10rem 0 0rem;
+  padding: 2rem 16rem 0 0rem;
   font-size: 1.6rem; }
   @media only screen and (max-width: 1300px) {
     .page {
@@ -2135,47 +2135,64 @@ input:checked + .slider:before {
   @media only screen and (max-width: 720px) {
     .page {
       padding: 2rem 3rem; } }
+  .page hr {
+    border: 1px solid #dfe5e7;
+    margin: 3rem 0; }
+  .page__photo {
+    margin: 2rem 0 1rem 0; }
   .page__header__actions {
-    display: block;
-    width: 100%;
-    font-size: 1.7rem;
     text-align: right;
-    margin-bottom: 1rem; }
+    margin: 1rem 0; }
+    .page__header__actions button {
+      font-size: 2.2rem; }
   .page__header__title {
     letter-spacing: 0.1rem;
-    font-weight: 300;
+    font-weight: 400;
     word-spacing: 0.2rem;
     font-size: 3.6rem; }
   .page__header__time {
     display: block;
     font-style: italic;
-    font-size: 1.5rem;
-    margin-left: 5px; }
+    font-size: 1.6rem;
+    margin-left: 0.3rem;
+    margin-top: 0.5rem; }
   .page__information {
-    font-style: italic;
-    font-size: 2rem; }
-    .page__information h3 {
-      font-weight: 300;
-      font-size: 2.3rem; }
-    .page__information div {
+    font-size: 2rem;
+    font-weight: 300; }
+    .page__information strong {
+      font-weight: 400;
+      display: block;
+      margin-bottom: 0.3rem; }
+    .page__information div:not(:last-child) {
       margin-bottom: 2rem; }
   .page__body {
-    padding: 1rem 0;
     overflow-x: hidden; }
-    .page__body p {
-      padding-bottom: 1.8rem;
-      line-height: 3.4rem;
-      font-size: 1.7rem;
-      word-spacing: 0.2rem; }
-    .page__body ul {
-      margin-left: 2rem; }
+    .page__body p,
+    .page__body strong,
+    .page__body ul,
     .page__body ol {
-      margin-left: 2rem; }
+      line-height: 1.45;
+      font-size: 2rem; }
+    .page__body h2 {
+      margin-bottom: 1.5rem;
+      font-size: 3rem;
+      font-weight: 400; }
+    .page__body h2 * {
+      font-size: 3rem;
+      font-weight: 400; }
+    .page__body p {
+      margin-bottom: 2.8rem; }
+    .page__body ul {
+      margin-left: 2rem;
+      margin-bottom: 2.8rem; }
+    .page__body ol {
+      margin-left: 2rem;
+      margin-bottom: 2.8rem; }
   .page__tags {
     display: block;
-    margin: 1rem 0 0rem 0; }
+    margin-top: 1.2rem; }
     .page__tags span {
-      font-size: 1.4rem;
+      font-size: 1.6rem;
       margin: 1rem 0.8rem 0 0;
       display: inline-block;
       border-radius: 4px;
@@ -2201,12 +2218,12 @@ input:checked + .slider:before {
       margin-right: 1.4rem; }
     .page__author__details {
       display: inline-block;
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       position: relative; }
   .page__rating {
     margin-top: 6rem;
     margin-bottom: 0;
-    font-size: 1.7rem; }
+    font-size: 1.6rem; }
     .page__rating button {
       font-size: 2rem;
       margin: 0 0.5rem; }
@@ -2223,10 +2240,9 @@ input:checked + .slider:before {
     padding-top: 3rem;
     border-top: 1px solid; }
     .page__comments h2 {
-      margin-bottom: 5rem; }
+      margin-bottom: 3.5rem; }
     .page__comments__add {
-      padding-top: 3rem;
-      display: block; }
+      padding: 2rem 0; }
 
 .comments-wrapper {
   padding: 0 16rem 0 0; }
@@ -2283,9 +2299,7 @@ input:checked + .slider:before {
 .no-comment-message {
   color: #555;
   font-size: 1.6rem;
-  text-align: center;
-  margin-bottom: 1.6rem;
-  margin-top: -1.6rem; }
+  margin-bottom: 1.6rem; }
 
 .disabled-message {
   font-style: italic;
@@ -2298,7 +2312,7 @@ input:checked + .slider:before {
   margin-top: 6rem; }
 
 .page__attach-files {
-  margin-top: -2rem; }
+  margin-top: 5.2rem; }
 
 .file-links {
   margin-bottom: 2rem; }

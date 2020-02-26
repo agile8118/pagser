@@ -17,7 +17,6 @@ class Photo extends Component {
           return (
             <div className="page__photo" id="js--page-photo">
               <img
-                className="margin-top-1"
                 src={this.props.photo.secure_url}
                 alt="Page featured image"
                 onError={e => {

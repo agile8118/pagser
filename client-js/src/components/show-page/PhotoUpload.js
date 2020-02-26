@@ -161,7 +161,7 @@ class PhotoUpload extends Component {
   renderButtons() {
     if (this.state.photo.length > 0) {
       return (
-        <div>
+        <React.Fragment>
           <button
             className="btn-normal btn-normal-xs margin-right-1"
             onClick={() => {
@@ -178,7 +178,7 @@ class PhotoUpload extends Component {
           >
             Remove Page Photo
           </button>
-        </div>
+        </React.Fragment>
       );
     } else {
       return (
@@ -212,7 +212,7 @@ class PhotoUpload extends Component {
 
   render() {
     return (
-      <div>
+      <React.Fragment>
         {this.renderPhoto.apply(this)}
 
         <ConfirmModal
@@ -243,63 +243,61 @@ class PhotoUpload extends Component {
             thubmnail.
           </em>
 
-          <div>
-            <div className="left-content">
-              <p className="image__upload--error">{this.state.error}</p>
-            </div>
+          <div className="left-content">
+            <p className="image__upload--error">{this.state.error}</p>
+          </div>
 
-            <InputFile
-              addClass="margin-bottom-2"
-              hide={this.state.inputLabelHide}
-              label={this.state.inputLabelName}
-              id="image-input"
-              size={8000000}
-              type="image"
-              minWidth={1200}
-              minHeight={675}
-              onChange={this.onFileInputChange}
-              onClick={e => {}}
-              onError={msg => {
-                this.setState({ error: msg });
+          <InputFile
+            addClass="margin-bottom-2"
+            hide={this.state.inputLabelHide}
+            label={this.state.inputLabelName}
+            id="image-input"
+            size={8000000}
+            type="image"
+            minWidth={1200}
+            minHeight={675}
+            onChange={this.onFileInputChange}
+            onClick={e => {}}
+            onError={msg => {
+              this.setState({ error: msg });
+              this.reset();
+            }}
+          />
+
+          <img id="img-preview" src="" />
+
+          <div
+            className="image__upload--options margin-top-2"
+            id="js--uploader-options"
+          >
+            <a
+              id="reset-btn"
+              className="btn-round btn-round-sm display-none"
+              onClick={() => {
                 this.reset();
               }}
-            />
-
-            <img id="img-preview" src="" />
-
-            <div
-              className="image__upload--options margin-top-2"
-              id="js--uploader-options"
             >
-              <a
-                id="reset-btn"
-                className="btn-round btn-round-sm display-none"
-                onClick={() => {
-                  this.reset();
-                }}
-              >
-                Choose another photo
-              </a>
-              <a
-                id="upload-btn"
-                className="btn-round btn-round-sm btn-round-full display-none"
-                onClick={this.onUploadClick.bind(this)}
-              >
-                Upload
-              </a>
-            </div>
-
-            <div
-              className="image__upload--loading margin-top-2 center-content display-none"
-              id="js--uploader-loading"
+              Choose another photo
+            </a>
+            <a
+              id="upload-btn"
+              className="btn-round btn-round-sm btn-round-full display-none"
+              onClick={this.onUploadClick.bind(this)}
             >
-              <Loading />
-            </div>
+              Upload
+            </a>
+          </div>
+
+          <div
+            className="image__upload--loading margin-top-2 center-content display-none"
+            id="js--uploader-loading"
+          >
+            <Loading />
           </div>
         </Modal>
 
         <div className="form__group">{this.renderButtons.apply(this)}</div>
-      </div>
+      </React.Fragment>
     );
   }
 }
