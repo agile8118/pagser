@@ -464,9 +464,8 @@ class EditPage extends Component {
             />
             <span id="js--url-error-message" className="display-none" />
             <p className="url__display">
-              pagher.com/{window.location.pathname.split("/")[1]}/{
-                this.state.url
-              }
+              pagher.com/{window.location.pathname.split("/")[1]}/
+              {this.state.url}
             </p>
           </div>
         </div>
@@ -584,7 +583,8 @@ class EditPage extends Component {
                   plugins:
                     "preview link lists advlist codesample image imagetools",
                   toolbar:
-                    "bold italic underline | link codesample image | alignleft aligncenter alignright | bullist numlist | outdent indent",
+                    "formatselect | bold italic underline | link codesample image | alignleft aligncenter alignright | bullist numlist | outdent indent",
+                  block_formats: "Paragraph=p; Header=h2;",
                   menubar: false,
                   statusbar: false,
                   image_dimensions: false,

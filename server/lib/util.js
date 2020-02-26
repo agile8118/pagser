@@ -64,7 +64,6 @@ util.cleanHTML = html => {
       "ul",
       "li",
       "span",
-      "div",
       "h1",
       "h2",
       "h3",
@@ -74,8 +73,7 @@ util.cleanHTML = html => {
     ],
     allowedAttributes: false,
     transformTags: {
-      h1: "strong",
-      h2: "strong",
+      h1: "h2",
       h3: "strong",
       h4: "strong",
       h5: "strong",

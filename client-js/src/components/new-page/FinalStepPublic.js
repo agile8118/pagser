@@ -255,7 +255,8 @@ class FinalStepPublic extends Component {
   render() {
     let loadingClass = "";
     let contentClass = "";
-    if (this.state.links === false || this.state.links === true) {
+    console.log(this.state);
+    if (this.state.rating === false || this.state.rating === true) {
       loadingClass = "display-none";
       contentClass = "";
     } else {

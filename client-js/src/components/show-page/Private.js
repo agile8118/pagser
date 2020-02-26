@@ -65,7 +65,7 @@ class Index extends Component {
     if (this.props.contents.briefDes.replace(/ /g, "").length > 0) {
       return (
         <div>
-          <h3>Brief Description</h3>
+          <strong>What's this page about?</strong>
           {this.props.contents.briefDes}
         </div>
       );
@@ -78,7 +78,7 @@ class Index extends Component {
     if (this.props.contents.targets.replace(/ /g, "").length > 0) {
       return (
         <div>
-          <h3>Who this page is for?</h3>
+          <strong>Who's this page for?</strong>
           {this.props.contents.targets}
         </div>
       );
@@ -98,9 +98,9 @@ class Index extends Component {
             <div className="page">
               <div className="page__header">
                 <Actions type="private" />
-                <h2 className="page__header__title">
+                <h1 className="page__header__title">
                   {this.props.contents.title}
-                </h2>
+                </h1>
                 <span className="page__header__time">{this.props.date}</span>
               </div>
 
@@ -111,6 +111,7 @@ class Index extends Component {
                   {this.renderBriefDes()}
                   {this.renderTarget()}
                 </div>
+                <hr></hr>
                 <div className="page__body">{this.renderBody()}</div>
 
                 <AttachFiles />

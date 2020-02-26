@@ -126,17 +126,15 @@ class AttachFiles extends Component {
     if (this.props.viewer.status === "owner")
       // If user is the owner of the page
       return (
-        <div>
-          <div>
-            <button
-              className="btn-normal btn-normal-xs"
-              onClick={() => {
-                this.setState({ attachFileMdl: true });
-              }}
-            >
-              <i className="fa fa-upload" /> Add an attach file
-            </button>
-          </div>
+        <React.Fragment>
+          <button
+            className="btn-normal btn-normal-xs"
+            onClick={() => {
+              this.setState({ attachFileMdl: true });
+            }}
+          >
+            <i className="fa fa-upload" /> Add an attach file
+          </button>
 
           <Modal
             header="Add an attach file"
@@ -200,7 +198,7 @@ class AttachFiles extends Component {
               <Loading />
             </div>
           </Modal>
-        </div>
+        </React.Fragment>
       );
     // If viewer is not the owner of the page just return a simple div
     return <div />;
