@@ -9,7 +9,8 @@
     "concat:css": "concat -o ../public/style.concat.css ../public/style.comp.css",
     "prefix:css": "postcss --use autoprefixer -b \"last 10 versions\" ../public/style.concat.css -o ../public/style.prefix.css",
     "compress:css": "node-sass ../public/style.prefix.css ../public/style.css --output-style compressed",
-    "build": "npm-run-all compile:sass concat:css prefix:css compress:css",
+    "cleanup": "rm ../public/style.prefix.css ../public/style.concat.css ../public/style.comp.css",
+    "build": "npm-run-all compile:sass concat:css prefix:css compress:css cleanup",
     "build:dark": "node-sass src/dark-theme.scss ../public/dark-style.css --output-style compressed"
   },
   "author": "",
