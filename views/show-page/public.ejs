@@ -25,9 +25,11 @@
   <body>
 
     <nav class="navigation navigation-md">
-      <a href="/" class="navigation__logo"><img id="pagherLogo" src="/images/pagher-logo.svg" alt="Pagher logo"></a>
-      <a href="/public-pages" class="navigation__link">Public Pages</a>
-      <a href="/new-page/initial-step" class="navigation__link js--create-page">Create Your Page</a>
+      <a href="javascript:void(0)" onclick="sidenavTogglerClicked()" class="navigation__link navigation__link--icon"><i
+          class="fa fa-bars" aria-hidden="true"></i></a>
+      <a href="/" class="navigation__logo"><img id="pagherLogoMd" src="/images/pagher-logo.svg"
+          alt="Pagher logo">Pagher</a>
+      <a href="/new-page/initial-step" class="navigation__right-link navigation-btn js--create-page">Create a Page</a>
       <a href="/login" class="navigation__right-link display-none" id="js--login-md">Login</a>
       <div class="nav-dropdown display-none" id="js--nav-dropdown-md">
         <div class="nav-dropdown__button">
@@ -36,40 +38,75 @@
         <div class="nav-dropdown__content">
           <a href="/admin/profile"><i class="fa fa-user"></i> Profile</a>
           <a href="/admin/settings"><i class="fa fa-cogs"></i> Setting</a>
-          <a href="/admin/pages/published"><i class="fa fa-file-text"></i> Pages</a>
           <a href="javascript:void(0);" onclick="localStorage.removeItem('token');window.location = '/';"><i
               class="fa fa-sign-out"></i> Logout</a>
+          <span class="switch-theme__text">Theme:</span>
+          <div class="switch-theme">
+            <span class="switch-theme__light"></span>
+            <label class="switch">
+              <input type="checkbox" class="js--themeSwitch">
+              <span class="slider round"></span>
+            </label>
+            <span class="switch-theme__dark"></span>
+          </div>
         </div>
       </div>
     </nav>
 
     <nav class="navigation navigation-sm">
-      <div class="navigation-sm__visible">
-        <a href="/" class="navigation__logo"><img id="pagherLogoMd" src="/images/pagher-logo.svg" alt="Pagher logo"></a>
-        <button class="navigation__bar-button" onclick="navOpenerClicked()"><i id="navigationBar" class="fa fa-bars"
-            aria-hidden="true"></i></button><br>
-      </div>
-      <div class="navigation-sm__hidden display-none">
-        <a href="/public-pages">Public Pages</a>
-        <a href="/new-page/initial-step" class="js--create-page">Create Your Page</a>
-        <a id="js--login-sm" class="display-none" href="/login">Login</a>
-        <div class="nav-dropdown-slider display-none" id="js--nav-dropdown-sm">
-          <div class="nav-dropdown-slider__button">
-            <a href="javascript:void(0);" onclick="navDropdownClicked(event)" class="">
-              <img class="js--user-image" src="/images/users/placeholder.png"><i class="fa fa-caret-down"
-                aria-hidden="true"></i>
-            </a>
-          </div>
-          <div class="nav-dropdown-slider__content display-none" id="js--nav-dropdown-slider-content">
-            <a href="/admin/profile"><i class="fa fa-user"></i> Profile</a>
-            <a href="/admin/settings"><i class="fa fa-cogs"></i> Setting</a>
-            <a href="/admin/pages/published"><i class="fa fa-file-text"></i> Pages</a>
-            <a href="javascript:void(0);" onclick="localStorage.removeItem('token');window.location = '/';"><i
-                class="fa fa-sign-out"></i> Logout</a>
+      <a href="javascript:void(0)" onclick="sidenavTogglerClicked()" class="navigation__link navigation__link--icon"><i
+          class="fa fa-bars" aria-hidden="true"></i></a>
+      <a href="/" class="navigation__logo"><img id="pagherLogoSm" src="/images/pagher-logo.svg"
+          alt="Pagher logo">Pagher</a>
+      <a href="/new-page/initial-step" class="navigation__right-link navigation-btn js--create-page"><i
+          class="fa fa-pencil-square-o"></i></a>
+      <a href="/login" class="navigation__right-link display-none" id="js--login-sm">Login</a>
+      <div class="nav-dropdown display-none" id="js--nav-dropdown-sm">
+        <div class="nav-dropdown__button">
+          <a href="javascript:void(0);"><img class="js--user-image" src="/images/users/placeholder.png"></a>
+        </div>
+        <div class="nav-dropdown__content">
+          <a href="/admin/profile"><i class="fa fa-user"></i> Profile</a>
+          <a href="/admin/settings"><i class="fa fa-cogs"></i> Setting</a>
+          <a href="javascript:void(0);" onclick="localStorage.removeItem('token');window.location = '/';"><i
+              class="fa fa-sign-out"></i> Logout</a>
+          <span class="switch-theme__text">Theme:</span>
+          <div class="switch-theme">
+            <span class="switch-theme__light"></span>
+            <label class="switch">
+              <input type="checkbox" class="js--themeSwitch">
+              <span class="slider round"></span>
+            </label>
+            <span class="switch-theme__dark"></span>
           </div>
         </div>
       </div>
     </nav>
+
+    <div class="sidenav sidenav--close" id="js--sidenav">
+      <div class="sidenav__section">
+        <a href="#" class="sidenav__link"><i class="fa fa-home"></i>Home</a>
+        <a href="#" class="sidenav__link"><i class="fa fa-file-text"></i>Subscriptions</a>
+        <a href="#" class="sidenav__link"><i class="fa fa-history"></i>History</a>
+        <a href="#" class="sidenav__link"><i class="fa fa-bookmark"></i>Read Later</a>
+        <a href="#" class="sidenav__link"><i class="fa fa-thumbs-up"></i>Liked Pages</a>
+        <a href="#" class="sidenav__link"><i class="fa fa-th-large"></i>Collections</a>
+      </div>
+      <div class="sidenav__section">
+        <a href="#" class="sidenav__link"><i class="fa fa-line-chart"></i>Analytics</a>
+        <a href="#" class="sidenav__link"><i class="fa fa-envelope-open"></i>Your Pages</a>
+        <a href="#" class="sidenav__link"><i class="fa fa-comments"></i>Comments</a>
+      </div>
+      <div class="sidenav__footer">
+        <ul class="">
+          <li class=""><a href="javascript:void(0);">Support</a></li>
+          <li class=""><a href="javascript:void(0);">Contact us</a></li>
+          <li class=""><a href="/terms-of-use">Terms of Use</a></li>
+          <li class=""><a href="/privacy-policy">Privacy Policy</a></li>
+        </ul>
+        <span>&copy; 2020 Pagher, Inc.</span>
+      </div>
+    </div>
 
     <div class="react-container" name="showPage">
       <div class="row">
@@ -164,28 +201,6 @@
 
     <br><br><br><br><br><br>
 
-
-    <footer class="footer">
-      <div class="footer__text">
-        Copyright &copy; 2019 Pagher, Inc. All rights reserved.
-      </div>
-      <ul class="footer__nav">
-        <li class="footer__link"><a href="javascript:void(0);">Support</a></li>
-        <li class="footer__link"><a href="javascript:void(0);">Contact us</a></li>
-        <li class="footer__link"><a href="/terms-of-use">Terms of Use</a></li>
-        <li class="footer__link"><a href="/privacy-policy">Privacy Policy</a></li>
-      </ul>
-      <div class="footer__right">
-        <span class="footer__theme-text">Dark Theme:</span>
-        <span class="footer__theme-light"></span>
-        <label class="switch">
-          <input type="checkbox" id="themeSwitch">
-          <span class="slider round"></span>
-        </label>
-        <span class="footer__theme-dark"></span>
-      </div>
-    </footer>
-
     <script>
 
       if (localStorage.getItem("theme") === "dark") {
@@ -194,13 +209,16 @@
         changeTheme("light");
       }
 
-      document.getElementById('themeSwitch').addEventListener('change', (event) => {
-        if (event.target.checked) {
-          changeTheme("dark");
-        } else {
-          changeTheme("light");
-        }
-      })
+      document.querySelectorAll(".js--themeSwitch").forEach(function (elem) {
+        elem.addEventListener('change', (event) => {
+          if (event.target.checked) {
+            changeTheme("dark");
+          } else {
+            changeTheme("light");
+          }
+        })
+      });
+
 
       function changeTheme(theme) {
         if (theme === "dark") {
@@ -208,9 +226,11 @@
           link.setAttribute("rel", "stylesheet");
           link.setAttribute("href", "/dark-style.css");
           document.querySelector("head").appendChild(link)
-          document.querySelector("#themeSwitch").checked = true;
+          document.querySelectorAll(".js--themeSwitch").forEach(function (elem) {
+            elem.checked = true
+          });
           document.querySelector("#navigationBar").style.color = "#fff";
-          document.querySelector("#pagherLogo").src = "/images/pagher-logo-light.svg";
+          document.querySelector("#pagherLogoSm").src = "/images/pagher-logo-light.svg";
           document.querySelector("#pagherLogoMd").src = "/images/pagher-logo-light.svg";
           localStorage.setItem("theme", "dark");
         }
@@ -218,9 +238,11 @@
         if (theme === "light") {
           if (document.querySelectorAll("link[href='/dark-style.css']")[0]) {
             document.querySelector("head").removeChild(document.querySelectorAll("link[href='/dark-style.css']")[0]);
-            document.querySelector("#themeSwitch").checked = false;
+            document.querySelectorAll(".js--themeSwitch").forEach(function (elem) {
+              elem.checked = false
+            });
             document.querySelector("#navigationBar").style.color = "";
-            document.querySelector("#pagherLogo").src = "/images/pagher-logo.svg";
+            document.querySelector("#pagherLogoSm").src = "/images/pagher-logo.svg";
             document.querySelector("#pagherLogoMd").src = "/images/pagher-logo.svg";
             localStorage.setItem("theme", "light");
           }
@@ -234,6 +256,29 @@
         userImages[i].addEventListener('error', function (e) {
           e.target.src = "/images/users/placeholder.png";
         })
+      }
+
+      function sidenavTogglerClicked(e) {
+        if (document
+          .querySelector("#js--sidenav").classList.contains("sidenav--open")) {
+          // Close the side navigation
+          document.querySelector("body").style.marginLeft = "0";
+          document
+            .querySelector("#js--sidenav")
+            .classList.remove("sidenav--open");
+          document
+            .querySelector("#js--sidenav")
+            .classList.add("sidenav--close");
+        } else {
+          // Open the side navigation
+          document.querySelector("body").style.marginLeft = "24rem";
+          document
+            .querySelector("#js--sidenav")
+            .classList.add("sidenav--open");
+          document
+            .querySelector("#js--sidenav")
+            .classList.remove("sidenav--close");
+        }
       }
 
       function navDropdownClicked(e) {
@@ -278,7 +323,7 @@
           document.querySelectorAll(".js--create-page")[1].href =
             "/login?redirected=new-page";
           document
-            .querySelector("#js--nav-dropdown-md")
+            .querySelector("#js--nav-dropdown-sm")
             .classList.add("display-none");
           document
             .querySelector("#js--nav-dropdown-sm")
