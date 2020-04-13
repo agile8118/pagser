@@ -21,6 +21,7 @@
   background-color: #fff;
   border-right: 1px solid rgb(223, 221, 221);
   color: $color-text;
+  z-index: 99;
 
   &__header {
     display: flex;

@@ -26,6 +26,9 @@ body {
   box-sizing: border-box;
   min-height: 100vh;
   position: relative; }
+  @media only screen and (max-width: 700px) {
+    body {
+      margin-left: 0 !important; } }
 
 .body-grey {
   background-color: #f7f7f7; }
@@ -489,7 +492,6 @@ pre {
   flex-direction: row;
   align-items: center;
   padding: 0.3rem 0;
-  margin-left: 1rem;
   font-size: 1.6rem; }
   .navigation__logo img {
     width: 4rem;
@@ -501,24 +503,18 @@ pre {
   color: #555;
   font-weight: 300;
   padding: 1.2rem 1rem;
-  transition: all 0.2s; }
+  transition: all 0.2s;
+  margin-right: 1rem; }
   .navigation__link--icon {
     font-size: 2.4rem;
     line-height: 1; }
   .navigation__link--icon:hover {
     color: #827f7f; }
 
-.navigation__right-link {
+.navigation__right {
   margin-left: auto;
-  margin-right: 2rem;
-  display: inline-block;
-  color: #555;
-  font-weight: 300;
-  padding: 1.2rem 1rem;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s; }
-  .navigation__right-link:hover {
-    background-color: #fcfcfc; }
+  display: flex;
+  align-items: center; }
 
 .navigation-btn {
   background-color: #2980b9;
@@ -537,7 +533,7 @@ pre {
 .nav-dropdown__button {
   padding: 0.7rem 0.8rem;
   transition: all 0.2s; }
-  .nav-dropdown__button:hover {
+  .nav-dropdown__button--active {
     background-color: #f9f9f9; }
 
 .nav-dropdown__button a {
@@ -549,7 +545,6 @@ pre {
   border-radius: 50%; }
 
 .nav-dropdown__content {
-  display: none;
   position: absolute;
   background-color: #fff;
   border-bottom-left-radius: 5px;
@@ -578,12 +573,6 @@ pre {
       border-bottom-right-radius: 5px; }
     .nav-dropdown__content a:hover {
       background-color: #f9f9f9; }
-
-.nav-dropdown:hover .nav-dropdown__content {
-  display: block; }
-
-.nav-dropdown:hover .nav-dropdown__button {
-  background-color: #f9f9f9; }
 
 /* small navigation */
 .navigation__bar-button {
@@ -688,10 +677,10 @@ pre {
   .navigation__right-link {
     margin-right: 0.5rem; }
   .navigation-btn {
-    padding: 0.7rem 0.9rem 0.6rem 1.2rem;
+    padding: 0.5rem 0.4rem 0.4rem 0.7rem;
     font-size: 2rem;
     line-height: 1;
-    border-radius: 4px; }
+    border-radius: 6px; }
   .nav-dropdown {
     margin-right: 0rem; }
   .navigation-md {
@@ -857,7 +846,8 @@ pre {
   width: 24rem;
   background-color: #fff;
   border-right: 1px solid #dfdddd;
-  color: #555; }
+  color: #555;
+  z-index: 99; }
   .sidenav__header {
     display: flex;
     align-items: center;

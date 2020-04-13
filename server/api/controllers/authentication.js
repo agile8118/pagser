@@ -10,13 +10,13 @@ function tokenForUser(userId) {
   return jwt.encode({ sub: userId, iat: timestamp }, keys.jwtSecret);
 }
 
-exports.signin = function(req, res, next) {
+exports.signin = function (req, res, next) {
   // User has already had their email and password auth'd
   // We just need to give them a token
   res.send({ token: tokenForUser(req.user.id) });
 };
 
-exports.signup = function(req, res, next) {
+exports.signup = function (req, res, next) {
   const email = req.body.email;
   const password = req.body.password;
   const username = req.body.username;
@@ -26,23 +26,23 @@ exports.signup = function(req, res, next) {
     username,
     password,
     name,
-    verified: true
+    verified: true,
   });
 
-  bcrypt.genSalt(10, function(err, salt) {
+  bcrypt.genSalt(10, function (err, salt) {
     if (err) {
       return next(err);
     }
 
     // hash (encrypt) our password using the salt
-    bcrypt.hash(user.password, salt, null, function(err, hash) {
+    bcrypt.hash(user.password, salt, null, function (err, hash) {
       if (err) {
         return res.send("err");
       }
 
       // overwrite plain text password with encrypted password
       user.password = hash;
-      user.save(function(err) {
+      user.save(function (err) {
         if (err) {
           return res.send("Error");
         }
@@ -53,9 +53,9 @@ exports.signup = function(req, res, next) {
 };
 
 // check if a user can take a choosen username or not
-exports.usernameAvailability = function(req, res) {
+exports.usernameAvailability = function (req, res) {
   const username = req.body.username;
-  User.findOne({ username: username }, function(err, result) {
+  User.findOne({ username: username }, function (err, result) {
     if (err) {
       res.status(422).send({ error: "An error happened." });
     } else {
@@ -119,18 +119,18 @@ exports.resetPassword = (req, res) => {
     }
     // update user password password
 
-    bcrypt.genSalt(10, function(err, salt) {
+    bcrypt.genSalt(10, function (err, salt) {
       if (err) {
         return next(err);
       }
 
       // hash (encrypt) our password using the salt
-      bcrypt.hash(password, salt, null, function(err, hash) {
+      bcrypt.hash(password, salt, null, function (err, hash) {
         if (err) return res.status(500).send("error");
 
         // overwrite plain text password with encrypted password
         user.password = hash;
-        user.save(function(err) {
+        user.save(function (err) {
           if (!err) {
             res.status(200).send({ success: "password updated succcessfully" });
           }
