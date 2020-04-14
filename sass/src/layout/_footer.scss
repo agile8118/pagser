@@ -49,29 +49,4 @@
       margin-left: unset;
     }
   }
-
-  &__theme-text {
-    font-weight: 600;
-    color: #555;
-    padding-right: 0rem;
-    font-size: 1.5rem;
-  }
-
-  &__theme-light {
-    display: inline-block;
-    width: 3.2rem;
-    height: 3.2rem;
-    background: #fff;
-    border-radius: 500px;
-    margin: 0 1rem;
-  }
-
-  &__theme-dark {
-    display: inline-block;
-    width: 3.2rem;
-    height: 3.2rem;
-    background: #2d3133;
-    border-radius: 500px;
-    margin: 0 1rem;
-  }
 }

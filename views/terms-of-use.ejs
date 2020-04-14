@@ -1,229 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-  <link href="https://fonts.googleapis.com/css?family=Lato:100,300,300i,400" rel="stylesheet">
-  <link rel="stylesheet" href="/fonts/font-awesome.min.css">
-  <link rel="stylesheet" href="/style.css">
-  <title>Terms of Use | Pagher</title>
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="manifest" href="/site.webmanifest">
-  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-  <meta name="apple-mobile-web-app-title" content="Pagher">
-  <meta name="application-name" content="Pagher">
-  <meta name="msapplication-TileColor" content="#2d89ef">
-  <meta name="theme-color" content="#ffffff">
-</head>
-<body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Lato:100,300,300i,400" rel="stylesheet">
+    <link rel="stylesheet" href="/fonts/font-awesome.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <title>Terms of Use | Pagher</title>
 
-  <nav class="navigation navigation-md">
-    <a href="/" class="navigation__logo"><img id="pagherLogo" src="/images/pagher-logo.svg" alt="Pagher logo"></a>
-    <a href="/public-pages" class="navigation__link">Public Pages</a>
-    <a href="/new-page/initial-step" class="navigation__link js--create-page">Create Your Page</a>
-    <a href="/login" class="navigation__right-link display-none" id="js--login-md">Login</a>
-    <div class="nav-dropdown display-none" id="js--nav-dropdown-md">
-      <div class="nav-dropdown__button">
-        <a href="javascript:void(0);"><img class="js--user-image" src="/images/users/placeholder.png"></a>
-      </div>
-      <div class="nav-dropdown__content">
-        <a href="/admin/profile"><i class="fa fa-user"></i> Profile</a>
-        <a href="/admin/settings"><i class="fa fa-cogs"></i> Setting</a>
-        <a href="/admin/pages/published"><i class="fa fa-file-text"></i> Pages</a>
-        <a href="javascript:void(0);" onclick="localStorage.removeItem('token');window.location = '/';"><i class="fa fa-sign-out"></i> Logout</a>
-      </div>
-    </div>
-  </nav>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="apple-mobile-web-app-title" content="Pagher">
+    <meta name="application-name" content="Pagher">
+    <meta name="msapplication-TileColor" content="#2d89ef">
+    <meta name="theme-color" content="#ffffff">
+  </head>
 
-  <nav class="navigation navigation-sm">
-    <div class="navigation-sm__visible">
-      <a href="/" class="navigation__logo"><img id="pagherLogoMd" src="/images/pagher-logo.svg" alt="Pagher logo"></a>
-      <button class="navigation__bar-button" onclick="navOpenerClicked()"><i id="navigationBar"  class="fa fa-bars" aria-hidden="true"></i></button><br>
-    </div>
-    <div class="navigation-sm__hidden display-none">
-        <a href="/public-pages">Public Pages</a>
-        <a href="/new-page/initial-step" class="js--create-page">Create Your Page</a>
-        <a id="js--login-sm" class="display-none" href="/login">Login</a>
-        <div class="nav-dropdown-slider display-none" id="js--nav-dropdown-sm">
-          <div class="nav-dropdown-slider__button">
-            <a href="javascript:void(0);" onclick="navDropdownClicked(event)" class="">
-              <img class="js--user-image" src="/images/users/placeholder.png"><i class="fa fa-caret-down" aria-hidden="true"></i>
-            </a>
-          </div>
-          <div class="nav-dropdown-slider__content display-none" id="js--nav-dropdown-slider-content">
-            <a href="/admin/profile"><i class="fa fa-user"></i> Profile</a>
-            <a href="/admin/settings"><i class="fa fa-cogs"></i> Setting</a>
-            <a href="/admin/pages/published"><i class="fa fa-file-text"></i> Pages</a>
-            <a href="javascript:void(0);" onclick="localStorage.removeItem('token');window.location = '/';"><i class="fa fa-sign-out"></i> Logout</a>
-          </div>
-        </div>
-    </div>
-  </nav>
+  <body>
 
-  <div class="container-big" style="padding: 0 2rem;">
-    <h2 class="heading-secondary margin-top-4 margin-bottom-2">Pagher Terms of Service</h2>
-    <h3 class="heading-tertiary margin-bottom-1 margin-top-3">1. Terms</h3>
-    <p class="normal-paragraph margin-bottom-2">By accessing the website at <a href="http://pagher.com">http://pagher.com</a>, you are agreeing to be bound by these terms of service, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these terms, you are prohibited from using or accessing this site. The materials contained in this website are protected by applicable copyright and trademark law.</p>
-    <h3 class="heading-tertiary margin-bottom-1 margin-top-3">2. Use License</h3>
-    <ol type="a">
-       <li>Permission is granted to temporarily download one copy of the materials (information or software) on Pagher's website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:
-       <ol type="i">
-           <li>modify or copy the materials;</li>
-           <li>use the materials for any commercial purpose, or for any public display (commercial or non-commercial);</li>
-           <li>attempt to decompile or reverse engineer any software contained on Pagher's website;</li>
-           <li>remove any copyright or other proprietary notations from the materials; or</li>
-           <li>transfer the materials to another person or "mirror" the materials on any other server.</li>
-       </ol>
+    <%- include("partials/header") %>
+    <br><br><br>
+    <div class="container-big" style="padding: 0 2rem;">
+      <h2 class="heading-secondary margin-top-4 margin-bottom-2">Pagher Terms of Service</h2>
+      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">1. Terms</h3>
+      <p class="normal-paragraph margin-bottom-2">By accessing the website at <a
+          href="http://pagher.com">http://pagher.com</a>, you are agreeing to be bound by these terms of service, all
+        applicable laws and regulations, and agree that you are responsible for compliance with any applicable local
+        laws. If you do not agree with any of these terms, you are prohibited from using or accessing this site. The
+        materials contained in this website are protected by applicable copyright and trademark law.</p>
+      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">2. Use License</h3>
+      <ol type="a">
+        <li>Permission is granted to temporarily download one copy of the materials (information or software) on
+          Pagher's website for personal, non-commercial transitory viewing only. This is the grant of a license, not a
+          transfer of title, and under this license you may not:
+          <ol type="i">
+            <li>modify or copy the materials;</li>
+            <li>use the materials for any commercial purpose, or for any public display (commercial or non-commercial);
+            </li>
+            <li>attempt to decompile or reverse engineer any software contained on Pagher's website;</li>
+            <li>remove any copyright or other proprietary notations from the materials; or</li>
+            <li>transfer the materials to another person or "mirror" the materials on any other server.</li>
+          </ol>
         </li>
-       <li>This license shall automatically terminate if you violate any of these restrictions and may be terminated by Pagher at any time. Upon terminating your viewing of these materials or upon the termination of this license, you must destroy any downloaded materials in your possession whether in electronic or printed format.</li>
-    </ol>
-    <h3 class="heading-tertiary margin-bottom-1 margin-top-3">3. Disclaimer</h3>
-    <ol type="a">
-       <li>The materials on Pagher's website are provided on an 'as is' basis. Pagher makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.</li>
-       <li>Further, Pagher does not warrant or make any representations concerning the accuracy, likely results, or reliability of the use of the materials on its website or otherwise relating to such materials or on any sites linked to this site.</li>
-    </ol>
-    <h3 class="heading-tertiary margin-bottom-1 margin-top-3">4. Limitations</h3>
-    <p class="normal-paragraph margin-bottom-2">In no event shall Pagher or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on Pagher's website, even if Pagher or a Pagher authorized representative has been notified orally or in writing of the possibility of such damage. Because some jurisdictions do not allow limitations on implied warranties, or limitations of liability for consequential or incidental damages, these limitations may not apply to you.</p>
-    <h3 class="heading-tertiary margin-bottom-1 margin-top-3">5. Accuracy of materials</h3>
-    <p class="normal-paragraph margin-bottom-2">The materials appearing on Pagher's website could include technical, typographical, or photographic errors. Pagher does not warrant that any of the materials on its website are accurate, complete or current. Pagher may make changes to the materials contained on its website at any time without notice. However Pagher does not make any commitment to update the materials.</p>
-    <h3 class="heading-tertiary margin-bottom-1 margin-top-3">6. Links</h3>
-    <p class="normal-paragraph margin-bottom-2">Pagher has not reviewed all of the sites linked to its website and is not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement by Pagher of the site. Use of any such linked website is at the user's own risk.</p>
-    <h3 class="heading-tertiary margin-bottom-1 margin-top-3">7. Modifications</h3>
-    <p class="normal-paragraph margin-bottom-2">Pagher may revise these terms of service for its website at any time without notice. By using this website you are agreeing to be bound by the then current version of these terms of service.</p>
-    <h3 class="heading-tertiary margin-bottom-1 margin-top-3">8. Governing Law</h3>
-    <p class="normal-paragraph margin-bottom-2">These terms and conditions are governed by and construed in accordance with the laws of Austin and you irrevocably submit to the exclusive jurisdiction of the courts in that State or location.</p>
+        <li>This license shall automatically terminate if you violate any of these restrictions and may be terminated by
+          Pagher at any time. Upon terminating your viewing of these materials or upon the termination of this license,
+          you must destroy any downloaded materials in your possession whether in electronic or printed format.</li>
+      </ol>
+      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">3. Disclaimer</h3>
+      <ol type="a">
+        <li>The materials on Pagher's website are provided on an 'as is' basis. Pagher makes no warranties, expressed or
+          implied, and hereby disclaims and negates all other warranties including, without limitation, implied
+          warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of
+          intellectual property or other violation of rights.</li>
+        <li>Further, Pagher does not warrant or make any representations concerning the accuracy, likely results, or
+          reliability of the use of the materials on its website or otherwise relating to such materials or on any sites
+          linked to this site.</li>
+      </ol>
+      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">4. Limitations</h3>
+      <p class="normal-paragraph margin-bottom-2">In no event shall Pagher or its suppliers be liable for any damages
+        (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out
+        of the use or inability to use the materials on Pagher's website, even if Pagher or a Pagher authorized
+        representative has been notified orally or in writing of the possibility of such damage. Because some
+        jurisdictions do not allow limitations on implied warranties, or limitations of liability for consequential or
+        incidental damages, these limitations may not apply to you.</p>
+      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">5. Accuracy of materials</h3>
+      <p class="normal-paragraph margin-bottom-2">The materials appearing on Pagher's website could include technical,
+        typographical, or photographic errors. Pagher does not warrant that any of the materials on its website are
+        accurate, complete or current. Pagher may make changes to the materials contained on its website at any time
+        without notice. However Pagher does not make any commitment to update the materials.</p>
+      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">6. Links</h3>
+      <p class="normal-paragraph margin-bottom-2">Pagher has not reviewed all of the sites linked to its website and is
+        not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement
+        by Pagher of the site. Use of any such linked website is at the user's own risk.</p>
+      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">7. Modifications</h3>
+      <p class="normal-paragraph margin-bottom-2">Pagher may revise these terms of service for its website at any time
+        without notice. By using this website you are agreeing to be bound by the then current version of these terms of
+        service.</p>
+      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">8. Governing Law</h3>
+      <p class="normal-paragraph margin-bottom-2">These terms and conditions are governed by and construed in accordance
+        with the laws of Austin and you irrevocably submit to the exclusive jurisdiction of the courts in that State or
+        location.</p>
 
-  </div>
-  <br><br><br><br>
-  <footer class="footer">
-    <div class="footer__text">
-      Copyright &copy; 2019 Pagher, Inc. All rights reserved.
     </div>
-     <ul class="footer__nav">
-         <li class="footer__link"><a href="javascript:void(0);">Support</a></li>
-         <li class="footer__link"><a href="javascript:void(0);">Contact us</a></li>
-         <li class="footer__link"><a href="/terms-of-use">Terms of Use</a></li>
-         <li class="footer__link"><a href="/privacy-policy">Privacy Policy</a></li>
-     </ul>
-     <div class="footer__right">
-       <span class="footer__theme-text">Dark Theme:</span>
-       <span class="footer__theme-light"></span>
-       <label class="switch">
-          <input type="checkbox" id="themeSwitch">
-          <span class="slider round"></span>
-        </label>
-        <span class="footer__theme-dark"></span>
-     </div>
-  </footer>
+    <br><br><br><br>
 
+    <%- include("partials/footer") %>
 
-<script>
+    <script src="/bundle.js"></script>
+  </body>
 
-if (localStorage.getItem("theme") === "dark") {
-  changeTheme("dark");
-} else {
-  changeTheme("light");
-}
-
-document.getElementById('themeSwitch').addEventListener('change', (event) => {
-  if (event.target.checked) {
-    changeTheme("dark");
-  } else {
-    changeTheme("light");
-  }
-})
-
-function changeTheme(theme) {
-  if (theme === "dark") {
-    var link = document.createElement("link");
-    link.setAttribute("rel", "stylesheet");
-    link.setAttribute("href", "/dark-style.css");
-    document.querySelector("head").appendChild(link)
-    document.querySelector("#themeSwitch").checked = true;
-    document.querySelector("#navigationBar").style.color = "#fff";
-    document.querySelector("#pagherLogo").src = "/images/pagher-logo-light.svg";
-    document.querySelector("#pagherLogoMd").src = "/images/pagher-logo-light.svg";
-    localStorage.setItem("theme", "dark");
-  }
-
-  if (theme === "light") {
-    if (document.querySelectorAll("link[href='/dark-style.css']")[0]) {
-      document.querySelector("head").removeChild(document.querySelectorAll("link[href='/dark-style.css']")[0]);
-      document.querySelector("#themeSwitch").checked = false;
-      document.querySelector("#navigationBar").style.color = "";
-      document.querySelector("#pagherLogo").src = "/images/pagher-logo.svg";
-      document.querySelector("#pagherLogoMd").src = "/images/pagher-logo.svg";
-      localStorage.setItem("theme", "light");
-    }
-  }
-}
-
-// If user profile image couldn't render, then show user placeholer default image
-var userImages = document.querySelectorAll(".js--user-image")
-for (var i = 0; i < userImages.length; i++) {
-  userImages[i].addEventListener('error', function (e) {
-    e.target.src = "/images/users/placeholder.png";
-  })
-}
-
-function navDropdownClicked(e) {
-	document
-		.querySelector("#js--nav-dropdown-slider-content")
-		.classList.toggle("display-none");
-	e.target.classList.toggle("nav-dropdown-slider__button--active");
-}
-
-function navOpenerClicked() {
-	var navItems = document.querySelector(".navigation-sm__hidden");
-	if (navItems.classList[1] === "display-none") {
-		navItems.classList.remove("display-none");
-	} else {
-		navItems.classList.add("display-none");
-	}
-}
-
-var xhttp = new XMLHttpRequest();
-xhttp.onreadystatechange = function() {
-	if (this.status === 200) {
-		try {
-			document.querySelectorAll(".js--user-image")[0].src = JSON.parse(
-				this.response
-			).user.photo;
-
-			document.querySelectorAll(".js--user-image")[1].src = JSON.parse(
-				this.response
-			).user.photo;
-		} catch (e) {}
-		document
-			.querySelector("#js--nav-dropdown-md")
-			.classList.remove("display-none");
-		document
-			.querySelector("#js--nav-dropdown-sm")
-			.classList.remove("display-none");
-		document.querySelector("#js--login-md").classList.add("display-none");
-		document.querySelector("#js--login-sm").classList.add("display-none");
-	} else if (this.status === 401) {
-		document.querySelectorAll(".js--create-page")[0].href =
-			"/login?redirected=new-page";
-		document.querySelectorAll(".js--create-page")[1].href =
-			"/login?redirected=new-page";
-		document
-			.querySelector("#js--nav-dropdown-md")
-			.classList.add("display-none");
-		document
-			.querySelector("#js--nav-dropdown-sm")
-			.classList.add("display-none");
-		document.querySelector("#js--login-md").classList.remove("display-none");
-		document.querySelector("#js--login-sm").classList.remove("display-none");
-	}
-};
-xhttp.open("POST", "/auth", true);
-xhttp.setRequestHeader("authorization", localStorage.getItem("token"));
-xhttp.send();
-</script>
-<script src="/bundle.js"></script>
-</body>
 </html>
