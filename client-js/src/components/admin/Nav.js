@@ -122,12 +122,6 @@ class Nav extends Component {
               </a>
             </li>
           </ul>
-
-          <div className="side-bottom">
-            <a href="/new-page/initial-step" className="btn-action">
-              Create a page
-            </a>
-          </div>
         </nav>
       </div>
     );

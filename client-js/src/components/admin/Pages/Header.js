@@ -10,11 +10,11 @@ const Header = () => {
           Pages
         </h3>
       </div>
-      <div className="inline-buttons">
+      <div className="a-12">
         <Link
           to="/admin/pages/published"
           className={`btn-lined  ${
-            location === "published" ? "" : "btn-lined-not-active"
+            location === "published" ? "btn-lined-active" : ""
           }`}
         >
           <i className="fa fa-check-square margin-right-3px" /> Published
@@ -22,7 +22,7 @@ const Header = () => {
         <Link
           to="/admin/pages/favorited"
           className={`btn-lined  ${
-            location === "favorited" ? "" : "btn-lined-not-active"
+            location === "favorited" ? "btn-lined-active" : ""
           }`}
         >
           <i className="fa fa-heart margin-right-3px" /> Favorited
@@ -30,7 +30,7 @@ const Header = () => {
         <Link
           to="/admin/pages/draft"
           className={`btn-lined  ${
-            location === "draft" ? "" : "btn-lined-not-active"
+            location === "draft" ? "btn-lined-active" : ""
           }`}
         >
           <i className="fa fa-file margin-right-3px" /> Draft
@@ -38,7 +38,7 @@ const Header = () => {
         <Link
           to="/admin/pages/trash"
           className={`btn-lined  ${
-            location === "trash" ? "" : "btn-lined-not-active"
+            location === "trash" ? "btn-lined-active" : ""
           }`}
         >
           <i className="fa fa-trash margin-right-3px" /> Trash

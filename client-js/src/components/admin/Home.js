@@ -15,10 +15,7 @@ class Home extends Component {
             world, just very specific persons or even yourself. Just click on
             the button below to discover this feature more.
           </p>
-          <a
-            className="btn-normal btn-normal-link"
-            href="/new-page/initial-step"
-          >
+          <a className="btn btn-blue" href="/new-page/initial-step">
             Create a page
           </a>
         </div>

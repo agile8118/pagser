@@ -15,7 +15,7 @@ class PhotoUpload extends Component {
     photo: "/images/users/placeholder.png",
     inputLabelName: "Upload Your Picture",
     inputLabelHide: false,
-    uploadPhotoMdl: false
+    uploadPhotoMdl: false,
   };
 
   // Is used to avoid memory leak
@@ -25,22 +25,22 @@ class PhotoUpload extends Component {
     this._isMounted = true;
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
 
     // Get the user photo from server
     axios
       .get(`/api/profile`, config)
-      .then(response => {
+      .then((response) => {
         const user = response.data.user;
         if (this._isMounted) {
           this.setState({
-            photo: user.photo.secure_url || "/images/users/placeholder.png"
+            photo: user.photo.secure_url || "/images/users/placeholder.png",
           });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response.status === 401) {
           window.location.href = "/login?redirected=admin";
         }
@@ -69,15 +69,19 @@ class PhotoUpload extends Component {
     formData.append("img", document.querySelector("#image-input").files[0]);
     formData.set(
       "cropData",
-      `{ "x": "${this.state.cropData.x}", "y": "${this.state.cropData.y}", "width": "${this.state.cropData.width}", "height": "${this.state.cropData.height}" }`
+      `{ "x": "${this.state.cropData.x}", "y": "${
+        this.state.cropData.y
+      }", "width": "${this.state.cropData.width}", "height": "${
+        this.state.cropData.height
+      }" }`
     );
 
     try {
       const { data } = await axios.put(`/api/photo`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          authorization: localStorage.getItem("token")
-        }
+          authorization: localStorage.getItem("token"),
+        },
       });
 
       document.querySelector("#reset-btn").click();
@@ -90,7 +94,7 @@ class PhotoUpload extends Component {
         photo: data.image,
         alertMessage: "Profile picture uploaded successfully.",
         alertType: "success",
-        uploadPhotoMdl: false
+        uploadPhotoMdl: false,
       });
     } catch (error) {
       document.querySelector("#reset-btn").click();
@@ -100,7 +104,7 @@ class PhotoUpload extends Component {
       this.setState({
         alertMessage: "There was problem with uploading.",
         alertType: "error",
-        uploadPhotoMdl: false
+        uploadPhotoMdl: false,
       });
     }
   };
@@ -130,8 +134,8 @@ class PhotoUpload extends Component {
             x: cropper.getData().x,
             y: cropper.getData().y,
             width: cropper.getData().width,
-            height: cropper.getData().height
-          }
+            height: cropper.getData().height,
+          },
         });
       },
       ready: function() {
@@ -148,10 +152,10 @@ class PhotoUpload extends Component {
             x: cropper.getData().x,
             y: cropper.getData().y,
             width: cropper.getData().width,
-            height: cropper.getData().height
-          }
+            height: cropper.getData().height,
+          },
         });
-      }
+      },
     });
   }
 
@@ -183,10 +187,10 @@ class PhotoUpload extends Component {
             href="javascript:void(0)"
             onClick={() => {
               this.setState({
-                uploadPhotoMdl: true
+                uploadPhotoMdl: true,
               });
             }}
-            className="btn-link"
+            className="btn-text btn-text-underlined"
           >
             Change or upload a new photo
           </a>
@@ -217,8 +221,8 @@ class PhotoUpload extends Component {
               minWidth={250}
               minHeight={250}
               onChange={this.onFileInputChange}
-              onClick={e => {}}
-              onError={msg => {
+              onClick={(e) => {}}
+              onError={(msg) => {
                 this.setState({ error: msg });
                 this.reset();
               }}
@@ -232,7 +236,7 @@ class PhotoUpload extends Component {
             >
               <a
                 id="reset-btn"
-                className="btn-round btn-round-sm display-none"
+                className="btn btn-round btn-blue-o display-none"
                 onClick={() => {
                   this.reset();
                 }}
@@ -241,7 +245,7 @@ class PhotoUpload extends Component {
               </a>
               <a
                 id="upload-btn"
-                className="btn-round btn-round-sm btn-round-full display-none"
+                className="btn btn-round btn-blue display-none"
                 onClick={this.onUploadClick}
               >
                 Upload

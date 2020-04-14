@@ -15,7 +15,7 @@ class AttachFiles extends Component {
     this.state = {
       inputLabelName: "Upload a File",
       attachFileMdl: false,
-      error: ""
+      error: "",
     };
 
     this.uploadBtn = React.createRef();
@@ -43,8 +43,8 @@ class AttachFiles extends Component {
       await axios.post(`/api/pages/${this.props.id}/attach-files`, formData, {
         headers: {
           authorization: localStorage.getItem("token"),
-          "Content-Type": "multipart/form-data"
-        }
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       this.reset();
@@ -53,7 +53,7 @@ class AttachFiles extends Component {
     } catch ({ response }) {
       this.reset();
       this.setState({
-        error: response.data.error
+        error: response.data.error,
       });
     }
   };
@@ -71,7 +71,7 @@ class AttachFiles extends Component {
   renderFiles() {
     if (this.props.viewer.status === "owner")
       // If user is the owner of the page
-      return this.props.attachFiles.map(file => {
+      return this.props.attachFiles.map((file) => {
         return (
           <a
             className="file-link"
@@ -81,8 +81,8 @@ class AttachFiles extends Component {
             <i className="fa fa-download" />
             {" " + file.name}
             <button
-              className="delete-x-button"
-              onClick={async e => {
+              className="btn-i"
+              onClick={async (e) => {
                 e.preventDefault();
                 loadingModal("Deleting the attach file...");
 
@@ -90,8 +90,8 @@ class AttachFiles extends Component {
                   `/api/pages/${this.props.id}/attach-files/${file._id}`,
                   {
                     headers: {
-                      authorization: localStorage.getItem("token")
-                    }
+                      authorization: localStorage.getItem("token"),
+                    },
                   }
                 );
 
@@ -107,7 +107,7 @@ class AttachFiles extends Component {
         );
       });
     // If user is not the owner of the page
-    return this.props.attachFiles.map(file => {
+    return this.props.attachFiles.map((file) => {
       return (
         <a
           className="file-link"
@@ -128,7 +128,7 @@ class AttachFiles extends Component {
       return (
         <React.Fragment>
           <button
-            className="btn-normal btn-normal-xs"
+            className="btn btn-round btn-blue btn-sm"
             onClick={() => {
               this.setState({ attachFileMdl: true });
             }}
@@ -158,10 +158,10 @@ class AttachFiles extends Component {
               onClick={() => {
                 this.setState({ error: "" });
               }}
-              onError={msg => {
+              onError={(msg) => {
                 this.setState({
                   error: msg,
-                  inputLabelName: "Upload a File"
+                  inputLabelName: "Upload a File",
                 });
                 this.cancelBtn.current.classList.add("display-none");
                 this.uploadBtn.current.classList.add("display-none");
@@ -174,7 +174,7 @@ class AttachFiles extends Component {
             >
               <a
                 ref={this.cancelBtn}
-                className="btn-round btn-round-sm display-none"
+                className="btn btn-round btn-blue-o display-none"
                 onClick={() => {
                   this.reset();
                   this.setState({ attachFileMdl: false });
@@ -184,7 +184,7 @@ class AttachFiles extends Component {
               </a>
               <a
                 ref={this.uploadBtn}
-                className="btn-round btn-round-sm btn-round-full display-none"
+                className="btn btn-round btn-blue display-none"
                 onClick={this.onUploadClick}
               >
                 Upload
@@ -217,15 +217,18 @@ class AttachFiles extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     id: state.pageData.id,
     attachFiles: state.pageData.attachFiles || "",
     viewer: {
-      status: state.pageData.status
+      status: state.pageData.status,
     },
-    isPending: state.pageData.isPending
+    isPending: state.pageData.isPending,
   };
 };
 
-export default connect(mapStateToProps, actions)(AttachFiles);
+export default connect(
+  mapStateToProps,
+  actions
+)(AttachFiles);

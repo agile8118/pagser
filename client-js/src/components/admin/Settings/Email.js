@@ -13,20 +13,20 @@ class Email extends Component {
 
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
 
     axios
       .get(`/api/account/email`, config)
-      .then(response => {
+      .then((response) => {
         if (this._isMounted) {
           this.setState({
-            email: response.data.email
+            email: response.data.email,
           });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response.status === 401) {
           window.location.href = "/login?redirected=admin";
         }
@@ -48,7 +48,7 @@ class Email extends Component {
       return (
         <form
           className="form"
-          onSubmit={event => {
+          onSubmit={(event) => {
             event.preventDefault();
             this.onFormSubmit.apply(this);
           }}
@@ -59,13 +59,13 @@ class Email extends Component {
               className="form__input"
               type="text"
               value={this.state.email}
-              onChange={event => {
+              onChange={(event) => {
                 this.setState({ email: event.target.value });
               }}
             />
           </div>
           <button
-            className="btn-round btn-round-normal float-right"
+            className="btn btn-blue-o btn-round float-right"
             onClick={() => {
               showSnackBar("Sorry we haven't added this part yet.");
             }}

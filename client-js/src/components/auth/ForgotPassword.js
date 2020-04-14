@@ -12,7 +12,7 @@ class ForgotPassword extends Component {
       confirmPassword: "",
       status: "showform",
       message: "",
-      btnDisabled: true
+      btnDisabled: true,
     };
   }
 
@@ -105,24 +105,24 @@ class ForgotPassword extends Component {
       .post(`/api/resetpassword`, {
         userId: getParameterByName("i"),
         token: { code: getParameterByName("t") },
-        password: this.state.password
+        password: this.state.password,
       })
-      .then(response => {
+      .then((response) => {
         this.setState({ status: "success" });
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response.data.error === "invalid link") {
           this.setState({
             status: "error",
             message:
-              "The link you've clicked on is not valid, make sure that you open the exact link we've sent to your email."
+              "The link you've clicked on is not valid, make sure that you open the exact link we've sent to your email.",
           });
         }
         if (error.response.data.error === "link expired") {
           this.setState({
             status: "error",
             message:
-              "The link you've clicked on has expired. Please request for a password reset once again."
+              "The link you've clicked on has expired. Please request for a password reset once again.",
           });
         }
       });
@@ -139,7 +139,7 @@ class ForgotPassword extends Component {
           </p>
           <form
             method="post"
-            onSubmit={event => {
+            onSubmit={(event) => {
               event.preventDefault();
               this.onFormSubmit.apply(this);
             }}
@@ -148,16 +148,16 @@ class ForgotPassword extends Component {
               <input
                 type="password"
                 className="form__input"
-                onBlur={event => {
+                onBlur={(event) => {
                   this.onInputFocusOut.apply(this, [
                     event.target.value,
-                    "password"
+                    "password",
                   ]);
                 }}
-                onChange={event => {
+                onChange={(event) => {
                   this.onInputChange.apply(this, [
                     event.target.value,
-                    "password"
+                    "password",
                   ]);
                 }}
                 placeholder="Password"
@@ -173,16 +173,16 @@ class ForgotPassword extends Component {
                 type="password"
                 className="form__input form__input--disabled"
                 disabled
-                onBlur={event => {
+                onBlur={(event) => {
                   this.onInputFocusOut.apply(this, [
                     event.target.value,
-                    "confirmPassword"
+                    "confirmPassword",
                   ]);
                 }}
-                onChange={event => {
+                onChange={(event) => {
                   this.onInputChange.apply(this, [
                     event.target.value,
-                    "confirmPassword"
+                    "confirmPassword",
                   ]);
                 }}
                 placeholder="Confirm Password"
@@ -196,7 +196,7 @@ class ForgotPassword extends Component {
             <div className="form__group">
               <button
                 action="submit"
-                className="btn-round"
+                className="btn btn-blue btn-round"
                 disabled={this.state.btnDisabled}
               >
                 Reset

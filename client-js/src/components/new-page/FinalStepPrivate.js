@@ -14,20 +14,20 @@ class FinalStepPrivate extends Component {
     url: "",
     usedUrls: [],
     btnDisabled: true,
-    loaded: false
+    loaded: false,
   };
 
   componentDidMount() {
     const pageId = getParameterByName("id", window.location.href) || "id";
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
 
     axios
       .get(`/api/new-page/final-step/${pageId}`, config)
-      .then(response => {
+      .then((response) => {
         const page = response.data.page;
         this.setState({
           type: page.type,
@@ -37,10 +37,10 @@ class FinalStepPrivate extends Component {
           username: page.author.username,
           url: page.url || "",
           usedUrls: response.data.urls,
-          loaded: true
+          loaded: true,
         });
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response.status === 401) {
           window.location.href = "/login?redirected=new-page";
         } else {
@@ -49,7 +49,7 @@ class FinalStepPrivate extends Component {
       });
   }
 
-  onSwithClicked = e => {
+  onSwithClicked = (e) => {
     switch (e.target.getAttribute("role")) {
       case "comments":
         this.setState({ comments: !this.state.comments });
@@ -72,15 +72,15 @@ class FinalStepPrivate extends Component {
       configurations: {
         comments: this.state.comments,
         rating: this.state.rating,
-        anonymously: this.state.anonymously
+        anonymously: this.state.anonymously,
       },
       url: this.state.url,
-      password: this.state.pass
+      password: this.state.pass,
     };
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
     axios
       .patch(
@@ -89,14 +89,14 @@ class FinalStepPrivate extends Component {
           window.location.href
         )}`,
         {
-          page
+          page,
         },
         config
       )
-      .then(response => {
+      .then((response) => {
         callback();
       })
-      .catch(response => {
+      .catch((response) => {
         this.props.history.push(`/new-page/initial-step`);
       });
   }
@@ -105,19 +105,21 @@ class FinalStepPrivate extends Component {
     const pageId = getParameterByName("id", window.location.href);
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
     this.updatePage(() => {
       axios
         .post(`/api/new-page/${pageId}`, null, config)
-        .then(response => {
+        .then((response) => {
           loadingModal();
           this.props.history.push(
-            `/new-page/message?type=private&status=success&url=${response.data.url}&username=${response.data.username}`
+            `/new-page/message?type=private&status=success&url=${
+              response.data.url
+            }&username=${response.data.username}`
           );
         })
-        .catch(error => {
+        .catch((error) => {
           loadingModal();
           if (error.response.data.error === "error with contents") {
             this.props.history.push(
@@ -147,7 +149,7 @@ class FinalStepPrivate extends Component {
   renderButton() {
     return (
       <button
-        className="btn-normal btn-normal-sm"
+        className="btn btn-blue"
         onClick={this.onSubmitButtonClicked}
         disabled={this.state.btnDisabled}
       >
@@ -164,7 +166,7 @@ class FinalStepPrivate extends Component {
             <ProgressBar width={100} />
             <div className="page-new">
               <button
-                className="back-button back-button--new-page"
+                className="btn-text btn-text-big a-11"
                 onClick={this.onBackButtonClicked.bind(this)}
               >
                 <i className="fa fa-arrow-left" aria-hidden="true" /> Back
@@ -242,7 +244,7 @@ class FinalStepPrivate extends Component {
                     onError={() => {
                       this.setState({ btnDisabled: true });
                     }}
-                    onSuccess={url => {
+                    onSuccess={(url) => {
                       this.setState({ btnDisabled: false, url });
                     }}
                   />

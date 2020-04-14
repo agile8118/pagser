@@ -11,7 +11,7 @@ class Password extends Component {
     password: "",
     confirmPassword: "",
     alertMessage: null,
-    alertType: "success"
+    alertType: "success",
   };
 
   onInputFocusOut(value, fieldName) {
@@ -92,18 +92,18 @@ class Password extends Component {
 
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
     axios
       .patch(
         `/api/account/password`,
         {
-          password: this.state.password
+          password: this.state.password,
         },
         config
       )
-      .then(response => {
+      .then((response) => {
         loadingModal();
         util.confirmPasswordReset.apply(this);
         util.inputNone("password");
@@ -111,11 +111,11 @@ class Password extends Component {
           password: "",
           confirmPassword: "",
           alertMessage: "Password updated successfully.",
-          alertType: "success"
+          alertType: "success",
         });
         util.disableButton("change-password");
       })
-      .catch(error => {
+      .catch((error) => {
         loadingModal();
         console.log("err");
       });
@@ -126,7 +126,7 @@ class Password extends Component {
       <div>
         <form
           method="post"
-          onSubmit={event => {
+          onSubmit={(event) => {
             event.preventDefault();
             this.onFormSubmit.apply(this);
           }}
@@ -144,16 +144,16 @@ class Password extends Component {
             <input
               type="password"
               className="form__input"
-              onBlur={event => {
+              onBlur={(event) => {
                 this.onInputFocusOut.apply(this, [
                   event.target.value,
-                  "password"
+                  "password",
                 ]);
               }}
-              onChange={event => {
+              onChange={(event) => {
                 this.onInputChange.apply(this, [
                   event.target.value,
-                  "password"
+                  "password",
                 ]);
               }}
               placeholder="Password"
@@ -168,16 +168,16 @@ class Password extends Component {
               type="password"
               className="form__input form__input--disabled"
               disabled
-              onBlur={event => {
+              onBlur={(event) => {
                 this.onInputFocusOut.apply(this, [
                   event.target.value,
-                  "confirmPassword"
+                  "confirmPassword",
                 ]);
               }}
-              onChange={event => {
+              onChange={(event) => {
                 this.onInputChange.apply(this, [
                   event.target.value,
-                  "confirmPassword"
+                  "confirmPassword",
                 ]);
               }}
               placeholder="Confirm Password"
@@ -188,7 +188,7 @@ class Password extends Component {
             </div>
           </div>
           <button
-            className="btn-round btn-round-normal float-right margin-top-1 btn-disabled"
+            className="btn btn-blue-o btn-round float-right margin-top-1"
             id="change-password"
             disabled
           >

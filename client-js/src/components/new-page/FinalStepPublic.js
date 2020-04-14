@@ -18,22 +18,22 @@ class FinalStepPublic extends Component {
       comments: "fa fa-2x fa-toggle-off",
       rating: "fa fa-2x fa-toggle-off",
       links: "fa fa-2x fa-toggle-off",
-      anonymously: "fa fa-2x fa-toggle-off"
+      anonymously: "fa fa-2x fa-toggle-off",
     },
-    btnDisabled: true
+    btnDisabled: true,
   };
 
   componentDidMount() {
     const pageId = getParameterByName("id", window.location.href) || "id";
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
 
     axios
       .get(`/api/new-page/final-step/${pageId}`, config)
-      .then(response => {
+      .then((response) => {
         const page = response.data.page;
         this.setState(
           {
@@ -41,14 +41,14 @@ class FinalStepPublic extends Component {
             comments: page.configurations.comments,
             rating: page.configurations.rating,
             anonymously: page.configurations.anonymously,
-            links: page.configurations.links
+            links: page.configurations.links,
           },
           () => {
             this.stateChanged("classes");
           }
         );
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response.status === 401) {
           window.location.href = "/login?redirected=new-page";
         } else {
@@ -77,21 +77,21 @@ class FinalStepPublic extends Component {
         comments: this.state.comments,
         rating: this.state.rating,
         links: this.state.links,
-        anonymously: this.state.anonymously
+        anonymously: this.state.anonymously,
       },
-      tags: this.state.tags
+      tags: this.state.tags,
     };
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
     axios
       .patch(`/api/new-page/final-step/${pageId}`, { page }, config)
-      .then(response => {
+      .then((response) => {
         callback();
       })
-      .catch(response => {
+      .catch((response) => {
         loadingModal();
         this.props.history.push(`/new-page/initial-step`);
       });
@@ -142,19 +142,19 @@ class FinalStepPublic extends Component {
     const pageId = getParameterByName("id", window.location.href);
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
     this.updatePage(() => {
       axios
         .post(`/api/new-page/${pageId}`, null, config)
-        .then(response => {
+        .then((response) => {
           loadingModal();
           this.props.history.push(
             `/new-page/message?type=public&status=success&url=${response.data}`
           );
         })
-        .catch(error => {
+        .catch((error) => {
           loadingModal();
           if (error.response.data.error === "error with contents") {
             this.props.history.push(
@@ -243,7 +243,7 @@ class FinalStepPublic extends Component {
         onClick={() => {
           this.onButtonClicked.apply(this);
         }}
-        className="btn-normal btn-normal-sm"
+        className="btn btn-blue"
         id="publish-button"
         disabled={this.state.btnDisabled}
       >
@@ -272,7 +272,7 @@ class FinalStepPublic extends Component {
           </div>
           <div className={contentClass}>
             <button
-              className="back-button back-button--new-page"
+              className="btn-text btn-text-big a-11"
               onClick={this.onBackButtonClicked.bind(this)}
             >
               <i className="fa fa-arrow-left" aria-hidden="true" /> Back

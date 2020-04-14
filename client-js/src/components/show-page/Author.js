@@ -30,6 +30,9 @@ const Author = ({ isPending, author }) => {
         </a>
         <p className={bioClassName}>{userBio}</p>
       </div>
+      <div className="page__author__sub">
+        <button className="btn btn-blue btn-round">Subscribe</button>
+      </div>
     </div>
   );
 };
@@ -37,7 +40,7 @@ const Author = ({ isPending, author }) => {
 const mapStateToProps = ({ pageData }) => {
   return {
     isPending: pageData.isPending,
-    author: pageData.author
+    author: pageData.author,
   };
 };
 

@@ -15,11 +15,11 @@ class PhotoUpload extends Component {
     inputLabelName: "Upload a Photo",
     inputLabelHide: false,
     rmPhotoConfMdl: false,
-    uploadPhotoMdl: false
+    uploadPhotoMdl: false,
   };
 
   componentDidMount() {
-    const loadStyleSheet = src => {
+    const loadStyleSheet = (src) => {
       if (document.createStylesheet) {
         document.createStylesheet(src);
       } else {
@@ -50,27 +50,31 @@ class PhotoUpload extends Component {
     formData.append("img", document.querySelector("#image-input").files[0]);
     formData.set(
       "cropData",
-      `{ "x": "${this.state.cropData.x}", "y": "${this.state.cropData.y}", "width": "${this.state.cropData.width}", "height": "${this.state.cropData.height}" }`
+      `{ "x": "${this.state.cropData.x}", "y": "${
+        this.state.cropData.y
+      }", "width": "${this.state.cropData.width}", "height": "${
+        this.state.cropData.height
+      }" }`
     );
 
     axios
       .put(`/api/pages/${this.props.pageId}/photo`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          authorization: localStorage.getItem("token")
-        }
+          authorization: localStorage.getItem("token"),
+        },
       })
-      .then(res => {
+      .then((res) => {
         document.querySelector("#reset-btn").click();
         show("#js--uploader-options");
         hide("#js--uploader-loading");
         this.setState({
           photo: res.data.image,
-          uploadPhotoMdl: false
+          uploadPhotoMdl: false,
         });
         showSnackBar("Photo uploaded successfully.", "success");
       })
-      .catch(e => {
+      .catch((e) => {
         document.querySelector("#reset-btn").click();
         this.setState({ uploadPhotoMdl: false });
         show("#js--uploader-options");
@@ -88,20 +92,20 @@ class PhotoUpload extends Component {
 
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
     axios
       .delete(`/api/pages/${this.props.pageId}/photo`, config)
-      .then(res => {
+      .then((res) => {
         loadingModal();
         showSnackBar("Photo successfully removed from your page.", "success");
 
         this.setState({
-          photo: ""
+          photo: "",
         });
       })
-      .catch(e => {
+      .catch((e) => {
         loadingModal();
         showSnackBar("There was problem with removing the photo.", "error");
       });
@@ -133,8 +137,8 @@ class PhotoUpload extends Component {
             x: cropper.getData().x,
             y: cropper.getData().y,
             width: cropper.getData().width,
-            height: cropper.getData().height
-          }
+            height: cropper.getData().height,
+          },
         });
       },
       ready: function() {
@@ -151,10 +155,10 @@ class PhotoUpload extends Component {
             x: cropper.getData().x,
             y: cropper.getData().y,
             width: cropper.getData().width,
-            height: cropper.getData().height
-          }
+            height: cropper.getData().height,
+          },
         });
-      }
+      },
     });
   }
 
@@ -163,7 +167,7 @@ class PhotoUpload extends Component {
       return (
         <React.Fragment>
           <button
-            className="btn-normal btn-normal-xs margin-right-1"
+            className="btn btn-blue btn-sm btn-round margin-right-1"
             onClick={() => {
               this.setState({ uploadPhotoMdl: true });
             }}
@@ -171,7 +175,7 @@ class PhotoUpload extends Component {
             Change Page Photo
           </button>
           <button
-            className="btn-normal btn-normal-xs btn-normal-danger"
+            className="btn btn-sm btn-round btn-red"
             onClick={() => {
               this.setState({ rmPhotoConfMdl: true });
             }}
@@ -183,7 +187,7 @@ class PhotoUpload extends Component {
     } else {
       return (
         <button
-          className="btn-normal btn-normal-xs"
+          className="btn btn-blue btn-sm btn-round"
           onClick={() => {
             this.setState({ uploadPhotoMdl: true });
           }}
@@ -257,8 +261,8 @@ class PhotoUpload extends Component {
             minWidth={1200}
             minHeight={675}
             onChange={this.onFileInputChange}
-            onClick={e => {}}
-            onError={msg => {
+            onClick={(e) => {}}
+            onError={(msg) => {
               this.setState({ error: msg });
               this.reset();
             }}
@@ -272,7 +276,7 @@ class PhotoUpload extends Component {
           >
             <a
               id="reset-btn"
-              className="btn-round btn-round-sm display-none"
+              className="btn btn-round btn-blue-o display-none"
               onClick={() => {
                 this.reset();
               }}
@@ -281,7 +285,7 @@ class PhotoUpload extends Component {
             </a>
             <a
               id="upload-btn"
-              className="btn-round btn-round-sm btn-round-full display-none"
+              className="btn btn-round btn-blue display-none"
               onClick={this.onUploadClick.bind(this)}
             >
               Upload
