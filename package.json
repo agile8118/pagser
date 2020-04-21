@@ -11,7 +11,7 @@
     "build-statics": "cd ./client-js && npm run build && cd .. && cd ./sass && npm run build && cd ..",
     "start": "node server/server.js",
     "prod": "pm2 start ecosystem.config.js",
-    "dev": "nodemon server/server.js"
+    "dev": "nodemon --watch server server/server.js"
   },
   "author": "",
   "license": "ISC",

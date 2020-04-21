@@ -2,6 +2,7 @@ const { Page, DraftPage } = require("../../models/page");
 const { Trash } = require("../../models/trash");
 const User = require("../../models/user");
 const Comment = require("../../models/comment");
+const Subscription = require("../../models/subscription");
 const util = require("../../lib/util");
 const crypto = require("crypto");
 const multer = require("multer");
@@ -23,14 +24,14 @@ const IAM_USER_SECRET = keys.secretAccessKey;
 let S3 = new AWS.S3({
   accessKeyId: IAM_USER_KEY,
   secretAccessKey: IAM_USER_SECRET,
-  Bucket: BUCKET_NAME
+  Bucket: BUCKET_NAME,
 });
 
 var storage = multer.diskStorage({
-  destination: function(req, file, cb) {
+  destination: function (req, file, cb) {
     cb(null, "./public/images/pages");
   },
-  filename: function(req, file, cb) {
+  filename: function (req, file, cb) {
     cb(
       null,
       Date.now() +
@@ -39,18 +40,18 @@ var storage = multer.diskStorage({
         "." +
         file.originalname.split(".").pop()
     );
-  }
+  },
 });
 
 var upload = multer({ storage: storage }).single("img");
 
 var fileStorage = multer.diskStorage({
-  destination: function(req, file, cb) {
+  destination: function (req, file, cb) {
     cb(null, "./storage");
   },
-  filename: function(req, file, cb) {
+  filename: function (req, file, cb) {
     cb(null, file.originalname);
-  }
+  },
 });
 
 var uploadFile = multer({ storage: fileStorage }).single("file");
@@ -58,12 +59,11 @@ var uploadFile = multer({ storage: fileStorage }).single("file");
 cloudinary.config({
   cloud_name: "dxlsmrixd",
   api_key: keys.cloudinary_api_key,
-  api_secret: keys.cloudinary_api_secret
+  api_secret: keys.cloudinary_api_secret,
 });
 
-exports.fetchPublicPageData = function(req, res) {
+exports.fetchPublicPageData = async (req, res) => {
   const pageUrl = req.params.url;
-  var viewer;
 
   try {
     var decoded = jwt.decode(req.headers.authorization, keys.jwtSecret);
@@ -72,50 +72,51 @@ exports.fetchPublicPageData = function(req, res) {
     var userId = false;
   }
 
-  Page.findOne({ url: pageUrl })
+  const page = await Page.findOne({ url: pageUrl })
     .select("_id likes dislikes author photo url attachFiles contents.title")
     .populate({
       path: "author",
       select: "name username biography photo",
-      model: "User"
-    })
-    .exec((err, page) => {
-      if (err) return res.status(500).send("error");
-      var pageData = {
-        id: page._id,
-        author: page.author,
-        likes: page.likes.length,
-        dislikes: page.dislikes.length,
-        url: page.url,
-        contents: {
-          title: page.contents.title
-        },
-        attachFiles: page.attachFiles,
-        photo: page.photo || ""
-      };
-
-      if (userId) {
-        if (page.author.equals(userId)) {
-          viewer = { status: "owner", favorited: null };
-          res.send({ page: pageData, viewer });
-        } else {
-          viewer = { status: "authenticated" };
-          User.findById(userId, "favoritePages", function(err, user) {
-            if (err) return res.status(500).send("error");
-            if (user.favoritePages.indexOf(page.id) === -1) {
-              viewer = { status: "authenticated", favorited: false };
-              res.send({ page: pageData, viewer });
-            } else {
-              viewer = { status: "authenticated", favorited: true };
-              res.send({ page: pageData, viewer });
-            }
-          });
-        }
-      } else {
-        viewer = { status: "spectator", favorited: false };
-        res.send({ page: pageData, viewer });
-      }
+      model: "User",
     });
+
+  const subs = await Subscription.find(
+    { author: page.author.id },
+    "subscriber"
+  );
+
+  const pageData = {
+    id: page._id,
+    author: { ...page.author._doc, subscribersNum: subs.length },
+    likes: page.likes.length,
+    dislikes: page.dislikes.length,
+    url: page.url,
+    contents: {
+      title: page.contents.title,
+    },
+    attachFiles: page.attachFiles,
+    photo: page.photo || "",
+  };
+
+  let viewer = {};
+  if (userId) {
+    if (page.author.equals(userId))
+      viewer = { status: "owner", favorited: null };
+    else {
+      const { favoritePages } = await User.findById(userId, "favoritePages");
+      const sub = await Subscription.findOne({
+        subscriber: userId,
+        author: page.author.id,
+      });
+
+      viewer.status = "authenticated";
+      viewer.favorite = false;
+      if (favoritePages.indexOf(page.id) !== -1) viewer.favorite = true;
+      if (sub) viewer.subscribed = true;
+    }
+  } else viewer = { status: "spectator", favorited: false };
+
+  res.send({ page: pageData, viewer });
 };
 
 exports.fetchDraftPageData = (req, res) => {
@@ -148,7 +149,7 @@ exports.fetchDraftPageData = (req, res) => {
         .populate({
           path: "author",
           select: "username",
-          model: "User"
+          model: "User",
         })
         .exec((err, page) => {
           if (err) return res.status(500).send("error");
@@ -157,7 +158,7 @@ exports.fetchDraftPageData = (req, res) => {
             "url",
             (err, results) => {
               if (err) return res.status(500).send("error");
-              var urls = results.map(result => {
+              var urls = results.map((result) => {
                 return result.url;
               });
               res.send({ page, urls });
@@ -179,20 +180,20 @@ exports.updateDraftPageData = (req, res) => {
   switch (stage) {
     case "initial-step":
       var obj = {
-        type: page.type
+        type: page.type,
       };
       obj.author = req.user.id;
 
       DraftPage.findById(pageId, (err, result) => {
         if (err || !result) {
           var newPage = new DraftPage(obj);
-          newPage.save(function(err, newPage) {
+          newPage.save(function (err, newPage) {
             if (err) return res.status(500).send("error");
             res.status(201).send({ id: newPage.id, message: "created" });
           });
         } else {
           result.type = page.type;
-          result.save(err => {
+          result.save((err) => {
             if (err) return res.status(500).send("error");
             res.send({ id: result.id, message: "updated" });
           });
@@ -207,10 +208,10 @@ exports.updateDraftPageData = (req, res) => {
           title: page.contents.title,
           briefDes: page.contents.briefDes,
           body: util.cleanHTML(page.contents.body),
-          targets: page.contents.targets || ""
+          targets: page.contents.targets || "",
         };
 
-        result.save(function(err, page) {
+        result.save(function (err, page) {
           if (err) return res.status(500).send("error");
           res.status(200).send(result.id);
         });
@@ -223,13 +224,13 @@ exports.updateDraftPageData = (req, res) => {
           comments: page.configurations.comments,
           rating: page.configurations.rating,
           anonymously: page.configurations.anonymously,
-          links: page.configurations.links
+          links: page.configurations.links,
         };
 
         result.url = page.url || "";
         result.tags = page.tags;
 
-        result.save(function(err, page) {
+        result.save(function (err, page) {
           if (!err) {
             res.status(201).send("updated");
           }
@@ -241,7 +242,7 @@ exports.updateDraftPageData = (req, res) => {
   }
 };
 
-exports.create = function(req, res) {
+exports.create = function (req, res) {
   const pageId = req.params.id;
   const userId = req.user.id;
 
@@ -263,7 +264,7 @@ exports.create = function(req, res) {
             author: result.author,
             configurations: result.configurations,
             tags: result.tags,
-            contents: result.contents
+            contents: result.contents,
           });
 
           Page.findOne(
@@ -275,7 +276,7 @@ exports.create = function(req, res) {
                 page.url =
                   page.url + "_" + crypto.randomBytes(1).toString("hex");
               }
-              page.save(err => {
+              page.save((err) => {
                 if (err) {
                   return res.status(400).send("err");
                 }
@@ -294,12 +295,12 @@ exports.create = function(req, res) {
             configurations: {
               anonymously: result.configurations.anonymously,
               rating: result.configurations.rating,
-              comments: result.configurations.comments
+              comments: result.configurations.comments,
             },
             contents: result.contents,
-            password: result.password
+            password: result.password,
           });
-          page.save(err => {
+          page.save((err) => {
             if (err) {
               return res.status(400).send("err");
             }
@@ -338,7 +339,7 @@ exports.updatePage = (req, res) => {
           url: util.convertToUrl(page.contents.title),
           contents: page.contents,
           configurations: page.configurations,
-          tags: page.tags
+          tags: page.tags,
         },
         { new: true },
         (err, result) => {
@@ -355,9 +356,9 @@ exports.updatePage = (req, res) => {
           configurations: {
             anonymously: page.configurations.anonymously,
             rating: page.configurations.rating,
-            comments: page.configurations.comments
+            comments: page.configurations.comments,
           },
-          url: page.url
+          url: page.url,
         },
         { new: true },
         (err, page) => {
@@ -373,16 +374,16 @@ exports.updatePage = (req, res) => {
 };
 
 // Favorite or unfavorite a page
-exports.favorite = function(req, res) {
+exports.favorite = function (req, res) {
   var pageId = req.params.id;
   var userId = req.user.id;
 
-  Page.findById(pageId, function(err, page) {
+  Page.findById(pageId, function (err, page) {
     if (err) return res.status(500).send("error");
     if (page) {
       var pageId = page.id;
 
-      User.findById(userId, function(err, user) {
+      User.findById(userId, function (err, user) {
         if (user.favoritePages.indexOf(pageId) === -1) {
           User.findByIdAndUpdate(
             userId,
@@ -410,13 +411,13 @@ exports.favorite = function(req, res) {
 };
 
 // users liked or disliked a page
-exports.rate = function(req, res) {
+exports.rate = function (req, res) {
   var rate = req.body.rate;
   var pageId = req.params.id;
   var userId = req.user.id;
 
   if (rate === "like") {
-    Page.findById(pageId, function(err, page) {
+    Page.findById(pageId, function (err, page) {
       if (err) return res.status(500).send("error");
       var indexL = page.likes.indexOf(userId);
 
@@ -429,7 +430,7 @@ exports.rate = function(req, res) {
             if (err) return res.status(500).send("error");
             res.send({
               likes: page.likes.length,
-              dislikes: page.dislikes.length
+              dislikes: page.dislikes.length,
             });
           }
         );
@@ -442,14 +443,14 @@ exports.rate = function(req, res) {
             if (err) return res.status(500).send("error");
             res.send({
               likes: page.likes.length,
-              dislikes: page.dislikes.length
+              dislikes: page.dislikes.length,
             });
           }
         );
       }
     });
   } else if (rate === "dislike") {
-    Page.findById(pageId, function(err, page) {
+    Page.findById(pageId, function (err, page) {
       if (err) {
         res.send("error");
       } else {
@@ -464,7 +465,7 @@ exports.rate = function(req, res) {
               if (err) return res.status(500).send("error");
               res.send({
                 likes: page.likes.length,
-                dislikes: page.dislikes.length
+                dislikes: page.dislikes.length,
               });
             }
           );
@@ -477,7 +478,7 @@ exports.rate = function(req, res) {
               if (err) return res.status(500).send("error");
               res.send({
                 likes: page.likes.length,
-                dislikes: page.dislikes.length
+                dislikes: page.dislikes.length,
               });
             }
           );
@@ -495,7 +496,7 @@ exports.uploadPagePhoto = (req, res) => {
     const imageFolderPath = "./public/images/pages/";
     const pageId = req.params.id;
 
-    upload(req, res, function(err) {
+    upload(req, res, function (err) {
       if (err) {
         return res.send(err);
       }
@@ -510,7 +511,7 @@ exports.uploadPagePhoto = (req, res) => {
       }
       const buffer = readChunk.sync(`${imageFolderPath}${imgName}`, 0, 4100);
       if (req.file.size > 8000000) {
-        fs.unlink(`${imageFolderPath}${imgName}`, err => {});
+        fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
         return res.send("maximum image file size is 8MB");
       }
       if (
@@ -518,12 +519,12 @@ exports.uploadPagePhoto = (req, res) => {
         (fileType(buffer) && fileType(buffer).mime === "image/jpg") ||
         (fileType(buffer) && fileType(buffer).mime === "image/jpeg")
       ) {
-        var image = new Jimp(`${imageFolderPath}${imgName}`, function(
+        var image = new Jimp(`${imageFolderPath}${imgName}`, function (
           err,
           image
         ) {
           if (image.bitmap.width < 1200 || image.bitmap.height < 675) {
-            fs.unlink(`${imageFolderPath}${imgName}`, err => {});
+            fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
             return res.send(
               "image dimentions must be at least 1200 * 675 pixels"
             );
@@ -532,16 +533,16 @@ exports.uploadPagePhoto = (req, res) => {
           image
             .quality(60)
             .resize(1200, Jimp.AUTO)
-            .write(`${imageFolderPath}${imgName}`, function(err, image) {
+            .write(`${imageFolderPath}${imgName}`, function (err, image) {
               if (err) {
-                fs.unlink(`${imageFolderPath}${imgName}`, err => {});
+                fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
                 return res.send("error");
               }
 
               cloudinary.v2.uploader.upload(
                 `${imageFolderPath}${imgName}`,
                 { folder: "images/pages" },
-                function(error, result) {
+                function (error, result) {
                   Page.findById(pageId, (err, page) => {
                     if (!page) {
                       return res.status(400).send("err");
@@ -554,16 +555,19 @@ exports.uploadPagePhoto = (req, res) => {
                       page.photo.secure_url = result.secure_url;
                     } catch (e) {
                       res.status(500).send({ error: "An error occurred" });
-                      fs.unlink(`${imageFolderPath}${imgName}`, err => {});
+                      fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
                     }
 
-                    page.save(err => {
+                    page.save((err) => {
                       if (!err) {
                         try {
                           res.send({ image: page.photo.secure_url });
                         } catch (e) {
                           res.status(500).send({ error: "An error occurred" });
-                          fs.unlink(`${imageFolderPath}${imgName}`, err => {});
+                          fs.unlink(
+                            `${imageFolderPath}${imgName}`,
+                            (err) => {}
+                          );
                         }
                       }
                     });
@@ -573,7 +577,7 @@ exports.uploadPagePhoto = (req, res) => {
             });
         });
 
-        var cropedImage = new Jimp(`${imageFolderPath}${imgName}`, function(
+        var cropedImage = new Jimp(`${imageFolderPath}${imgName}`, function (
           err,
           image
         ) {
@@ -587,18 +591,18 @@ exports.uploadPagePhoto = (req, res) => {
               .crop(x, y, width, height)
               .quality(60)
               .resize(400, 225)
-              .write(`${imageFolderPath}croped-${imgName}`, function(
+              .write(`${imageFolderPath}croped-${imgName}`, function (
                 err,
                 image
               ) {
                 if (err) {
-                  fs.unlink(`${imageFolderPath}croped-${imgName}`, err => {});
+                  fs.unlink(`${imageFolderPath}croped-${imgName}`, (err) => {});
                 }
 
                 cloudinary.v2.uploader.upload(
                   `${imageFolderPath}croped-${imgName}`,
                   { folder: "images/pages/croped" },
-                  function(error, result) {
+                  function (error, result) {
                     Page.findById(pageId, (err, page) => {
                       if (!page) {
                       }
@@ -613,25 +617,25 @@ exports.uploadPagePhoto = (req, res) => {
                       } catch (e) {
                         fs.unlink(
                           `${imageFolderPath}croped-${imgName}`,
-                          err => {}
+                          (err) => {}
                         );
                       }
 
-                      page.save(err => {
+                      page.save((err) => {
                         if (!err) {
                           try {
                             fs.unlink(
                               `${imageFolderPath}croped-${imgName}`,
-                              err => {}
+                              (err) => {}
                             );
                             fs.unlink(
                               `${imageFolderPath}${imgName}`,
-                              err => {}
+                              (err) => {}
                             );
                           } catch (e) {
                             fs.unlink(
                               `${imageFolderPath}croped-${imgName}`,
-                              err => {}
+                              (err) => {}
                             );
                           }
                         }
@@ -642,12 +646,12 @@ exports.uploadPagePhoto = (req, res) => {
               });
           } catch (e) {
             res.status(500).send("An unkown error occurred.");
-            fs.unlink(`${imageFolderPath}${imgName}`, err => {});
+            fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
           }
         });
       } else {
         res.send("image format is not supported");
-        fs.unlink(`${imageFolderPath}${imgName}`, err => {});
+        fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
       }
     });
   } catch (e) {
@@ -665,7 +669,7 @@ exports.removePagePhoto = (req, res) => {
     cloudinary.v2.uploader.destroy(page.cropedPhoto.public_id);
     page.photo = { public_id: "", secure_url: "" };
     page.cropedPhoto = { public_id: "", secure_url: "" };
-    page.save(err => {
+    page.save((err) => {
       if (err || !page) return res.send("error");
       res.send("photo removed");
     });
@@ -681,7 +685,7 @@ exports.getAttachFile = (req, res) => {
 
   const options = {
     Bucket: BUCKET_NAME,
-    Key: key
+    Key: key,
   };
 
   res.attachment(key);
@@ -703,13 +707,13 @@ exports.getAttachFiles = (req, res) => {
 exports.addAttachFile = (req, res) => {
   const pageId = req.params.id;
 
-  uploadFile(req, res, err => {
+  uploadFile(req, res, (err) => {
     const file = req.file;
 
     Page.findById(pageId, "attachFiles", (err, page) => {
       if (err || !page) return res.status(500).send("error");
 
-      var uploadedFileInDatabase = page.attachFiles.filter(item => {
+      var uploadedFileInDatabase = page.attachFiles.filter((item) => {
         return item.name === file.originalname;
       });
 
@@ -725,16 +729,16 @@ exports.addAttachFile = (req, res) => {
 
         const key = `${pageId}/${file.originalname}`;
 
-        S3.createBucket(function() {
+        S3.createBucket(function () {
           const params = {
             Bucket: BUCKET_NAME,
             Key: key,
-            Body: fileStream
+            Body: fileStream,
           };
-          S3.upload(params, function(err, data) {
+          S3.upload(params, function (err, data) {
             fs.unlink(
               path.join(__dirname, "../../../storage/" + file.originalname),
-              err => {}
+              (err) => {}
             );
 
             if (err)
@@ -776,7 +780,7 @@ exports.addAttachFile = (req, res) => {
     function handleIssueWithFile(errorMessage) {
       fs.unlink(
         path.join(__dirname, "../../../storage/" + file.originalname),
-        err => {}
+        (err) => {}
       );
       res.status(400).send({ error: errorMessage });
     }
@@ -795,16 +799,16 @@ exports.deleteAttachFile = (req, res) => {
     (err, page) => {
       if (err) return res.status(500).send("error");
 
-      const removedFile = page.attachFiles.filter(file => {
+      const removedFile = page.attachFiles.filter((file) => {
         return file._id.equals(fileId);
       });
 
       const params = {
         Bucket: BUCKET_NAME,
-        Key: `${pageId}/${removedFile[0].name}`
+        Key: `${pageId}/${removedFile[0].name}`,
       };
 
-      S3.deleteObject(params, function(err, data) {
+      S3.deleteObject(params, function (err, data) {
         if (err) return res.status(500).send("error");
         res.send({ message: "file deleted" });
       });
@@ -828,24 +832,24 @@ exports.delete = (req, res) => {
         title: page.contents.title,
         briefDes: page.contents.briefDes,
         targets: page.contents.targets,
-        body: page.contents.body
+        body: page.contents.body,
       },
       tags: page.tags,
       configurations: {
         comments: page.configurations.comments,
         rating: page.configurations.rating,
         anonymously: page.configurations.anonymously,
-        links: page.configurations.links
+        links: page.configurations.links,
       },
       author: page.author,
       url: page.url,
-      kind: "page"
+      kind: "page",
     };
     var trashPage = new Trash(trashPageObj);
-    Comment.deleteMany({ page: page.id }, err => {
+    Comment.deleteMany({ page: page.id }, (err) => {
       if (err) return res.status(500).send("error");
     });
-    trashPage.save(err => {
+    trashPage.save((err) => {
       if (err) return res.status(500).send("error");
       res.send("ok");
     });
@@ -877,7 +881,7 @@ exports.fetchPrivatePageData = (req, res) => {
       .populate({
         path: "author",
         select: "name username biography photo",
-        model: "User"
+        model: "User",
       })
       .exec((err, page) => {
         if (err) return res.status(500).send("error");
@@ -896,7 +900,7 @@ exports.fetchPrivatePageData = (req, res) => {
           author: page.author,
           url: page.url,
           attachFiles: page.attachFiles,
-          photo: page.photo || ""
+          photo: page.photo || "",
         };
 
         if (userId) {
@@ -938,7 +942,7 @@ exports.fetchEditPageData = (req, res) => {
           "url",
           (err, results) => {
             if (err) return res.status(500).send("error");
-            var urls = results.map(result => {
+            var urls = results.map((result) => {
               if (result.url !== page.url) {
                 return result.url;
               }

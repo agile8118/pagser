@@ -340,11 +340,11 @@ pre {
 
 @keyframes animatetop {
   from {
-    top: -20px;
-    opacity: 0; }
+    opacity: 0;
+    transform: scale(1.05); }
   to {
-    top: 0;
-    opacity: 1; } }
+    opacity: 1;
+    transform: scale(1); } }
 
 /***** FADEIN *****/
 @keyframes fadein {
@@ -536,6 +536,7 @@ pre {
 .navigation-btn {
   background-color: #2980b9;
   color: #fff;
+  font-family: inherit;
   padding: 0.3rem 1.2rem;
   font-size: 1.6rem;
   border-radius: 5px; }
@@ -1108,12 +1109,19 @@ pre {
   font-size: inherit;
   letter-spacing: 1px;
   text-transform: capitalize;
-  padding: 0.5rem 1.4rem;
+  padding: 0.4rem 1.4rem;
   border-radius: 7px;
   cursor: pointer;
   transition: all 0.2s; }
   .btn:focus {
     outline: none; }
+
+.btn-default {
+  background: #e1e0e0;
+  color: #5c5b5b;
+  border: 1px solid #dcdada; }
+  .btn-default:hover, .btn-default:focus {
+    background-color: #cdcbcb; }
 
 .btn-blue {
   color: #fff;
@@ -2167,9 +2175,12 @@ input:checked + .slider:before {
     padding: 1.2rem 0;
     font-size: 1.6rem;
     border-top: 1px solid #e8e8e8;
-    border-bottom: 1px solid #e8e8e8;
-    display: flex;
-    align-items: center; }
+    border-bottom: 1px solid #e8e8e8; }
+    .page__author__head {
+      display: flex;
+      align-items: center; }
+    .page__author__bio {
+      margin: 1rem 0 0 6.5rem; }
     .page__author img {
       height: 5rem;
       width: 5rem;
