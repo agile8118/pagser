@@ -4,7 +4,8 @@ import {
   FETCH_PAGE_DATA_FAILED,
   PAGE_RATED,
   PAGE_FAVORITED,
-  FETCH_ATTACH_FILES
+  FETCH_ATTACH_FILES,
+  SUBSCRIBE,
 } from "./constants";
 
 export const pageData = (state = {}, action = {}) => {
@@ -23,12 +24,13 @@ export const pageData = (state = {}, action = {}) => {
         date: action.payload.page.date,
         rating: {
           likes: action.payload.page.likes,
-          dislikes: action.payload.page.dislikes
+          dislikes: action.payload.page.dislikes,
         },
         attachFiles: action.payload.page.attachFiles,
         status: action.payload.viewer.status,
         favorited: action.payload.viewer.favorited,
-        isPending: false
+        subscribed: action.payload.viewer.subscribed,
+        isPending: false,
       };
     case PAGE_RATED:
       return { ...state, rating: action.payload };
@@ -36,6 +38,12 @@ export const pageData = (state = {}, action = {}) => {
       return { ...state, favorited: action.payload };
     case FETCH_ATTACH_FILES:
       return { ...state, attachFiles: action.payload };
+    case SUBSCRIBE:
+      return {
+        ...state,
+        subscribed: action.payload.subscribed,
+        author: { ...state.author, subscribersNum: action.payload.subNum },
+      };
     case FETCH_PAGE_DATA_FAILED:
       if (action.payload === "not found") {
         return { id: "notfound" };

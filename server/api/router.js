@@ -3,6 +3,7 @@ const Controller = require("./controllers");
 const Admin = require("./controllers/admin");
 const Page = require("./controllers/page");
 const Comment = require("./controllers/comment");
+const Subscription = require("./controllers/subscription");
 const passportService = require("./services/passport");
 const passport = require("passport");
 const validate = require("../middleware/validate");
@@ -11,7 +12,7 @@ const middleware = require("../middleware");
 const requireAuth = passport.authenticate("jwt", { session: false });
 const requireSignin = passport.authenticate("local", { session: false });
 
-module.exports = function(app) {
+module.exports = function (app) {
   // *********** AUTHENTICATION ROUTES *********** //
   app.post(
     "/register",
@@ -177,6 +178,16 @@ module.exports = function(app) {
     requireAuth,
     Admin.deleteDraftPages
   );
+
+  // *********** SUBSCRIPTIONS ROUTES *********** //
+  // Subscribe or onsubscribe the user
+  app.post(
+    "/api/subscription/:id",
+    requireAuth,
+    Subscription.toggleSubscription
+  );
+
+  // Fetch the user subscriptions
 
   app.post("/auth", requireAuth, Controller.getAuth);
 };

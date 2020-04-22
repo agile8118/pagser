@@ -1,5 +1,12 @@
 <script>
 
+  // Buttons won't get focused on click
+  document.addEventListener("click", function (e) {
+    if (document.activeElement.toString() == "[object HTMLButtonElement]") {
+      document.activeElement.blur();
+    }
+  });
+
   if (window.location.href.indexOf("new-page") > -1) {
     document.querySelectorAll(".js--create-page").forEach(function (el) {
       el.classList.add("display-none")

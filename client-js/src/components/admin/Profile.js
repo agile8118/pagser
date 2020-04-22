@@ -18,8 +18,8 @@ class Profile extends Component {
       twitter: "",
       youtube: "",
       linkedin: "",
-      facebook: ""
-    }
+      facebook: "",
+    },
   };
   _isMounted = false;
 
@@ -28,13 +28,13 @@ class Profile extends Component {
 
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
 
     axios
       .get(`/api/profile`, config)
-      .then(response => {
+      .then((response) => {
         const user = response.data.user;
         if (this._isMounted) {
           this.setState({
@@ -48,12 +48,12 @@ class Profile extends Component {
               twitter: user.links.twitter,
               youtube: user.links.youtube,
               linkedin: user.links.linkedin,
-              facebook: user.links.facebook
-            }
+              facebook: user.links.facebook,
+            },
           });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response.status === 401) {
           window.location.href = "/login?redirected=admin";
         }
@@ -163,8 +163,8 @@ class Profile extends Component {
     loadingModal("Updating your profile...");
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
 
     axios
@@ -174,11 +174,11 @@ class Profile extends Component {
           name: this.state.name,
           headline: this.state.headline,
           biography: this.state.biography,
-          links: this.state.links
+          links: this.state.links,
         },
         config
       )
-      .then(response => {
+      .then((response) => {
         loadingModal();
         this.setState(
           (({ name, headline, biography, links }) => ({
@@ -186,13 +186,13 @@ class Profile extends Component {
             headline,
             biography,
             links,
-            btnDisabled: false
+            btnDisabled: false,
           }))(this.state)
         );
         showSnackBar("Your profile updated successfully.", "success");
         this.forceUpdate();
       })
-      .catch(error => {
+      .catch((error) => {
         loadingModal();
         this.setState({ btnDisabled: false });
         showSnackBar("An unknown error occurred.", "error");
@@ -215,10 +215,10 @@ class Profile extends Component {
               className="form__input"
               value={this.state.name}
               placeholder="Full name"
-              onBlur={e => {
+              onBlur={(e) => {
                 this.checkIfAllOk.apply(this);
               }}
-              onChange={event => {
+              onChange={(event) => {
                 this.setState({ name: event.target.value });
               }}
             />
@@ -230,13 +230,13 @@ class Profile extends Component {
             <label className="form__label">Headline</label>
             <input
               maxLength={50}
-              onBlur={e => {
+              onBlur={(e) => {
                 this.checkIfAllOk.apply(this);
               }}
               className="form__input"
               placeholder="Describe yourself in few words"
               value={this.state.headline}
-              onChange={event => {
+              onChange={(event) => {
                 this.setState({ headline: event.target.value });
               }}
             />
@@ -249,12 +249,12 @@ class Profile extends Component {
             <label className="form__label">Biography</label>
             <textarea
               maxLength={250}
-              onBlur={e => {
+              onBlur={(e) => {
                 this.checkIfAllOk.apply(this);
               }}
               className="form__textarea"
               value={this.state.biography}
-              onChange={event => {
+              onChange={(event) => {
                 this.setState({ biography: event.target.value });
               }}
               placeholder="Add more information about yourself"
@@ -275,9 +275,9 @@ class Profile extends Component {
                 placeholder="Website (http://www.example.com)"
                 className="form__input"
                 value={this.state.links.website}
-                onChange={event => {
+                onChange={(event) => {
                   this.setState({
-                    links: { ...this.state.links, website: event.target.value }
+                    links: { ...this.state.links, website: event.target.value },
                   });
                 }}
               />
@@ -292,12 +292,12 @@ class Profile extends Component {
                   placeholder="Twitter Profile"
                   value={this.state.links.twitter}
                   className="form__input"
-                  onChange={event => {
+                  onChange={(event) => {
                     this.setState({
                       links: {
                         ...this.state.links,
-                        twitter: event.target.value
-                      }
+                        twitter: event.target.value,
+                      },
                     });
                   }}
                 />
@@ -313,12 +313,12 @@ class Profile extends Component {
                   placeholder="Youtube Profile"
                   value={this.state.links.youtube}
                   className="form__input"
-                  onChange={event => {
+                  onChange={(event) => {
                     this.setState({
                       links: {
                         ...this.state.links,
-                        youtube: event.target.value
-                      }
+                        youtube: event.target.value,
+                      },
                     });
                   }}
                 />
@@ -334,12 +334,12 @@ class Profile extends Component {
                   placeholder="LinkedIn Profile"
                   value={this.state.links.linkedin}
                   className="form__input"
-                  onChange={event => {
+                  onChange={(event) => {
                     this.setState({
                       links: {
                         ...this.state.links,
-                        linkedin: event.target.value
-                      }
+                        linkedin: event.target.value,
+                      },
                     });
                   }}
                 />
@@ -355,12 +355,12 @@ class Profile extends Component {
                   placeholder="Facebook Profile"
                   value={this.state.links.facebook}
                   className="form__input"
-                  onChange={event => {
+                  onChange={(event) => {
                     this.setState({
                       links: {
                         ...this.state.links,
-                        facebook: event.target.value
-                      }
+                        facebook: event.target.value,
+                      },
                     });
                   }}
                 />
@@ -369,9 +369,9 @@ class Profile extends Component {
           </div>
           <div className="right-content">
             <button
-              className="btn-round btn-round-normal"
+              className="btn btn-blue-o btn-round"
               disabled={this.state.btnDisabled}
-              onClick={e => this.onSaveClick(e)}
+              onClick={(e) => this.onSaveClick(e)}
             >
               Save
             </button>
@@ -384,7 +384,7 @@ class Profile extends Component {
             <a
               href={`/users/${this.state.username}`}
               target="_blank"
-              className="btn-link"
+              className="btn-text btn-text-underlined"
             >
               View public profile <i className="fa fa-arrow-right" />
             </a>

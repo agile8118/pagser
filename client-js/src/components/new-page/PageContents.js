@@ -14,34 +14,34 @@ class PageContents extends Component {
     briefDes: "",
     targets: "",
     body: "",
-    btnDisabled: true
+    btnDisabled: true,
   };
 
   componentDidMount() {
     const pageId = getParameterByName("id", window.location.href);
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
     // Get the current page data from server and set those data in inputs
     axios
       .get(`/api/new-page/page-contents/${pageId}`, config)
-      .then(response => {
+      .then((response) => {
         this.setState(
           {
             body: response.data.page.contents.body,
             briefDes: response.data.page.contents.briefDes,
             targets: response.data.page.contents.targets,
             title: response.data.page.contents.title,
-            type: response.data.page.type
+            type: response.data.page.type,
           },
           () => {
             this.checkIfAllOk.apply(this);
           }
         );
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response.status === 401) {
           window.location.href = "/login?redirected=new-page";
         } else {
@@ -58,8 +58,8 @@ class PageContents extends Component {
     const pageId = getParameterByName("id", window.location.href);
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
     axios
       .patch(
@@ -70,17 +70,17 @@ class PageContents extends Component {
               title: this.state.title,
               briefDes: this.state.briefDes,
               body: this.state.body,
-              targets: this.state.targets
-            }
-          }
+              targets: this.state.targets,
+            },
+          },
         },
         config
       )
-      .then(response => {
+      .then((response) => {
         loadingModal();
         this.props.history.push(to);
       })
-      .catch(response => {
+      .catch((response) => {
         loadingModal();
         this.props.history.push(`/new-page/initial-step`);
       });
@@ -296,7 +296,7 @@ class PageContents extends Component {
   renderButton() {
     return (
       <button
-        className="btn-normal btn-normal-sm"
+        className="btn btn-blue"
         onClick={() => {
           this.onNextButtonClicked.apply(this);
         }}
@@ -318,7 +318,7 @@ class PageContents extends Component {
         <div>
           {/* Back button */}
           <button
-            className="back-button back-button--new-page"
+            className="btn-text btn-text-big a-11"
             onClick={this.onBackButtonClicked.bind(this)}
           >
             <i className="fa fa-arrow-left" aria-hidden="true" /> Back
@@ -341,12 +341,12 @@ class PageContents extends Component {
                 className="form__input"
                 type="text"
                 value={this.state.title}
-                onChange={e => {
+                onChange={(e) => {
                   this.setState({ title: e.target.value }, () => {
                     this.checkTitleValidation.apply(this);
                   });
                 }}
-                onBlur={e => {
+                onBlur={(e) => {
                   this.checkTitleValidation.apply(this);
                   this.checkIfAllOk.apply(this);
                 }}
@@ -367,12 +367,12 @@ class PageContents extends Component {
                 className="form__textarea"
                 rows="3"
                 value={this.state.briefDes}
-                onChange={e => {
+                onChange={(e) => {
                   this.setState({ briefDes: e.target.value }, () => {
                     this.checkBriefDesValidation.apply(this);
                   });
                 }}
-                onBlur={e => {
+                onBlur={(e) => {
                   this.checkBriefDesValidation.apply(this);
                   this.checkIfAllOk.apply(this);
                 }}
@@ -393,12 +393,12 @@ class PageContents extends Component {
                 className="form__textarea"
                 rows="3"
                 value={this.state.targets}
-                onChange={e => {
+                onChange={(e) => {
                   this.setState({ targets: e.target.value }, () => {
                     this.checkTargetsValidation.apply(this);
                   });
                 }}
-                onBlur={e => {
+                onBlur={(e) => {
                   this.checkTargetsValidation.apply(this);
                   this.checkIfAllOk.apply(this);
                 }}
@@ -427,7 +427,7 @@ class PageContents extends Component {
                   image_dimensions: false,
                   imagetools_toolbar:
                     "rotateleft rotateright | flipv fliph | imageoptions",
-                  height: 350
+                  height: 350,
                 }}
                 onInit={() => {
                   if (localStorage.getItem("theme") === "dark") {
@@ -441,13 +441,13 @@ class PageContents extends Component {
                       "#fff";
                   }
                 }}
-                onChange={e => {
+                onChange={(e) => {
                   this.setState({ body: e.target.getContent() }, () => {
                     this.checkPageBodyValidation.apply(this);
                     this.checkIfAllOk.apply(this);
                   });
                 }}
-                onBlur={e => {}}
+                onBlur={(e) => {}}
               />
               <div className="form__input--message">
                 <span />

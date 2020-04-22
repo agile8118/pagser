@@ -29,10 +29,10 @@ class Register extends Component {
         second: "",
         third: "",
         fourth: "",
-        fifth: ""
+        fifth: "",
       },
       loading: false,
-      changeEmailMdl: false
+      changeEmailMdl: false,
     };
   }
 
@@ -40,9 +40,9 @@ class Register extends Component {
     var currentUsername = this.state.username;
     axios
       .post(`/usernameAvailability`, {
-        username: currentUsername
+        username: currentUsername,
       })
-      .then(respond => {
+      .then((respond) => {
         if (respond.data.message === "ok") {
           util.inputOK("username");
           this.setState({ usernameIsOK: true });
@@ -89,9 +89,9 @@ class Register extends Component {
     if (fieldName === "username") {
       axios
         .post(`/usernameAvailability`, {
-          username: value
+          username: value,
         })
-        .then(respond => {
+        .then((respond) => {
           if (respond.data.message === "ok") {
             util.inputOK("username");
             this.setState({ usernameIsOK: true });
@@ -246,25 +246,25 @@ class Register extends Component {
       const user = { name, email, username, password };
       axios
         .post(`/api/sendcode`, user)
-        .then(response => {
+        .then((response) => {
           this.setState({ loading: false });
           this.setState({
             alertMessage: null,
-            status: "verifyemail"
+            status: "verifyemail",
           });
         })
-        .catch(error => {
+        .catch((error) => {
           this.setState({ loading: false });
           if (error.response.data.error === "email is in use") {
             this.setState({
               alertMessage:
                 "This email is in use, you can login or reset your password in login tab.",
-              alertType: "error"
+              alertType: "error",
             });
           } else {
             this.setState({
               alertMessage: "Something went wrong, please try again.",
-              alertType: "error"
+              alertType: "error",
             });
           }
         });
@@ -278,21 +278,21 @@ class Register extends Component {
         name: this.state.name,
         username: this.state.username,
         password: this.state.password,
-        email: this.state.email
+        email: this.state.email,
       })
-      .then(response => {
+      .then((response) => {
         this.setState({
           loading: false,
           alertMessage: "New code has been sent to your email.",
-          alertType: "success"
+          alertType: "success",
         });
         this.resetDigits();
       })
-      .catch(error => {
+      .catch((error) => {
         this.setState({
           loading: false,
           alertMessage: "Something went wrong, please try again.",
-          alertType: "error"
+          alertType: "error",
         });
         this.resetDigits();
       });
@@ -301,40 +301,42 @@ class Register extends Component {
   onVerifyCodeSubmit() {
     this.setState({ loading: true });
 
-    const code = `${this.state.digits.first}${this.state.digits.second}${this.state.digits.third}${this.state.digits.fourth}${this.state.digits.fifth}`;
+    const code = `${this.state.digits.first}${this.state.digits.second}${
+      this.state.digits.third
+    }${this.state.digits.fourth}${this.state.digits.fifth}`;
 
     axios
       .post(`/register/validatecode`, {
-        code: Number(code)
+        code: Number(code),
       })
-      .then(response => {
+      .then((response) => {
         axios
           .post(`/register`, {
             name: this.state.name,
             username: this.state.username,
             password: this.state.password,
             email: this.state.email,
-            code: Number(code)
+            code: Number(code),
           })
-          .then(response => {
+          .then((response) => {
             localStorage.setItem("token", response.data.token);
             window.location = `/admin`;
           })
-          .catch(error => {
+          .catch((error) => {
             this.setState({
               loading: false,
               alertMessage: "Something went wrong, please try again.",
-              alertType: "error"
+              alertType: "error",
             });
             this.resetDigits();
           });
       })
-      .catch(error => {
+      .catch((error) => {
         this.setState({
           loading: false,
           alertMessage:
             "The code is invalid, make sure that you put the exact code we've sent to your email. You may want to resend the code.",
-          alertType: "error"
+          alertType: "error",
         });
         this.resetDigits();
       });
@@ -347,30 +349,30 @@ class Register extends Component {
         name: this.state.name,
         username: this.state.username,
         password: this.state.password,
-        email
+        email,
       })
-      .then(response => {
+      .then((response) => {
         this.setState({
           email,
           alertMessage: "New code has been sent to your email.",
           alertType: "success",
-          changeEmailMdl: false
+          changeEmailMdl: false,
         });
         this.resetDigits();
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response.data.error === "email is in use") {
           this.setState({
             alertMessage:
               "This email is already in use, please login with this email or choose another one.",
             alertType: "error",
-            changeEmailMdl: false
+            changeEmailMdl: false,
           });
           this.resetDigits();
         } else {
           this.setState({
             alertMessage: "Something went wrong, please try again.",
-            alertType: "error"
+            alertType: "error",
           });
           this.resetDigits();
         }
@@ -385,8 +387,8 @@ class Register extends Component {
         second: "",
         third: "",
         fourth: "",
-        fifth: ""
-      }
+        fifth: "",
+      },
     });
     this.firstDigit.current.focus();
   }
@@ -419,11 +421,11 @@ class Register extends Component {
       switch (number) {
         case "first":
           this.setState(
-            prevState => ({
+            (prevState) => ({
               digits: {
                 ...prevState.digits,
-                first: valueEntered
-              }
+                first: valueEntered,
+              },
             }),
             () => {
               this.checkDigits();
@@ -433,11 +435,11 @@ class Register extends Component {
           break;
         case "second":
           this.setState(
-            prevState => ({
+            (prevState) => ({
               digits: {
                 ...prevState.digits,
-                second: valueEntered
-              }
+                second: valueEntered,
+              },
             }),
             () => {
               this.checkDigits();
@@ -447,11 +449,11 @@ class Register extends Component {
           break;
         case "third":
           this.setState(
-            prevState => ({
+            (prevState) => ({
               digits: {
                 ...prevState.digits,
-                third: valueEntered
-              }
+                third: valueEntered,
+              },
             }),
             () => {
               this.checkDigits();
@@ -461,11 +463,11 @@ class Register extends Component {
           break;
         case "fourth":
           this.setState(
-            prevState => ({
+            (prevState) => ({
               digits: {
                 ...prevState.digits,
-                fourth: valueEntered
-              }
+                fourth: valueEntered,
+              },
             }),
             () => {
               this.checkDigits();
@@ -475,11 +477,11 @@ class Register extends Component {
           break;
         case "fifth":
           this.setState(
-            prevState => ({
+            (prevState) => ({
               digits: {
                 ...prevState.digits,
-                fifth: valueEntered
-              }
+                fifth: valueEntered,
+              },
             }),
             () => {
               this.checkDigits();
@@ -496,46 +498,46 @@ class Register extends Component {
     if (event.keyCode === 8) {
       switch (number) {
         case "first":
-          this.setState(prevState => ({
+          this.setState((prevState) => ({
             digits: {
               ...prevState.digits,
-              first: ""
-            }
+              first: "",
+            },
           }));
           break;
         case "second":
-          this.setState(prevState => ({
+          this.setState((prevState) => ({
             digits: {
               ...prevState.digits,
-              second: ""
-            }
+              second: "",
+            },
           }));
           this.firstDigit.current.focus();
           break;
         case "third":
-          this.setState(prevState => ({
+          this.setState((prevState) => ({
             digits: {
               ...prevState.digits,
-              third: ""
-            }
+              third: "",
+            },
           }));
           this.secondDigit.current.focus();
           break;
         case "fourth":
-          this.setState(prevState => ({
+          this.setState((prevState) => ({
             digits: {
               ...prevState.digits,
-              fourth: ""
-            }
+              fourth: "",
+            },
           }));
           this.thirdDigit.current.focus();
           break;
         case "fifth":
-          this.setState(prevState => ({
+          this.setState((prevState) => ({
             digits: {
               ...prevState.digits,
-              fifth: ""
-            }
+              fifth: "",
+            },
           }));
           this.fourthDigit.current.focus();
           break;
@@ -595,7 +597,10 @@ class Register extends Component {
             </a>
             .
           </p>
-          <button action="submit" className="btn-round">
+          <button
+            action="submit"
+            className="btn btn-round btn-blue-o btn-big margin-top-1-5"
+          >
             Sign Up
           </button>
         </div>
@@ -636,7 +641,7 @@ class Register extends Component {
             onClick={() => {
               this.setState({ changeEmailMdl: true });
             }}
-            className="btn-link"
+            className="btn-text btn-text-underlined"
           >
             Change your email
           </a>
@@ -646,7 +651,7 @@ class Register extends Component {
             onClick={() => {
               this.resendCode();
             }}
-            className="btn-link"
+            className="btn-text btn-text-underlined"
           >
             Resend code
           </a>
@@ -717,7 +722,7 @@ class Register extends Component {
               />
               <form
                 method="post"
-                onSubmit={event => {
+                onSubmit={(event) => {
                   event.preventDefault();
                   this.onFormSubmit.apply(this);
                 }}
@@ -726,13 +731,13 @@ class Register extends Component {
                   <input
                     type="text"
                     className="form__input"
-                    onBlur={event => {
+                    onBlur={(event) => {
                       this.onInputFocusOut.apply(this, [
                         event.target.value,
-                        "name"
+                        "name",
                       ]);
                     }}
-                    onChange={event => {
+                    onChange={(event) => {
                       this.setState({ name: event.target.value });
                     }}
                     placeholder="Full Name"
@@ -747,13 +752,13 @@ class Register extends Component {
                   <input
                     type="text"
                     className="form__input"
-                    onBlur={event => {
+                    onBlur={(event) => {
                       this.onInputFocusOut.apply(this, [
                         event.target.value,
-                        "username"
+                        "username",
                       ]);
                     }}
-                    onChange={event => {
+                    onChange={(event) => {
                       this.setState({ username: event.target.value });
                     }}
                     placeholder="Username"
@@ -768,13 +773,13 @@ class Register extends Component {
                   <input
                     type="text"
                     className="form__input"
-                    onBlur={event => {
+                    onBlur={(event) => {
                       this.onInputFocusOut.apply(this, [
                         event.target.value,
-                        "email"
+                        "email",
                       ]);
                     }}
-                    onChange={event => {
+                    onChange={(event) => {
                       this.setState({ email: event.target.value });
                     }}
                     placeholder="Email Address"
@@ -789,16 +794,16 @@ class Register extends Component {
                   <input
                     type="password"
                     className="form__input"
-                    onBlur={event => {
+                    onBlur={(event) => {
                       this.onInputFocusOut.apply(this, [
                         event.target.value,
-                        "password"
+                        "password",
                       ]);
                     }}
-                    onChange={event => {
+                    onChange={(event) => {
                       this.onInputChange.apply(this, [
                         event.target.value,
-                        "password"
+                        "password",
                       ]);
                     }}
                     placeholder="Password"
@@ -814,16 +819,16 @@ class Register extends Component {
                     type="password"
                     className="form__input form__input--disabled"
                     disabled
-                    onBlur={event => {
+                    onBlur={(event) => {
                       this.onInputFocusOut.apply(this, [
                         event.target.value,
-                        "confirmPassword"
+                        "confirmPassword",
                       ]);
                     }}
-                    onChange={event => {
+                    onChange={(event) => {
                       this.onInputChange.apply(this, [
                         event.target.value,
-                        "confirmPassword"
+                        "confirmPassword",
                       ]);
                     }}
                     placeholder="Confirm Password"
@@ -855,7 +860,7 @@ class Register extends Component {
               Put your email address here and we will send a new code to that.
             </p>
             <form
-              onSubmit={event => {
+              onSubmit={(event) => {
                 event.preventDefault();
                 this.onChangeEmailSubmit.apply(this);
               }}
@@ -870,7 +875,7 @@ class Register extends Component {
                 />
               </div>
               <div className="right-content">
-                <button type="submit" className="btn-round">
+                <button type="submit" className="btn btn-blue btn-round">
                   Change
                 </button>
               </div>
@@ -891,7 +896,7 @@ class Register extends Component {
               type={this.state.alertType}
             />
             <form
-              onSubmit={event => {
+              onSubmit={(event) => {
                 event.preventDefault();
                 this.onVerifyCodeSubmit.apply(this);
               }}
@@ -903,10 +908,10 @@ class Register extends Component {
                     autoFocus
                     value={this.state.digits.first}
                     ref={this.firstDigit}
-                    onKeyDown={event => {
+                    onKeyDown={(event) => {
                       this.onDigitKeyDown(event, "first");
                     }}
-                    onChange={event => {
+                    onChange={(event) => {
                       this.onDigitChanged(event, "first");
                     }}
                     disabled={this.state.loading}
@@ -916,10 +921,10 @@ class Register extends Component {
                     type="tel"
                     value={this.state.digits.second}
                     ref={this.secondDigit}
-                    onKeyDown={event => {
+                    onKeyDown={(event) => {
                       this.onDigitKeyDown(event, "second");
                     }}
-                    onChange={event => {
+                    onChange={(event) => {
                       this.onDigitChanged(event, "second");
                     }}
                     disabled={this.state.loading}
@@ -929,10 +934,10 @@ class Register extends Component {
                     type="tel"
                     value={this.state.digits.third}
                     ref={this.thirdDigit}
-                    onKeyDown={event => {
+                    onKeyDown={(event) => {
                       this.onDigitKeyDown(event, "third");
                     }}
-                    onChange={event => {
+                    onChange={(event) => {
                       this.onDigitChanged(event, "third");
                     }}
                     disabled={this.state.loading}
@@ -942,10 +947,10 @@ class Register extends Component {
                     type="tel"
                     value={this.state.digits.fourth}
                     ref={this.fourthDigit}
-                    onKeyDown={event => {
+                    onKeyDown={(event) => {
                       this.onDigitKeyDown(event, "fourth");
                     }}
-                    onChange={event => {
+                    onChange={(event) => {
                       this.onDigitChanged(event, "fourth");
                     }}
                     disabled={this.state.loading}
@@ -955,10 +960,10 @@ class Register extends Component {
                     type="tel"
                     value={this.state.digits.fifth}
                     ref={this.fifthDigit}
-                    onKeyDown={event => {
+                    onKeyDown={(event) => {
                       this.onDigitKeyDown(event, "fifth");
                     }}
-                    onChange={event => {
+                    onChange={(event) => {
                       this.onDigitChanged(event, "fifth");
                     }}
                     disabled={this.state.loading}

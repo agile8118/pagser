@@ -6,13 +6,13 @@ import { showSnackBar, loadingModal } from "../../lib/util";
 
 import {
   fetchPublicPageData,
-  favoritePage
+  favoritePage,
 } from "../../redux/show-page/actions";
 
 class Actions extends Component {
   state = {
     titleTyped: "",
-    deletePageMdl: false
+    deletePageMdl: false,
   };
 
   componentDidMount() {
@@ -25,16 +25,16 @@ class Actions extends Component {
     loadingModal("Loading...");
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
     axios
       .patch(`/api/pages/${this.props.id}/favorite`, null, config)
-      .then(response => {
+      .then((response) => {
         loadingModal();
         this.props.favoritePage(response.data);
       })
-      .catch(error => {
+      .catch((error) => {
         loadingModal();
         if (error.response && error.response.status === 401) {
           showSnackBar("Please login to favorite a page.");
@@ -47,15 +47,15 @@ class Actions extends Component {
   onDeletePageSubmit() {
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
     axios
       .delete(`/api/pages/${this.props.id}`, config)
-      .then(response => {
+      .then((response) => {
         location.reload();
       })
-      .catch(response => {
+      .catch((response) => {
         console.log(response);
       });
   }
@@ -85,7 +85,7 @@ class Actions extends Component {
               </p>
 
               <form
-                onSubmit={event => {
+                onSubmit={(event) => {
                   event.preventDefault();
                   this.onDeletePageSubmit.apply(this);
                 }}
@@ -95,7 +95,7 @@ class Actions extends Component {
                     type="text"
                     placeholder="Type in your page title to confirm to delete it"
                     className="form__input"
-                    onChange={event => {
+                    onChange={(event) => {
                       this.setState({ titleTyped: event.target.value }, () => {
                         if (
                           this.state.titleTyped
@@ -122,9 +122,9 @@ class Actions extends Component {
                 <strong>{this.props.contents.title.toLowerCase()}</strong>
                 <div className="right-content">
                   <button
+                    className="btn btn-round btn-red"
                     type="submit"
                     id="deleteButton"
-                    className="btn-round btn-round-danger"
                     disabled
                   >
                     Delete
@@ -135,7 +135,7 @@ class Actions extends Component {
 
             <div className="page__header__actions">
               <button
-                className="btn-icon"
+                className="btn-i btn-i-blue btn-i-big"
                 onClick={() => {
                   if (this.props.type === "public") {
                     var url = `/public-pages/${
@@ -152,7 +152,7 @@ class Actions extends Component {
                 <i className="fa fa-pencil-square-o" />
               </button>
               <button
-                className="btn-icon margin-left-07"
+                className="btn-i btn-i-blue btn-i-big margin-left-07"
                 onClick={() => {
                   this.setState({ deletePageMdl: true });
                 }}
@@ -170,7 +170,7 @@ class Actions extends Component {
         return (
           <div className="page__header__actions">
             <button
-              className="btn-icon"
+              className="btn-i btn-i-blue btn-i-big"
               onClick={() => this.onFavoriteButtonClick.apply(this)}
             >
               <i className={favBtnClass} />
@@ -186,18 +186,19 @@ class Actions extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     id: state.pageData.id,
     viewer: {
       favorited: state.pageData.favorited,
-      status: state.pageData.status
+      status: state.pageData.status,
     },
     contents: state.pageData.contents,
-    isPending: state.pageData.isPending
+    isPending: state.pageData.isPending,
   };
 };
 
-export default connect(mapStateToProps, { fetchPublicPageData, favoritePage })(
-  Actions
-);
+export default connect(
+  mapStateToProps,
+  { fetchPublicPageData, favoritePage }
+)(Actions);

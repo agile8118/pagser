@@ -79,12 +79,12 @@
 
 @keyframes animatetop {
   from {
-    top: -20px;
     opacity: 0;
+    transform: scale(1.05);
   }
   to {
-    top: 0;
     opacity: 1;
+    transform: scale(1);
   }
 }
 

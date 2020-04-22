@@ -1,21 +1,19 @@
 const { Page } = require("../../models/page");
-const Comment = require("../../models/comment");
 const User = require("../../models/user");
-const util = require("../../lib/util");
 
-exports.fetchHomePages = function(req, res) {
+exports.fetchHomePages = function (req, res) {
   var homePages = {
     newsest: [],
     reviewed: [],
     mostPopuler: [],
-    viewed: []
+    viewed: [],
   };
 
   function fetchNewestPages(cb) {
     Page.find(
       { type: "public" },
       "_id contents.title contents.briefDes featureImage url date author",
-      function(err, pages) {
+      function (err, pages) {
         if (err) {
           return res.send("error");
         }
@@ -28,7 +26,7 @@ exports.fetchHomePages = function(req, res) {
       .sort({ date: -1 });
   }
 
-  fetchNewestPages(function() {
+  fetchNewestPages(function () {
     res.send(homePages);
   });
 };

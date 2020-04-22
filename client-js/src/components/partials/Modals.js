@@ -23,7 +23,8 @@ export const ConfirmModal = ({
   message,
   open,
   onCancel,
-  onConfirm
+  onConfirm,
+  btnName,
 }) => {
   const className = open ? "mdl" : "mdl display-none";
   return (
@@ -40,14 +41,14 @@ export const ConfirmModal = ({
           <p>{message}</p>
 
           <form
-            onSubmit={e => {
+            onSubmit={(e) => {
               e.preventDefault();
               onConfirm();
             }}
           >
             <div className="right-content">
-              <button type="submit" className="btn-round btn-round-danger">
-                Remove
+              <button type="submit" className="btn btn-round btn-red">
+                {btnName ? btnName : "Remove"}
               </button>
             </div>
           </form>

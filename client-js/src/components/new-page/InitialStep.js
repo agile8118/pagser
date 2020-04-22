@@ -12,15 +12,15 @@ class InitialStep extends Component {
     const pageId = getParameterByName("id", window.location.href) || "id";
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
     axios
       .get(`/api/new-page/initial-step/${pageId}`, config)
-      .then(response => {
+      .then((response) => {
         this.setState({ type: response.data.type, loading: false });
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response.status === 401) {
           window.location.href = "/login?redirected=new-page";
         }
@@ -40,8 +40,8 @@ class InitialStep extends Component {
     const pageId = getParameterByName("id", window.location.href);
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
     axios
       .patch(
@@ -49,13 +49,13 @@ class InitialStep extends Component {
         { page: { type: this.state.type } },
         config
       )
-      .then(response => {
+      .then((response) => {
         loadingModal();
         this.props.history.push(
           `/new-page/page-contents?id=${response.data.id}`
         );
       })
-      .catch(response => {
+      .catch((response) => {
         loadingModal();
       });
   }
@@ -73,7 +73,7 @@ class InitialStep extends Component {
       return (
         <button
           onClick={this.onNextButtonClicked.bind(this)}
-          className="btn-normal btn-normal-sm"
+          className="btn btn-blue"
           disabled={this.state.type ? this.state.type.length <= 0 : true}
         >
           Next

@@ -10,16 +10,16 @@ class Rating extends Component {
     loadingModal("Loading...");
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
     axios
       .patch(`/api/pages/${this.props.id}/rate`, { rate: "dislike" }, config)
-      .then(response => {
+      .then((response) => {
         loadingModal();
         this.props.ratePage(response.data);
       })
-      .catch(error => {
+      .catch((error) => {
         loadingModal();
         if (error.response.status === 401) {
           showSnackBar("Please login to rate a page.");
@@ -33,16 +33,16 @@ class Rating extends Component {
     loadingModal("Loading...");
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
     axios
       .patch(`/api/pages/${this.props.id}/rate`, { rate: "like" }, config)
-      .then(response => {
+      .then((response) => {
         loadingModal();
         this.props.ratePage(response.data);
       })
-      .catch(error => {
+      .catch((error) => {
         loadingModal();
         if (error.response.status === 401) {
           showSnackBar("Please login to rate a page.");
@@ -61,7 +61,7 @@ class Rating extends Component {
             <div>
               <span>{this.props.rating.likes}</span>
               <button
-                className="btn-icon no-transform"
+                className="btn-i btn-i-big btn-i-blue"
                 onClick={() => {
                   this.onLikeButtonClick.apply(this);
                 }}
@@ -72,7 +72,7 @@ class Rating extends Component {
             <div>
               <span>{this.props.rating.dislikes}</span>
               <button
-                className="btn-icon no-transform"
+                className="btn-i btn-i-big btn-i-blue"
                 onClick={() => {
                   this.onDislikeButtonClick.apply(this);
                 }}
@@ -89,12 +89,15 @@ class Rating extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     id: state.pageData.id,
     rating: state.pageData.rating,
-    isPending: state.pageData.isPending
+    isPending: state.pageData.isPending,
   };
 };
 
-export default connect(mapStateToProps, actions)(Rating);
+export default connect(
+  mapStateToProps,
+  actions
+)(Rating);

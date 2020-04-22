@@ -19,7 +19,7 @@ class Comments extends Component {
     sendReplyToId: null,
     btnDisabled: true,
     rmCommentConfMdl: false,
-    updateCommentMdl: false
+    updateCommentMdl: false,
   };
 
   componentDidMount() {
@@ -29,23 +29,23 @@ class Comments extends Component {
   fetchComments() {
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
     axios
       .get(
         `/api/pages/${this.props.id}/comments?page=${this.state.commentPage}`,
         config
       )
-      .then(response => {
+      .then((response) => {
         this.setState({
           comments: response.data.comments,
           commentPage: Number(response.data.page),
           commentPages: Number(response.data.pages),
-          userId: response.data.userId
+          userId: response.data.userId,
         });
       })
-      .catch(response => {
+      .catch((response) => {
         console.log(response);
       });
   }
@@ -71,8 +71,8 @@ class Comments extends Component {
     if (this.state.commentText.length > 0) {
       const config = {
         headers: {
-          authorization: localStorage.getItem("token")
-        }
+          authorization: localStorage.getItem("token"),
+        },
       };
       axios
         .post(
@@ -80,10 +80,10 @@ class Comments extends Component {
           { text: this.state.commentText, inReplyTo: this.state.sendReplyToId },
           config
         )
-        .then(response => {
+        .then((response) => {
           loadingModal();
           if (response.data.inReplyTo) {
-            var newComments = this.state.comments.map(c => {
+            var newComments = this.state.comments.map((c) => {
               if (c.id === response.data.inReplyTo) {
                 c.replyes.push(response.data);
                 return c;
@@ -95,7 +95,7 @@ class Comments extends Component {
               comments: newComments,
               commentText: "",
               sendReplyToId: null,
-              sendReplyToName: null
+              sendReplyToName: null,
             });
             showSnackBar("Your comment reply added successfully.", "success");
           } else {
@@ -103,14 +103,14 @@ class Comments extends Component {
               comments: [response.data, ...this.state.comments],
               commentText: "",
               sendReplyToName: null,
-              sendReplyToId: null
+              sendReplyToId: null,
             });
             window.location.hash = "comments2";
             window.location.hash = "comments";
             showSnackBar("Your comment added successfully.", "success");
           }
         })
-        .catch(response => {
+        .catch((response) => {
           loadingModal();
           showSnackBar("Sorry an unkown error occurred.", "error");
         });
@@ -124,12 +124,12 @@ class Comments extends Component {
           {this.renderCommentReplyButton(comment)}
 
           <button
-            className="btn-icon margin-left-07"
+            className="btn-i btn-i-big btn-i-blue margin-left-07"
             onClick={() => {
               this.setState(
                 {
                   modalCommentText: comment.text,
-                  modalUpdateCommentId: comment.id
+                  modalUpdateCommentId: comment.id,
                 },
                 () => {
                   this.setState({ updateCommentMdl: true });
@@ -141,11 +141,11 @@ class Comments extends Component {
           </button>
 
           <button
-            className="btn-icon margin-left-07"
+            className="btn-i btn-i-big btn-i-blue margin-left-07"
             onClick={() => {
               this.setState({
                 modalCommentId: comment.id,
-                rmCommentConfMdl: true
+                rmCommentConfMdl: true,
               });
             }}
           >
@@ -166,12 +166,12 @@ class Comments extends Component {
     if (!comment.inReplyTo && this.state.userId) {
       return (
         <a
-          className="btn-icon"
+          className="btn-i btn-i-big btn-i-blue"
           href="#add-comment"
           onClick={() => {
             this.setState({
               sendReplyToName: comment.author.name,
-              sendReplyToId: comment.id
+              sendReplyToId: comment.id,
             });
           }}
         >
@@ -185,7 +185,7 @@ class Comments extends Component {
 
   renderComments() {
     if (this.state.comments && this.state.comments.length > 0) {
-      return this.state.comments.map(comment => {
+      return this.state.comments.map((comment) => {
         return (
           <div className="comment" key={comment.id}>
             <div className="comment__header">
@@ -194,7 +194,7 @@ class Comments extends Component {
                   className="comment__header__image"
                   src={comment.author.photo.secure_url}
                   alt="comment's author image"
-                  onError={e => {
+                  onError={(e) => {
                     e.target.src = "/images/users/placeholder.png";
                   }}
                 />
@@ -223,7 +223,7 @@ class Comments extends Component {
 
   renderCommentReplyes(comments) {
     if (comments && comments.length > 0) {
-      return comments.map(comment => {
+      return comments.map((comment) => {
         return (
           <div className="comment comment-reply" key={comment.id}>
             <div className="comment__header">
@@ -232,7 +232,7 @@ class Comments extends Component {
                   className="comment__header__image"
                   src={comment.author.photo.secure_url}
                   alt="comment's author image"
-                  onError={e => {
+                  onError={(e) => {
                     e.target.src = "/images/users/placeholder.png";
                   }}
                 />
@@ -260,7 +260,7 @@ class Comments extends Component {
         <div className="page__comments__add" id="add-comment">
           <form
             method="post"
-            onSubmit={e => {
+            onSubmit={(e) => {
               e.preventDefault();
               this.onFormSubmit.apply(this);
             }}
@@ -275,7 +275,7 @@ class Comments extends Component {
               className="form__textarea"
               rows="5"
               placeholder="Type your comment about the page..."
-              onChange={e => {
+              onChange={(e) => {
                 this.setState({ commentText: e.target.value }, () => {
                   if (this.state.commentText.length > 0) {
                     this.setState({ btnDisabled: false });
@@ -289,7 +289,7 @@ class Comments extends Component {
 
             <div className="right-content">
               <button
-                className="btn-round btn-round-normal"
+                className="btn btn-round btn-blue-o"
                 disabled={this.state.btnDisabled}
               >
                 Submit
@@ -318,7 +318,7 @@ class Comments extends Component {
         <div className="comment-in-reply-to-label">
           in reply to {this.state.sendReplyToName}{" "}
           <button
-            className="delete-x-button-white"
+            className="btn-i btn-i-white"
             onClick={() => {
               this.setState({ sendReplyToName: null, sendReplyToId: null });
             }}
@@ -344,21 +344,23 @@ class Comments extends Component {
 
             const config = {
               headers: {
-                authorization: localStorage.getItem("token")
-              }
+                authorization: localStorage.getItem("token"),
+              },
             };
             axios
               .delete(
-                `/api/pages/${this.props.id}/comments/${this.state.modalCommentId}`,
+                `/api/pages/${this.props.id}/comments/${
+                  this.state.modalCommentId
+                }`,
                 config
               )
-              .then(response => {
+              .then((response) => {
                 loadingModal();
                 if (response.data.reply) {
                   var array = [...this.state.comments]; // make a separate copy of the array
-                  var newComments = array.map(comment => {
+                  var newComments = array.map((comment) => {
                     if (comment.id === response.data.commentId) {
-                      const newReplys = comment.replyes.filter(c => {
+                      const newReplys = comment.replyes.filter((c) => {
                         return c.id !== response.data.deletedCommentId;
                       });
                       comment.replyes = newReplys;
@@ -375,7 +377,7 @@ class Comments extends Component {
                   });
                 } else {
                   var array = [...this.state.comments]; // make a separate copy of the array
-                  var newComments = array.filter(comment => {
+                  var newComments = array.filter((comment) => {
                     return comment.id !== response.data.commentId;
                   });
                   this.setState({ comments: newComments }, () => {
@@ -386,7 +388,7 @@ class Comments extends Component {
                   });
                 }
               })
-              .catch(response => {
+              .catch((response) => {
                 loadingModal();
                 showSnackBar("An unknown error occurred.");
               });
@@ -403,40 +405,42 @@ class Comments extends Component {
             this.setState({
               updateCommentMdl: false,
               modalCommentText: "",
-              modalUpdateCommentId: null
+              modalUpdateCommentId: null,
             })
           }
         >
           <form
-            onSubmit={event => {
+            onSubmit={(event) => {
               event.preventDefault();
               loadingModal("Updating your comment...");
 
               this.setState({
-                updateCommentMdl: false
+                updateCommentMdl: false,
               });
 
               const config = {
                 headers: {
-                  authorization: localStorage.getItem("token")
-                }
+                  authorization: localStorage.getItem("token"),
+                },
               };
 
               axios
                 .put(
-                  `/api/pages/${this.props.id}/comments/${this.state.modalUpdateCommentId}`,
+                  `/api/pages/${this.props.id}/comments/${
+                    this.state.modalUpdateCommentId
+                  }`,
                   { text: this.state.modalCommentText },
                   config
                 )
-                .then(response => {
+                .then((response) => {
                   loadingModal();
                   if (response.data.reply) {
                     var array = [...this.state.comments]; // make a separate copy of the array
-                    var newComments = array.map(comment => {
+                    var newComments = array.map((comment) => {
                       if (comment.id !== response.data.comment.inReplyTo) {
                         return comment;
                       } else {
-                        const newReplyes = comment.replyes.map(c => {
+                        const newReplyes = comment.replyes.map((c) => {
                           if (c.id === response.data.comment._id) {
                             c.text = response.data.comment.text;
                             return c;
@@ -457,7 +461,7 @@ class Comments extends Component {
                     });
                   } else {
                     var array = [...this.state.comments]; // make a separate copy of the array
-                    var newComments = array.filter(comment => {
+                    var newComments = array.filter((comment) => {
                       if (comment.id !== this.state.modalUpdateCommentId) {
                         return comment;
                       } else {
@@ -473,7 +477,7 @@ class Comments extends Component {
                     });
                   }
                 })
-                .catch(response => {
+                .catch((response) => {
                   loadingModal();
                   showSnackBar("An unknown error occurred.");
                 });
@@ -485,13 +489,13 @@ class Comments extends Component {
               value={this.state.modalCommentText}
               className="form__textarea"
               rows="5"
-              onChange={e => {
+              onChange={(e) => {
                 this.setState({ modalCommentText: e.target.value });
               }}
             />
             <br />
             <div className="right-content">
-              <button type="submit" className="btn-round">
+              <button type="submit" className="btn btn-blue btn-round">
                 Update
               </button>
             </div>
@@ -548,7 +552,7 @@ class Comments extends Component {
       );
 
       array.shift();
-      var numbers = array.map(num => {
+      var numbers = array.map((num) => {
         if (page === num) {
           return (
             <a
@@ -579,7 +583,7 @@ class Comments extends Component {
       });
 
       // Don't display the pagination if we have only 1 page
-      if (numbers.length === 1) numbers = <div></div>;
+      if (numbers.length === 1) numbers = <div />;
 
       return (
         <div className="pagination">

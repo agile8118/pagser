@@ -28,8 +28,8 @@ class EditPage extends Component {
       comments: "",
       rating: "",
       anonymously: "",
-      links: ""
-    }
+      links: "",
+    },
   };
 
   componentDidMount() {
@@ -454,8 +454,8 @@ class EditPage extends Component {
               type="text"
               value={this.state.url}
               className="form__input"
-              onBlur={e => {}}
-              onChange={e => {
+              onBlur={(e) => {}}
+              onChange={(e) => {
                 var url = convertToUrl(e.target.value);
                 this.setState({ url }, () => {
                   this.checkIfAllOk.apply(this);
@@ -479,7 +479,7 @@ class EditPage extends Component {
       return (
         <div>
           <button
-            className="back-button back-button--new-page"
+            className="btn-text btn-text-big a-11"
             onClick={() => {
               if (this.props.page.type === "public") {
                 var url = `/public-pages/${
@@ -509,12 +509,12 @@ class EditPage extends Component {
                 className="form__input"
                 type="text"
                 value={this.state.title}
-                onChange={e => {
+                onChange={(e) => {
                   this.setState({ title: e.target.value }, () => {
                     this.checkTitleValidation.apply(this);
                   });
                 }}
-                onBlur={e => {
+                onBlur={(e) => {
                   this.checkTitleValidation.apply(this);
                   this.checkIfAllOk.apply(this);
                 }}
@@ -534,12 +534,12 @@ class EditPage extends Component {
                 className="form__textarea"
                 rows="3"
                 value={this.state.briefDes}
-                onChange={e => {
+                onChange={(e) => {
                   this.setState({ briefDes: e.target.value }, () => {
                     this.checkBriefDesValidation.apply(this);
                   });
                 }}
-                onBlur={e => {
+                onBlur={(e) => {
                   this.checkBriefDesValidation.apply(this);
                   this.checkIfAllOk.apply(this);
                 }}
@@ -558,12 +558,12 @@ class EditPage extends Component {
                 className="form__textarea"
                 rows="3"
                 value={this.state.targets}
-                onChange={e => {
+                onChange={(e) => {
                   this.setState({ targets: e.target.value }, () => {
                     this.checkTargetsValidation.apply(this);
                   });
                 }}
-                onBlur={e => {
+                onBlur={(e) => {
                   this.checkTargetsValidation.apply(this);
                   this.checkIfAllOk.apply(this);
                 }}
@@ -590,7 +590,7 @@ class EditPage extends Component {
                   image_dimensions: false,
                   imagetools_toolbar:
                     "rotateleft rotateright | flipv fliph | imageoptions",
-                  height: 350
+                  height: 350,
                 }}
                 onInit={() => {
                   if (localStorage.getItem("theme") === "dark") {
@@ -604,13 +604,13 @@ class EditPage extends Component {
                       "#fff";
                   }
                 }}
-                onChange={e => {
+                onChange={(e) => {
                   this.setState({ body: e.target.getContent() }, () => {
                     this.checkPageBodyValidation.apply(this);
                     this.checkIfAllOk.apply(this);
                   });
                 }}
-                onBlur={e => {}}
+                onBlur={(e) => {}}
               />
               <div className="form__input--message">
                 <span />
@@ -631,7 +631,7 @@ class EditPage extends Component {
             </div>
             <div className="center-content">
               <button
-                className="btn-normal btn-normal-sm"
+                className="btn btn-blue"
                 onClick={() => {
                   this.onFormSubmit.apply(this);
                 }}
@@ -672,8 +672,8 @@ class EditPage extends Component {
   onFormSubmit() {
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
 
     axios
@@ -687,21 +687,21 @@ class EditPage extends Component {
               title: this.state.title,
               briefDes: this.state.briefDes,
               targets: this.state.targets,
-              body: this.state.body
+              body: this.state.body,
             },
             configurations: {
               comments: this.state.comments,
               rating: this.state.rating,
               anonymously: this.state.anonymously,
-              links: this.state.links || undefined
+              links: this.state.links || undefined,
             },
             url: this.state.url,
-            tags: this.state.tags || null
-          }
+            tags: this.state.tags || null,
+          },
         },
         config
       )
-      .then(response => {
+      .then((response) => {
         if (response.data.type === "public") {
           var url = `/public-pages/${response.data.url}`;
         } else if (response.data.type === "private") {
@@ -711,7 +711,7 @@ class EditPage extends Component {
         }
         window.location = `${url}`;
       })
-      .catch(response => {
+      .catch((response) => {
         showSnackBar("An unknown error occurred.");
       });
   }

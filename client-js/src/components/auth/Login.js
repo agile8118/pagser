@@ -12,7 +12,7 @@ class Login extends Component {
     alertMessage: null,
     alertType: "success",
     loading: false,
-    forgotPassMdl: false
+    forgotPassMdl: false,
   };
 
   componentDidMount() {
@@ -25,19 +25,19 @@ class Login extends Component {
         this.setState({
           alertMessage:
             "Please login in order to be able to create a new page.",
-          alertType: "normall"
+          alertType: "normall",
         });
         break;
       case "admin":
         this.setState({
           alertMessage: "Please login to access the admin area.",
-          alertType: "normall"
+          alertType: "normall",
         });
         break;
       case "access":
         this.setState({
           alertMessage: "Please login to access that page.",
-          alertType: "normall"
+          alertType: "normall",
         });
         break;
     }
@@ -49,20 +49,22 @@ class Login extends Component {
       .value;
     axios
       .post(`/api/forgotpassword`, {
-        email
+        email,
       })
-      .then(response => {
+      .then((response) => {
         this.setState({
-          alertMessage: `Instructions on how to reset your password were sent to ${this.state.email}`,
+          alertMessage: `Instructions on how to reset your password were sent to ${
+            this.state.email
+          }`,
           alertType: "success",
-          forgotPassMdl: false
+          forgotPassMdl: false,
         });
       })
-      .catch(error => {
+      .catch((error) => {
         this.setState({
           alertMessage: `No one with email ${this.state.email} founded.`,
           alertType: "error",
-          forgotPassMdl: false
+          forgotPassMdl: false,
         });
       });
   }
@@ -72,17 +74,17 @@ class Login extends Component {
     axios
       .post(`/login`, {
         email: this.state.email,
-        password: this.state.password
+        password: this.state.password,
       })
-      .then(response => {
+      .then((response) => {
         localStorage.setItem("token", response.data.token);
         window.location = `/admin`;
       })
-      .catch(error => {
+      .catch((error) => {
         this.setState({
           loading: false,
           alertMessage: `Incorrect password or email address.`,
-          alertType: "error"
+          alertType: "error",
         });
       });
   }
@@ -92,7 +94,10 @@ class Login extends Component {
       return (
         <div>
           <div className="form__group">
-            <button action="submit" className="btn-round">
+            <button
+              action="submit"
+              className="btn btn-round btn-blue-o btn-big"
+            >
               Sign In
             </button>
           </div>
@@ -101,7 +106,7 @@ class Login extends Component {
             onClick={() => {
               this.setState({ forgotPassMdl: true });
             }}
-            className="btn-link"
+            className="btn-text btn-text-underlined"
           >
             Forgot your password?
           </a>
@@ -132,7 +137,7 @@ class Login extends Component {
         >
           <p>Put your email address here and we will send you instructions.</p>
           <form
-            onSubmit={event => {
+            onSubmit={(event) => {
               event.preventDefault();
               this.onForgotPasswordSubmit.apply(this);
             }}
@@ -142,7 +147,7 @@ class Login extends Component {
                 type="email"
                 placeholder="Email"
                 className="form__input"
-                onChange={event => {
+                onChange={(event) => {
                   this.setState({ email: event.target.value });
                 }}
                 value={this.state.email}
@@ -150,7 +155,7 @@ class Login extends Component {
               />
             </div>
             <div className="right-content">
-              <button type="submit" className="btn-round">
+              <button type="submit" className="btn btn-round btn-blue">
                 Send
               </button>
             </div>
@@ -185,7 +190,7 @@ class Login extends Component {
             />
             <form
               method="post"
-              onSubmit={event => {
+              onSubmit={(event) => {
                 event.preventDefault();
                 this.onFormSubmit.apply(this);
               }}
@@ -194,7 +199,7 @@ class Login extends Component {
                 <input
                   type="text"
                   className="form__input"
-                  onChange={event => {
+                  onChange={(event) => {
                     this.setState({ email: event.target.value });
                   }}
                   placeholder="Email Address"
@@ -206,7 +211,7 @@ class Login extends Component {
                 <input
                   type="password"
                   className="form__input"
-                  onChange={event => {
+                  onChange={(event) => {
                     this.setState({ password: event.target.value });
                   }}
                   placeholder="Your Password"
