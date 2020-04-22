@@ -3,7 +3,7 @@ import {
   FETCH_PAGE_DATA_PENDING,
   FETCH_PAGE_DATA_FAILED,
   PAGE_RATED,
-  PAGE_FAVORITED,
+  READ_LATER,
   FETCH_ATTACH_FILES,
   SUBSCRIBE,
 } from "./constants";
@@ -28,14 +28,14 @@ export const pageData = (state = {}, action = {}) => {
         },
         attachFiles: action.payload.page.attachFiles,
         status: action.payload.viewer.status,
-        favorited: action.payload.viewer.favorited,
+        readLater: action.payload.viewer.readLater,
         subscribed: action.payload.viewer.subscribed,
         isPending: false,
       };
     case PAGE_RATED:
       return { ...state, rating: action.payload };
-    case PAGE_FAVORITED:
-      return { ...state, favorited: action.payload };
+    case READ_LATER:
+      return { ...state, readLater: action.payload };
     case FETCH_ATTACH_FILES:
       return { ...state, attachFiles: action.payload };
     case SUBSCRIBE:

@@ -12,12 +12,6 @@ const userSchema = new Schema({
     unique: true,
     trim: true,
   },
-  favoritePages: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Page",
-    },
-  ],
   email: { type: String, unique: true, lowercase: true },
   password: String,
   biography: { type: String, default: "" },

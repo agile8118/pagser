@@ -3,6 +3,7 @@ const { Trash } = require("../../models/trash");
 const User = require("../../models/user");
 const Comment = require("../../models/comment");
 const Subscription = require("../../models/subscription");
+const ReadLater = require("../../models/readLater");
 const util = require("../../lib/util");
 const crypto = require("crypto");
 const multer = require("multer");
@@ -100,21 +101,19 @@ exports.fetchPublicPageData = async (req, res) => {
 
   let viewer = {};
   if (userId) {
-    if (page.author.equals(userId))
-      viewer = { status: "owner", favorited: null };
+    viewer.status = "authenticated";
+    if (page.author.equals(userId)) viewer = { status: "owner" };
     else {
-      const { favoritePages } = await User.findById(userId, "favoritePages");
+      const rl = await ReadLater.findOne({ user: userId, page: page.id });
       const sub = await Subscription.findOne({
         subscriber: userId,
         author: page.author.id,
       });
 
-      viewer.status = "authenticated";
-      viewer.favorite = false;
-      if (favoritePages.indexOf(page.id) !== -1) viewer.favorite = true;
+      if (rl) viewer.readLater = true;
       if (sub) viewer.subscribed = true;
     }
-  } else viewer = { status: "spectator", favorited: false };
+  } else viewer = { status: "spectator" };
 
   res.send({ page: pageData, viewer });
 };
@@ -371,43 +370,6 @@ exports.updatePage = (req, res) => {
   } else {
     return res.status(400).send({ error: "error with contents" });
   }
-};
-
-// Favorite or unfavorite a page
-exports.favorite = function (req, res) {
-  var pageId = req.params.id;
-  var userId = req.user.id;
-
-  Page.findById(pageId, function (err, page) {
-    if (err) return res.status(500).send("error");
-    if (page) {
-      var pageId = page.id;
-
-      User.findById(userId, function (err, user) {
-        if (user.favoritePages.indexOf(pageId) === -1) {
-          User.findByIdAndUpdate(
-            userId,
-            { $push: { favoritePages: pageId } },
-            (err, page) => {
-              if (err) return res.status(500).send("error");
-              res.send({ favorited: true });
-            }
-          );
-        } else {
-          User.findByIdAndUpdate(
-            userId,
-            { $pull: { favoritePages: pageId } },
-            (err, page) => {
-              if (err) return res.status(500).send("error");
-              res.send({ favorited: false });
-            }
-          );
-        }
-      });
-    } else if (!page) {
-      res.status(404).send("no page founded");
-    }
-  });
 };
 
 // users liked or disliked a page

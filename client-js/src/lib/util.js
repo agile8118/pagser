@@ -8,7 +8,7 @@ export const getParameterByName = (name, url) => {
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 };
 
-export const convertToUrl = text => {
+export const convertToUrl = (text) => {
   return (
     text
       .toLowerCase()
@@ -19,19 +19,22 @@ export const convertToUrl = text => {
 };
 
 export const showSnackBar = (text, className = "nothing") => {
-  var x = document.getElementById("snackbar");
+  const x = document.getElementById("snackbar");
+  x.className = "";
+  x.innerHTML = "";
+
   if (x.className.indexOf("show") === -1) {
     x.innerHTML = text;
     x.classList.add(className);
     x.classList.add("show");
-    setTimeout(function() {
+    setTimeout(() => {
       x.className = "";
       x.innerHTML = "";
     }, 2900);
   }
 };
 
-export const loadingModal = message => {
+export const loadingModal = (message) => {
   let loadingModal = document.querySelector("#loading-modal");
   let loadingModalMessage = document.querySelector("#loading-modal-message");
   if (message) {
@@ -42,7 +45,7 @@ export const loadingModal = message => {
   }
 };
 
-export const hide = selector => {
+export const hide = (selector) => {
   // If the element is a modal
   if (selector.match(/mdl/)) {
     document.querySelector(selector).style.display = "none";
@@ -51,7 +54,7 @@ export const hide = selector => {
   }
 };
 
-export const show = selector => {
+export const show = (selector) => {
   // If the element is a modal
   if (selector.match(/mdl/)) {
     document.querySelector(selector).style.display = "block";

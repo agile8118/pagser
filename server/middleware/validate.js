@@ -1,7 +1,8 @@
-var User = require("../models/user");
-var validator = require("validator");
+const User = require("../models/user");
+const validator = require("validator");
+const ObjectId = require("mongoose").Types.ObjectId;
 
-var validate = {};
+const validate = {};
 
 function isAlpha(string) {
   if (/^[A-Za-z ]+$/.test(string)) {
@@ -64,8 +65,15 @@ function letterPercentage(string, minPercent) {
   }
 }
 
+// Validate if the id is valid mongoose id
+validate.id = (req, res, next) => {
+  const id = req.params.id;
+  if (ObjectId.isValid(id)) return next();
+  res.status(422).send({ message: "An error with the provided id." });
+};
+
 // VALIDATE NAME FIELD //
-validate.name = function(req, res, next) {
+validate.name = function (req, res, next) {
   var name = req.body.name;
 
   if (notEmpty(name) && isAlpha(name) && len(name, 3, 30)) {
@@ -121,7 +129,7 @@ validate.links = (req, res, next) => {
 };
 
 // VALIDATE USERNAME FIELD //
-validate.username = function(req, res, next) {
+validate.username = function (req, res, next) {
   var username = req.body.username;
   if (notEmpty(username) && len(username, 5, 15) && isUsername(username)) {
     next();
@@ -131,7 +139,7 @@ validate.username = function(req, res, next) {
 };
 
 // VALIDATE EMAIL FIELD //
-validate.email = function(req, res, next) {
+validate.email = function (req, res, next) {
   var email = req.body.email;
 
   if (notEmpty(email) && validator.isEmail(email)) {
@@ -142,7 +150,7 @@ validate.email = function(req, res, next) {
 };
 
 // VALIDATE PASSWORD FIELD //
-validate.password = function(req, res, next) {
+validate.password = function (req, res, next) {
   var password = req.body.password;
   var username = req.body.username;
 
@@ -158,9 +166,9 @@ validate.password = function(req, res, next) {
 };
 
 // CHECK IF PROVIDED EMAIL IS NOT EXISTED //
-validate.emailNotExisted = function(req, res, next) {
+validate.emailNotExisted = function (req, res, next) {
   var email = req.body.email;
-  User.findOne({ email: email }, function(err, result) {
+  User.findOne({ email: email }, function (err, result) {
     if (err) {
       res.status(422).send({ error: "An error happened." });
     } else {
@@ -174,9 +182,9 @@ validate.emailNotExisted = function(req, res, next) {
 };
 
 // CHECK IF PROVIDED USERNAME IS NOT EXISTED //
-validate.usernameNotExisted = function(req, res, next) {
+validate.usernameNotExisted = function (req, res, next) {
   var username = req.body.username;
-  User.findOne({ username: username }, function(err, result) {
+  User.findOne({ username: username }, function (err, result) {
     if (err) {
       res.status(422).send({ error: "An error happened." });
     } else {

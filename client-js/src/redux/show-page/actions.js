@@ -5,7 +5,7 @@ import {
   FETCH_PAGE_DATA_PENDING,
   FETCH_PAGE_DATA_FAILED,
   PAGE_RATED,
-  PAGE_FAVORITED,
+  READ_LATER,
   FETCH_ATTACH_FILES,
   SUBSCRIBE,
 } from "./constants";
@@ -20,6 +20,7 @@ export const fetchPublicPageData = () => async (dispatch) => {
       },
     }
   );
+
   dispatch({
     type: FETCH_PAGE_DATA_SUCCESS,
     payload: data,
@@ -77,8 +78,33 @@ export const ratePage = (obj) => (dispatch) => {
   dispatch({ type: PAGE_RATED, payload: obj });
 };
 
-export const favoritePage = ({ favorited }) => (dispatch) => {
-  dispatch({ type: PAGE_FAVORITED, payload: favorited });
+// Send a requst to server to add or remove a page from the read later list
+export const readLater = (id) => async (dispatch) => {
+  try {
+    loadingModal("Loading...");
+    const { data } = await axios.patch(`/api/read-later/${id}`, null, {
+      headers: {
+        authorization: localStorage.getItem("token"),
+      },
+    });
+
+    loadingModal();
+
+    if (data.readLater)
+      showSnackBar("Page added to the read later list.", "success");
+    else showSnackBar("Page removed from the read later list.", "success");
+
+    dispatch({ type: READ_LATER, payload: data.readLater });
+  } catch (e) {
+    loadingModal();
+    if (e.response && e.response.status === 401) {
+      showSnackBar(
+        "Please login to be able to add pages to the read later list."
+      );
+    } else {
+      showSnackBar("An unknown error occurred.");
+    }
+  }
 };
 
 // Send a request to server to either subscribe to or unsubscribe from the author
