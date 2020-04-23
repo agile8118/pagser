@@ -909,6 +909,12 @@ pre {
       margin-right: 2.4rem; }
     .sidenav__link:hover {
       background-color: #f7f7f7; }
+    .sidenav__link--active {
+      background-color: #333;
+      color: #fff; }
+      .sidenav__link--active:hover {
+        background-color: #333;
+        color: #fff; }
 
 .sidenav--open {
   left: 0; }

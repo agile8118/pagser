@@ -20,7 +20,7 @@ const publicPath = path.join(__dirname, "../public");
 mongoose.connect(
   process.env.NODE_ENV === "production" ? keys.mlab_url : keys.mlab_local_url,
   {
-    useMongoClient: true
+    useMongoClient: true,
   }
 );
 
@@ -42,7 +42,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: new MongoStore({ mongooseConnection: mongoose.connection }),
-    cookie: { maxAge: 180 * 60 * 1000 } // 3 hours
+    cookie: { maxAge: 180 * 60 * 1000 }, // 3 hours
   })
 );
 
@@ -53,40 +53,48 @@ const port = process.env.PORT || 3080;
 const { Page } = require("./models/page");
 const { Trash } = require("./models/trash");
 
-app.get("/home", function(req, res) {
-  res.render("home");
+app.get("/home", function (req, res) {
+  res.render("main");
 });
 
-app.get("/users/:username", function(req, res) {
+app.get("/feed/*", function (req, res) {
+  res.render("main");
+});
+
+app.get("/u/*", function (req, res) {
+  res.render("main");
+});
+
+app.get("/users/:username", function (req, res) {
   res.render("public-profile");
 });
 
-app.get("/login", function(req, res) {
+app.get("/login", function (req, res) {
   res.render("auth");
 });
 
-app.get("/register", function(req, res) {
+app.get("/register", function (req, res) {
   res.render("auth");
 });
 
-app.get("/forgotpassword", function(req, res) {
+app.get("/forgotpassword", function (req, res) {
   res.render("auth");
 });
 
-app.get("/verifyemail", function(req, res) {
+app.get("/verifyemail", function (req, res) {
   res.render("auth");
 });
 
-app.get("/new-page/*", function(req, res) {
+app.get("/new-page/*", function (req, res) {
   res.render("new-page");
 });
 
-app.get("/new-page", function(req, res) {
+app.get("/new-page", function (req, res) {
   res.render("new-page");
 });
 
 // render a public page
-app.get("/public-pages/:url", function(req, res) {
+app.get("/public-pages/:url", function (req, res) {
   var url = req.params.url;
 
   Page.findOne(
@@ -115,19 +123,19 @@ app.get("/public-pages/:url/edit", (req, res) => {
   res.render("edit-page");
 });
 
-app.get("/admin", function(req, res) {
+app.get("/admin", function (req, res) {
   res.render("admin");
 });
 
-app.get("/admin/home", function(req, res) {
+app.get("/admin/home", function (req, res) {
   res.render("admin");
 });
 
-app.get("/admin/profile", function(req, res) {
+app.get("/admin/profile", function (req, res) {
   res.render("admin");
 });
 
-app.get("/admin/settings", function(req, res) {
+app.get("/admin/settings", function (req, res) {
   res.render("admin");
 });
 
@@ -140,24 +148,24 @@ app.get("/:username/:url/edit", (req, res) => {
   res.render("edit-page");
 });
 
-app.get("/admin/pages/*", function(req, res) {
+app.get("/admin/pages/*", function (req, res) {
   res.render("admin");
 });
 
-app.get("/privacy-policy", function(req, res) {
+app.get("/privacy-policy", function (req, res) {
   res.render("privacy-policy");
 });
 
-app.get("/terms-of-use", function(req, res) {
+app.get("/terms-of-use", function (req, res) {
   res.render("terms-of-use");
 });
 
-app.get("*", function(req, res) {
+app.get("*", function (req, res) {
   res.send("Page Not Found!");
 });
 
 const server = http.createServer(app);
-server.listen(port, function() {
+server.listen(port, function () {
   console.log("****************************");
   console.log("Server has started on", port);
   console.log("****************************");
