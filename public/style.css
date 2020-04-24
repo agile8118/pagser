@@ -63,8 +63,7 @@ a {
 
 .heading-tertiary {
   font-size: 2.5rem;
-  word-spacing: 4px;
-  text-transform: uppercase; }
+  word-spacing: 4px; }
   @media only screen and (max-width: 405px) {
     .heading-tertiary {
       font-size: 2.3rem; } }
@@ -1644,6 +1643,7 @@ input[type="file"] {
   margin: 1rem 2rem 4.4rem 0;
   background-color: #fff;
   position: relative;
+  border: 1px solid #dfdede;
   border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px;
   display: inline-block;

@@ -9,7 +9,7 @@ class Draft extends Component {
     pages: null,
     status: "normal",
     selectedPages: [],
-    confirmModalStatus: ""
+    confirmModalStatus: "",
   };
   _isMounted = false;
 
@@ -17,21 +17,21 @@ class Draft extends Component {
     this._isMounted = true;
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
 
     axios
       .get(`/api/admin/pages/favorited`, config)
-      .then(response => {
+      .then((response) => {
         const pages = response.data.pages;
         if (this._isMounted) {
           this.setState({
-            pages
+            pages,
           });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response.status === 401) {
           window.location.href = "/login?redirected=admin";
         }
@@ -64,8 +64,8 @@ class Draft extends Component {
     this.setState({ confirmModalStatus: "loading" });
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
 
     axios
@@ -74,14 +74,14 @@ class Draft extends Component {
         { pageIds: this.state.selectedPages },
         config
       )
-      .then(response => {
-        let newPages = this.state.pages.filter(page => {
+      .then((response) => {
+        let newPages = this.state.pages.filter((page) => {
           return this.state.selectedPages.indexOf(page._id) === -1;
         });
         this.setState({
           pages: newPages,
           selectedPages: [],
-          confirmModalStatus: ""
+          confirmModalStatus: "",
         });
         this.confirmModal();
       })
@@ -188,23 +188,9 @@ class Draft extends Component {
       );
     }
     if (this.state.pages.length > 0) {
-      return this.state.pages.map(page => {
+      return this.state.pages.map((page) => {
         let target = "";
         let pageClass = "";
-        let pageUrl = "";
-        if (page.contents.title.length > 25) {
-          page.contents.title = page.contents.title.substring(0, 25) + "...";
-        }
-        if (page.contents.briefDes.length > 35) {
-          page.contents.briefDes =
-            page.contents.briefDes.substring(0, 35) + "...";
-        }
-
-        if (page.type === "private") {
-          pageUrl = `/${page.author.username}/${page.url}`;
-        } else if (page.type === "public") {
-          pageUrl = `/public-pages/${page.url}`;
-        }
 
         if (this.state.status === "normal") {
           pageClass = "page-thumbnail";
@@ -226,12 +212,12 @@ class Draft extends Component {
             key={page._id}
           >
             <PageThumbnail
-              onClick={e => {
+              onClick={(e) => {
                 this.onPageClicked(page._id);
               }}
               target={target}
               className={pageClass}
-              url={pageUrl}
+              url={page.url}
               image={page.cropedPhoto.secure_url}
               title={page.contents.title}
               briefDes={page.contents.briefDes}

@@ -24,3 +24,25 @@ exports.toggle = async (req, res) => {
     res.status(500).send({ message: "Internal server error." });
   }
 };
+
+// Fetch users's read later pages
+exports.fetch = async (req, res) => {
+  try {
+    const results = await ReadLater.find({ user: req.user.id })
+      .select("page date")
+      .populate({
+        path: "page",
+        select: "type url date cropedPhoto contents.title contents.briefDes",
+        model: "Page",
+        populate: {
+          path: "author",
+          select: "username",
+          model: "User",
+        },
+      });
+
+    res.send({ results });
+  } catch (e) {
+    res.status(500).send({ message: "Internal server error." });
+  }
+};

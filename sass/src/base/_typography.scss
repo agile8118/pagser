@@ -29,7 +29,7 @@ a {
 .heading-tertiary {
   font-size: 2.5rem;
   word-spacing: 4px;
-  text-transform: uppercase;
+  // text-transform: uppercase;
 
   @include res-max(405px) {
     font-size: 2.3rem;

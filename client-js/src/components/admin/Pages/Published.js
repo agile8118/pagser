@@ -15,21 +15,21 @@ class Pages extends Component {
     this._isMounted = true;
     const config = {
       headers: {
-        authorization: localStorage.getItem("token")
-      }
+        authorization: localStorage.getItem("token"),
+      },
     };
 
     axios
       .get(`/api/admin/pages/published`, config)
-      .then(response => {
+      .then((response) => {
         const pages = response.data.pages;
         if (this._isMounted) {
           this.setState({
-            pages
+            pages,
           });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response.status === 401) {
           window.location.href = "/login?redirected=admin";
         }
@@ -63,14 +63,7 @@ class Pages extends Component {
     }
 
     if (this.state.pages.length > 0) {
-      return this.state.pages.map(page => {
-        if (page.contents.title.length > 25) {
-          page.contents.title = page.contents.title.substring(0, 25) + "...";
-        }
-        if (page.contents.briefDes.length > 35) {
-          page.contents.briefDes =
-            page.contents.briefDes.substring(0, 35) + "...";
-        }
+      return this.state.pages.map((page) => {
         if (page.type === "private") {
           var pageUrl = `/${page.author.username}/${page.url}`;
         } else if (page.type === "public") {
