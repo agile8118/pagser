@@ -1,0 +1,18 @@
+.header-nav {
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  color: $color-text;
+
+  &__actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.4rem;
+
+    .btn-text {
+      padding: 1rem 2rem;
+    }
+  }
+}

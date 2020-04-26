@@ -185,6 +185,7 @@ module.exports = function (app) {
 
   // *********** READ LATER ROUTES *********** //
   app.patch("/api/read-later/:id", requireAuth, validate.id, ReadLater.toggle);
+  app.delete("/api/read-later", requireAuth, ReadLater.remove);
   app.get("/api/read-later/", requireAuth, ReadLater.fetch);
 
   app.post("/auth", requireAuth, Controller.getAuth);
