@@ -1,7 +1,7 @@
 const User = require("../../models/user");
 const Subscription = require("../../models/subscription");
 
-exports.toggleSubscription = async (req, res) => {
+exports.toggle = async (req, res) => {
   try {
     const authorId = req.params.id;
     const userId = req.user.id;

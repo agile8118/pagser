@@ -25,6 +25,7 @@ export const ConfirmModal = ({
   onCancel,
   onConfirm,
   btnName,
+  children,
 }) => {
   const className = open ? "mdl" : "mdl display-none";
   return (
@@ -38,7 +39,7 @@ export const ConfirmModal = ({
         </div>
 
         <div className="mdl__body">
-          <p>{message}</p>
+          {message || children}
 
           <form
             onSubmit={(e) => {

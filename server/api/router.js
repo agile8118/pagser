@@ -4,6 +4,7 @@ const Admin = require("./controllers/admin");
 const Page = require("./controllers/page");
 const Comment = require("./controllers/comment");
 const Subscription = require("./controllers/subscription");
+const ReadLater = require("./controllers/readLater");
 const passportService = require("./services/passport");
 const passport = require("passport");
 const validate = require("../middleware/validate");
@@ -98,7 +99,6 @@ module.exports = function (app) {
 
   // *********** PAGE ROUTES *********** //
   app.get("/api/public-pages/:url", Page.fetchPublicPageData);
-  app.patch("/api/pages/:id/favorite", requireAuth, Page.favorite);
   app.patch("/api/pages/:id/rate", requireAuth, Page.rate);
   app.put(
     "/api/pages/:id/photo",
@@ -181,13 +181,12 @@ module.exports = function (app) {
 
   // *********** SUBSCRIPTIONS ROUTES *********** //
   // Subscribe or onsubscribe the user
-  app.post(
-    "/api/subscription/:id",
-    requireAuth,
-    Subscription.toggleSubscription
-  );
+  app.post("/api/subscription/:id", requireAuth, Subscription.toggle);
 
-  // Fetch the user subscriptions
+  // *********** READ LATER ROUTES *********** //
+  app.patch("/api/read-later/:id", requireAuth, validate.id, ReadLater.toggle);
+  app.delete("/api/read-later", requireAuth, ReadLater.remove);
+  app.get("/api/read-later/", requireAuth, ReadLater.fetch);
 
   app.post("/auth", requireAuth, Controller.getAuth);
 };

@@ -3,6 +3,7 @@ const { Trash } = require("../../models/trash");
 const User = require("../../models/user");
 const Comment = require("../../models/comment");
 const Subscription = require("../../models/subscription");
+const ReadLater = require("../../models/readLater");
 const util = require("../../lib/util");
 const crypto = require("crypto");
 const multer = require("multer");
@@ -62,9 +63,8 @@ cloudinary.config({
   api_secret: keys.cloudinary_api_secret,
 });
 
+// Fetch the data of a public page
 exports.fetchPublicPageData = async (req, res) => {
-  const pageUrl = req.params.url;
-
   try {
     var decoded = jwt.decode(req.headers.authorization, keys.jwtSecret);
     var userId = decoded.sub;
@@ -72,51 +72,123 @@ exports.fetchPublicPageData = async (req, res) => {
     var userId = false;
   }
 
-  const page = await Page.findOne({ url: pageUrl })
-    .select("_id likes dislikes author photo url attachFiles contents.title")
-    .populate({
-      path: "author",
-      select: "name username biography photo",
-      model: "User",
-    });
-
-  const subs = await Subscription.find(
-    { author: page.author.id },
-    "subscriber"
-  );
-
-  const pageData = {
-    id: page._id,
-    author: { ...page.author._doc, subscribersNum: subs.length },
-    likes: page.likes.length,
-    dislikes: page.dislikes.length,
-    url: page.url,
-    contents: {
-      title: page.contents.title,
-    },
-    attachFiles: page.attachFiles,
-    photo: page.photo || "",
-  };
-
-  let viewer = {};
-  if (userId) {
-    if (page.author.equals(userId))
-      viewer = { status: "owner", favorited: null };
-    else {
-      const { favoritePages } = await User.findById(userId, "favoritePages");
-      const sub = await Subscription.findOne({
-        subscriber: userId,
-        author: page.author.id,
+  try {
+    const page = await Page.findOne({ url: req.params.url })
+      .select("_id likes dislikes author photo url attachFiles contents.title")
+      .populate({
+        path: "author",
+        select: "name username biography photo",
+        model: "User",
       });
 
-      viewer.status = "authenticated";
-      viewer.favorite = false;
-      if (favoritePages.indexOf(page.id) !== -1) viewer.favorite = true;
-      if (sub) viewer.subscribed = true;
-    }
-  } else viewer = { status: "spectator", favorited: false };
+    const subs = await Subscription.find(
+      { author: page.author.id },
+      "subscriber"
+    );
 
-  res.send({ page: pageData, viewer });
+    const pageData = {
+      id: page._id,
+      author: { ...page.author._doc, subscribersNum: subs.length },
+      likes: page.likes.length,
+      dislikes: page.dislikes.length,
+      url: page.url,
+      contents: {
+        title: page.contents.title,
+      },
+      attachFiles: page.attachFiles,
+      photo: page.photo || "",
+    };
+
+    let viewer = {};
+    if (userId) {
+      viewer.status = "authenticated";
+      if (page.author.equals(userId)) viewer = { status: "owner" };
+      else {
+        const rl = await ReadLater.findOne({ user: userId, page: page.id });
+        const sub = await Subscription.findOne({
+          subscriber: userId,
+          author: page.author.id,
+        });
+
+        if (rl) viewer.readLater = true;
+        if (sub) viewer.subscribed = true;
+      }
+    } else viewer = { status: "spectator" };
+
+    res.send({ page: pageData, viewer });
+  } catch (e) {
+    res.status(500).send({ message: "Internal server error." });
+  }
+};
+
+// Fetch the data of a private page
+exports.fetchPrivatePageData = async (req, res) => {
+  try {
+    const decoded = jwt.decode(req.headers.authorization, keys.jwtSecret);
+    var userId = decoded.sub;
+  } catch (e) {
+    var userId = false;
+  }
+
+  try {
+    const author = await User.findOne({ username: req.params.username }, "_id");
+
+    if (!author) return res.status(404).send();
+
+    const page = await Page.findOne({
+      url: req.params.url,
+      author: author.id,
+      type: "private",
+    })
+      .select(
+        "url dislikes likes date comments photo author configurations contents attachFiles _id"
+      )
+      .populate({
+        path: "author",
+        select: "name username biography photo",
+        model: "User",
+      });
+
+    if (!page) return res.status(404).send();
+
+    const subs = await Subscription.find(
+      { author: page.author.id },
+      "subscriber"
+    );
+
+    const pageData = {
+      id: page._id,
+      contents: page.contents,
+      configurations: page.configurations,
+      date: util.timeSince(page.date),
+      likes: page.likes.length,
+      dislikes: page.dislikes.length,
+      author: { ...page.author._doc, subscribersNum: subs.length },
+      url: page.url,
+      attachFiles: page.attachFiles,
+      photo: page.photo || "",
+    };
+
+    let viewer = {};
+    if (userId) {
+      viewer.status = "authenticated";
+      if (page.author.equals(userId)) viewer = { status: "owner" };
+      else {
+        const rl = await ReadLater.findOne({ user: userId, page: page.id });
+        const sub = await Subscription.findOne({
+          subscriber: userId,
+          author: page.author.id,
+        });
+
+        if (rl) viewer.readLater = true;
+        if (sub) viewer.subscribed = true;
+      }
+    } else viewer = { status: "spectator" };
+
+    res.send({ page: pageData, viewer });
+  } catch (e) {
+    res.status(500).send({ message: "Internal server error." });
+  }
 };
 
 exports.fetchDraftPageData = (req, res) => {
@@ -371,43 +443,6 @@ exports.updatePage = (req, res) => {
   } else {
     return res.status(400).send({ error: "error with contents" });
   }
-};
-
-// Favorite or unfavorite a page
-exports.favorite = function (req, res) {
-  var pageId = req.params.id;
-  var userId = req.user.id;
-
-  Page.findById(pageId, function (err, page) {
-    if (err) return res.status(500).send("error");
-    if (page) {
-      var pageId = page.id;
-
-      User.findById(userId, function (err, user) {
-        if (user.favoritePages.indexOf(pageId) === -1) {
-          User.findByIdAndUpdate(
-            userId,
-            { $push: { favoritePages: pageId } },
-            (err, page) => {
-              if (err) return res.status(500).send("error");
-              res.send({ favorited: true });
-            }
-          );
-        } else {
-          User.findByIdAndUpdate(
-            userId,
-            { $pull: { favoritePages: pageId } },
-            (err, page) => {
-              if (err) return res.status(500).send("error");
-              res.send({ favorited: false });
-            }
-          );
-        }
-      });
-    } else if (!page) {
-      res.status(404).send("no page founded");
-    }
-  });
 };
 
 // users liked or disliked a page
@@ -853,75 +888,6 @@ exports.delete = (req, res) => {
       if (err) return res.status(500).send("error");
       res.send("ok");
     });
-  });
-};
-
-// fetch data for a private page
-exports.fetchPrivatePageData = (req, res) => {
-  const pageURl = req.params.url;
-  const username = req.params.username;
-  var viewer;
-
-  try {
-    var decoded = jwt.decode(req.headers.authorization, keys.jwtSecret);
-    var userId = decoded.sub;
-  } catch (e) {
-    var userId = false;
-  }
-
-  User.findOne({ username }, "_id favoritePages", (err, user) => {
-    if (err) return res.status(500).send("error");
-    if (!user) {
-      return res.status(404).send();
-    }
-    Page.findOne({ url: pageURl, author: user.id, type: "private" })
-      .select(
-        "url dislikes likes date comments photo author configurations contents attachFiles _id"
-      )
-      .populate({
-        path: "author",
-        select: "name username biography photo",
-        model: "User",
-      })
-      .exec((err, page) => {
-        if (err) return res.status(500).send("error");
-        if (!page) {
-          return res.status(404).send();
-        }
-        formatedDate = util.timeSince(page.date);
-
-        const pageData = {
-          id: page._id,
-          contents: page.contents,
-          configurations: page.configurations,
-          date: formatedDate,
-          likes: page.likes.length,
-          dislikes: page.dislikes.length,
-          author: page.author,
-          url: page.url,
-          attachFiles: page.attachFiles,
-          photo: page.photo || "",
-        };
-
-        if (userId) {
-          if (page.author.equals(userId)) {
-            viewer = { status: "owner", favorited: null };
-            res.send({ page: pageData, viewer });
-          } else {
-            viewer = { status: "authenticated" };
-            if (user.favoritePages.indexOf(page.id) === -1) {
-              viewer = { status: "authenticated", favorited: false };
-              res.send({ page: pageData, viewer });
-            } else {
-              viewer = { status: "authenticated", favorited: true };
-              res.send({ page: pageData, viewer });
-            }
-          }
-        } else {
-          viewer = { status: "spectator", favorited: false };
-          res.send({ page: pageData, viewer });
-        }
-      });
   });
 };
 

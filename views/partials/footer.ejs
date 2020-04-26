@@ -1,5 +1,40 @@
 <script>
 
+  // Close/Open dropdowns based on where user clicks
+  document.querySelector("body").addEventListener("click", (e) => {
+    if (document.querySelector(".dropdown")) {
+      if (e.target.getAttribute("data-role") !== "dropdown") {
+        // Close all dropdowns
+        document.querySelectorAll(".dropdown").forEach((element) => {
+          element.classList.remove("dropdown--open");
+          element.classList.add("dropdown--close");
+        });
+      } else {
+        // Open the dropdown clicked on and close the others
+        document.querySelectorAll(".dropdown").forEach((element) => {
+          if (
+            element.getAttribute("data-dropdown") !==
+            e.target.getAttribute("data-dropdown")
+          ) {
+            element.classList.remove("dropdown--open");
+            element.classList.add("dropdown--close");
+          } else {
+            // Open or close the selected dropdown
+            if (element.classList.contains("dropdown--open")) {
+              // Close the dropdown
+              element.classList.remove("dropdown--open");
+              element.classList.add("dropdown--close");
+            } else {
+              // Open the dropdown
+              element.classList.add("dropdown--open");
+              element.classList.remove("dropdown--close");
+            }
+          }
+        });
+      }
+    }
+  });
+
   // Buttons won't get focused on click
   document.addEventListener("click", function (e) {
     if (document.activeElement.toString() == "[object HTMLButtonElement]") {
