@@ -84,6 +84,13 @@
   font-weight: 300;
 }
 
+.btn:disabled {
+  cursor: not-allowed;
+  background: #ebebe4;
+  border: 1px solid #ccc;
+  color: #757575;
+}
+
 // ** icon buttons  ** //
 .btn-i {
   cursor: pointer;
@@ -122,13 +129,6 @@
   &:focus {
     color: darken(#e6e6e6, 10%);
   }
-}
-
-.btn:disabled {
-  cursor: not-allowed;
-  background: #ebebe4;
-  border: 1px solid #ccc;
-  color: #757575;
 }
 
 // ** text buttons  ** //
@@ -196,13 +196,12 @@
   z-index: 99;
 
   &--close &__content {
-    animation: asd2 0.1s ease forwards;
     display: none;
   }
 
   &--open &__content {
     display: block;
-    animation: asd1 0.1s ease;
+    animation: ScaleIn 0.1s ease;
   }
 
   &--open button {

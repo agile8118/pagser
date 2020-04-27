@@ -15,7 +15,10 @@ const middleware = require("../middleware");
 const requireAuth = passport.authenticate("jwt", { session: false });
 const requireSignin = passport.authenticate("local", { session: false });
 
-module.exports = function (app) {
+module.exports = (app) => {
+  // *********** INDEX ROUTES *********** //
+  app.post("/auth", requireAuth, Controller.getAuth);
+
   // *********** AUTHENTICATION ROUTES *********** //
   app.post(
     "/register",
@@ -59,8 +62,6 @@ module.exports = function (app) {
   app.post("/api/auth", requireAuth, (req, res) => {
     res.send(req.user);
   });
-  // *********** INDEX ROUTES *********** //
-  app.get("/api/home", Controller.fetchHomePages);
 
   // *********** ADMIN ROUTES *********** //
   app.get("/api/profile", requireAuth, Admin.fetchUserData);
@@ -196,6 +197,4 @@ module.exports = function (app) {
   // *********** RATING ROUTES *********** //
   app.patch("/api/rate/page/:id", requireAuth, Rating.ratePage);
   app.get("/api/liked-pages/", requireAuth, Rating.fetchLikedPages);
-
-  app.post("/auth", requireAuth, Controller.getAuth);
 };
