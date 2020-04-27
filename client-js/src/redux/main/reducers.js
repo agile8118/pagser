@@ -1,6 +1,6 @@
 import {
   CHANGE_PAGE,
-  FETCH_READ_LATER_PAGES_SUCCESS,
+  FETCH_PAGES_SUCCESS,
   FILTER_BY,
   SORT_BY,
   CHANGE_STATUS,
@@ -42,9 +42,9 @@ export const section = (state = "", action = {}) => {
   }
 };
 
-export const readLaters = (state = [], action = {}) => {
+export const pages = (state = [], action = {}) => {
   switch (action.type) {
-    case FETCH_READ_LATER_PAGES_SUCCESS:
+    case FETCH_PAGES_SUCCESS:
       return action.payload;
     case REMOVE_PAGES:
       return state.filter((page) => {

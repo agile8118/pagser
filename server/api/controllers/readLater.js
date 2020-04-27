@@ -1,5 +1,4 @@
 const ReadLater = require("../../models/readLater");
-const mongoose = require("mongoose");
 
 // Add/Remove a page from the read later list
 exports.toggle = async (req, res) => {

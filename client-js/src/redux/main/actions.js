@@ -2,7 +2,7 @@ import axios from "axios";
 import { loadingModal, showSnackBar } from "../../lib/util";
 import {
   CHANGE_PAGE,
-  FETCH_READ_LATER_PAGES_SUCCESS,
+  FETCH_PAGES_SUCCESS,
   FILTER_BY,
   SORT_BY,
   CHANGE_STATUS,
@@ -15,10 +15,10 @@ export const changeSection = (section) => (dispatch) => {
   dispatch({ type: CHANGE_PAGE, payload: section });
 };
 
-export const fetchReadLaterPages = (sortBy, filterBy) => async (dispatch) => {
+export const fetchPages = (kind, filterBy, sortBy) => async (dispatch) => {
   loadingModal("Loading...");
   const { data } = await axios.get(
-    `/api/read-later?sortBy=${sortBy}&filterBy=${filterBy}`,
+    `/api/${kind}?sortBy=${sortBy}&filterBy=${filterBy}`,
     {
       headers: {
         authorization: localStorage.getItem("token"),
@@ -27,9 +27,9 @@ export const fetchReadLaterPages = (sortBy, filterBy) => async (dispatch) => {
   );
   loadingModal();
 
-  dispatch({ type: FETCH_READ_LATER_PAGES_SUCCESS, payload: data.results });
-  dispatch({ type: FILTER_BY, payload: data.filterBy });
-  dispatch({ type: SORT_BY, payload: data.sortBy });
+  dispatch({ type: FETCH_PAGES_SUCCESS, payload: data.results });
+  if (filterBy) dispatch({ type: FILTER_BY, payload: data.filterBy });
+  if (sortBy) dispatch({ type: SORT_BY, payload: data.sortBy });
 };
 
 export const selectPage = (id) => {
@@ -39,10 +39,10 @@ export const selectPage = (id) => {
   };
 };
 
-export const removePages = () => async (dispatch, getState) => {
+export const removePages = (kind) => async (dispatch, getState) => {
   try {
     loadingModal("Loading...");
-    await axios.delete("/api/read-later", {
+    await axios.delete(`/api/${kind}`, {
       data: { ids: getState().selectedPages },
       headers: {
         authorization: localStorage.getItem("token"),

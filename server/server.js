@@ -94,29 +94,31 @@ app.get("/new-page", function (req, res) {
 });
 
 // render a public page
-app.get("/public-pages/:url", function (req, res) {
-  var url = req.params.url;
+app.get("/public-pages/:url", async (req, res) => {
+  try {
+    const url = req.params.url;
 
-  Page.findOne(
-    { url },
-    "contents date type tags photo configurations",
-    (err, page) => {
-      if (err) return res.status(500).send("error");
-      if (!page) {
-        Trash.findOne({ url }, "id", (err, result) => {
-          if (err) return res.status(500).send("error");
-          if (result) {
-            res.render("show-page/deleted-page");
-          } else {
-            res.render("show-page/no-page");
-          }
-        });
-      } else {
-        var timeAgo = util.timeSince(page.date);
-        res.render("show-page/public", { page, timeAgo });
-      }
+    const page = await Page.findOne(
+      { url },
+      "contents date type tags photo configurations"
+    );
+
+    if (!page) {
+      Trash.findOne({ url }, "id", (err, result) => {
+        if (err) return res.status(500).send("error");
+        if (result) {
+          res.render("show-page/deleted-page");
+        } else {
+          res.render("show-page/no-page");
+        }
+      });
+    } else {
+      const timeAgo = util.timeSince(page.date);
+      res.render("show-page/public", { page, timeAgo });
     }
-  );
+  } catch (e) {
+    return res.status(500).send({ message: "Internal server error" });
+  }
 });
 
 app.get("/public-pages/:url/edit", (req, res) => {

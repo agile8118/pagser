@@ -5,6 +5,7 @@ const Page = require("./controllers/page");
 const Comment = require("./controllers/comment");
 const Subscription = require("./controllers/subscription");
 const ReadLater = require("./controllers/readLater");
+const History = require("./controllers/history");
 const passportService = require("./services/passport");
 const passport = require("passport");
 const validate = require("../middleware/validate");
@@ -187,6 +188,10 @@ module.exports = function (app) {
   app.patch("/api/read-later/:id", requireAuth, validate.id, ReadLater.toggle);
   app.delete("/api/read-later", requireAuth, ReadLater.remove);
   app.get("/api/read-later/", requireAuth, ReadLater.fetch);
+
+  // *********** HISTORY ROUTES *********** //
+  app.get("/api/history/", requireAuth, History.fetch);
+  app.delete("/api/history", requireAuth, History.remove);
 
   app.post("/auth", requireAuth, Controller.getAuth);
 };

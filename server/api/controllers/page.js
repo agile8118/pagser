@@ -4,6 +4,7 @@ const User = require("../../models/user");
 const Comment = require("../../models/comment");
 const Subscription = require("../../models/subscription");
 const ReadLater = require("../../models/readLater");
+const History = require("../../models/history");
 const util = require("../../lib/util");
 const crypto = require("crypto");
 const multer = require("multer");
@@ -113,10 +114,26 @@ exports.fetchPublicPageData = async (req, res) => {
         if (rl) viewer.readLater = true;
         if (sub) viewer.subscribed = true;
       }
+
+      const result = await History.findOne({ user: userId, page: page.id });
+      if (result) {
+        // Update the date visited
+        await History.findOneAndUpdate(
+          {
+            user: userId,
+            page: page.id,
+          },
+          { date: Date.now() }
+        );
+      } else {
+        // Add the page to the user's reading history list
+        await History.create({ user: userId, page: page.id });
+      }
     } else viewer = { status: "spectator" };
 
     res.send({ page: pageData, viewer });
   } catch (e) {
+    console.error(e);
     res.status(500).send({ message: "Internal server error." });
   }
 };
@@ -182,6 +199,21 @@ exports.fetchPrivatePageData = async (req, res) => {
 
         if (rl) viewer.readLater = true;
         if (sub) viewer.subscribed = true;
+      }
+
+      const result = await History.findOne({ user: userId, page: page.id });
+      if (result) {
+        // Update the date visited
+        await History.findOneAndUpdate(
+          {
+            user: userId,
+            page: page.id,
+          },
+          { date: Date.now() }
+        );
+      } else {
+        // Add the page to the user's reading history list
+        await History.create({ user: userId, page: page.id });
       }
     } else viewer = { status: "spectator" };
 
