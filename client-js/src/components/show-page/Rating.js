@@ -14,7 +14,7 @@ class Rating extends Component {
       },
     };
     axios
-      .patch(`/api/pages/${this.props.id}/rate`, { rate: "dislike" }, config)
+      .patch(`/api/rate/page/${this.props.id}`, { rate: "dislike" }, config)
       .then((response) => {
         loadingModal();
         this.props.ratePage(response.data);
@@ -37,7 +37,7 @@ class Rating extends Component {
       },
     };
     axios
-      .patch(`/api/pages/${this.props.id}/rate`, { rate: "like" }, config)
+      .patch(`/api/rate/page/${this.props.id}`, { rate: "like" }, config)
       .then((response) => {
         loadingModal();
         this.props.ratePage(response.data);

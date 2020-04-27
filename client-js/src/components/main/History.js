@@ -28,7 +28,7 @@ class History extends Component {
     if (this.props.status === "normal")
       return (
         <Dropdown
-          num="2"
+          num="1"
           select={this.props.filterBy}
           onChange={(name) => {
             this.props.fetchPages("history", name, this.props.sortBy);
