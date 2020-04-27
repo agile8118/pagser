@@ -5,6 +5,7 @@ const Comment = require("../../models/comment");
 const Subscription = require("../../models/subscription");
 const ReadLater = require("../../models/readLater");
 const History = require("../../models/history");
+const Rating = require("../../models/rating");
 const util = require("../../lib/util");
 const crypto = require("crypto");
 const multer = require("multer");
@@ -87,11 +88,14 @@ exports.fetchPublicPageData = async (req, res) => {
       "subscriber"
     );
 
+    const likes = await Rating.find({ page: page._id, liked: true });
+    const dislikes = await Rating.find({ page: page._id, liked: false });
+
     const pageData = {
       id: page._id,
       author: { ...page.author._doc, subscribersNum: subs.length },
-      likes: page.likes.length,
-      dislikes: page.dislikes.length,
+      likes: likes.length,
+      dislikes: dislikes.length,
       url: page.url,
       contents: {
         title: page.contents.title,
@@ -173,13 +177,16 @@ exports.fetchPrivatePageData = async (req, res) => {
       "subscriber"
     );
 
+    const likes = await Rating.find({ page: page._id, liked: true });
+    const dislikes = await Rating.find({ page: page._id, liked: false });
+
     const pageData = {
       id: page._id,
       contents: page.contents,
       configurations: page.configurations,
       date: util.timeSince(page.date),
-      likes: page.likes.length,
-      dislikes: page.dislikes.length,
+      likes: likes.length,
+      dislikes: dislikes.length,
       author: { ...page.author._doc, subscribersNum: subs.length },
       url: page.url,
       attachFiles: page.attachFiles,
@@ -474,86 +481,6 @@ exports.updatePage = (req, res) => {
     }
   } else {
     return res.status(400).send({ error: "error with contents" });
-  }
-};
-
-// users liked or disliked a page
-exports.rate = function (req, res) {
-  var rate = req.body.rate;
-  var pageId = req.params.id;
-  var userId = req.user.id;
-
-  if (rate === "like") {
-    Page.findById(pageId, function (err, page) {
-      if (err) return res.status(500).send("error");
-      var indexL = page.likes.indexOf(userId);
-
-      if (indexL === -1) {
-        Page.findByIdAndUpdate(
-          pageId,
-          { $push: { likes: userId }, $pull: { dislikes: userId } },
-          { new: true },
-          (err, page) => {
-            if (err) return res.status(500).send("error");
-            res.send({
-              likes: page.likes.length,
-              dislikes: page.dislikes.length,
-            });
-          }
-        );
-      } else {
-        Page.findByIdAndUpdate(
-          pageId,
-          { $pull: { likes: userId, dislikes: userId } },
-          { new: true },
-          (err, page) => {
-            if (err) return res.status(500).send("error");
-            res.send({
-              likes: page.likes.length,
-              dislikes: page.dislikes.length,
-            });
-          }
-        );
-      }
-    });
-  } else if (rate === "dislike") {
-    Page.findById(pageId, function (err, page) {
-      if (err) {
-        res.send("error");
-      } else {
-        var indexD = page.dislikes.indexOf(userId);
-
-        if (indexD === -1) {
-          Page.findByIdAndUpdate(
-            pageId,
-            { $push: { dislikes: userId }, $pull: { likes: userId } },
-            { new: true },
-            (err, page) => {
-              if (err) return res.status(500).send("error");
-              res.send({
-                likes: page.likes.length,
-                dislikes: page.dislikes.length,
-              });
-            }
-          );
-        } else {
-          Page.findByIdAndUpdate(
-            pageId,
-            { $pull: { dislikes: userId, likes: userId } },
-            { new: true },
-            (err, page) => {
-              if (err) return res.status(500).send("error");
-              res.send({
-                likes: page.likes.length,
-                dislikes: page.dislikes.length,
-              });
-            }
-          );
-        }
-      }
-    });
-  } else {
-    return res.status(400).send();
   }
 };
 

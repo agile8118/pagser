@@ -6,6 +6,7 @@ const Comment = require("./controllers/comment");
 const Subscription = require("./controllers/subscription");
 const ReadLater = require("./controllers/readLater");
 const History = require("./controllers/history");
+const Rating = require("./controllers/rating");
 const passportService = require("./services/passport");
 const passport = require("passport");
 const validate = require("../middleware/validate");
@@ -100,7 +101,6 @@ module.exports = function (app) {
 
   // *********** PAGE ROUTES *********** //
   app.get("/api/public-pages/:url", Page.fetchPublicPageData);
-  app.patch("/api/pages/:id/rate", requireAuth, Page.rate);
   app.put(
     "/api/pages/:id/photo",
     requireAuth,
@@ -192,6 +192,10 @@ module.exports = function (app) {
   // *********** HISTORY ROUTES *********** //
   app.get("/api/history/", requireAuth, History.fetch);
   app.delete("/api/history", requireAuth, History.remove);
+
+  // *********** RATING ROUTES *********** //
+  app.patch("/api/rate/page/:id", requireAuth, Rating.ratePage);
+  app.get("/api/liked-pages/", requireAuth, Rating.fetchLikedPages);
 
   app.post("/auth", requireAuth, Controller.getAuth);
 };
