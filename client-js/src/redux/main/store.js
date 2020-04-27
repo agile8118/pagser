@@ -3,7 +3,7 @@ import reduxThunk from "redux-thunk";
 
 import {
   section,
-  readLaters,
+  pages,
   sortBy,
   filterBy,
   status,
@@ -11,7 +11,7 @@ import {
 } from "./reducers";
 const rootReducer = combineReducers({
   section,
-  readLaters,
+  pages,
   filterBy,
   sortBy,
   status,

@@ -31,6 +31,12 @@ const userSchema = new Schema({
         "https://res.cloudinary.com/dxlsmrixd/image/upload/v1555133028/images/users/placeholder.png",
     },
   },
+  readingHistory: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Page",
+    },
+  ],
   verified: { type: Boolean, default: false },
   token: {
     code: String,

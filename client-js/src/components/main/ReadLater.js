@@ -5,7 +5,7 @@ import { ConfirmModal } from "../partials/Modals";
 import Dropdown from "../partials/Dropdown";
 
 import {
-  fetchReadLaterPages,
+  fetchPages,
   changeStatus,
   selectPage,
   removePages,
@@ -15,7 +15,7 @@ class ReadLater extends Component {
   state = { confModal: false };
 
   componentDidMount() {
-    this.props.fetchReadLaterPages(this.props.sortBy, this.props.filterBy);
+    this.props.fetchPages("read-later", this.props.filterBy, this.props.sortBy);
   }
 
   componentWillUnmount() {
@@ -23,17 +23,17 @@ class ReadLater extends Component {
   }
 
   renderDropdowns = () => {
-    if (this.props.filterBy === "all" && this.props.readLaterList.length === 0)
+    if (this.props.filterBy === "all" && this.props.pages.length === 0)
       return "";
     if (this.props.status === "normal")
       return (
         <React.Fragment>
-          {this.props.readLaterList.length > 1 && (
+          {this.props.pages.length > 1 && (
             <Dropdown
               num="1"
               select={this.props.sortBy}
               onChange={(name) => {
-                this.props.fetchReadLaterPages(name, this.props.filterBy);
+                this.props.fetchPages("read-later", this.props.filterBy, name);
               }}
             >
               <div
@@ -61,7 +61,7 @@ class ReadLater extends Component {
             num="2"
             select={this.props.filterBy}
             onChange={(name) => {
-              this.props.fetchReadLaterPages(this.props.sortBy, name);
+              this.props.fetchPages("read-later", name, this.props.sortBy);
             }}
           >
             <div data-role-name="btn-name" data-icon-class="fa fa-filter">
@@ -82,8 +82,8 @@ class ReadLater extends Component {
   };
 
   renderList = () => {
-    if (this.props.readLaterList.length > 0) {
-      return this.props.readLaterList.map((item) => {
+    if (this.props.pages.length > 0) {
+      return this.props.pages.map((item) => {
         return (
           <div
             className="col-lg-1-of-5 col-md-1-of-4 col-sm-1-of-3 col-xs-1-of-2 col-xxs-1-of-1"
@@ -153,7 +153,7 @@ class ReadLater extends Component {
       </button>
     );
 
-    const editBtn = this.props.readLaterList.length > 0 &&
+    const editBtn = this.props.pages.length > 0 &&
       this.props.status === "normal" && (
         <button
           className="btn-text"
@@ -171,7 +171,7 @@ class ReadLater extends Component {
           header="Remove from the list?"
           open={this.state.confModal}
           onConfirm={() => {
-            this.props.removePages();
+            this.props.removePages("read-later");
             this.setState({ confModal: false });
           }}
           onCancel={() => {
@@ -193,7 +193,7 @@ class ReadLater extends Component {
         </ConfirmModal>
         <div className="row">
           <div className="header-nav">
-            <h3 className="heading-tertiary">Your Reading List:</h3>
+            <h3 className="heading-tertiary">Your Read Later List:</h3>
             <div className="header-nav__actions">
               {this.renderDropdowns()}
               {removeBtn}
@@ -210,7 +210,7 @@ class ReadLater extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    readLaterList: state.readLaters,
+    pages: state.pages,
     selectedPages: state.selectedPages,
     status: state.status,
     sortBy: state.sortBy,
@@ -220,5 +220,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
   mapStateToProps,
-  { fetchReadLaterPages, changeStatus, selectPage, removePages }
+  { fetchPages, changeStatus, selectPage, removePages }
 )(ReadLater);

@@ -46,7 +46,8 @@ const PageThumbnail = (props) => {
     target = "_self";
   }
 
-  if (props.selected) className += " page-thumbnail--selected";
+  if (props.status === "editing" && props.selected)
+    className += " page-thumbnail--selected";
 
   return (
     <div className={className} onClick={props.onClick}>
@@ -63,7 +64,9 @@ const PageThumbnail = (props) => {
           <h4>{title}</h4>
           <p>{briefDes}</p>
         </div>
-        <span className="page-thumbnail__type">{props.type}</span>
+        <span className="page-thumbnail__type">
+          {props.label ? props.label : props.type}
+        </span>
       </a>
     </div>
   );
