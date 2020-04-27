@@ -60,8 +60,8 @@ exports.fetchLikedPages = async (req, res) => {
   try {
     const filterBy = req.query.filterBy;
 
-    const results = await History.find({ user: req.user.id })
-      .select("page date")
+    const results = await Rating.find({ user: req.user.id, liked: true })
+      .select("page")
       .sort({ date: -1 })
       .populate({
         path: "page",
@@ -78,7 +78,6 @@ exports.fetchLikedPages = async (req, res) => {
       return {
         id: i.page._id,
         type: i.page.type,
-        dateVisited: util.timeSince(i.date),
         author: i.page.author,
         url: i.page.url,
         photo: i.page.cropedPhoto,
