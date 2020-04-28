@@ -11,6 +11,7 @@ import {
 } from "./reducers";
 const rootReducer = combineReducers({
   section,
+
   pages,
   filterBy,
   sortBy,

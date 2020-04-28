@@ -91,11 +91,13 @@ const SideNav = ({ changeSection, section }) => {
         <Link
           to="/u/pages"
           className={
-            section === "pages"
+            section === "pages/published" ||
+            section === "pages/draft" ||
+            section === "pages/trash"
               ? "sidenav__link sidenav__link--active"
               : "sidenav__link"
           }
-          onClick={() => changeSection("pages")}
+          onClick={() => changeSection("pages/published")}
         >
           <i className="fa fa-envelope-open" />Your Pages
         </Link>

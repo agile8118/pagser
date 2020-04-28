@@ -2,12 +2,46 @@ import React from "react";
 
 const PageThumbnail = (props) => {
   if (props.noPhoto) {
+    let briefDes = props.briefDes;
+    let title = props.title;
+    let url = "";
+    let className = "";
+    let target = props.target;
+
+    if (props.title.length > 25) {
+      title = props.title.substring(0, 25) + "...";
+    }
+
+    if (props.briefDes.length > 35) {
+      briefDes = props.briefDes.substring(0, 35) + "...";
+    }
+
+    if (props.briefDes.length === 0) {
+      briefDes = <em>No brief description provided.</em>;
+    }
+
+    if (props.type === "draft") {
+      url = `/new-page/initial-step?id=${props.id}`;
+    }
+
+    if (props.status === "normal" || !props.status) {
+      className = "page-thumbnail page-thumbnail-no-photo";
+    } else if (props.status === "editing") {
+      className =
+        "page-thumbnail page-thumbnail-no-photo page-thumbnail--shaking";
+      url = "javascript:void(0)";
+      target = "_self";
+    }
+
+    if (props.status === "editing" && props.selected)
+      className += " page-thumbnail--selected";
+
     return (
-      <div className={props.className} onClick={props.onClick}>
-        <a href={props.url} target={props.target}>
+      <div className={className} onClick={props.onClick}>
+        <a href={url} target={target}>
           <div className="page-thumbnail__details">
-            <h4>{props.title}</h4>
-            <p>{props.briefDes}</p>
+            <h4>{title}</h4>
+            <p>{briefDes}</p>
           </div>
         </a>
       </div>
