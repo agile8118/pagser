@@ -4,14 +4,16 @@ import Password from "./Password";
 
 const Settings = () => {
   return (
-    <div>
-      <div className="center-content">
-        <h3 className="heading-tertiary" id="information">
-          Account and password
-        </h3>
+    <div className="row">
+      <div className="admin">
+        <div className="center-content">
+          <h3 className="heading-tertiary" id="information">
+            Website and User Settings
+          </h3>
+        </div>
+        <Email />
+        <Password />
       </div>
-      <Email />
-      <Password />
     </div>
   );
 };

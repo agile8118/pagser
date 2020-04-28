@@ -1,6 +1,7 @@
 const Authentication = require("./controllers/authentication");
 const Controller = require("./controllers");
-const Admin = require("./controllers/admin");
+const Profile = require("./controllers/Profile");
+const Settings = require("./controllers/Settings");
 const Page = require("./controllers/page");
 const Comment = require("./controllers/comment");
 const Subscription = require("./controllers/subscription");
@@ -64,8 +65,8 @@ module.exports = (app) => {
     res.send(req.user);
   });
 
-  // *********** ADMIN ROUTES *********** //
-  app.get("/api/profile", requireAuth, Admin.fetchUserData);
+  // *********** PROFILE ROUTES *********** //
+  app.get("/api/profile", requireAuth, Profile.fetchUserData);
   app.patch(
     "/api/profile",
     requireAuth,
@@ -73,17 +74,19 @@ module.exports = (app) => {
     validate.headline,
     validate.biography,
     validate.links,
-    Admin.updateUserData
+    Profile.updateUserData
   );
-  app.get("/api/account/email", requireAuth, Admin.fetchUserEmail);
-  app.patch("/api/account/email", requireAuth, Admin.updateUserEmail);
+  app.put("/api/profile/photo", requireAuth, Profile.uploadUserImage);
+
+  // *********** SETTINGS ROUTES *********** //
+  app.get("/api/settings/email", requireAuth, Settings.fetchUserEmail);
+  app.patch("/api/settings/email", requireAuth, Settings.updateUserEmail);
   app.patch(
-    "/api/account/password",
+    "/api/settings/password",
     requireAuth,
     validate.password,
-    Admin.updateUserPassword
+    Settings.updateUserPassword
   );
-  app.put("/api/photo", requireAuth, Admin.uploadUserImage);
 
   // *********** USER'S PAGES MANAGER ROUTES *********** //
   app.get(

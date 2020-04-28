@@ -1,20 +1,13 @@
-const jwt = require("jwt-simple");
 const multer = require("multer");
 const readChunk = require("read-chunk");
 const fileType = require("file-type");
 const Jimp = require("jimp");
 const fs = require("fs");
 const User = require("../../models/user");
-const { Page, DraftPage } = require("../../models/page");
-const { Trash } = require("../../models/trash");
 const keys = require("../../config/keys");
 const func = require("../../lib/functions");
 const crypto = require("crypto");
-const bcrypt = require("bcrypt-nodejs");
 const cloudinary = require("cloudinary");
-const mongoose = require("mongoose");
-
-const util = require("../../lib/util");
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -39,11 +32,6 @@ cloudinary.config({
   api_key: keys.cloudinary_api_key,
   api_secret: keys.cloudinary_api_secret,
 });
-
-function tokenForUser(userId) {
-  const timestamp = new Date().getTime();
-  return jwt.encode({ sub: userId, iat: timestamp }, keys.jwtSecret);
-}
 
 exports.fetchUserData = function (req, res, next) {
   var userId = req.user.id;
@@ -71,55 +59,6 @@ exports.updateUserData = function (req, res, next) {
       return res.send("error");
     }
     func.sendUserData(userId, res);
-  });
-};
-
-exports.fetchUserEmail = (req, res) => {
-  const userId = req.user.id;
-
-  User.findById(userId, "email", (err, user) => {
-    if (err) return res.status(500).send("error");
-    res.send({ email: user.email });
-  });
-};
-
-exports.updateUserEmail = function (req, res) {
-  var userId = req.user.id;
-  var email = req.body.email;
-
-  User.findByIdAndUpdate(userId, { email }, function (err, user) {
-    if (err) {
-      return res.send("error updating email");
-    }
-    func.sendUserData(userId, res);
-  });
-};
-
-exports.updateUserPassword = function (req, res) {
-  var userId = req.user.id;
-  var password = req.body.password;
-
-  User.findById(userId, function (err, user) {
-    if (err) return res.status(500).send("error");
-
-    bcrypt.genSalt(10, function (err, salt) {
-      if (err) return res.status(500).send("error");
-
-      // hash (encrypt) our password using the salt
-      bcrypt.hash(password, salt, null, function (err, hash) {
-        if (err) {
-          return res.send("err");
-        }
-
-        // overwrite plain text password with encrypted password
-        user.password = hash;
-        user.save(function (err) {
-          if (!err) {
-            res.status(200).send("password updated succcessfully");
-          }
-        });
-      });
-    });
   });
 };
 

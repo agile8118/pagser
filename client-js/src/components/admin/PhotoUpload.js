@@ -77,7 +77,7 @@ class PhotoUpload extends Component {
     );
 
     try {
-      const { data } = await axios.put(`/api/photo`, formData, {
+      const { data } = await axios.put(`/api/profile/photo`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           authorization: localStorage.getItem("token"),
@@ -161,10 +161,8 @@ class PhotoUpload extends Component {
 
   render() {
     return (
-      <div>
-        <br />
-        <br />
-        <div className="center-content admin__photo-section">
+      <React.Fragment>
+        <div className="center-content margin-top-3">
           <h3 className="heading-tertiary" id="photo">
             Photo
           </h3>
@@ -177,6 +175,7 @@ class PhotoUpload extends Component {
             additionalClasses="margin-top-2"
           />
           <img
+            className="profile__img"
             src={this.state.photo}
             onError={() => {
               this.setState({ photo: "/images/users/placeholder.png" });
@@ -262,7 +261,7 @@ class PhotoUpload extends Component {
             </div>
           </div>
         </Modal>
-      </div>
+      </React.Fragment>
     );
   }
 }
