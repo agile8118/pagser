@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
 import Loading from "../partials/Loading";
-import { ROOT_URL } from "../../lib/keys";
 import { showSnackBar, loadingModal } from "../../lib/util";
 import util from "../../lib/forms";
 import PhotoUpload from "./PhotoUpload";
@@ -202,192 +201,194 @@ class Profile extends Component {
   render() {
     if (this.state.loaded) {
       return (
-        <div>
-          <div className="center-content">
-            <h3 className="heading-tertiary" id="information">
-              Information
-            </h3>
-          </div>
+        <div className="row">
+          <div className="admin">
+            <div className="center-content">
+              <h3 className="heading-tertiary" id="information">
+                Your Information
+              </h3>
+            </div>
 
-          <div className="form__group" id="name">
-            <label className="form__label">Name</label>
-            <input
-              className="form__input"
-              value={this.state.name}
-              placeholder="Full name"
-              onBlur={(e) => {
-                this.checkIfAllOk.apply(this);
-              }}
-              onChange={(event) => {
-                this.setState({ name: event.target.value });
-              }}
-            />
-            <div className="form__input--message">
-              <span />
-            </div>
-          </div>
-          <div className="form__group" id="headline">
-            <label className="form__label">Headline</label>
-            <input
-              maxLength={50}
-              onBlur={(e) => {
-                this.checkIfAllOk.apply(this);
-              }}
-              className="form__input"
-              placeholder="Describe yourself in few words"
-              value={this.state.headline}
-              onChange={(event) => {
-                this.setState({ headline: event.target.value });
-              }}
-            />
-            <div className="form__input--message">
-              <span />
-            </div>
-            <span className="form__len-display">50</span>
-          </div>
-          <div className="form__group" id="biography">
-            <label className="form__label">Biography</label>
-            <textarea
-              maxLength={250}
-              onBlur={(e) => {
-                this.checkIfAllOk.apply(this);
-              }}
-              className="form__textarea"
-              value={this.state.biography}
-              onChange={(event) => {
-                this.setState({ biography: event.target.value });
-              }}
-              placeholder="Add more information about yourself"
-              rows="4"
-            />
-            <div className="form__input--message">
-              <span />
-            </div>
-            <span className="form__len-display">250</span>
-          </div>
-
-          <div className="form__group">
-            <label className="form__label">Links</label>
-            <div className="form__group--sm">
+            <div className="form__group" id="name">
+              <label className="form__label">Name</label>
               <input
-                type="text"
-                maxLength={100}
-                placeholder="Website (http://www.example.com)"
                 className="form__input"
-                value={this.state.links.website}
+                value={this.state.name}
+                placeholder="Full name"
+                onBlur={(e) => {
+                  this.checkIfAllOk.apply(this);
+                }}
                 onChange={(event) => {
-                  this.setState({
-                    links: { ...this.state.links, website: event.target.value },
-                  });
+                  this.setState({ name: event.target.value });
                 }}
               />
+              <div className="form__input--message">
+                <span />
+              </div>
+            </div>
+            <div className="form__group" id="headline">
+              <label className="form__label">Headline</label>
+              <input
+                maxLength={50}
+                onBlur={(e) => {
+                  this.checkIfAllOk.apply(this);
+                }}
+                className="form__input"
+                placeholder="Describe yourself in few words"
+                value={this.state.headline}
+                onChange={(event) => {
+                  this.setState({ headline: event.target.value });
+                }}
+              />
+              <div className="form__input--message">
+                <span />
+              </div>
+              <span className="form__len-display">50</span>
+            </div>
+            <div className="form__group" id="biography">
+              <label className="form__label">Biography</label>
+              <textarea
+                maxLength={250}
+                onBlur={(e) => {
+                  this.checkIfAllOk.apply(this);
+                }}
+                className="form__textarea"
+                value={this.state.biography}
+                onChange={(event) => {
+                  this.setState({ biography: event.target.value });
+                }}
+                placeholder="Add more information about yourself"
+                rows="4"
+              />
+              <div className="form__input--message">
+                <span />
+              </div>
+              <span className="form__len-display">250</span>
             </div>
 
-            <div className="form__group--sm">
-              <div className="input__group">
-                <div>https://twitter.com/</div>
+            <div className="form__group">
+              <label className="form__label">Links</label>
+              <div className="form__group--sm">
                 <input
-                  maxLength={100}
                   type="text"
-                  placeholder="Twitter Profile"
-                  value={this.state.links.twitter}
+                  maxLength={100}
+                  placeholder="Website (http://www.example.com)"
                   className="form__input"
+                  value={this.state.links.website}
                   onChange={(event) => {
                     this.setState({
                       links: {
                         ...this.state.links,
-                        twitter: event.target.value,
+                        website: event.target.value,
                       },
                     });
                   }}
                 />
               </div>
-            </div>
 
-            <div className="form__group--sm">
-              <div className="input__group">
-                <div>https://youtube.com/</div>
-                <input
-                  maxLength={100}
-                  type="text"
-                  placeholder="Youtube Profile"
-                  value={this.state.links.youtube}
-                  className="form__input"
-                  onChange={(event) => {
-                    this.setState({
-                      links: {
-                        ...this.state.links,
-                        youtube: event.target.value,
-                      },
-                    });
-                  }}
-                />
+              <div className="form__group--sm">
+                <div className="input__group">
+                  <div>https://twitter.com/</div>
+                  <input
+                    maxLength={100}
+                    type="text"
+                    placeholder="Twitter Profile"
+                    value={this.state.links.twitter}
+                    className="form__input"
+                    onChange={(event) => {
+                      this.setState({
+                        links: {
+                          ...this.state.links,
+                          twitter: event.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="form__group--sm">
+                <div className="input__group">
+                  <div>https://youtube.com/</div>
+                  <input
+                    maxLength={100}
+                    type="text"
+                    placeholder="Youtube Profile"
+                    value={this.state.links.youtube}
+                    className="form__input"
+                    onChange={(event) => {
+                      this.setState({
+                        links: {
+                          ...this.state.links,
+                          youtube: event.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="form__group--sm">
+                <div className="input__group">
+                  <div>https://linkedin.com/</div>
+                  <input
+                    maxLength={100}
+                    type="text"
+                    placeholder="LinkedIn Profile"
+                    value={this.state.links.linkedin}
+                    className="form__input"
+                    onChange={(event) => {
+                      this.setState({
+                        links: {
+                          ...this.state.links,
+                          linkedin: event.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="form__group--sm">
+                <div className="input__group">
+                  <div>https://facebook.com/</div>
+                  <input
+                    type="text"
+                    maxLength={100}
+                    placeholder="Facebook Profile"
+                    value={this.state.links.facebook}
+                    className="form__input"
+                    onChange={(event) => {
+                      this.setState({
+                        links: {
+                          ...this.state.links,
+                          facebook: event.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
               </div>
             </div>
-
-            <div className="form__group--sm">
-              <div className="input__group">
-                <div>https://linkedin.com/</div>
-                <input
-                  maxLength={100}
-                  type="text"
-                  placeholder="LinkedIn Profile"
-                  value={this.state.links.linkedin}
-                  className="form__input"
-                  onChange={(event) => {
-                    this.setState({
-                      links: {
-                        ...this.state.links,
-                        linkedin: event.target.value,
-                      },
-                    });
-                  }}
-                />
-              </div>
+            <div className="right-content">
+              <button
+                className="btn btn-blue-o btn-round"
+                disabled={this.state.btnDisabled}
+                onClick={(e) => this.onSaveClick(e)}
+              >
+                Save
+              </button>
             </div>
-
-            <div className="form__group--sm">
-              <div className="input__group">
-                <div>https://facebook.com/</div>
-                <input
-                  type="text"
-                  maxLength={100}
-                  placeholder="Facebook Profile"
-                  value={this.state.links.facebook}
-                  className="form__input"
-                  onChange={(event) => {
-                    this.setState({
-                      links: {
-                        ...this.state.links,
-                        facebook: event.target.value,
-                      },
-                    });
-                  }}
-                />
-              </div>
+            <PhotoUpload />
+            <div className="right-content margin-top-4">
+              <a
+                href={`/users/${this.state.username}`}
+                target="_blank"
+                className="btn-text btn-text-underlined"
+              >
+                View public profile <i className="fa fa-arrow-right" />
+              </a>
             </div>
-          </div>
-          <div className="right-content">
-            <button
-              className="btn btn-blue-o btn-round"
-              disabled={this.state.btnDisabled}
-              onClick={(e) => this.onSaveClick(e)}
-            >
-              Save
-            </button>
-          </div>
-          <PhotoUpload />
-          <br />
-          <br />
-          <br />
-          <div className="right-content">
-            <a
-              href={`/users/${this.state.username}`}
-              target="_blank"
-              className="btn-text btn-text-underlined"
-            >
-              View public profile <i className="fa fa-arrow-right" />
-            </a>
           </div>
         </div>
       );
@@ -396,27 +397,12 @@ class Profile extends Component {
         <div>
           <div className="center-content">
             <h3 className="heading-tertiary" id="information">
-              Information
+              Your Information
             </h3>
           </div>
           <br />
           <div className="center-content">
-            <div className="lds-css ng-scope">
-              <div className="lds-spinner">
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-              </div>
-            </div>
+            <Loading />
           </div>
         </div>
       );

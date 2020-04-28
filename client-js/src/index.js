@@ -14,15 +14,9 @@ import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import ForgotPassword from "./components/auth/ForgotPassword";
 
-import AdminHome from "./components/admin/Home";
 import Profile from "./components/admin/Profile";
-import Settings from "./components/admin/Settings/Settings";
-import Nav from "./components/admin/Nav";
-import Footer from "./components/admin/Footer";
-import lPagesPublished from "./components/admin/Pages/Published";
-import lPagesFavorited from "./components/admin/Pages/Favorited";
-import lPagesTrash from "./components/admin/Pages/Trash";
-import lPagesDraft from "./components/admin/Pages/Draft";
+import Settings from "./components/admin/settings/Settings";
+import AdminHeader from "./components/admin/Header";
 
 import InitialStep from "./components/new-page/InitialStep";
 import PageContents from "./components/new-page/PageContents";
@@ -149,33 +143,11 @@ if (containerName === "showPrivate") {
 if (containerName === "admin") {
   ReactDOM.render(
     <BrowserRouter>
-      <div className="admin">
-        <Nav />
-        <div className="admin__empty" />
-        <div className="admin__content a-8">
-          <div className="row">
-            <div className="row">
-              <Switch>
-                <Route exact path="/admin/home" component={AdminHome} />
-                <Route path="/admin/profile" component={Profile} />
-                <Route path="/admin/settings" component={Settings} />
-                <Route
-                  path="/admin/pages/published"
-                  component={lPagesPublished}
-                />
-                <Route
-                  path="/admin/pages/favorited"
-                  component={lPagesFavorited}
-                />
-                <Route path="/admin/pages/draft" component={lPagesDraft} />
-                <Route path="/admin/pages/trash" component={lPagesTrash} />
-                <Redirect from="/admin" to="/admin/home" />
-              </Switch>
-            </div>
-          </div>
-          <Footer />
-        </div>
-      </div>
+      <AdminHeader />
+      <Switch>
+        <Route path="/profile" component={Profile} />
+        <Route path="/settings" component={Settings} />
+      </Switch>
     </BrowserRouter>,
     container
   );

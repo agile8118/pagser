@@ -2,9 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import { loadingModal } from "../../../lib/util";
 import util from "../../../lib/forms";
-import { ROOT_URL } from "../../../lib/keys";
 import Alert from "../../partials/Alert";
-import Loading from "../../partials/Loading";
 
 class Password extends Component {
   state = {
@@ -97,7 +95,7 @@ class Password extends Component {
     };
     axios
       .patch(
-        `/api/account/password`,
+        `/api/settings/password`,
         {
           password: this.state.password,
         },

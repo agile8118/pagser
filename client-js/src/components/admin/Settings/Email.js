@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { ROOT_URL } from "../../../lib/keys";
-import util from "../../../lib/forms";
 import { showSnackBar } from "../../../lib/util";
 
 class Email extends Component {
@@ -18,7 +16,7 @@ class Email extends Component {
     };
 
     axios
-      .get(`/api/account/email`, config)
+      .get(`/api/settings/email`, config)
       .then((response) => {
         if (this._isMounted) {
           this.setState({

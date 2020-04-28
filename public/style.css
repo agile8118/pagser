@@ -1243,6 +1243,9 @@ pre {
   justify-content: space-between;
   font-size: 2.4rem; }
 
+.lined-btns-big {
+  font-size: 2.8rem; }
+
 .btn-lined {
   font-size: inherit;
   font-weight: 700;
@@ -2043,67 +2046,18 @@ input:checked + .slider:before {
     font-size: 1.6rem; }
 
 .admin {
-  display: flex;
   font-size: 1.6rem; }
-  .admin__empty {
-    width: 24rem;
-    flex-shrink: 0; }
-    @media (max-width: 1020px) {
-      .admin__empty {
-        width: 0; } }
-  .admin__footer {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0; }
-  .admin__content {
-    padding: 4rem 24rem 4rem 8rem;
-    width: 100%;
-    position: relative; }
-    @media (max-width: 1745px) {
-      .admin__content {
-        padding: 4rem 5rem; } }
-    @media (max-width: 1020px) {
-      .admin__content {
-        position: unset; } }
-    @media (max-width: 87.5em) {
-      .admin__content {
-        padding: 6rem 4rem; } }
-  .admin__photo-section img {
-    border-radius: 50%;
-    width: 20rem;
-    margin-top: 2.5rem;
-    margin-bottom: 2rem; }
 
-.recent-comments {
-  margin-top: 8rem; }
-  .recent-comments h5 {
-    text-transform: none; }
-  .recent-comments p {
-    font-size: 1.6rem;
-    color: #555;
-    font-style: italic;
-    padding-top: 0.3rem; }
+.admin__header {
+  background-color: #eeecec;
+  margin-bottom: 4rem;
+  padding: 3rem 0 0 0; }
 
-.recent-likes {
-  margin-top: 8rem; }
-  .recent-likes h5 {
-    text-transform: none; }
-  .recent-likes p {
-    font-size: 1.6rem;
-    color: #555;
-    font-style: italic;
-    padding-top: 0.3rem; }
-
-.in-hand-pages-message {
-  font-size: 1.6rem;
-  color: #555;
-  font-style: italic; }
-
-.pages-no-page-message {
-  color: #555;
-  font-size: 1.6rem;
-  margin-top: 1rem; }
+.profile__img {
+  border-radius: 50%;
+  width: 20rem;
+  margin-top: 2.5rem;
+  margin-bottom: 2rem; }
 
 .page-new {
   background-color: #fff;
