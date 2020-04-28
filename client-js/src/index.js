@@ -19,10 +19,10 @@ import Profile from "./components/admin/Profile";
 import Settings from "./components/admin/Settings/Settings";
 import Nav from "./components/admin/Nav";
 import Footer from "./components/admin/Footer";
-import PagesPublished from "./components/admin/Pages/Published";
-import PagesFavorited from "./components/admin/Pages/Favorited";
-import PagesTrash from "./components/admin/Pages/Trash";
-import PagesDraft from "./components/admin/Pages/Draft";
+import lPagesPublished from "./components/admin/Pages/Published";
+import lPagesFavorited from "./components/admin/Pages/Favorited";
+import lPagesTrash from "./components/admin/Pages/Trash";
+import lPagesDraft from "./components/admin/Pages/Draft";
 
 import InitialStep from "./components/new-page/InitialStep";
 import PageContents from "./components/new-page/PageContents";
@@ -47,7 +47,8 @@ import ReadLater from "./components/main/ReadLater";
 import LikedPages from "./components/main/LikedPages";
 import Collections from "./components/main/Collections";
 import Analytics from "./components/main/Analytics";
-import Pages from "./components/main/Pages";
+import PagesPublished from "./components/main/pages/Published";
+import PagesDraft from "./components/main/pages/Draft";
 import UComments from "./components/main/Comments";
 import SideNav from "./components/main/SideNav";
 
@@ -160,14 +161,14 @@ if (containerName === "admin") {
                 <Route path="/admin/settings" component={Settings} />
                 <Route
                   path="/admin/pages/published"
-                  component={PagesPublished}
+                  component={lPagesPublished}
                 />
                 <Route
                   path="/admin/pages/favorited"
-                  component={PagesFavorited}
+                  component={lPagesFavorited}
                 />
-                <Route path="/admin/pages/draft" component={PagesDraft} />
-                <Route path="/admin/pages/trash" component={PagesTrash} />
+                <Route path="/admin/pages/draft" component={lPagesDraft} />
+                <Route path="/admin/pages/trash" component={lPagesTrash} />
                 <Redirect from="/admin" to="/admin/home" />
               </Switch>
             </div>
@@ -193,8 +194,10 @@ if (containerName === "main") {
           <Route path="/feed/liked-pages" component={LikedPages} />
           <Route path="/u/collections" component={Collections} />
           <Route path="/u/analytics" component={Analytics} />
-          <Route path="/u/pages" component={Pages} />
+          <Route path="/u/pages/published" component={PagesPublished} />
+          <Route path="/u/pages/draft" component={PagesDraft} />
           <Route path="/u/comments" component={UComments} />
+          <Redirect from="/u/pages" to="/u/pages/published" />
         </Switch>
       </BrowserRouter>
     </Provider>,

@@ -7,6 +7,7 @@ const Subscription = require("./controllers/subscription");
 const ReadLater = require("./controllers/readLater");
 const History = require("./controllers/history");
 const Rating = require("./controllers/rating");
+const UserPages = require("./controllers/userPages");
 const passportService = require("./services/passport");
 const passport = require("passport");
 const validate = require("../middleware/validate");
@@ -83,6 +84,32 @@ module.exports = (app) => {
     Admin.updateUserPassword
   );
   app.put("/api/photo", requireAuth, Admin.uploadUserImage);
+
+  // *********** USER'S PAGES MANAGER ROUTES *********** //
+  app.get(
+    "/api/user-pages/published",
+    requireAuth,
+    UserPages.fetchPublishedPages
+  );
+  app.get("/api/user-pages/draft", requireAuth, UserPages.fetchDraftPages);
+  app.delete("/api/user-pages/draft", requireAuth, UserPages.deleteDraftPages);
+
+  // *********** SUBSCRIPTIONS ROUTES *********** //
+  // Subscribe or onsubscribe the user
+  app.post("/api/subscription/:id", requireAuth, Subscription.toggle);
+
+  // *********** READ LATER ROUTES *********** //
+  app.patch("/api/read-later/:id", requireAuth, validate.id, ReadLater.toggle);
+  app.delete("/api/read-later", requireAuth, ReadLater.remove);
+  app.get("/api/read-later/", requireAuth, ReadLater.fetch);
+
+  // *********** HISTORY ROUTES *********** //
+  app.get("/api/history/", requireAuth, History.fetch);
+  app.delete("/api/history", requireAuth, History.remove);
+
+  // *********** RATING ROUTES *********** //
+  app.patch("/api/rate/page/:id", requireAuth, Rating.ratePage);
+  app.get("/api/liked-pages/", requireAuth, Rating.fetchLikedPages);
 
   // *********** NEW PAGE ROUTES *********** //
   app.get(
@@ -167,34 +194,4 @@ module.exports = (app) => {
     middleware.checkCommentOwnership,
     Comment.deleteComment
   );
-
-  // *********** PAGE MANAGER ROUTES *********** //
-  app.get("/api/admin/pages/:kind", requireAuth, Admin.fetchPages);
-  app.put(
-    "/api/admin/pages/unfavorite-pages",
-    requireAuth,
-    Admin.unfavoritePages
-  );
-  app.put(
-    "/api/admin/pages/delete-draft-pages",
-    requireAuth,
-    Admin.deleteDraftPages
-  );
-
-  // *********** SUBSCRIPTIONS ROUTES *********** //
-  // Subscribe or onsubscribe the user
-  app.post("/api/subscription/:id", requireAuth, Subscription.toggle);
-
-  // *********** READ LATER ROUTES *********** //
-  app.patch("/api/read-later/:id", requireAuth, validate.id, ReadLater.toggle);
-  app.delete("/api/read-later", requireAuth, ReadLater.remove);
-  app.get("/api/read-later/", requireAuth, ReadLater.fetch);
-
-  // *********** HISTORY ROUTES *********** //
-  app.get("/api/history/", requireAuth, History.fetch);
-  app.delete("/api/history", requireAuth, History.remove);
-
-  // *********** RATING ROUTES *********** //
-  app.patch("/api/rate/page/:id", requireAuth, Rating.ratePage);
-  app.get("/api/liked-pages/", requireAuth, Rating.fetchLikedPages);
 };

@@ -3,6 +3,7 @@ import { loadingModal, showSnackBar } from "../../lib/util";
 import {
   CHANGE_PAGE,
   FETCH_PAGES_SUCCESS,
+  FETCH_PAGES_PENDING,
   FILTER_BY,
   SORT_BY,
   CHANGE_STATUS,
@@ -11,25 +12,32 @@ import {
   REMOVE_PAGES,
 } from "./constants";
 
-export const changeSection = (section) => (dispatch) => {
+export const changeSection = (section) => (dispatch, getState) => {
+  if (getState().section !== section) {
+    dispatch({ type: FETCH_PAGES_PENDING });
+  }
   dispatch({ type: CHANGE_PAGE, payload: section });
 };
 
 export const fetchPages = (kind, filterBy, sortBy) => async (dispatch) => {
-  loadingModal("Loading...");
-  const { data } = await axios.get(
-    `/api/${kind}?sortBy=${sortBy}&filterBy=${filterBy}`,
-    {
-      headers: {
-        authorization: localStorage.getItem("token"),
-      },
-    }
-  );
-  loadingModal();
+  try {
+    loadingModal("Loading...");
+    const { data } = await axios.get(
+      `/api/${kind}?sortBy=${sortBy}&filterBy=${filterBy}`,
+      {
+        headers: {
+          authorization: localStorage.getItem("token"),
+        },
+      }
+    );
+    loadingModal();
 
-  dispatch({ type: FETCH_PAGES_SUCCESS, payload: data.results });
-  if (filterBy) dispatch({ type: FILTER_BY, payload: data.filterBy });
-  if (sortBy) dispatch({ type: SORT_BY, payload: data.sortBy });
+    dispatch({ type: FETCH_PAGES_SUCCESS, payload: data.results });
+    if (filterBy) dispatch({ type: FILTER_BY, payload: data.filterBy });
+    if (sortBy) dispatch({ type: SORT_BY, payload: data.sortBy });
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 export const selectPage = (id) => {
@@ -54,17 +62,19 @@ export const removePages = (kind) => async (dispatch, getState) => {
       payload: getState().selectedPages,
     });
 
-    dispatch({
-      type: EMPTY_LIST,
-      payload: "",
-    });
+    dispatch({ type: EMPTY_LIST });
 
     dispatch({
       type: CHANGE_STATUS,
       payload: "normal",
     });
     loadingModal();
-    showSnackBar("Page(s) successfully removed from your list.", "success");
+
+    if (getState().section === "pages/draft") {
+      showSnackBar("Draft Page(s) successfully deleted.", "success");
+    } else {
+      showSnackBar("Page(s) successfully removed from your list.", "success");
+    }
   } catch (e) {}
 };
 

@@ -1,6 +1,7 @@
 import {
   CHANGE_PAGE,
   FETCH_PAGES_SUCCESS,
+  FETCH_PAGES_PENDING,
   FILTER_BY,
   SORT_BY,
   CHANGE_STATUS,
@@ -22,28 +23,33 @@ export const section = (state = "", action = {}) => {
         "liked-pages",
         "collections",
         "analytics",
-        "pages",
+        "pages/published",
+        "pages/draft",
         "comments",
       ];
 
-      let section = "";
-      for (let item of sections) {
-        if (window.location.pathname.split("/")[1] === "home") {
-          section = "home";
-          break;
-        }
-        if (window.location.pathname.split("/")[2] === item) {
-          section = item;
-          break;
-        }
+      if (window.location.pathname.split("/")[1] === "home") {
+        return "home";
       }
 
-      return section;
+      if (window.location.pathname.split("/")[2] === "pages") {
+        const index = sections.indexOf(
+          `${window.location.pathname.split("/")[2]}/${
+            window.location.pathname.split("/")[3]
+          }`
+        );
+        return sections[index] || "pages/published";
+      }
+
+      const index = sections.indexOf(window.location.pathname.split("/")[2]);
+      return sections[index] || "";
   }
 };
 
 export const pages = (state = [], action = {}) => {
   switch (action.type) {
+    case FETCH_PAGES_PENDING:
+      return [];
     case FETCH_PAGES_SUCCESS:
       return action.payload;
     case REMOVE_PAGES:

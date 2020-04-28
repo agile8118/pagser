@@ -386,21 +386,13 @@ pre {
   to {
     opacity: 1; } }
 
-@keyframes asd1 {
+@keyframes ScaleIn {
   from {
     opacity: 0;
     transform: translateX(50%) scale(0.9); }
   to {
     opacity: 1;
     transform: translateX(50%) scale(1); } }
-
-@keyframes asd2 {
-  from {
-    opacity: 1;
-    transform: translateX(50%) scale(1); }
-  to {
-    opacity: 0;
-    transform: translateX(50%) scale(0.9); } }
 
 .container,
 .container-big {
@@ -1189,6 +1181,12 @@ pre {
   padding: 0.5rem 2.8rem;
   font-weight: 300; }
 
+.btn:disabled {
+  cursor: not-allowed;
+  background: #ebebe4;
+  border: 1px solid #ccc;
+  color: #757575; }
+
 .btn-i {
   cursor: pointer;
   background: transparent;
@@ -1212,12 +1210,6 @@ pre {
   color: #e6e6e6; }
   .btn-i-white:hover, .btn-i-white:focus {
     color: #cdcdcd; }
-
-.btn:disabled {
-  cursor: not-allowed;
-  background: #ebebe4;
-  border: 1px solid #ccc;
-  color: #757575; }
 
 .btn-text {
   cursor: pointer;
@@ -1246,28 +1238,38 @@ pre {
 .btn-text-big {
   font-size: 1.9rem; }
 
+.lined-btns {
+  display: flex;
+  justify-content: space-between;
+  font-size: 2.4rem; }
+
 .btn-lined {
   font-size: inherit;
+  font-weight: 700;
   padding-bottom: 0.7rem;
   padding-right: 0.4rem;
   margin-bottom: 3rem;
-  border-bottom: 4px solid rgba(41, 128, 185, 0.2);
-  transition: all 0.2s; }
+  color: rgba(41, 128, 185, 0.5);
+  border: none;
+  border-bottom: 5px solid rgba(41, 128, 185, 0.5);
+  transition: all 0.2s;
+  cursor: pointer; }
   .btn-lined:hover {
-    border-bottom: 4px solid rgba(41, 128, 185, 0.5); }
+    color: rgba(41, 128, 185, 0.9);
+    border-bottom: 5px solid rgba(41, 128, 185, 0.9); }
 
-.btn-lined-active {
-  border-bottom: 4px solid rgba(41, 128, 185, 0.9) !important; }
+.btn-lined--active {
+  color: rgba(41, 128, 185, 0.9);
+  border-bottom: 5px solid rgba(41, 128, 185, 0.9); }
 
 .dropdown {
   position: relative;
   z-index: 99; }
   .dropdown--close .dropdown__content {
-    animation: asd2 0.1s ease forwards;
     display: none; }
   .dropdown--open .dropdown__content {
     display: block;
-    animation: asd1 0.1s ease; }
+    animation: ScaleIn 0.1s ease; }
   .dropdown--open button {
     background: #297fb92b; }
   .dropdown button {

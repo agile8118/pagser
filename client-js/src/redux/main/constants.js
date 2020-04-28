@@ -1,5 +1,6 @@
 export const CHANGE_PAGE = "CHANGE_PAGE";
 export const FETCH_PAGES_SUCCESS = "FETCH_PAGES_SUCCESS";
+export const FETCH_PAGES_PENDING = "FETCH_PAGES_PENDING";
 export const FILTER_BY = "FILTER_BY";
 export const SORT_BY = "SORT_BY";
 export const CHANGE_STATUS = "CHANGE_STATUS";
