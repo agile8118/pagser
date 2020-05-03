@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import PageThumbnail from "../partials/PageThumbnail";
 import Dropdown from "../partials/Dropdown";
 
-import { fetchPages } from "../../redux/main/actions";
+import { fetchPages } from "actions";
 
 class History extends Component {
   componentDidMount() {

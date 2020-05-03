@@ -3,7 +3,7 @@ import axios from "axios";
 import { connect } from "react-redux";
 import { showSnackBar, loadingModal } from "../../lib/util";
 
-import * as actions from "../../redux/show-page/actions";
+import * as actions from "actions";
 
 class Rating extends Component {
   onDislikeButtonClick() {

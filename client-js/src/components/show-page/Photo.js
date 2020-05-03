@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PhotoUpload from "./PhotoUpload";
 
-import * as actions from "../../redux/show-page/actions";
+import * as actions from "actions";
 
 class Photo extends Component {
   render() {
@@ -19,7 +19,7 @@ class Photo extends Component {
               <img
                 src={this.props.photo.secure_url}
                 alt="Page featured image"
-                onError={e => {
+                onError={(e) => {
                   document.querySelector("#js--page-photo").innerHTML = "";
                   document
                     .querySelector("#js--page-photo")
@@ -40,13 +40,16 @@ class Photo extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     id: state.pageData.id,
     photo: state.pageData.photo,
     status: state.pageData.status,
-    isPending: state.pageData.isPending
+    isPending: state.pageData.isPending,
   };
 };
 
-export default connect(mapStateToProps, actions)(Photo);
+export default connect(
+  mapStateToProps,
+  actions
+)(Photo);

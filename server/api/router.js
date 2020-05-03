@@ -116,9 +116,16 @@ module.exports = (app) => {
   app.get("/api/liked-pages/", requireAuth, Rating.fetchLikedPages);
 
   // *********** COLLECTION ROUTES *********** //
-  app.get("/api/collection/:id", Collection.fetchOne);
+  app.get("/api/collection/:id", validate.id, Collection.fetchOne);
+  // app.post("/api/collection/:id/add-page", requireAuth, Collection.addPage);
   app.post("/api/collection", requireAuth, Collection.create);
   app.get("/api/collections/created", requireAuth, Collection.fetchCreated);
+  // Fetch collection for add to collection modal (for add page)
+  // app.get(
+  //   "/api/collections/created/:pageId",
+  //   requireAuth,
+  //   Collection.fetchCreatedFAP
+  // );
   app.get("/api/collections/saved", requireAuth, Collection.fetchSaved);
   app.get(
     "/api/collections/created-saved",

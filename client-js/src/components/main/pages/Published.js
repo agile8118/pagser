@@ -4,7 +4,7 @@ import PageThumbnail from "../../partials/PageThumbnail";
 import Dropdown from "../../partials/Dropdown";
 import Header from "./Header";
 
-import { fetchPages } from "../../../redux/main/actions";
+import { fetchPages } from "actions";
 
 class Published extends Component {
   componentDidMount() {

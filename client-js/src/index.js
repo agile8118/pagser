@@ -48,8 +48,7 @@ import UComments from "./components/main/Comments";
 import SideNav from "./components/main/SideNav";
 
 // Stores
-import showPageStore from "./redux/show-page/store";
-import mainStore from "./redux/main/store";
+import { showPageStore, mainStore } from "./reducers/store";
 
 const container = document.querySelector(".react-container");
 

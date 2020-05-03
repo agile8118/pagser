@@ -4,12 +4,7 @@ import PageThumbnail from "../partials/PageThumbnail";
 import { ConfirmModal } from "../partials/Modals";
 import Dropdown from "../partials/Dropdown";
 
-import {
-  fetchPages,
-  changeStatus,
-  selectPage,
-  removePages,
-} from "../../redux/main/actions";
+import { fetchPages, changeStatus, selectPage, removePages } from "actions";
 
 class History extends Component {
   state = { confModal: false };

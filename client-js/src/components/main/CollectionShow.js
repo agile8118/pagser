@@ -1,14 +1,24 @@
 import React, { Component } from "react";
+import axios from "axios";
+import { loadingModal, showSnackBar } from "../../lib/util";
 
 class CollectionShow extends Component {
-  state = { confModal: false };
+  fetchCollections = async (id) => {
+    loadingModal("Loading...");
+    const { data } = await axios.get(`/api/collection/${id}`, {
+      headers: {
+        authorization: localStorage.getItem("token"),
+      },
+    });
+
+    console.log(data);
+
+    loadingModal();
+  };
 
   componentDidMount() {
-    // this.props.fetchPages("history", this.props.filterBy);
-  }
-
-  componentWillUnmount() {
-    // this.props.changeStatus("normal");
+    const { id } = this.props.match.params;
+    this.fetchCollections(id);
   }
 
   render() {
