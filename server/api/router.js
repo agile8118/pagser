@@ -7,6 +7,7 @@ const Comment = require("./controllers/comment");
 const Subscription = require("./controllers/subscription");
 const ReadLater = require("./controllers/readLater");
 const History = require("./controllers/history");
+const Collection = require("./controllers/collection");
 const Rating = require("./controllers/rating");
 const UserPages = require("./controllers/userPages");
 const passportService = require("./services/passport");
@@ -113,6 +114,18 @@ module.exports = (app) => {
   // *********** RATING ROUTES *********** //
   app.patch("/api/rate/page/:id", requireAuth, Rating.ratePage);
   app.get("/api/liked-pages/", requireAuth, Rating.fetchLikedPages);
+
+  // *********** COLLECTION ROUTES *********** //
+  app.get("/api/collection/:id", Collection.fetchOne);
+  app.post("/api/collection", requireAuth, Collection.create);
+  app.get("/api/collections/created", requireAuth, Collection.fetchCreated);
+  app.get("/api/collections/saved", requireAuth, Collection.fetchSaved);
+  app.get(
+    "/api/collections/created-saved",
+    requireAuth,
+    Collection.fetchCreatedAndSaved
+  );
+  // app.get("/api/collections/shared", requireAuth, Collection.fetchShared);
 
   // *********** NEW PAGE ROUTES *********** //
   app.get(

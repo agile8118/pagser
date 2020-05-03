@@ -99,6 +99,20 @@
     }
   }
 
+  .col-lg-1-of-2 {
+    @media only screen and (min-width: 1510px) {
+      width: calc((100% - 1 * #{$gutter-horizontal-small}) / 2);
+
+      &:nth-child(2n) {
+        margin-right: 0 !important;
+      }
+
+      &:not(:last-child) {
+        margin-right: $gutter-horizontal-small;
+      }
+    }
+  }
+
   .col-lg-1-of-5 {
     @media only screen and (min-width: 1510px) {
       width: calc((100% - 4 * #{$gutter-horizontal-small}) / 5);

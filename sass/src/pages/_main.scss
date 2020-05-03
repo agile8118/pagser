@@ -13,6 +13,37 @@
 
     .btn-text {
       padding: 1rem 2rem;
+      &:last-child {
+        padding-right: 0;
+        padding-left: 0;
+        margin-left: 2rem;
+      }
     }
+  }
+}
+
+.collection-show {
+  font-size: 1.6rem;
+  color: $color-text;
+
+  &__name {
+    font-weight: 700;
+    font-size: 2.2rem;
+    // margin-bottom: 0.5rem;
+  }
+
+  &__pages-num {
+    font-style: italic;
+    margin-bottom: 0.5rem;
+  }
+
+  &__desc {
+    margin-bottom: 0.5rem;
+  }
+
+  &__creator {
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: rgba($color: $color-text, $alpha: 0.75);
   }
 }

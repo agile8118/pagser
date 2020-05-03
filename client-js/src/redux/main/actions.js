@@ -2,6 +2,8 @@ import axios from "axios";
 import { loadingModal, showSnackBar } from "../../lib/util";
 import {
   CHANGE_PAGE,
+  COLLECTION_CREATION_SUCCESS,
+  FETCH_COLLECTIONS_SUCCESS,
   FETCH_PAGES_SUCCESS,
   FETCH_PAGES_PENDING,
   FILTER_BY,
@@ -88,4 +90,47 @@ export const changeStatus = (status) => (dispatch) => {
     type: EMPTY_LIST,
     payload: "",
   });
+};
+
+export const fetchCollections = (kind, filterBy, sortBy) => async (
+  dispatch
+) => {
+  try {
+    loadingModal("Loading...");
+    const { data } = await axios.get(
+      `/api/collections/${kind}?sortBy=${sortBy}`,
+      {
+        headers: {
+          authorization: localStorage.getItem("token"),
+        },
+      }
+    );
+    loadingModal();
+
+    dispatch({ type: FETCH_COLLECTIONS_SUCCESS, payload: data.results });
+    if (sortBy) dispatch({ type: SORT_BY, payload: data.sortBy });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const createCollection = (name, desc) => async (dispatch) => {
+  try {
+    loadingModal("Loading...");
+    const { data } = await axios.post(
+      `/api/collection`,
+      { name, description: desc },
+      {
+        headers: {
+          authorization: localStorage.getItem("token"),
+        },
+      }
+    );
+    loadingModal();
+    showSnackBar("Your collection created successfully.", "success");
+
+    dispatch({ type: COLLECTION_CREATION_SUCCESS, payload: data.results });
+  } catch (e) {
+    console.log(e);
+  }
 };

@@ -40,6 +40,7 @@ import History from "./components/main/History";
 import ReadLater from "./components/main/ReadLater";
 import LikedPages from "./components/main/LikedPages";
 import Collections from "./components/main/Collections";
+import CollectionShow from "./components/main/CollectionShow";
 import Analytics from "./components/main/Analytics";
 import PagesPublished from "./components/main/pages/Published";
 import PagesDraft from "./components/main/pages/Draft";
@@ -165,6 +166,7 @@ if (containerName === "main") {
           <Route path="/feed/read-later" component={ReadLater} />
           <Route path="/feed/liked-pages" component={LikedPages} />
           <Route path="/u/collections" component={Collections} />
+          <Route path="/collection/:id" component={CollectionShow} />
           <Route path="/u/analytics" component={Analytics} />
           <Route path="/u/pages/published" component={PagesPublished} />
           <Route path="/u/pages/draft" component={PagesDraft} />

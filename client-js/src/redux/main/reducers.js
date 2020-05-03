@@ -32,6 +32,10 @@ export const section = (state = "", action = {}) => {
         return "home";
       }
 
+      if (window.location.pathname.split("/")[1] === "collection") {
+        return null;
+      }
+
       if (window.location.pathname.split("/")[2] === "pages") {
         const index = sections.indexOf(
           `${window.location.pathname.split("/")[2]}/${

@@ -1,8 +1,8 @@
 .form {
   @include clearfix;
+
   &__group {
     margin: 2rem 0;
-
     &--sm {
       margin: 1rem 0;
     }
@@ -28,6 +28,10 @@
     & input {
       margin-top: 0.5rem;
     }
+  }
+
+  &__group:first-child {
+    margin-top: 0;
   }
 
   &__input,
