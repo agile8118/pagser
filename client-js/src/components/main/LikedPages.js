@@ -7,6 +7,7 @@ import { fetchPages } from "actions";
 
 class History extends Component {
   componentDidMount() {
+    document.title = "Liked Pages | Pagher";
     this.props.fetchPages("liked-pages", this.props.filterBy);
   }
 
@@ -78,7 +79,7 @@ class History extends Component {
             <h3 className="heading-tertiary">Pages You Have Liked:</h3>
             <div className="header-nav__actions">{this.renderDropdowns()}</div>
           </div>
-          {this.renderList()}
+          <div className="row">{this.renderList()}</div>
         </div>
       </React.Fragment>
     );

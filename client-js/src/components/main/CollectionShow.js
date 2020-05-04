@@ -22,6 +22,8 @@ class CollectionShow extends Component {
   }
 
   render() {
+    document.title = ` | Pagher`;
+
     return (
       <React.Fragment>
         <div className="row">

@@ -8,6 +8,7 @@ import { fetchPages } from "actions";
 
 class Published extends Component {
   componentDidMount() {
+    document.title = "Published Pages | Pagher";
     this.props.fetchPages("user-pages/published", this.props.filterBy);
   }
 

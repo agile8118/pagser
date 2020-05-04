@@ -10,6 +10,7 @@ class ReadLater extends Component {
   state = { confModal: false };
 
   componentDidMount() {
+    document.title = "Reading List | Pagher";
     this.props.fetchPages("read-later", this.props.filterBy, this.props.sortBy);
   }
 
@@ -196,7 +197,7 @@ class ReadLater extends Component {
               {editBtn}
             </div>
           </div>
-          {this.renderList()}
+          <div className="row">{this.renderList()}</div>
         </div>
       </React.Fragment>
     );

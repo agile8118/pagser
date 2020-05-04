@@ -10,6 +10,7 @@ class History extends Component {
   state = { confModal: false };
 
   componentDidMount() {
+    document.title = "History | Pagher";
     this.props.fetchPages("history", this.props.filterBy);
   }
 
@@ -166,7 +167,7 @@ class History extends Component {
               {editBtn}
             </div>
           </div>
-          {this.renderList()}
+          <div className="row">{this.renderList()}</div>
         </div>
       </React.Fragment>
     );

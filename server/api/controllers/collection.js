@@ -57,7 +57,13 @@ exports.fetchCreated = async (req, res) => {
 
     if (sortBy === "a-z")
       collections.sort((a, b) => {
-        return a.name.toLowerCase() > b.name.toLowerCase();
+        if (a.name.toLowerCase() < b.name.toLowerCase()) {
+          return -1;
+        }
+        if (a.name.toLowerCase() > b.name.toLowerCase()) {
+          return 1;
+        }
+        return 0;
       });
 
     res.send({ collections, sortBy });

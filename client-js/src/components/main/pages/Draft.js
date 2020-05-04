@@ -10,6 +10,7 @@ class Published extends Component {
   state = { confModal: false };
 
   componentDidMount() {
+    document.title = "Draft Pages | Pagher";
     this.props.fetchPages("user-pages/draft");
   }
 
