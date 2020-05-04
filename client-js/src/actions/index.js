@@ -2,8 +2,6 @@ import axios from "axios";
 import { loadingModal, showSnackBar } from "lib/util";
 import {
   CHANGE_PAGE,
-  COLLECTION_CREATION_SUCCESS,
-  FETCH_COLLECTIONS_SUCCESS,
   FETCH_PAGES_SUCCESS,
   FETCH_PAGES_PENDING,
   FILTER_BY,
@@ -19,7 +17,8 @@ import {
   READ_LATER,
   FETCH_ATTACH_FILES,
   SUBSCRIBE,
-  COLLECTIONS_MODAL,
+  ADD_TO_CL_MDL,
+  CLOSE_ALL_MDLS,
 } from "./constants";
 
 export const changeSection = (section) => (dispatch, getState) => {
@@ -98,49 +97,6 @@ export const changeStatus = (status) => (dispatch) => {
     type: EMPTY_LIST,
     payload: "",
   });
-};
-
-export const fetchCollections = (kind, filterBy, sortBy) => async (
-  dispatch
-) => {
-  try {
-    loadingModal("Loading...");
-    const { data } = await axios.get(
-      `/api/collections/${kind}?sortBy=${sortBy}`,
-      {
-        headers: {
-          authorization: localStorage.getItem("token"),
-        },
-      }
-    );
-    loadingModal();
-
-    dispatch({ type: FETCH_COLLECTIONS_SUCCESS, payload: data.results });
-    if (sortBy) dispatch({ type: SORT_BY, payload: data.sortBy });
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-export const createCollection = (name, desc) => async (dispatch) => {
-  try {
-    loadingModal("Loading...");
-    const { data } = await axios.post(
-      `/api/collection`,
-      { name, description: desc },
-      {
-        headers: {
-          authorization: localStorage.getItem("token"),
-        },
-      }
-    );
-    loadingModal();
-    showSnackBar("Your collection created successfully.", "success");
-
-    dispatch({ type: COLLECTION_CREATION_SUCCESS, payload: data.results });
-  } catch (e) {
-    console.log(e);
-  }
 };
 
 export const fetchPublicPageData = () => async (dispatch) => {
@@ -258,31 +214,16 @@ export const subscribe = (authorId) => async (dispatch) => {
   });
 };
 
+// Close all modals
 export const closeModal = () => {
   return {
-    type: COLLECTIONS_MODAL,
-    payload: false,
+    type: CLOSE_ALL_MDLS,
   };
 };
 
-export const addToCollection = () => async (dispatch, getState) => {
-  // const { data } = await axios.post(
-  //   `/api/collections/created/${getState().pageData.id}`,
-  //   {},
-  //   {
-  //     headers: {
-  //       authorization: localStorage.getItem("token"),
-  //     },
-  //   }
-  // );
-
-  // dispatch({
-  //   type: FETCH_COLLECTIONS,
-  //   payload: data,
-  // });
-
+export const addToCollectionOpen = (pageId) => async (dispatch, getState) => {
   dispatch({
-    type: COLLECTIONS_MODAL,
-    payload: true,
+    type: ADD_TO_CL_MDL,
+    payload: { open: true, pageId },
   });
 };

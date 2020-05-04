@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { Modal } from "../partials/Modals";
 import AddToClMdl from "../modals/AddToCL";
 
-import { fetchPublicPageData, readLater, addToCollection } from "actions";
+import { fetchPublicPageData, readLater, addToCollectionOpen } from "actions";
 
 class Actions extends Component {
   state = {
@@ -145,10 +145,10 @@ class Actions extends Component {
               <button
                 className="btn-i btn-i-blue btn-i-big"
                 onClick={() => {
-                  this.props.addToCollection();
+                  this.props.addToCollectionOpen(this.props.id);
                 }}
               >
-                <i className="fa fa-plus" aria-hidden="true" />
+                <i className="fa fa-th-large" aria-hidden="true" />
               </button>
               <button
                 className="btn-i btn-i-blue btn-i-big"
@@ -184,5 +184,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
   mapStateToProps,
-  { fetchPublicPageData, readLater, addToCollection }
+  { fetchPublicPageData, readLater, addToCollectionOpen }
 )(Actions);

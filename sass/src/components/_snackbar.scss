@@ -9,7 +9,7 @@
   text-align: center; /* Centered text */
   padding: 1.6rem; /* Padding */
   position: fixed; /* Sit on top of the screen */
-  z-index: 1; /* Add a z-index if needed */
+  z-index: 999999999; /* Add a z-index if needed */
   left: 50%; /* Center the snackbar */
   bottom: 3rem; /* 30px from the bottom */
   box-shadow: $default-box-shadow;

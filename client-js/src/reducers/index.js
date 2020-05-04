@@ -1,7 +1,5 @@
 import {
   CHANGE_PAGE,
-  COLLECTION_CREATION_SUCCESS,
-  FETCH_COLLECTIONS_SUCCESS,
   FETCH_PAGES_SUCCESS,
   FETCH_PAGES_PENDING,
   FILTER_BY,
@@ -17,7 +15,8 @@ import {
   READ_LATER,
   FETCH_ATTACH_FILES,
   SUBSCRIBE,
-  COLLECTIONS_MODAL,
+  ADD_TO_CL_MDL,
+  CLOSE_ALL_MDLS,
 } from "actions/constants";
 
 export const section = (state = "", action = {}) => {
@@ -167,19 +166,25 @@ export const pageData = (state = {}, action = {}) => {
   }
 };
 
-export const modals = (state = {}, action = {}) => {
+export const modals = (
+  state = { addToCL: { open: false, pageId: null } },
+  action = {}
+) => {
   switch (action.type) {
-    case COLLECTIONS_MODAL:
-      return { ...state, collectionMdl: action.payload };
-    default:
-      return state;
-  }
-};
-
-export const collections = (state = {}, action = {}) => {
-  switch (action.type) {
-    // case COLLECTIONS_MODAL:
-    //   return { ...state, collectionMdl: action.payload };
+    case ADD_TO_CL_MDL:
+      return {
+        ...state,
+        addToCL: {
+          ...state.addToCL,
+          open: action.payload.open,
+          pageId: action.payload.pageId,
+        },
+      };
+    case CLOSE_ALL_MDLS:
+      return {
+        ...state,
+        addToCL: { ...state.addToCL, open: false },
+      };
     default:
       return state;
   }

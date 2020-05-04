@@ -1,20 +1,21 @@
-export const CHANGE_PAGE = "CHANGE_PAGE";
-export const COLLECTION_CREATION_SUCCESS = "COLLECTION_CREATION_SUCCESS";
-export const FETCH_COLLECTIONS_SUCCESS = "FETCH_COLLECTIONS_SUCCESS";
-export const FETCH_PAGES_SUCCESS = "FETCH_PAGES_SUCCESS";
-export const FETCH_PAGES_PENDING = "FETCH_PAGES_PENDING";
-export const FILTER_BY = "FILTER_BY";
-export const SORT_BY = "SORT_BY";
-export const CHANGE_STATUS = "CHANGE_STATUS";
-export const SELECT_PAGE = "SELECT_PAGE";
-export const EMPTY_LIST = "EMPTY_LIST";
-export const REMOVE_PAGES = "REMOVE_PAGES";
+// Main Page
+export const FETCH_PAGES_SUCCESS = "pages/fetched";
+export const FETCH_PAGES_PENDING = "pages/fetch";
+export const REMOVE_PAGES = "pages/remove";
+export const CHANGE_PAGE = "ui/changePage";
+export const FILTER_BY = "ui/filterBy";
+export const SORT_BY = "ui/sortBy";
+export const CHANGE_STATUS = "ui/changeStatus";
+export const SELECT_PAGE = "ui/selectPage";
+export const EMPTY_LIST = "ui/unselectPage";
 
-export const FETCH_PAGE_DATA_SUCCESS = "FETCH_PAGE_DATA_SUCCESS";
-export const FETCH_PAGE_DATA_PENDING = "FETCH_PAGE_DATA_PENDING";
-export const FETCH_PAGE_DATA_FAILED = "FETCH_PAGE_DATA_FAILED";
-export const PAGE_RATED = "PAGE_RATED";
-export const READ_LATER = "READ_LATER";
-export const FETCH_ATTACH_FILES = "FETCH_ATTACH_FILES";
-export const SUBSCRIBE = "SUBSCRIBE";
-export const COLLECTIONS_MODAL = "COLLECTIONS_MODAL";
+// Show Page
+export const FETCH_PAGE_DATA_SUCCESS = "page/fetched";
+export const FETCH_PAGE_DATA_PENDING = "page/fetch";
+export const FETCH_PAGE_DATA_FAILED = "page/errorFetched";
+export const PAGE_RATED = "page/rated";
+export const READ_LATER = "page/toggledReadLater";
+export const FETCH_ATTACH_FILES = "attachFiles/fetched";
+export const SUBSCRIBE = "user/subscribe";
+export const ADD_TO_CL_MDL = "modals/addToCL";
+export const CLOSE_ALL_MDLS = "modals/closeAll";

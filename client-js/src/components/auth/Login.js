@@ -78,7 +78,7 @@ class Login extends Component {
       })
       .then((response) => {
         localStorage.setItem("token", response.data.token);
-        window.location = `/admin`;
+        window.location = `/home`;
       })
       .catch((error) => {
         this.setState({

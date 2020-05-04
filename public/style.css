@@ -233,6 +233,9 @@ pre {
 .margin-left-07 {
   margin-left: 0.7rem !important; }
 
+.margin-top-5px {
+  margin-top: 5px; }
+
 .margin-top-1 {
   margin-top: 1rem !important; }
 
@@ -250,6 +253,9 @@ pre {
 
 .margin-bottom-0 {
   margin-bottom: 0rem !important; }
+
+.margin-bottom-08 {
+  margin-bottom: 0.8rem !important; }
 
 .margin-bottom-1 {
   margin-bottom: 1rem !important; }
@@ -1125,10 +1131,6 @@ pre {
   color: #555; }
   .mdl__body p {
     font-size: 1.6rem; }
-  .mdl__body button {
-    padding: 0.7rem 2.5rem;
-    margin-bottom: 0;
-    margin-top: 0; }
 
 .mdl-sm .mdl__header {
   border: none;
@@ -1141,7 +1143,7 @@ pre {
   max-width: 18%; }
 
 .mdl-sm .mdl__body {
-  padding-top: 0; }
+  padding-top: 0.3rem; }
 
 .mdl-conf .mdl__header {
   border: none;
@@ -1164,7 +1166,6 @@ pre {
   font-family: inherit;
   font-size: inherit;
   letter-spacing: 1px;
-  text-transform: capitalize;
   padding: 0.4rem 1.4rem;
   border-radius: 7px;
   cursor: pointer;
@@ -1395,6 +1396,13 @@ pre {
 .form__input--disabled {
   cursor: not-allowed;
   background: #ebebe4; }
+
+.form__input--lined {
+  border: none;
+  padding: 0.8rem 0.3rem;
+  border-bottom: 1px solid #2980b9; }
+  .form__input--lined:focus {
+    border-bottom: 2px solid #2980b9; }
 
 .form__label {
   color: #555;
@@ -1867,7 +1875,7 @@ input[type="file"] {
   /* Padding */
   position: fixed;
   /* Sit on top of the screen */
-  z-index: 1;
+  z-index: 999999999;
   /* Add a z-index if needed */
   left: 50%;
   /* Center the snackbar */
@@ -2115,6 +2123,28 @@ input:checked + .slider:before {
     font-size: 90%;
     font-weight: 700;
     color: #6f6f6f; }
+
+.selectable-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #dad8d8;
+  border-radius: 5px;
+  border-radius: 7px;
+  padding: 0.5rem 1.2rem;
+  color: inherit; }
+  .selectable-item:hover {
+    background-color: #fcfcfc; }
+  .selectable-item:not(:last-child) {
+    margin-bottom: 0.8rem; }
+  .selectable-item span {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 500px;
+    border: 1px solid #d0cece; }
+  .selectable-item--selected span {
+    background-color: #2980b9;
+    border: 1px solid #2980b9; }
 
 .middle-box {
   padding: 2.5rem 2rem;

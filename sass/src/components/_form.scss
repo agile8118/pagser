@@ -65,7 +65,15 @@
     }
   }
 
-  &__textarea {
+  &__input--lined {
+    border: none;
+    // border-radius: 0;
+    padding: 0.8rem 0.3rem;
+    border-bottom: 1px solid $color-blue;
+
+    &:focus {
+      border-bottom: 2px solid $color-blue;
+    }
   }
 
   &__label {
