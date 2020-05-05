@@ -18,19 +18,41 @@ export const convertToUrl = (text) => {
   );
 };
 
-export const showSnackBar = (text, className = "nothing") => {
-  const x = document.getElementById("snackbar");
-  x.className = "";
-  x.innerHTML = "";
+// @TODO: make this function work as expected
+export const showSnackBar = (text, status, time = 2000) => {
+  const snackbar = document.getElementById("snackbar");
 
-  if (x.className.indexOf("show") === -1) {
-    x.innerHTML = text;
-    x.classList.add(className);
-    x.classList.add("show");
+  const hide = () => {
+    snackbar.classList.add("display-none");
+    snackbar.classList.remove("hide");
+    snackbar.classList.remove("show");
+    snackbar.classList.remove("success");
+    snackbar.classList.remove("error");
+  };
+
+  const show = () => {
+    if (status === "success") snackbar.classList.add("success");
+    if (status === "error") snackbar.classList.add("error");
+    snackbar.classList.remove("display-none");
+    snackbar.classList.add("show");
+    snackbar.innerHTML = text;
+
     setTimeout(() => {
-      x.className = "";
-      x.innerHTML = "";
-    }, 2900);
+      snackbar.classList.add("hide");
+      setTimeout(() => {
+        hide();
+      }, 300);
+    }, time);
+  };
+
+  if (snackbar.className.indexOf("show") > -1) {
+    snackbar.classList.add("hide");
+    setTimeout(() => {
+      hide();
+      show();
+    }, 300);
+  } else {
+    show();
   }
 };
 

@@ -58,8 +58,42 @@
 
   &:hover,
   &:focus {
-    color: #fff;
     background-color: darken($color-red, 8%);
+  }
+}
+
+.btn-red-o {
+  color: $color-red;
+  background-color: transparent;
+  border: 1px solid $color-red;
+
+  &:hover,
+  &:focus {
+    color: #fff;
+    background-color: $color-red;
+  }
+}
+
+.btn-green {
+  color: #fff;
+  background-color: $color-green;
+  border: 1px solid darken($color-green, 8%);
+
+  &:hover,
+  &:focus {
+    background-color: darken($color-green, 8%);
+  }
+}
+
+.btn-green-o {
+  color: $color-green;
+  background-color: transparent;
+  border: 1px solid $color-green;
+
+  &:hover,
+  &:focus {
+    color: #fff;
+    background-color: $color-green;
   }
 }
 
@@ -216,7 +250,7 @@
 
   &--open &__content {
     display: block;
-    animation: ScaleIn 0.1s ease;
+    animation: scaleInDropdowns 0.1s ease;
   }
 
   &--open button {

@@ -22,9 +22,7 @@
   max-width: 40%;
   border-radius: 1rem;
   border: 1px solid rgba(0, 0, 0, 0.46);
-  -webkit-animation-name: animatetop;
-  -webkit-animation-duration: 0.2s;
-  animation-name: animatetop;
+  animation-name: scaleIn;
   animation-duration: 0.2s;
 
   @media only screen and (max-width: 1460px) {

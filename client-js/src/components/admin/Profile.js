@@ -23,6 +23,8 @@ class Profile extends Component {
   _isMounted = false;
 
   componentDidMount() {
+    document.title = "Profile | Pagher";
+
     this._isMounted = true;
 
     const config = {

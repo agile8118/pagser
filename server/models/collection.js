@@ -19,7 +19,7 @@ const collectionSchema = new Schema({
     },
   ],
   date: { type: Date, default: Date.now },
-  shared: false,
+  shared: { type: Boolean, default: false },
 });
 
 const Collection = mongoose.model("Collection", collectionSchema);

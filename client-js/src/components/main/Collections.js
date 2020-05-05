@@ -80,6 +80,9 @@ class Collections extends Component {
   }
 
   renderCollections(kind) {
+    if (this.state[kind].length === 0)
+      return <div className="a-14">Collection list is empty.</div>;
+
     return this.state[kind].map((cl) => {
       return (
         <div

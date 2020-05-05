@@ -26,6 +26,7 @@ exports.fetchCreatedAndSaved = async (req, res) => {
     const createdCollections = await Collection.find({
       user: req.user.id,
     }).sort({ date: -1 });
+
     const { savedCollections } = await User.findById(req.user.id)
       .select("savedCollections")
       .populate({
@@ -33,9 +34,11 @@ exports.fetchCreatedAndSaved = async (req, res) => {
         populate: { path: "user", select: "name" },
       });
 
+    const sc = savedCollections.filter((item) => item.shared);
+
     res.send({
       createdCollections,
-      savedCollections,
+      savedCollections: sc,
     });
   } catch (e) {
     console.error(e);
@@ -100,8 +103,10 @@ exports.fetchSaved = async (req, res) => {
         populate: { path: "user", select: "name" },
       });
 
+    const sc = savedCollections.filter((item) => item.shared);
+
     res.send({
-      collections: savedCollections,
+      collections: sc,
     });
   } catch (e) {
     console.error(e);
@@ -112,9 +117,42 @@ exports.fetchSaved = async (req, res) => {
 // Fetch the data of one collection
 exports.fetchOne = async (req, res) => {
   try {
-    const collection = await Collection.findById(req.params.id);
+    const collection = await Collection.findById(req.params.id).populate([
+      {
+        path: "user",
+        select: "name",
+      },
+      {
+        path: "pages",
+        select: "type url cropedPhoto contents.title contents.briefDes",
+        model: "Page",
+        populate: {
+          path: "author",
+          select: "username",
+          model: "User",
+        },
+      },
+    ]);
 
-    res.send({ collection });
+    // Determine the status of the viewer
+    const userId = res.locals.userId;
+    let viewer;
+    let btn;
+    if (userId && collection.user.id !== userId) {
+      viewer = "authenticated";
+      const { savedCollections } = await User.findById(
+        userId,
+        "savedCollections"
+      );
+      btn = savedCollections.indexOf(req.params.id) > -1 ? "remove" : "save";
+    }
+    if (!userId) viewer = "spectator";
+    if (collection.user.id === userId) {
+      viewer = "owner";
+      btn = collection.shared ? "stop-sharing" : "share";
+    }
+
+    res.send({ collection, viewer, btn });
   } catch (e) {
     console.error(e);
     res.status(500).send({ message: "Internal server error." });
@@ -139,4 +177,36 @@ exports.AddRemovePage = async (req, res) => {
   }
 
   res.send({ message: "success", selected, clName: cl.name });
+};
+
+// Save or remove a collection created by others to user library
+exports.toggleLibrary = async (req, res) => {
+  const clId = req.params.id;
+
+  const { savedCollections } = await User.findById(
+    req.user.id,
+    "savedCollections"
+  );
+
+  if (savedCollections.indexOf(clId) > -1) {
+    // Remove from library
+    await User.findByIdAndUpdate(req.user.id, {
+      $pull: { savedCollections: clId },
+    });
+    return res.send({ message: "success", status: "removed" });
+  } else {
+    // Add to library
+    await User.findByIdAndUpdate(req.user.id, {
+      $push: { savedCollections: clId },
+    });
+    return res.send({ message: "success", status: "added" });
+  }
+};
+
+// Make the collection either public or private
+exports.sharing = async (req, res) => {
+  const { shared } = await Collection.findById(req.params.id, "shared");
+
+  await Collection.findByIdAndUpdate(req.params.id, { shared: !shared });
+  res.send({ message: "success", sharing: !shared });
 };

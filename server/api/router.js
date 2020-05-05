@@ -116,7 +116,12 @@ module.exports = (app) => {
   app.get("/api/liked-pages/", requireAuth, Rating.fetchLikedPages);
 
   // *********** COLLECTION ROUTES *********** //
-  app.get("/api/collection/:id", validate.id, Collection.fetchOne);
+  app.get(
+    "/api/collection/:id",
+    validate.id,
+    middleware.checkCLPrivacy,
+    Collection.fetchOne
+  );
   // Add or remove the page from the selected collection
   app.post(
     "/api/collection/add-remove/:id/:pageId",
@@ -124,6 +129,15 @@ module.exports = (app) => {
     Collection.AddRemovePage
   );
   app.post("/api/collection", requireAuth, Collection.create);
+  // Save or remove a collection created by others to user library
+  app.post(
+    "/api/collection/toggle-library/:id",
+    requireAuth,
+    Collection.toggleLibrary
+  );
+  // Make the collection either public or private
+  app.post("/api/collection/sharing/:id", requireAuth, Collection.sharing);
+
   app.get("/api/collections/created", requireAuth, Collection.fetchCreated);
   // Fetch collection for add to collection modal (for add page)
   app.get(
