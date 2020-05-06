@@ -3,9 +3,8 @@ import axios from "axios";
 import { loadingModal, showSnackBar, show, hide } from "../../lib/util";
 import { ConfirmModal, Modal } from "../partials/Modals";
 import InputFile from "../partials/InputFile";
+import UploadPhoto from "../modals/UploadPhoto";
 import Loading from "../partials/Loading";
-
-require("../../../../public/cropper.min.js");
 
 class PhotoUpload extends Component {
   state = {

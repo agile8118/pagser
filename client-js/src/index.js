@@ -50,6 +50,7 @@ import SideNav from "./components/main/SideNav";
 // Stores
 import showPageStore from "./reducers/showPageStore";
 import mainStore from "./reducers/mainStore";
+import adminStore from "./reducers/adminStore";
 
 const container = document.querySelector(".react-container");
 
@@ -143,13 +144,15 @@ if (containerName === "showPrivate") {
 
 if (containerName === "admin") {
   ReactDOM.render(
-    <BrowserRouter>
-      <AdminHeader />
-      <Switch>
-        <Route path="/profile" component={Profile} />
-        <Route path="/settings" component={Settings} />
-      </Switch>
-    </BrowserRouter>,
+    <Provider store={adminStore}>
+      <BrowserRouter>
+        <AdminHeader />
+        <Switch>
+          <Route path="/profile" component={Profile} />
+          <Route path="/settings" component={Settings} />
+        </Switch>
+      </BrowserRouter>
+    </Provider>,
     container
   );
 }

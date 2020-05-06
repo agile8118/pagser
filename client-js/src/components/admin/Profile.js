@@ -3,7 +3,7 @@ import axios from "axios";
 import Loading from "../partials/Loading";
 import { showSnackBar, loadingModal } from "../../lib/util";
 import util from "../../lib/forms";
-import PhotoUpload from "./PhotoUpload";
+import ProfilePhoto from "./ProfilePhoto";
 
 class Profile extends Component {
   state = {
@@ -381,7 +381,7 @@ class Profile extends Component {
                 Save
               </button>
             </div>
-            <PhotoUpload />
+            <ProfilePhoto />
             <div className="right-content margin-top-4">
               <a
                 href={`/users/${this.state.username}`}

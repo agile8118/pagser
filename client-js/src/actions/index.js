@@ -13,14 +13,22 @@ import {
   FETCH_PAGE_DATA_SUCCESS,
   FETCH_PAGE_DATA_PENDING,
   FETCH_PAGE_DATA_FAILED,
+  PAGE_PHOTO_CHANGED,
+  PHOTO_DELETED,
   PAGE_RATED,
   READ_LATER,
   FETCH_ATTACH_FILES,
   SUBSCRIBE,
+  // Generals
   ADD_TO_CL_MDL,
+  UPLOAD_PHOTO_MDL,
+  CONF_MDL,
   CLOSE_ALL_MDLS,
 } from "./constants";
 
+/* ----------------------- */
+/* Actions for main page */
+/* ----------------------- */
 export const changeSection = (section) => (dispatch, getState) => {
   if (getState().section !== section) {
     dispatch({ type: FETCH_PAGES_PENDING });
@@ -99,6 +107,9 @@ export const changeStatus = (status) => (dispatch) => {
   });
 };
 
+/* ----------------------- */
+/* Actions for show page */
+/* ----------------------- */
 export const fetchPublicPageData = () => async (dispatch) => {
   dispatch({ type: FETCH_PAGE_DATA_PENDING });
   const { data } = await axios.get(
@@ -163,6 +174,34 @@ export const fetchAttachFiles = (pageId, message) => async (dispatch) => {
   }
 };
 
+// Fire an action to let reducers know to update the page photo
+export const changePagePhoto = (secure_url) => {
+  return {
+    type: PAGE_PHOTO_CHANGED,
+    payload: secure_url,
+  };
+};
+
+// Send a request to server to delete the page photo
+export const deletePagePhoto = () => async (dispatch, getState) => {
+  loadingModal("Removing the photo...");
+  try {
+    await axios.delete(`/api/pages/${getState().pageData.id}/photo`, {
+      headers: {
+        authorization: localStorage.getItem("token"),
+      },
+    });
+    loadingModal();
+    showSnackBar("Photo successfully removed from your page.", "success");
+    dispatch({
+      type: PHOTO_DELETED,
+    });
+  } catch (e) {
+    loadingModal();
+    showSnackBar("There was problem with removing the photo.", "error");
+  }
+};
+
 export const ratePage = (obj) => (dispatch) => {
   dispatch({ type: PAGE_RATED, payload: obj });
 };
@@ -214,6 +253,9 @@ export const subscribe = (authorId) => async (dispatch) => {
   });
 };
 
+/* ----------------------- */
+/* General action creators */
+/* ----------------------- */
 // Close all modals
 export const closeModal = () => {
   return {
@@ -221,9 +263,23 @@ export const closeModal = () => {
   };
 };
 
-export const addToCollectionOpen = (pageId) => async (dispatch, getState) => {
+// Open confirmation modal
+export const openConfModal = () => {
+  return {
+    type: CONF_MDL,
+  };
+};
+
+export const addToCollectionOpen = (pageId) => async (dispatch) => {
   dispatch({
     type: ADD_TO_CL_MDL,
     payload: { open: true, pageId },
+  });
+};
+
+export const openUploadPhoto = (id) => async (dispatch) => {
+  dispatch({
+    type: UPLOAD_PHOTO_MDL,
+    payload: { open: true, id },
   });
 };

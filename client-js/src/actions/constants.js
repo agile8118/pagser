@@ -13,9 +13,15 @@ export const EMPTY_LIST = "ui/unselectPage";
 export const FETCH_PAGE_DATA_SUCCESS = "page/fetched";
 export const FETCH_PAGE_DATA_PENDING = "page/fetch";
 export const FETCH_PAGE_DATA_FAILED = "page/errorFetched";
+export const PAGE_PHOTO_CHANGED = "page/photoChanged";
+export const PHOTO_DELETED = "page/photoDeleted";
 export const PAGE_RATED = "page/rated";
 export const READ_LATER = "page/toggledReadLater";
 export const FETCH_ATTACH_FILES = "attachFiles/fetched";
 export const SUBSCRIBE = "user/subscribe";
+
+// General
+export const UPLOAD_PHOTO_MDL = "modals/uploadPhoto";
 export const ADD_TO_CL_MDL = "modals/addToCL";
 export const CLOSE_ALL_MDLS = "modals/closeAll";
+export const CONF_MDL = "modals/confirmation";

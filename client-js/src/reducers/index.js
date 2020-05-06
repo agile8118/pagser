@@ -11,14 +11,22 @@ import {
   FETCH_PAGE_DATA_SUCCESS,
   FETCH_PAGE_DATA_PENDING,
   FETCH_PAGE_DATA_FAILED,
+  PAGE_PHOTO_CHANGED,
+  PHOTO_DELETED,
   PAGE_RATED,
   READ_LATER,
   FETCH_ATTACH_FILES,
   SUBSCRIBE,
+  // Generals
   ADD_TO_CL_MDL,
+  CONF_MDL,
+  UPLOAD_PHOTO_MDL,
   CLOSE_ALL_MDLS,
 } from "actions/constants";
 
+/* ----------------------- */
+/* Reducers for main page */
+/* ----------------------- */
 export const section = (state = "", action = {}) => {
   switch (action.type) {
     case CHANGE_PAGE:
@@ -119,8 +127,9 @@ export const filterBy = (state = "all", action = {}) => {
   }
 };
 
-// *****
-
+/* ----------------------- */
+/* Reducers for show page */
+/* ----------------------- */
 export const pageData = (state = {}, action = {}) => {
   switch (action.type) {
     case FETCH_PAGE_DATA_PENDING:
@@ -145,6 +154,10 @@ export const pageData = (state = {}, action = {}) => {
         subscribed: action.payload.viewer.subscribed,
         isPending: false,
       };
+    case PAGE_PHOTO_CHANGED:
+      return { ...state, photo: { secure_url: action.payload, public_id: "" } };
+    case PHOTO_DELETED:
+      return { ...state, photo: { secure_url: "", public_id: "" } };
     case PAGE_RATED:
       return { ...state, rating: action.payload };
     case READ_LATER:
@@ -166,8 +179,15 @@ export const pageData = (state = {}, action = {}) => {
   }
 };
 
+/* ----------------------- */
+/* General reducers */
+/* ----------------------- */
 export const modals = (
-  state = { addToCL: { open: false, pageId: null } },
+  state = {
+    addToCL: { open: false, pageId: null },
+    uploadPhoto: { open: false, id: null }, // Id could be for user, collection or page
+    confirmation: { open: false },
+  },
   action = {}
 ) => {
   switch (action.type) {
@@ -180,10 +200,25 @@ export const modals = (
           pageId: action.payload.pageId,
         },
       };
+    case UPLOAD_PHOTO_MDL:
+      return {
+        ...state,
+        uploadPhoto: {
+          ...state.uploadPhoto,
+          open: action.payload.open,
+          id: action.payload.id,
+        },
+      };
+    case CONF_MDL:
+      console.log("***");
+
+      return { ...state, confirmation: { open: true } };
     case CLOSE_ALL_MDLS:
       return {
         ...state,
         addToCL: { ...state.addToCL, open: false },
+        uploadPhoto: { ...state.uploadPhoto, open: false },
+        confirmation: { open: false },
       };
     default:
       return state;

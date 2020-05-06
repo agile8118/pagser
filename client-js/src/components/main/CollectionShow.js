@@ -1,7 +1,11 @@
 import React, { Component } from "react";
 import axios from "axios";
+import { connect } from "react-redux";
 import PageThumbnail from "../partials/PageThumbnail";
+import UploadPhoto from "../modals/UploadPhoto";
 import { loadingModal, showSnackBar } from "../../lib/util";
+
+import { openUploadPhoto } from "actions";
 
 class CollectionShow extends Component {
   state = {
@@ -135,10 +139,10 @@ class CollectionShow extends Component {
     });
   }
 
-  render() {
-    let button;
+  // Render the share, stop-sharing, save or remove buttons
+  renderBtn() {
     if (this.state.btn === "save")
-      button = (
+      return (
         <button
           className="btn btn-blue-o"
           onClick={() => this.toggleInLibrary()}
@@ -148,7 +152,7 @@ class CollectionShow extends Component {
       );
 
     if (this.state.btn === "remove")
-      button = (
+      return (
         <button
           className="btn btn-red-o"
           onClick={() => this.toggleInLibrary()}
@@ -159,7 +163,7 @@ class CollectionShow extends Component {
       );
 
     if (this.state.btn === "share")
-      button = (
+      return (
         <button
           className="btn btn-green-o"
           onClick={() => this.toggleCLSharing()}
@@ -170,7 +174,7 @@ class CollectionShow extends Component {
       );
 
     if (this.state.btn === "stop-sharing")
-      button = (
+      return (
         <button
           className="btn btn-red-o"
           onClick={() => this.toggleCLSharing()}
@@ -179,17 +183,58 @@ class CollectionShow extends Component {
           <i className="fa fa-stop-circle" aria-hidden="true" />
         </button>
       );
+  }
+
+  // Render the collection image, viwer should be able to update it if their owner
+  renderImg() {
+    if (this.state.viewer === "owner") {
+      return (
+        <a
+          className="img-upload-btn"
+          href="javascript:void(0)"
+          onClick={() => this.props.openUploadPhoto()}
+        >
+          <img
+            src={this.state.photo}
+            onError={(e) => {
+              e.target.src = "/images/collection-placeholder.svg";
+            }}
+          />
+          <div className="img-upload-btn__cover">
+            <div className="img-upload-btn__content">
+              <i className="fa fa-cloud-upload" aria-hidden="true" /> Upload a
+              New Photo
+            </div>
+          </div>
+        </a>
+      );
+    }
+
+    return (
+      <img
+        src={this.state.photo}
+        onError={(e) => {
+          e.target.src = "/images/collection-placeholder.svg";
+        }}
+      />
+    );
+  }
+
+  render() {
     return (
       <React.Fragment>
+        <UploadPhoto
+          header="Upload a Photo"
+          text="Upload a photo for your collection:"
+          inputLabelName="Choose a photo"
+          url={`/api/collection/photo/${this.state.id}`}
+          minWidth={300}
+          minHeight={300}
+          size={5000000}
+          aspectRatio={1 / 1}
+        />
         <div className="row">
-          <div className="col-lg-1-of-2">
-            <img
-              src={this.state.photo}
-              onError={(e) => {
-                e.target.src = "/images/collection-placeholder.svg";
-              }}
-            />
-          </div>
+          <div className="col-lg-1-of-2">{this.renderImg()}</div>
           <div className="col-lg-1-of-2">
             <div className="collection-show">
               <h2 className="collection-show__name">{this.state.name}</h2>
@@ -198,7 +243,7 @@ class CollectionShow extends Component {
               <div className="collection-show__creator">
                 Created by {this.state.author}
               </div>
-              {button}
+              {this.renderBtn()}
             </div>
           </div>
         </div>
@@ -222,4 +267,7 @@ class CollectionShow extends Component {
   }
 }
 
-export default CollectionShow;
+export default connect(
+  null,
+  { openUploadPhoto }
+)(CollectionShow);

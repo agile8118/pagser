@@ -1394,18 +1394,13 @@ textarea {
 #img-preview {
   max-width: 100%; }
 
-.image__upload--options a {
+.image__upload--options a:not(:last-child) {
   margin-right: 0.8rem; }
 
 .image__upload--options {
   width: 100%;
   text-align: right;
   margin: 1rem 0; }
-
-.image__upload--error {
-  color: #e74c3c;
-  font-size: 1.6rem;
-  padding-bottom: 0.5rem; }
 
 .file__upload--label {
   border: 1px solid #dbe2e8;
@@ -1427,8 +1422,44 @@ textarea {
 .file__upload--label:hover {
   background: #fbfbfb; }
 
+.image__upload--error {
+  color: #e74c3c;
+  font-size: 1.6rem;
+  padding-bottom: 0.5rem; }
+
+p.image__upload--text {
+  font-size: 1.7rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem; }
+
+.image__upload--crop-msg {
+  margin: 1rem 0;
+  display: block; }
+
 input[type="file"] {
   display: none; }
+
+.img-upload-btn {
+  display: flex;
+  position: relative; }
+  .img-upload-btn__cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center; }
+  .img-upload-btn__content {
+    font-size: 2.6rem;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.72);
+    border-radius: 1rem;
+    padding: 1rem 3rem; }
+  .img-upload-btn:hover .img-upload-btn__cover {
+    display: flex; }
 
 #myProgress {
   margin: 2rem auto;
