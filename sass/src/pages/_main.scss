@@ -1,11 +1,22 @@
 .header-nav {
   font-size: 1.6rem;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   color: $color-text;
 
+  &__label {
+    border-radius: 5px;
+    background: $color-blue;
+    color: #fff;
+    font-size: 1.4rem;
+    padding: 0.3rem 0.8rem;
+    margin-right: auto;
+    margin-left: 0.7rem;
+    margin-top: 0.5rem;
+  }
+
   &__actions {
-    margin-left: auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -25,6 +36,14 @@
 .collection-show {
   font-size: 1.6rem;
   color: $color-text;
+
+  &__actions {
+    text-align: right;
+    button:not(:last-child) {
+      font-size: 2rem;
+      margin-right: 0.8rem;
+    }
+  }
 
   &__name {
     font-weight: 700;

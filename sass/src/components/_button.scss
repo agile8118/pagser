@@ -155,6 +155,15 @@
   }
 }
 
+.btn-i-red {
+  color: $color-red;
+
+  &:hover,
+  &:focus {
+    color: $color-red-dark;
+  }
+}
+
 .btn-i-white {
   color: #e6e6e6;
 
@@ -190,7 +199,7 @@
   }
 }
 
-.btn-text-red:disabled {
+.btn-text:disabled {
   color: #757575;
   cursor: not-allowed;
 }

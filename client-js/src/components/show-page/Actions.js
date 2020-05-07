@@ -103,8 +103,17 @@ class Actions extends Component {
                 </div>
               </form>
             </Modal>
+            <AddToClMdl />
 
             <div className="page__header__actions">
+              <button
+                className="btn-i btn-i-blue btn-i-big"
+                onClick={() => {
+                  this.props.addToCollectionOpen(this.props.id);
+                }}
+              >
+                <i className="fa fa-th-large" aria-hidden="true" />
+              </button>
               <button
                 className="btn-i btn-i-blue btn-i-big"
                 onClick={() => {

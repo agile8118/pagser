@@ -319,3 +319,47 @@ exports.photo = async (req, res) => {
     }
   });
 };
+
+// Update the name and description of the collection
+exports.updateInfo = async (req, res) => {
+  try {
+    const cl = await Collection.findByIdAndUpdate(req.params.id, {
+      name: req.body.name,
+      description: req.body.description,
+    });
+
+    res.send({
+      message: "updated",
+    });
+  } catch (e) {
+    res.status(500).send({ message: "Internal server error" });
+  }
+};
+
+// Remove one or more pages from a collection
+exports.removePages = async (req, res) => {
+  try {
+    await Collection.findByIdAndUpdate(req.params.id, {
+      $pull: { pages: { $in: req.body.pageIds } },
+    });
+
+    res.send({ message: "pages removed" });
+  } catch (e) {
+    console.error(e);
+    res.status(500).send({ message: "Internal server error" });
+  }
+};
+
+// Delete a collection entierly
+exports.delete = async (req, res) => {
+  try {
+    await Collection.findByIdAndRemove(req.params.id);
+    res.send({ message: "success" });
+  } catch (e) {
+    console.error(e);
+    res.status(500).send({ message: "Internal server error" });
+  }
+};
+
+// Change the order of one page (2 pages will be affected)
+exports.changePageOrders = async (req, res) => {};
