@@ -210,8 +210,6 @@ export const modals = (
         },
       };
     case CONF_MDL:
-      console.log("***");
-
       return { ...state, confirmation: { open: true } };
     case CLOSE_ALL_MDLS:
       return {

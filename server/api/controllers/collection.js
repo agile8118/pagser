@@ -1,6 +1,39 @@
 const Collection = require("../../models/collection");
 const User = require("../../models/user");
 
+// packages and constants for uploading
+const fs = require("fs");
+const multer = require("multer");
+const readChunk = require("read-chunk");
+const fileType = require("file-type");
+const cloudinary = require("cloudinary");
+const crypto = require("crypto");
+const keys = require("../../config/keys");
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./public/images/collections");
+  },
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      Date.now() +
+        "-" +
+        crypto.randomBytes(2).toString("hex") +
+        "." +
+        file.originalname.split(".").pop()
+    );
+  },
+});
+
+const upload = multer({ storage }).single("img");
+
+cloudinary.config({
+  cloud_name: "dxlsmrixd",
+  api_key: keys.cloudinary_api_key,
+  api_secret: keys.cloudinary_api_secret,
+});
+
 // Create a collection
 exports.create = async (req, res) => {
   try {
@@ -209,4 +242,80 @@ exports.sharing = async (req, res) => {
 
   await Collection.findByIdAndUpdate(req.params.id, { shared: !shared });
   res.send({ message: "success", sharing: !shared });
+};
+
+// Upload and update the collection photo
+exports.photo = async (req, res) => {
+  upload(req, res, async (err) => {
+    try {
+      if (err) res.status(500).send({ message: "Internal server error." });
+
+      const filePath = req.file ? req.file.path : null;
+
+      // Check if we have any file
+      if (!filePath) return res.status(400).send({ message: "No file" });
+      // Check file size
+      if (req.file.size > 8000000) {
+        fs.unlink(filePath, () => {});
+        return res.status(400).send({ message: "Bad request" });
+      }
+      // Check the file type
+      const buffer = readChunk.sync(filePath, 0, 4100);
+      if (!fileType(buffer))
+        return res.status(400).send({ message: "Bad request" });
+      if (
+        !(
+          fileType(buffer).mime !== "image/png" ||
+          fileType(buffer).mime !== "image/jpg" ||
+          fileType(buffer).mime !== "image/jpeg"
+        )
+      ) {
+        fs.unlink(filePath, () => {});
+        return res.status(400).send({ message: "Bad request" });
+      }
+
+      const cl = await Collection.findById(req.params.id);
+      // Collection has a image
+      if (cl.photo.secure_url) {
+        // Remove the image from cloudinary
+        cloudinary.v2.uploader.destroy(cl.photo.public_id);
+      }
+
+      const cropData = JSON.parse(req.body.cropData);
+      // Upload, crop and resize the image (cloudinary)
+      cloudinary.v2.uploader.upload(
+        filePath,
+        {
+          folder: "images/collections",
+          transformation: [
+            {
+              width: Math.round(Number(cropData.width)),
+              height: Math.round(Number(cropData.height)),
+              x: Math.round(Number(cropData.x)),
+              y: Math.round(Number(cropData.y)),
+              crop: "crop",
+            },
+            { width: 960, height: 540, crop: "scale" },
+          ],
+        },
+        async (error, { secure_url, public_id }) => {
+          fs.unlink(filePath, () => {});
+          if (error)
+            return res.status(500).send({ message: "Internal server error." });
+
+          await Collection.findByIdAndUpdate(req.params.id, {
+            photo: { secure_url, public_id },
+          });
+
+          res.send({
+            message: "image-changed",
+            image: secure_url,
+          });
+        }
+      );
+    } catch (err) {
+      if (req.file) fs.unlink(req.file.path, () => {});
+      res.status(500).send({ message: "Internal server error." });
+    }
+  });
 };

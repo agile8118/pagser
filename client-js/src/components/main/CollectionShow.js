@@ -228,17 +228,17 @@ class CollectionShow extends Component {
           text="Upload a photo for your collection:"
           inputLabelName="Choose a photo"
           url={`/api/collection/photo/${this.state.id}`}
-          minWidth={300}
-          minHeight={300}
-          size={5000000}
-          aspectRatio={1 / 1}
+          minWidth={960}
+          minHeight={540}
+          size={8000000}
+          aspectRatio={16 / 9}
+          success={(photo) => this.setState({ photo })}
         />
         <div className="row">
           <div className="col-lg-1-of-2">{this.renderImg()}</div>
           <div className="col-lg-1-of-2">
             <div className="collection-show">
               <h2 className="collection-show__name">{this.state.name}</h2>
-
               <div className="collection-show__desc">{this.state.desc}</div>
               <div className="collection-show__creator">
                 Created by {this.state.author}

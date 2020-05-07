@@ -138,7 +138,7 @@ module.exports = (app) => {
   // Make the collection either public or private
   app.post("/api/collection/sharing/:id", requireAuth, Collection.sharing);
   // Add a new photo or change the collection photo
-  // app.put("/api/collection/photo/:id", requireAuth, Collection.photo);
+  app.put("/api/collection/photo/:id", requireAuth, Collection.photo);
 
   app.get("/api/collections/created", requireAuth, Collection.fetchCreated);
   // Fetch collection for add to collection modal (for add page)
