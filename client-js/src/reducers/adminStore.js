@@ -1,24 +1,14 @@
 import { createStore, applyMiddleware, compose, combineReducers } from "redux";
 import reduxThunk from "redux-thunk";
 
-import {
-  section,
-  pages,
-  sortBy,
-  filterBy,
-  status,
-  selectedPages,
-} from "./reducers";
-const rootReducer = combineReducers({
-  section,
+import { modals } from "./index";
 
-  pages,
-  filterBy,
-  sortBy,
-  status,
-  selectedPages,
+const rootReducer = combineReducers({
+  modals,
 });
+
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
 const store = createStore(
   rootReducer,
   composeEnhancers(applyMiddleware(reduxThunk))

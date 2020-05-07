@@ -40,6 +40,7 @@ import History from "./components/main/History";
 import ReadLater from "./components/main/ReadLater";
 import LikedPages from "./components/main/LikedPages";
 import Collections from "./components/main/Collections";
+import CollectionShow from "./components/main/CollectionShow";
 import Analytics from "./components/main/Analytics";
 import PagesPublished from "./components/main/pages/Published";
 import PagesDraft from "./components/main/pages/Draft";
@@ -47,8 +48,9 @@ import UComments from "./components/main/Comments";
 import SideNav from "./components/main/SideNav";
 
 // Stores
-import showPageStore from "./redux/show-page/store";
-import mainStore from "./redux/main/store";
+import showPageStore from "./reducers/showPageStore";
+import mainStore from "./reducers/mainStore";
+import adminStore from "./reducers/adminStore";
 
 const container = document.querySelector(".react-container");
 
@@ -142,13 +144,15 @@ if (containerName === "showPrivate") {
 
 if (containerName === "admin") {
   ReactDOM.render(
-    <BrowserRouter>
-      <AdminHeader />
-      <Switch>
-        <Route path="/profile" component={Profile} />
-        <Route path="/settings" component={Settings} />
-      </Switch>
-    </BrowserRouter>,
+    <Provider store={adminStore}>
+      <BrowserRouter>
+        <AdminHeader />
+        <Switch>
+          <Route path="/profile" component={Profile} />
+          <Route path="/settings" component={Settings} />
+        </Switch>
+      </BrowserRouter>
+    </Provider>,
     container
   );
 }
@@ -165,6 +169,7 @@ if (containerName === "main") {
           <Route path="/feed/read-later" component={ReadLater} />
           <Route path="/feed/liked-pages" component={LikedPages} />
           <Route path="/u/collections" component={Collections} />
+          <Route path="/collection/:id" component={CollectionShow} />
           <Route path="/u/analytics" component={Analytics} />
           <Route path="/u/pages/published" component={PagesPublished} />
           <Route path="/u/pages/draft" component={PagesDraft} />

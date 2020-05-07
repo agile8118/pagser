@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { ConfirmModal } from "../partials/Modals";
 import { loadingModal } from "../../lib/util";
 
-import { subscribe } from "../../redux/show-page/actions";
+import { subscribe } from "actions";
 
 class Author extends Component {
   state = {

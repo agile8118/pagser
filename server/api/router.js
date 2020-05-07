@@ -7,6 +7,7 @@ const Comment = require("./controllers/comment");
 const Subscription = require("./controllers/subscription");
 const ReadLater = require("./controllers/readLater");
 const History = require("./controllers/history");
+const Collection = require("./controllers/collection");
 const Rating = require("./controllers/rating");
 const UserPages = require("./controllers/userPages");
 const passportService = require("./services/passport");
@@ -113,6 +114,65 @@ module.exports = (app) => {
   // *********** RATING ROUTES *********** //
   app.patch("/api/rate/page/:id", requireAuth, Rating.ratePage);
   app.get("/api/liked-pages/", requireAuth, Rating.fetchLikedPages);
+
+  // *********** COLLECTION ROUTES *********** //
+  // Retrive the data of a collection
+  app.get(
+    "/api/collection/:id",
+    validate.id,
+    middleware.checkCLPrivacy,
+    Collection.fetchOne
+  );
+  // Add or remove the page from the selected collection
+  app.post(
+    "/api/collection/add-remove/:id/:pageId",
+    requireAuth,
+    Collection.AddRemovePage
+  );
+  // Create a new collection
+  app.post("/api/collection", requireAuth, Collection.create);
+  // Save or remove a collection created by others to user library
+  app.post(
+    "/api/collection/toggle-library/:id",
+    requireAuth,
+    Collection.toggleLibrary
+  );
+  // Make the collection either public or private
+  app.post("/api/collection/sharing/:id", requireAuth, Collection.sharing);
+  // Add a new photo or change the collection photo
+  app.put("/api/collection/photo/:id", requireAuth, Collection.photo);
+  // Update the name and description of a collection
+  app.put("/api/collection/info/:id", requireAuth, Collection.updateInfo);
+  // Change the order of one page (2 pages will be affected)
+  app.put(
+    "/api/collection/change-order/:id",
+    requireAuth,
+    Collection.changePageOrders
+  );
+  // Remove one or more pages from a collection
+  app.put(
+    "/api/collection/remove-pages/:id",
+    requireAuth,
+    Collection.removePages
+  );
+  // Delete a collection entierly
+  app.delete("/api/collection/:id", requireAuth, Collection.delete);
+  // Fetch all the collection user has created
+  app.get("/api/collections/created", requireAuth, Collection.fetchCreated);
+  // Fetch collections for add to collection modal (for add page)
+  app.get(
+    "/api/collections/created/:pageId",
+    requireAuth,
+    Collection.fetchCreatedFAP
+  );
+  // Fetch all the collections user has saved
+  app.get("/api/collections/saved", requireAuth, Collection.fetchSaved);
+  // Fetch all the collections user has saved and created
+  app.get(
+    "/api/collections/created-saved",
+    requireAuth,
+    Collection.fetchCreatedAndSaved
+  );
 
   // *********** NEW PAGE ROUTES *********** //
   app.get(

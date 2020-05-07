@@ -1,0 +1,72 @@
+.collection-thumbnail a:hover .collection-thumbnail__view-label {
+  display: flex;
+}
+
+.collection-thumbnail {
+  height: 19rem;
+
+  &__photo {
+    position: relative;
+    display: flex;
+  }
+
+  &__num-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 1.4rem;
+    height: 3.5rem;
+    background-color: rgba($color: #000000, $alpha: 0.6);
+
+    i {
+      margin-left: 5px;
+    }
+  }
+
+  &__view-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-color: rgba($color: #000000, $alpha: 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: 1px;
+    display: none;
+
+    i {
+      margin-right: 5px;
+    }
+  }
+
+  &__details {
+    font-size: 1.6rem;
+    color: $color-text;
+  }
+
+  &__name {
+    font-weight: 700;
+    margin-bottom: 2px;
+    margin-top: 1px;
+  }
+
+  &__desc {
+    font-size: 90%;
+  }
+
+  &__author {
+    font-size: 90%;
+    font-weight: 700;
+    color: lighten($color: $color-text, $amount: 10%);
+  }
+}

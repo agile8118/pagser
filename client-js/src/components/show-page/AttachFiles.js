@@ -6,7 +6,7 @@ import InputFile from "../partials/InputFile";
 import { Modal } from "../partials/Modals";
 import { loadingModal } from "../../lib/util";
 
-import * as actions from "../../redux/show-page/actions";
+import * as actions from "actions";
 
 class AttachFiles extends Component {
   constructor(props) {

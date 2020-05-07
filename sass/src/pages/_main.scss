@@ -1,11 +1,22 @@
 .header-nav {
   font-size: 1.6rem;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   color: $color-text;
 
+  &__label {
+    border-radius: 5px;
+    background: $color-blue;
+    color: #fff;
+    font-size: 1.4rem;
+    padding: 0.3rem 0.8rem;
+    margin-right: auto;
+    margin-left: 0.7rem;
+    margin-top: 0.5rem;
+  }
+
   &__actions {
-    margin-left: auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -13,6 +24,47 @@
 
     .btn-text {
       padding: 1rem 2rem;
+      &:last-child {
+        padding-right: 0;
+        padding-left: 0;
+        margin-left: 2rem;
+      }
     }
+  }
+}
+
+.collection-show {
+  font-size: 1.6rem;
+  color: $color-text;
+
+  &__actions {
+    text-align: right;
+    button:not(:last-child) {
+      font-size: 2rem;
+      margin-right: 0.8rem;
+    }
+  }
+
+  &__name {
+    font-weight: 700;
+    font-size: 2.2rem;
+  }
+
+  &__no-page-msg {
+    font-style: italic;
+    margin-bottom: 0.5rem;
+    color: $color-text;
+    font-size: 2rem;
+    margin-top: 3rem;
+  }
+
+  &__desc {
+    margin-bottom: 0.5rem;
+  }
+
+  &__creator {
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: rgba($color: $color-text, $alpha: 0.75);
   }
 }

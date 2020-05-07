@@ -4,17 +4,13 @@ import PageThumbnail from "../partials/PageThumbnail";
 import { ConfirmModal } from "../partials/Modals";
 import Dropdown from "../partials/Dropdown";
 
-import {
-  fetchPages,
-  changeStatus,
-  selectPage,
-  removePages,
-} from "../../redux/main/actions";
+import { fetchPages, changeStatus, selectPage, removePages } from "actions";
 
 class ReadLater extends Component {
   state = { confModal: false };
 
   componentDidMount() {
+    document.title = "Reading List | Pagher";
     this.props.fetchPages("read-later", this.props.filterBy, this.props.sortBy);
   }
 
@@ -201,7 +197,7 @@ class ReadLater extends Component {
               {editBtn}
             </div>
           </div>
-          {this.renderList()}
+          <div className="row">{this.renderList()}</div>
         </div>
       </React.Fragment>
     );

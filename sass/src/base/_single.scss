@@ -79,3 +79,24 @@
   margin-top: 2.5rem;
   font-style: italic;
 }
+
+// No collection message in main
+.a-14 {
+  font-size: 1.6rem;
+  color: $color-text;
+  margin-bottom: 10rem;
+  font-style: italic;
+}
+
+// Move left and right buttons container
+.a-15 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+
+  button {
+    margin: 0 2rem;
+    i {
+      margin: 0 0.3rem;
+    }
+  }
+}

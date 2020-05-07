@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
 import { Modal } from "../partials/Modals";
+import AddToClMdl from "../modals/AddToCL";
 
-import { fetchPublicPageData, readLater } from "../../redux/show-page/actions";
+import { fetchPublicPageData, readLater, addToCollectionOpen } from "actions";
 
 class Actions extends Component {
   state = {
@@ -102,8 +103,17 @@ class Actions extends Component {
                 </div>
               </form>
             </Modal>
+            <AddToClMdl />
 
             <div className="page__header__actions">
+              <button
+                className="btn-i btn-i-blue btn-i-big"
+                onClick={() => {
+                  this.props.addToCollectionOpen(this.props.id);
+                }}
+              >
+                <i className="fa fa-th-large" aria-hidden="true" />
+              </button>
               <button
                 className="btn-i btn-i-blue btn-i-big"
                 onClick={() => {
@@ -122,7 +132,7 @@ class Actions extends Component {
                 <i className="fa fa-pencil-square-o" />
               </button>
               <button
-                className="btn-i btn-i-blue btn-i-big margin-left-07"
+                className="btn-i btn-i-blue btn-i-big"
                 onClick={() => {
                   this.setState({ deletePageMdl: true });
                 }}
@@ -138,16 +148,27 @@ class Actions extends Component {
         this.props.viewer.status === "authenticated"
       ) {
         return (
-          <div className="page__header__actions">
-            <button
-              className="btn-i btn-i-blue btn-i-big"
-              onClick={() => {
-                this.props.readLater(this.props.id);
-              }}
-            >
-              <i className={rlBtnClass} />
-            </button>
-          </div>
+          <React.Fragment>
+            <AddToClMdl />
+            <div className="page__header__actions">
+              <button
+                className="btn-i btn-i-blue btn-i-big"
+                onClick={() => {
+                  this.props.addToCollectionOpen(this.props.id);
+                }}
+              >
+                <i className="fa fa-th-large" aria-hidden="true" />
+              </button>
+              <button
+                className="btn-i btn-i-blue btn-i-big"
+                onClick={() => {
+                  this.props.readLater(this.props.id);
+                }}
+              >
+                <i className={rlBtnClass} />
+              </button>
+            </div>
+          </React.Fragment>
         );
       } else {
         return <div />;
@@ -172,5 +193,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
   mapStateToProps,
-  { fetchPublicPageData, readLater }
+  { fetchPublicPageData, readLater, addToCollectionOpen }
 )(Actions);

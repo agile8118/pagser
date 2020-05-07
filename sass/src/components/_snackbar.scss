@@ -1,79 +1,32 @@
 #snackbar {
-  visibility: hidden; /* Hidden by default. Visible on click */
-  min-width: 25rem; /* Set a default minimum width */
-  transform: translateX(-50%);
-  background-color: $color-grey-dark-3; /* Black background color */
+  min-width: 25rem;
+  background-color: $color-grey-dark-3;
   border-radius: 5px;
   font-size: 1.6rem;
-  color: #fff; /* White text color */
-  text-align: center; /* Centered text */
-  padding: 1.6rem; /* Padding */
-  position: fixed; /* Sit on top of the screen */
-  z-index: 1; /* Add a z-index if needed */
-  left: 50%; /* Center the snackbar */
-  bottom: 3rem; /* 30px from the bottom */
+  color: #fff;
+  text-align: center;
+  padding: 1.6rem;
+  position: fixed;
+  z-index: 999999999;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 3rem;
   box-shadow: $default-box-shadow;
 }
 
-/* Show the snackbar when clicking on a button (class added with JavaScript) */
 #snackbar.show {
-  visibility: visible; /* Show the snackbar */
+  display: block;
+  animation: fadein-snackbar 0.4s;
+}
 
-  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
-However, delay the fade out process for 2.5 seconds */
-  -webkit-animation: fadein 0.4s, fadeout 0.4s 2.5s;
-  animation: fadein 0.4s, fadeout 0.4s 2.5s;
+#snackbar.hide {
+  animation: fadeout-snackbar 0.4s;
 }
 
 #snackbar.success {
-  background-color: $color-green !important;
+  background-color: $color-green;
 }
 
 #snackbar.error {
-  background-color: $color-red !important;
-}
-
-/* Animations to fade the snackbar in and out */
-@-webkit-keyframes fadein {
-  from {
-    bottom: 0;
-    opacity: 0;
-  }
-  to {
-    bottom: 3rem;
-    opacity: 1;
-  }
-}
-
-@keyframes fadein {
-  from {
-    bottom: 0;
-    opacity: 0;
-  }
-  to {
-    bottom: 3rem;
-    opacity: 1;
-  }
-}
-
-@-webkit-keyframes fadeout {
-  from {
-    bottom: 3rem;
-    opacity: 1;
-  }
-  to {
-    bottom: 0;
-    opacity: 0;
-  }
-}
-
-@keyframes fadeout {
-  from {
-    bottom: 3rem;
-    opacity: 1;
-  }
-  to {
-    bottom: 0;
-    opacity: 0;
-  }
+  background-color: $color-red;
 }

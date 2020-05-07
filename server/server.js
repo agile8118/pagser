@@ -65,6 +65,10 @@ app.get("/u/*", function (req, res) {
   res.render("main");
 });
 
+app.get("/collection/:id", function (req, res) {
+  res.render("main");
+});
+
 app.get("/users/:username", function (req, res) {
   res.render("public-profile");
 });

@@ -4,17 +4,13 @@ import PageThumbnail from "../partials/PageThumbnail";
 import { ConfirmModal } from "../partials/Modals";
 import Dropdown from "../partials/Dropdown";
 
-import {
-  fetchPages,
-  changeStatus,
-  selectPage,
-  removePages,
-} from "../../redux/main/actions";
+import { fetchPages, changeStatus, selectPage, removePages } from "actions";
 
 class History extends Component {
   state = { confModal: false };
 
   componentDidMount() {
+    document.title = "History | Pagher";
     this.props.fetchPages("history", this.props.filterBy);
   }
 
@@ -171,7 +167,7 @@ class History extends Component {
               {editBtn}
             </div>
           </div>
-          {this.renderList()}
+          <div className="row">{this.renderList()}</div>
         </div>
       </React.Fragment>
     );

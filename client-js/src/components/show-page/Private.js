@@ -8,7 +8,7 @@ import Photo from "./Photo";
 import Comments from "./Comments";
 import AttachFiles from "./AttachFiles";
 
-import * as actions from "../../redux/show-page/actions";
+import * as actions from "actions";
 
 class Index extends Component {
   constructor(props) {
@@ -89,9 +89,9 @@ class Index extends Component {
 
   render() {
     if (this.props.isPending === false && this.props.id !== "notfound") {
-      document.querySelector(
-        "title"
-      ).innerHTML = `${this.props.contents.title} | Pagher`;
+      document.querySelector("title").innerHTML = `${
+        this.props.contents.title
+      } | Pagher`;
       return (
         <div>
           <div className="row">
@@ -111,7 +111,7 @@ class Index extends Component {
                   {this.renderBriefDes()}
                   {this.renderTarget()}
                 </div>
-                <hr></hr>
+                <hr />
                 <div className="page__body">{this.renderBody()}</div>
 
                 <AttachFiles />
@@ -168,18 +168,21 @@ class Index extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     id: state.pageData.id,
     viewer: {
       favorited: state.pageData.favorited,
-      status: state.pageData.status
+      status: state.pageData.status,
     },
     configurations: state.pageData.configurations,
     date: state.pageData.date,
     contents: state.pageData.contents,
-    isPending: state.pageData.isPending
+    isPending: state.pageData.isPending,
   };
 };
 
-export default connect(mapStateToProps, actions)(Index);
+export default connect(
+  mapStateToProps,
+  actions
+)(Index);

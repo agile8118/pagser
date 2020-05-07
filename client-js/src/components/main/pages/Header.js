@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 
-import { changeSection } from "../../../redux/main/actions";
+import { changeSection } from "actions";
 
 const Header = ({ section, changeSection }) => {
   return (

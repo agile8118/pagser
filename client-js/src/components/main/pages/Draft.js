@@ -4,17 +4,13 @@ import PageThumbnail from "../../partials/PageThumbnail";
 import { ConfirmModal } from "../../partials/Modals";
 import Header from "./Header";
 
-import {
-  fetchPages,
-  changeStatus,
-  selectPage,
-  removePages,
-} from "../../../redux/main/actions";
+import { fetchPages, changeStatus, selectPage, removePages } from "actions";
 
 class Published extends Component {
   state = { confModal: false };
 
   componentDidMount() {
+    document.title = "Draft Pages | Pagher";
     this.props.fetchPages("user-pages/draft");
   }
 

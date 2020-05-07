@@ -31,10 +31,10 @@ const userSchema = new Schema({
         "https://res.cloudinary.com/dxlsmrixd/image/upload/v1555133028/images/users/placeholder.png",
     },
   },
-  readingHistory: [
+  savedCollections: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Page",
+      ref: "Collection",
     },
   ],
   verified: { type: Boolean, default: false },

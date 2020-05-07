@@ -1,11 +1,14 @@
-var Comment = require("../models/comment");
+const Comment = require("../models/comment");
+const Collection = require("../models/collection");
 const { Page, DraftPage } = require("../models/page");
+const jwt = require("jwt-simple");
+const keys = require("../config/keys");
 
 var middleware = {};
 
-middleware.checkCommentOwnership = function(req, res, next) {
+middleware.checkCommentOwnership = function (req, res, next) {
   var commentid = req.params.commentid;
-  Comment.findById(commentid, function(err, comment) {
+  Comment.findById(commentid, function (err, comment) {
     if (err) return res.status(500).send("error");
     if (comment && comment.author.equals(req.user.id)) {
       next();
@@ -15,11 +18,11 @@ middleware.checkCommentOwnership = function(req, res, next) {
   });
 };
 
-middleware.checkPageOwnership = function(req, res, next) {
+middleware.checkPageOwnership = function (req, res, next) {
   var pageId = req.params.id;
   var userId = req.user.id;
 
-  Page.findOne({ _id: pageId, author: userId }, function(err, page) {
+  Page.findOne({ _id: pageId, author: userId }, function (err, page) {
     if (err) return res.status(400).send();
     if (page) {
       next();
@@ -29,7 +32,7 @@ middleware.checkPageOwnership = function(req, res, next) {
   });
 };
 
-middleware.checkDraftPageOwnership = function(req, res, next) {
+middleware.checkDraftPageOwnership = function (req, res, next) {
   var pageId = req.params.id;
   var userId = req.user.id;
   var stage = req.params.stage;
@@ -39,7 +42,7 @@ middleware.checkDraftPageOwnership = function(req, res, next) {
   } else {
     DraftPage.findOne(
       { _id: pageId, author: userId, status: "draft" },
-      function(err, page) {
+      function (err, page) {
         if (err) return res.status(400).send();
         if (page) {
           next();
@@ -49,6 +52,25 @@ middleware.checkDraftPageOwnership = function(req, res, next) {
       }
     );
   }
+};
+
+// Before showing a collection to user check if it has sharing on
+middleware.checkCLPrivacy = async (req, res, next) => {
+  try {
+    var decoded = jwt.decode(req.headers.authorization, keys.jwtSecret);
+    var userId = decoded.sub;
+  } catch (e) {
+    var userId = false;
+  }
+
+  res.locals.userId = userId;
+
+  const cl = await Collection.findById(req.params.id, "shared user");
+  if (cl.shared) return next();
+
+  if (cl.user.equals(userId)) return next();
+
+  res.status(403).send({ message: "not-authorized" });
 };
 
 module.exports = middleware;

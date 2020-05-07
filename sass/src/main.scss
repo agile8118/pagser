@@ -9,7 +9,6 @@
 
 @import "layout/grid";
 @import "layout/navigation";
-@import "layout/side-bar";
 @import "layout/side-nav";
 @import "layout/footer";
 
@@ -29,6 +28,8 @@
 @import "components/tinyMCE";
 @import "components/cupertino-modal";
 @import "components/switch";
+@import "components/collection-thumbnail";
+@import "components/items";
 
 @import "pages/auth";
 @import "pages/admin";

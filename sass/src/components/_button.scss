@@ -7,7 +7,6 @@
   font-family: inherit;
   font-size: inherit;
   letter-spacing: 1px;
-  text-transform: capitalize;
   padding: 0.4rem 1.4rem;
   border-radius: 7px;
   cursor: pointer;
@@ -59,8 +58,42 @@
 
   &:hover,
   &:focus {
-    color: #fff;
     background-color: darken($color-red, 8%);
+  }
+}
+
+.btn-red-o {
+  color: $color-red;
+  background-color: transparent;
+  border: 1px solid $color-red;
+
+  &:hover,
+  &:focus {
+    color: #fff;
+    background-color: $color-red;
+  }
+}
+
+.btn-green {
+  color: #fff;
+  background-color: $color-green;
+  border: 1px solid darken($color-green, 8%);
+
+  &:hover,
+  &:focus {
+    background-color: darken($color-green, 8%);
+  }
+}
+
+.btn-green-o {
+  color: $color-green;
+  background-color: transparent;
+  border: 1px solid $color-green;
+
+  &:hover,
+  &:focus {
+    color: #fff;
+    background-color: $color-green;
   }
 }
 
@@ -122,6 +155,15 @@
   }
 }
 
+.btn-i-red {
+  color: $color-red;
+
+  &:hover,
+  &:focus {
+    color: $color-red-dark;
+  }
+}
+
 .btn-i-white {
   color: #e6e6e6;
 
@@ -157,7 +199,7 @@
   }
 }
 
-.btn-text-red:disabled {
+.btn-text:disabled {
   color: #757575;
   cursor: not-allowed;
 }
@@ -217,7 +259,7 @@
 
   &--open &__content {
     display: block;
-    animation: ScaleIn 0.1s ease;
+    animation: scaleInDropdowns 0.1s ease;
   }
 
   &--open button {
