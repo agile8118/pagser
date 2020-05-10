@@ -127,7 +127,6 @@ class Index extends Component {
           <br />
           <br />
           <br />
-          <div id="snackbar" />
         </div>
       );
     }
