@@ -101,6 +101,8 @@ module.exports = (app) => {
   // *********** SUBSCRIPTIONS ROUTES *********** //
   // Subscribe or onsubscribe the user
   app.post("/api/subscription/:id", requireAuth, Subscription.toggle);
+  // Fetch the list of authors user has subscribed
+  app.get("/api/subscriptions", requireAuth, Subscription.fetchSubscriptions);
 
   // *********** READ LATER ROUTES *********** //
   app.patch("/api/read-later/:id", requireAuth, validate.id, ReadLater.toggle);

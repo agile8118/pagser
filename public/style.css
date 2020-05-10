@@ -186,7 +186,7 @@ pre {
 .a-13 {
   font-size: 1.7rem;
   color: #555;
-  margin-top: 2.5rem;
+  margin-top: 1.5rem;
   font-style: italic; }
 
 .a-14 {
@@ -1994,6 +1994,35 @@ input:checked + .slider:before {
   .selectable-item--selected span {
     background-color: #2980b9;
     border: 1px solid #2980b9; }
+
+.sub-thumbnail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.6rem;
+  width: 100%;
+  border-radius: 7px;
+  background-color: rgba(118, 114, 114, 0.078);
+  margin: 1rem 0;
+  padding: 1rem 2.4rem;
+  color: #333; }
+  .sub-thumbnail__info {
+    display: flex;
+    align-items: center; }
+    .sub-thumbnail__info-image {
+      width: 6.5rem;
+      border-radius: 500px;
+      border: 1px solid #b6b3b3;
+      margin-right: 1rem; }
+    .sub-thumbnail__info-text {
+      display: flex;
+      flex-direction: column; }
+    .sub-thumbnail__info-name {
+      color: #595959;
+      font-size: 1.8rem; }
+    .sub-thumbnail__info-headline {
+      font-size: 1.4rem;
+      color: #666666; }
 
 .middle-box {
   padding: 2.5rem 2rem;
