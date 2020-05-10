@@ -144,7 +144,6 @@ class AttachFiles extends Component {
             }}
           >
             <p>You can upload maximum of 5 files 10MB each for every page.</p>
-            <br />
             <div className="left-content">
               <p className="image__upload--error">{this.state.error}</p>
             </div>
