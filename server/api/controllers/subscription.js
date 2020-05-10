@@ -29,3 +29,20 @@ exports.toggle = async (req, res) => {
     return res.status(500).send({ message: "Error" });
   }
 };
+
+exports.fetchSubscriptions = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const subs = await Subscription.find({ subscriber: userId }).populate({
+      path: "author",
+      model: "User",
+      select: "name username headline photo",
+    });
+
+    res.send({ subs });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).send({ message: "Internal server error" });
+  }
+};
