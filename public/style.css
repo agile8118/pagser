@@ -408,7 +408,10 @@ pre {
 */
 .row {
   max-width: 114rem;
-  margin: 0 auto; }
+  margin: 0 auto;
+  padding: 0 2rem; }
+  .row .row {
+    padding: 0; }
   .row::after {
     content: "";
     clear: both;
@@ -418,6 +421,13 @@ pre {
     min-height: 1px; }
     .row [class^="col-"]:not(:last-child) {
       margin-right: 6rem; }
+  @media only screen and (min-width: 760px) and (max-width: 1509px) {
+    .row .col-md-1-of-2 {
+      width: calc((100% - 1 * 4.5rem) / 2); }
+      .row .col-md-1-of-2:nth-child(2n) {
+        margin-right: 0 !important; }
+      .row .col-md-1-of-2:not(:last-child) {
+        margin-right: 4.5rem; } }
   @media only screen and (min-width: 760px) and (max-width: 1509px) {
     .row .col-md-1-of-4 {
       width: calc((100% - 3 * 8rem) / 4); }
@@ -439,6 +449,20 @@ pre {
         margin-right: 4.5rem; }
       .row .col-md-1-of-4:nth-child(4n) {
         margin-right: 0 !important; } }
+  @media only screen and (min-width: 760px) and (max-width: 1509px) {
+    .row .col-md-1-of-5 {
+      width: calc((100% - 4 * 4.5rem) / 5); }
+      .row .col-md-1-of-5:nth-child(5n) {
+        margin-right: 0 !important; }
+      .row .col-md-1-of-5:not(:last-child) {
+        margin-right: 4.5rem; } }
+  @media only screen and (min-width: 760px) and (max-width: 1300px) {
+    .row .col-md-1-of-5 {
+      width: calc((100% - 4 * 2rem) / 5); }
+      .row .col-md-1-of-5:nth-child(5n) {
+        margin-right: 0 !important; }
+      .row .col-md-1-of-5:not(:last-child) {
+        margin-right: 2rem; } }
   @media only screen and (min-width: 1510px) {
     .row .col-lg-1-of-2 {
       width: calc((100% - 1 * 4.5rem) / 2); }

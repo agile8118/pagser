@@ -49,6 +49,11 @@
 .row {
   max-width: $grid-width;
   margin: 0 auto;
+  padding: 0 2rem;
+
+  .row {
+    padding: 0;
+  }
 
   @include clearfix;
 
@@ -58,6 +63,19 @@
 
     &:not(:last-child) {
       margin-right: $gutter-horizontal;
+    }
+  }
+  .col-md-1-of-2 {
+    @media only screen and (min-width: 760px) and (max-width: 1509px) {
+      width: calc((100% - 1 * #{$gutter-horizontal-small}) / 2);
+
+      &:nth-child(2n) {
+        margin-right: 0 !important;
+      }
+
+      &:not(:last-child) {
+        margin-right: $gutter-horizontal-small;
+      }
     }
   }
 
@@ -95,6 +113,32 @@
 
       &:nth-child(4n) {
         margin-right: 0 !important;
+      }
+    }
+  }
+
+  .col-md-1-of-5 {
+    @media only screen and (min-width: 760px) and (max-width: 1509px) {
+      width: calc((100% - 4 * #{$gutter-horizontal-small}) / 5);
+
+      &:nth-child(5n) {
+        margin-right: 0 !important;
+      }
+
+      &:not(:last-child) {
+        margin-right: $gutter-horizontal-small;
+      }
+    }
+
+    @media only screen and (min-width: 760px) and (max-width: 1300px) {
+      width: calc((100% - 4 * #{2rem}) / 5);
+
+      &:nth-child(5n) {
+        margin-right: 0 !important;
+      }
+
+      &:not(:last-child) {
+        margin-right: 2rem;
       }
     }
   }

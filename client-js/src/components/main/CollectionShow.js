@@ -202,7 +202,7 @@ class CollectionShow extends Component {
     return this.state.pages.map((item) => {
       return (
         <div
-          className="col-lg-1-of-5 col-md-1-of-4 col-sm-1-of-3 col-xs-1-of-2 col-xxs-1-of-1"
+          className="col-lg-1-of-5 col-md-1-of-5 col-sm-1-of-3 col-xs-1-of-2 col-xxs-1-of-1"
           key={item._id}
         >
           <PageThumbnail
@@ -483,8 +483,8 @@ class CollectionShow extends Component {
           <p>You cannot undo this action.</p>
         </ConfirmModal>
         <div className="row">
-          <div className="col-lg-1-of-2">{this.renderImg()}</div>
-          <div className="col-lg-1-of-2">
+          <div className="col-lg-1-of-2 col-md-1-of-2">{this.renderImg()}</div>
+          <div className="col-lg-1-of-2 col-md-1-of-2">
             <div className="collection-show">
               {this.renderActionBtns()}
 

@@ -1,18 +1,24 @@
+const jwt = require("jwt-simple");
 const { Page } = require("../../models/page");
 const Comment = require("../../models/comment");
 const User = require("../../models/user");
 const util = require("../../lib/util");
-const jwt = require("jwt-simple");
 const keys = require("../../config/keys");
 
-exports.addComment = function(req, res) {
-  var pageId = req.params.id;
-  var userId = req.user.id;
-  var text = req.body.text;
-  var inReplyTo = req.body.inReplyTo;
+// Add a comment for a page
+exports.addComment = (req, res) => {
+  const pageId = req.params.id;
+  const userId = req.user.id;
+  const text = req.body.text;
+  const inReplyTo = req.body.inReplyTo;
 
-  var comment = new Comment({ author: userId, text, page: pageId, inReplyTo });
-  comment.save(err => {
+  const comment = new Comment({
+    author: userId,
+    text,
+    page: pageId,
+    inReplyTo,
+  });
+  comment.save((err) => {
     if (err) return res.send("error");
 
     if (!comment.inReplyTo) {
@@ -34,7 +40,7 @@ exports.addComment = function(req, res) {
 
     Comment.findById(comment.id, "text inReplyTo author date")
       .populate("author", "name photo")
-      .exec(function(err, comment) {
+      .exec(function (err, comment) {
         if (err) {
           return res.send("error");
         }
@@ -44,13 +50,13 @@ exports.addComment = function(req, res) {
           author: {
             id: comment.author._id,
             name: comment.author.name,
-            photo: comment.author.photo
+            photo: comment.author.photo,
           },
           viewer: "owner",
           text: comment.text,
           inReplyTo: comment.inReplyTo,
           replyes: [],
-          date: util.timeSince(comment.date)
+          date: util.timeSince(comment.date),
         };
 
         res.send(c);
@@ -58,7 +64,7 @@ exports.addComment = function(req, res) {
   });
 };
 
-exports.fetchComments = function(req, res) {
+exports.fetchComments = function (req, res) {
   const pageId = req.params.id;
   const commentsPage = req.query.page;
 
@@ -80,7 +86,7 @@ exports.fetchComments = function(req, res) {
         {
           path: "author",
           select: "name photo",
-          model: "User"
+          model: "User",
         },
         {
           path: "replyes",
@@ -89,91 +95,91 @@ exports.fetchComments = function(req, res) {
           populate: {
             path: "author",
             select: "name photo",
-            model: "User"
-          }
-        }
-      ]
+            model: "User",
+          },
+        },
+      ],
     },
     (err, results) => {
       if (err) return res.status(500).send("error");
-      var data = results.docs.map(comment => {
+      var data = results.docs.map((comment) => {
         if (comment.author.id === userId) {
           return {
             id: comment.id,
             author: {
               name: comment.author.name,
-              photo: comment.author.photo
+              photo: comment.author.photo,
             },
             viewer: "owner",
             text: comment.text,
             date: util.timeSince(comment.date),
             inReplyTo: comment.inReplyTo,
-            replyes: comment.replyes.map(c => {
+            replyes: comment.replyes.map((c) => {
               if (userId === c.author.id) {
                 return {
                   id: c.id,
                   author: {
                     name: c.author.name,
-                    photo: c.author.photo
+                    photo: c.author.photo,
                   },
                   date: util.timeSince(c.date),
                   text: c.text,
                   inReplyTo: c.inReplyTo,
-                  viewer: "owner"
+                  viewer: "owner",
                 };
               } else {
                 return {
                   id: c.id,
                   author: {
                     name: c.author.name,
-                    photo: c.author.photo
+                    photo: c.author.photo,
                   },
                   date: util.timeSince(c.date),
                   text: c.text,
                   inReplyTo: c.inReplyTo,
-                  viewer: "spectator"
+                  viewer: "spectator",
                 };
               }
-            })
+            }),
           };
         } else {
           return {
             id: comment.id,
             author: {
               name: comment.author.name,
-              photo: comment.author.photo
+              photo: comment.author.photo,
             },
             viewer: "spectator",
             text: comment.text,
             date: util.timeSince(comment.date),
             inReplyTo: comment.inReplyTo,
-            replyes: comment.replyes.map(c => {
+            replyes: comment.replyes.map((c) => {
               if (userId === c.author.id) {
                 return {
                   id: c.id,
                   author: {
                     name: c.author.name,
-                    photo: c.author.photo
+                    photo: c.author.photo,
                   },
                   date: util.timeSince(c.date),
                   text: c.text,
                   inReplyTo: c.inReplyTo,
-                  viewer: "owner"
+                  viewer: "owner",
                 };
               } else {
                 return {
                   id: c.id,
                   author: {
                     name: c.author.name,
-                    photo: c.author.photo
+                    photo: c.author.photo,
                   },
                   date: util.timeSince(c.date),
                   text: c.text,
                   inReplyTo: c.inReplyTo,
-                  viewer: "spectator"
+                  viewer: "spectator",
                 };
               }
-            })
+            }),
           };
         }
       });
@@ -182,17 +188,17 @@ exports.fetchComments = function(req, res) {
         comments: data,
         page: results.page,
         pages: results.pages,
-        userId
+        userId,
       });
     }
   );
 };
 
-exports.deleteComment = function(req, res) {
+exports.deleteComment = function (req, res) {
   var pageId = req.params.id;
   var commentId = req.params.commentid;
 
-  Comment.findByIdAndRemove(commentId, "_id", function(err, comment) {
+  Comment.findByIdAndRemove(commentId, "_id", function (err, comment) {
     if (err) return res.status(500).send("error");
 
     if (comment.inReplyTo === null) {
@@ -217,7 +223,7 @@ exports.deleteComment = function(req, res) {
         res.send({
           commentId: comment.id,
           reply: true,
-          deletedCommentId: commentId
+          deletedCommentId: commentId,
         });
       });
     }

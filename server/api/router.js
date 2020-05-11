@@ -19,10 +19,14 @@ const requireAuth = passport.authenticate("jwt", { session: false });
 const requireSignin = passport.authenticate("local", { session: false });
 
 module.exports = (app) => {
+  // ------------------------------------------------ //
   // *********** INDEX ROUTES *********** //
+  // ------------------------------------------------ //
   app.post("/auth", requireAuth, Controller.getAuth);
 
+  // ------------------------------------------------ //
   // *********** AUTHENTICATION ROUTES *********** //
+  // ------------------------------------------------ //
   app.post(
     "/register",
     validate.name,
@@ -66,7 +70,9 @@ module.exports = (app) => {
     res.send(req.user);
   });
 
+  // ------------------------------------------------ //
   // *********** PROFILE ROUTES *********** //
+  // ------------------------------------------------ //
   app.get("/api/profile", requireAuth, Profile.fetchUserData);
   app.patch(
     "/api/profile",
@@ -89,7 +95,9 @@ module.exports = (app) => {
     Settings.updateUserPassword
   );
 
+  // ------------------------------------------------ //
   // *********** USER'S PAGES MANAGER ROUTES *********** //
+  // ------------------------------------------------ //
   app.get(
     "/api/user-pages/published",
     requireAuth,
@@ -98,26 +106,36 @@ module.exports = (app) => {
   app.get("/api/user-pages/draft", requireAuth, UserPages.fetchDraftPages);
   app.delete("/api/user-pages/draft", requireAuth, UserPages.deleteDraftPages);
 
+  // ------------------------------------------------ //
   // *********** SUBSCRIPTIONS ROUTES *********** //
+  // ------------------------------------------------ //
   // Subscribe or onsubscribe the user
   app.post("/api/subscription/:id", requireAuth, Subscription.toggle);
   // Fetch the list of authors user has subscribed
   app.get("/api/subscriptions", requireAuth, Subscription.fetchSubscriptions);
 
+  // ------------------------------------------------ //
   // *********** READ LATER ROUTES *********** //
+  // ------------------------------------------------ //
   app.patch("/api/read-later/:id", requireAuth, validate.id, ReadLater.toggle);
   app.delete("/api/read-later", requireAuth, ReadLater.remove);
   app.get("/api/read-later/", requireAuth, ReadLater.fetch);
 
+  // ------------------------------------------------ //
   // *********** HISTORY ROUTES *********** //
+  // ------------------------------------------------ //
   app.get("/api/history/", requireAuth, History.fetch);
   app.delete("/api/history", requireAuth, History.remove);
 
+  // ------------------------------------------------ //
   // *********** RATING ROUTES *********** //
+  // ------------------------------------------------ //
   app.patch("/api/rate/page/:id", requireAuth, Rating.ratePage);
   app.get("/api/liked-pages/", requireAuth, Rating.fetchLikedPages);
 
+  // ------------------------------------------------ //
   // *********** COLLECTION ROUTES *********** //
+  // ------------------------------------------------ //
   // Retrive the data of a collection
   app.get(
     "/api/collection/:id",
@@ -176,7 +194,9 @@ module.exports = (app) => {
     Collection.fetchCreatedAndSaved
   );
 
+  // ------------------------------------------------ //
   // *********** NEW PAGE ROUTES *********** //
+  // ------------------------------------------------ //
   app.get(
     "/api/new-page/:stage/:id",
     requireAuth,
@@ -192,7 +212,9 @@ module.exports = (app) => {
   );
   app.post("/api/new-page/:id", requireAuth, Page.create);
 
+  // ------------------------------------------------ //
   // *********** PAGE ROUTES *********** //
+  // ------------------------------------------------ //
   app.get("/api/public-pages/:url", Page.fetchPublicPageData);
   app.put(
     "/api/pages/:id/photo",
@@ -244,7 +266,9 @@ module.exports = (app) => {
     Page.addAttachFile
   );
 
+  // ------------------------------------------------ //
   // *********** COMMENT ROUTES *********** //
+  // ------------------------------------------------ //
   app.get("/api/pages/:id/comments", Comment.fetchComments);
   app.post("/api/pages/:id/comments", requireAuth, Comment.addComment);
   app.put(

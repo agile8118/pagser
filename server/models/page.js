@@ -1,8 +1,8 @@
-var mongoose = require("mongoose");
-var Schema = mongoose.Schema;
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 // private and public pges schema
-var pageSchema = new Schema({
+const pageSchema = new Schema({
   type: String,
   contents: {
     title: String,
@@ -31,21 +31,13 @@ var pageSchema = new Schema({
     ref: "User",
   },
   url: String,
-  comments: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment",
-    },
-  ],
   date: { type: Date, default: Date.now },
-  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  dislikes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   status: { type: String, default: "published" },
   attachFiles: [{ name: String, url: String }],
 });
 
 // draft pges schema
-var DraftPageSchema = new Schema({
+const DraftPageSchema = new Schema({
   type: String,
   contents: {
     title: { type: String, default: "" },
@@ -69,7 +61,7 @@ var DraftPageSchema = new Schema({
   status: { type: String, default: "draft" },
 });
 
-var Page = mongoose.model("Page", pageSchema, "pages");
-var DraftPage = mongoose.model("DraftPage", DraftPageSchema, "drafts");
+const Page = mongoose.model("Page", pageSchema, "pages");
+const DraftPage = mongoose.model("DraftPage", DraftPageSchema, "drafts");
 
 module.exports = { Page, DraftPage };
