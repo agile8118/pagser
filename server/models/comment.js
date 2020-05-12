@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-var mongoosePaginate = require("mongoose-paginate");
+const mongoosePaginate = require("mongoose-paginate");
 
-var commentSchema = mongoose.Schema({
+const commentSchema = mongoose.Schema({
   text: String,
   page: {
     type: mongoose.Schema.Types.ObjectId,
@@ -12,11 +12,12 @@ var commentSchema = mongoose.Schema({
     ref: "User",
   },
   date: { type: Date, default: Date.now },
-  replyes: [{ type: mongoose.Schema.Types.ObjectId }],
+  readByPageOwner: { type: Boolean, default: false },
+  lovedByPageOwner: { type: Boolean, default: false },
   inReplyTo: { type: mongoose.Schema.Types.ObjectId, default: null },
 });
 
 commentSchema.plugin(mongoosePaginate);
-var Comment = mongoose.model("Comment", commentSchema, "comments");
+const Comment = mongoose.model("Comment", commentSchema, "comments");
 
 module.exports = Comment;

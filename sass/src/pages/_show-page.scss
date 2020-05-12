@@ -233,6 +233,16 @@
     justify-content: space-between;
     padding-bottom: 1rem;
 
+    &__actions {
+      display: flex;
+      align-items: center;
+
+      button {
+        margin-right: 0.8rem;
+        margin-top: -0.3rem;
+      }
+    }
+
     &__name-and-date {
       font-size: 1.4rem;
       margin-left: 1rem;
@@ -256,6 +266,28 @@
     font-size: 1.4rem;
     line-height: 2.5rem;
     padding-bottom: 0.5rem;
+  }
+
+  &__view-replys {
+    text-align: right;
+    display: inline-block;
+    padding: 0;
+    margin-right: -0.5rem;
+    font-size: 1.4rem;
+  }
+
+  &__ratings {
+    display: flex;
+    margin-right: 1rem;
+    margin-top: -0.3rem;
+
+    div {
+      margin-right: 0.2rem;
+      button {
+        margin-left: 0.4rem;
+        margin-top: 0;
+      }
+    }
   }
 }
 

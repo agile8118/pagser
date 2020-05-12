@@ -203,6 +203,16 @@ pre {
     .a-15 button i {
       margin: 0 0.3rem; }
 
+.a-16 {
+  display: flex;
+  justify-content: center;
+  align-items: center; }
+  .a-16 button:first-child {
+    margin-right: 0.5rem; }
+  .a-16 button {
+    margin-top: 0.2rem;
+    margin-left: 0.5rem; }
+
 .right-content {
   width: 100%;
   text-align: right !important; }
@@ -407,7 +417,7 @@ pre {
 	xxs <= 360
 */
 .row {
-  max-width: 114rem;
+  max-width: 118rem;
   margin: 0 auto;
   padding: 0 2rem; }
   .row .row {
@@ -2314,6 +2324,12 @@ input:checked + .slider:before {
     display: flex;
     justify-content: space-between;
     padding-bottom: 1rem; }
+    .comment__header__actions {
+      display: flex;
+      align-items: center; }
+      .comment__header__actions button {
+        margin-right: 0.8rem;
+        margin-top: -0.3rem; }
     .comment__header__name-and-date {
       font-size: 1.4rem;
       margin-left: 1rem;
@@ -2330,6 +2346,21 @@ input:checked + .slider:before {
     font-size: 1.4rem;
     line-height: 2.5rem;
     padding-bottom: 0.5rem; }
+  .comment__view-replys {
+    text-align: right;
+    display: inline-block;
+    padding: 0;
+    margin-right: -0.5rem;
+    font-size: 1.4rem; }
+  .comment__ratings {
+    display: flex;
+    margin-right: 1rem;
+    margin-top: -0.3rem; }
+    .comment__ratings div {
+      margin-right: 0.2rem; }
+      .comment__ratings div button {
+        margin-left: 0.4rem;
+        margin-top: 0; }
 
 .comment-in-reply-to-label {
   font-size: 1.4rem;

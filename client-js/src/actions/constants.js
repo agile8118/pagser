@@ -20,6 +20,12 @@ export const READ_LATER = "page/toggledReadLater";
 export const FETCH_ATTACH_FILES = "attachFiles/fetched";
 export const SUBSCRIBE = "user/subscribe";
 
+// Comments
+export const COMMENTS_FETCHED = "comments/fetched";
+export const COMMENT_ADDED = "comment/added";
+export const REPLY_ADDED = "comment/replyAdded";
+export const REPLIES_FETCH = "comment/repliesFetched";
+
 // General
 export const UPLOAD_PHOTO_MDL = "modals/uploadPhoto";
 export const ADD_TO_CL_MDL = "modals/addToCL";

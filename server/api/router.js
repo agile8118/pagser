@@ -213,6 +213,25 @@ module.exports = (app) => {
   app.post("/api/new-page/:id", requireAuth, Page.create);
 
   // ------------------------------------------------ //
+  // *********** COMMENT ROUTES *********** //
+  // ------------------------------------------------ //
+  app.get("/api/comments/:pageId", Comment.fetchComments);
+  app.get("/api/comment/:id/replies", Comment.fetchReplies);
+  app.post("/api/comment/:pageId", requireAuth, Comment.addComment);
+  app.put(
+    "/api/comment/:id",
+    requireAuth,
+    middleware.checkCommentOwnership,
+    Comment.updateComment
+  );
+  app.delete(
+    "/api/comment/:id",
+    requireAuth,
+    middleware.checkCommentOwnership,
+    Comment.deleteComment
+  );
+
+  // ------------------------------------------------ //
   // *********** PAGE ROUTES *********** //
   // ------------------------------------------------ //
   app.get("/api/public-pages/:url", Page.fetchPublicPageData);
@@ -264,23 +283,5 @@ module.exports = (app) => {
     requireAuth,
     middleware.checkPageOwnership,
     Page.addAttachFile
-  );
-
-  // ------------------------------------------------ //
-  // *********** COMMENT ROUTES *********** //
-  // ------------------------------------------------ //
-  app.get("/api/pages/:id/comments", Comment.fetchComments);
-  app.post("/api/pages/:id/comments", requireAuth, Comment.addComment);
-  app.put(
-    "/api/pages/:id/comments/:commentid",
-    requireAuth,
-    middleware.checkCommentOwnership,
-    Comment.updateComment
-  );
-  app.delete(
-    "/api/pages/:id/comments/:commentid",
-    requireAuth,
-    middleware.checkCommentOwnership,
-    Comment.deleteComment
   );
 };

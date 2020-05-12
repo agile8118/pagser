@@ -8,6 +8,7 @@ import {
   SELECT_PAGE,
   EMPTY_LIST,
   REMOVE_PAGES,
+  // Show Page
   FETCH_PAGE_DATA_SUCCESS,
   FETCH_PAGE_DATA_PENDING,
   FETCH_PAGE_DATA_FAILED,
@@ -17,6 +18,11 @@ import {
   READ_LATER,
   FETCH_ATTACH_FILES,
   SUBSCRIBE,
+  // Comments
+  COMMENTS_FETCHED,
+  COMMENT_ADDED,
+  REPLY_ADDED,
+  REPLIES_FETCH,
   // Generals
   ADD_TO_CL_MDL,
   CONF_MDL,
@@ -174,6 +180,49 @@ export const pageData = (state = {}, action = {}) => {
       if (action.payload === "not found") {
         return { id: "notfound" };
       }
+    default:
+      return state;
+  }
+};
+
+export const comments = (state = [], action = {}) => {
+  switch (action.type) {
+    case COMMENTS_FETCHED:
+      return action.payload.comments;
+
+    case REPLIES_FETCH:
+      const newArr2 = [...state];
+      return newArr2.map((c) => {
+        if (c.id === action.payload.commentId) {
+          c.replies = action.payload.replies;
+        }
+        return c;
+      });
+
+    // case COMMENT_EDITED:
+
+    // case COMMENT_DELETED:
+
+    case COMMENT_ADDED:
+      return [action.payload, ...state];
+
+    case REPLY_ADDED:
+      const newArr = [...state];
+      return newArr.map((c) => {
+        if (c.id === action.payload.inReplyTo) c.replyes.push(action.payload);
+        return c;
+      });
+
+    // case COMMENT_RATED:
+    default:
+      return state;
+  }
+};
+
+export const user = (state = {}, action = {}) => {
+  switch (action.type) {
+    case COMMENTS_FETCHED:
+      return { ...state, id: action.payload.userId };
     default:
       return state;
   }

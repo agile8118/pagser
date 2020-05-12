@@ -19,6 +19,11 @@ import {
   READ_LATER,
   FETCH_ATTACH_FILES,
   SUBSCRIBE,
+  // Comments
+  COMMENTS_FETCHED,
+  COMMENT_ADDED,
+  REPLY_ADDED,
+  REPLIES_FETCH,
   // Generals
   ADD_TO_CL_MDL,
   UPLOAD_PHOTO_MDL,
@@ -206,7 +211,7 @@ export const ratePage = (obj) => (dispatch) => {
   dispatch({ type: PAGE_RATED, payload: obj });
 };
 
-// Send a requst to server to add or remove a page from the read later list
+// Send a request to server to add or remove a page from the read later list
 export const readLater = (id) => async (dispatch) => {
   try {
     loadingModal("Loading...");
@@ -250,6 +255,69 @@ export const subscribe = (authorId) => async (dispatch) => {
   dispatch({
     type: SUBSCRIBE,
     payload: data,
+  });
+};
+
+/* ----------------------- */
+/* Comments action creators */
+/* ----------------------- */
+// Fetch the list of all comments of a page
+export const fetchComments = (pageId) => async (dispatch) => {
+  const { data } = await axios.get(`/api/comments/${pageId}`, {
+    headers: {
+      authorization: localStorage.getItem("token"),
+    },
+  });
+
+  dispatch({
+    type: COMMENTS_FETCHED,
+    payload: { comments: data.comments, userId: data.userId },
+  });
+};
+
+// Send a request to server to add a comment for the page or a comment reply for another comment
+export const addComment = (pageId, comment) => async (dispatch) => {
+  loadingModal("Adding your comment...");
+  try {
+    const { data } = await axios.post(
+      `/api/comment/${pageId}`,
+      { text: comment, inReplyTo: null },
+      {
+        headers: {
+          authorization: localStorage.getItem("token"),
+        },
+      }
+    );
+
+    loadingModal();
+    if (data.inReplyTo) {
+      dispatch({
+        type: REPLY_ADDED,
+        payload: data.comment,
+      });
+
+      showSnackBar("Your comment reply added successfully.", "success");
+    } else {
+      dispatch({ type: COMMENT_ADDED, payload: data.comment });
+      showSnackBar("Your comment added successfully.", "success");
+    }
+  } catch (e) {
+    loadingModal();
+    showSnackBar("Sorry an unkown error occurred.", "error");
+  }
+};
+
+// Fetch all replies of a comment
+export const fetchReplies = (id) => async (dispatch) => {
+  const { data } = await axios.get(`/api/comment/${id}/replies`, {
+    headers: {
+      authorization: localStorage.getItem("token"),
+    },
+  });
+
+  dispatch({
+    type: REPLIES_FETCH,
+    payload: { replies: data.replies, commentId: data.commentId },
   });
 };
 

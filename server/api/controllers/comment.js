@@ -1,233 +1,184 @@
 const jwt = require("jwt-simple");
-const { Page } = require("../../models/page");
 const Comment = require("../../models/comment");
 const User = require("../../models/user");
 const util = require("../../lib/util");
 const keys = require("../../config/keys");
 
 // Add a comment for a page
-exports.addComment = (req, res) => {
-  const pageId = req.params.id;
-  const userId = req.user.id;
-  const text = req.body.text;
-  const inReplyTo = req.body.inReplyTo;
+exports.addComment = async (req, res) => {
+  try {
+    const pageId = req.params.pageId;
+    const userId = req.user.id;
+    const text = req.body.text;
+    const inReplyTo = req.body.inReplyTo;
 
-  const comment = new Comment({
-    author: userId,
-    text,
-    page: pageId,
-    inReplyTo,
-  });
-  comment.save((err) => {
-    if (err) return res.send("error");
+    const comment = await Comment.create({
+      author: userId,
+      text,
+      page: pageId,
+      inReplyTo,
+    });
 
-    if (!comment.inReplyTo) {
-      Page.findByIdAndUpdate(
-        pageId,
-        { $push: { comments: comment.id } },
-        { new: true },
-        (err, page) => {
-          if (err) return res.status(500).send("error");
-        }
-      );
-    } else {
-      Comment.findByIdAndUpdate(
-        inReplyTo,
-        { $push: { replyes: comment.id } },
-        (err, commet) => {}
-      );
-    }
+    const user = await User.findById(userId, "photo name");
 
-    Comment.findById(comment.id, "text inReplyTo author date")
-      .populate("author", "name photo")
-      .exec(function (err, comment) {
-        if (err) {
-          return res.send("error");
-        }
+    const formattedComment = {
+      id: comment.id,
+      author: {
+        id: user._id,
+        name: user.name,
+        photo: user.photo.secure_url,
+      },
+      viewer: "owner",
+      text: comment.text,
+      inReplyTo: comment.inReplyTo,
+      replies: comment.inReplyTo ? [] : null,
+      date: util.timeSince(comment.date),
+    };
 
-        var c = {
-          id: comment.id,
-          author: {
-            id: comment.author._id,
-            name: comment.author.name,
-            photo: comment.author.photo,
-          },
-          viewer: "owner",
-          text: comment.text,
-          inReplyTo: comment.inReplyTo,
-          replyes: [],
-          date: util.timeSince(comment.date),
-        };
-
-        res.send(c);
-      });
-  });
+    res.send({ comment: formattedComment });
+  } catch (e) {
+    console.error(e);
+    res.status(500).send({ message: "Internal server error" });
+  }
 };
 
-exports.fetchComments = function (req, res) {
-  const pageId = req.params.id;
-  const commentsPage = req.query.page;
-
+// Fetch all comments for the show page
+exports.fetchComments = async (req, res) => {
   try {
-    var decoded = jwt.decode(req.headers.authorization, keys.jwtSecret);
-    var userId = decoded.sub;
+    const pageId = req.params.pageId;
+
+    let userId;
+    try {
+      userId = jwt.decode(req.headers.authorization, keys.jwtSecret).sub;
+    } catch (e) {
+      userId = false;
+    }
+
+    // Find all page comments which are not replies
+    const comments = await Comment.find({
+      page: pageId,
+      inReplyTo: null,
+    })
+      .sort({ date: -1 })
+      .populate({
+        path: "author",
+        select: "name photo",
+        model: "User",
+      });
+
+    const ids = comments.map((c) => c._id);
+
+    // Find the replies of the founded comments
+    const replies = await Comment.find(
+      { inReplyTo: { $in: ids } },
+      "_id inReplyTo"
+    );
+
+    // Make found comments ready for client
+    const formattedComments = comments.map((comment) => {
+      // Filter the replies for each comment
+      const reps = replies.filter(
+        (rep) => rep.inReplyTo.toString() === comment._id.toString()
+      );
+
+      // Return each comment formatted and with replies attached to it
+      return {
+        id: comment.id,
+        author: {
+          name: comment.author.name,
+          photo: comment.author.photo.secure_url,
+        },
+        viewer: comment.author.id === userId ? "owner" : "spectator",
+        text: comment.text,
+        date: util.timeSince(comment.date),
+        replies: reps.length,
+      };
+    });
+
+    res.send({ comments: formattedComments, userId });
   } catch (e) {
-    var userId = false;
+    console.error(e);
+  }
+};
+
+// Fetch all replies of a comment
+exports.fetchReplies = async (req, res) => {
+  let userId;
+  try {
+    userId = jwt.decode(req.headers.authorization, keys.jwtSecret).sub;
+  } catch (e) {
+    userId = false;
   }
 
-  Comment.paginate(
-    { page: pageId, inReplyTo: null },
-    {
-      select: "text author date inReplyTo replyes",
-      limit: 10,
-      page: commentsPage,
-      sort: { date: -1 },
-      populate: [
-        {
-          path: "author",
-          select: "name photo",
-          model: "User",
-        },
-        {
-          path: "replyes",
-          select: "text author date inReplyTo",
-          model: "Comment",
-          populate: {
-            path: "author",
-            select: "name photo",
-            model: "User",
-          },
-        },
-      ],
-    },
-    (err, results) => {
-      if (err) return res.status(500).send("error");
-      var data = results.docs.map((comment) => {
-        if (comment.author.id === userId) {
-          return {
-            id: comment.id,
-            author: {
-              name: comment.author.name,
-              photo: comment.author.photo,
-            },
-            viewer: "owner",
-            text: comment.text,
-            date: util.timeSince(comment.date),
-            inReplyTo: comment.inReplyTo,
-            replyes: comment.replyes.map((c) => {
-              if (userId === c.author.id) {
-                return {
-                  id: c.id,
-                  author: {
-                    name: c.author.name,
-                    photo: c.author.photo,
-                  },
-                  date: util.timeSince(c.date),
-                  text: c.text,
-                  inReplyTo: c.inReplyTo,
-                  viewer: "owner",
-                };
-              } else {
-                return {
-                  id: c.id,
-                  author: {
-                    name: c.author.name,
-                    photo: c.author.photo,
-                  },
-                  date: util.timeSince(c.date),
-                  text: c.text,
-                  inReplyTo: c.inReplyTo,
-                  viewer: "spectator",
-                };
-              }
-            }),
-          };
-        } else {
-          return {
-            id: comment.id,
-            author: {
-              name: comment.author.name,
-              photo: comment.author.photo,
-            },
-            viewer: "spectator",
-            text: comment.text,
-            date: util.timeSince(comment.date),
-            inReplyTo: comment.inReplyTo,
-            replyes: comment.replyes.map((c) => {
-              if (userId === c.author.id) {
-                return {
-                  id: c.id,
-                  author: {
-                    name: c.author.name,
-                    photo: c.author.photo,
-                  },
-                  date: util.timeSince(c.date),
-                  text: c.text,
-                  inReplyTo: c.inReplyTo,
-                  viewer: "owner",
-                };
-              } else {
-                return {
-                  id: c.id,
-                  author: {
-                    name: c.author.name,
-                    photo: c.author.photo,
-                  },
-                  date: util.timeSince(c.date),
-                  text: c.text,
-                  inReplyTo: c.inReplyTo,
-                  viewer: "spectator",
-                };
-              }
-            }),
-          };
-        }
-      });
+  const commentId = req.params.id;
 
-      res.send({
-        comments: data,
-        page: results.page,
-        pages: results.pages,
-        userId,
-      });
-    }
-  );
+  // Find the replies of the selected comment
+  const results = await Comment.find({ inReplyTo: commentId }).populate({
+    path: "author",
+    model: "User",
+    select: "name photo",
+  });
+
+  const replies = results.map((r) => {
+    return {
+      id: r.id,
+      author: {
+        name: r.author.name,
+        photo: r.author.photo.secure_url,
+      },
+      viewer: r.author.id === userId ? "owner" : "spectator",
+      text: r.text,
+      date: util.timeSince(r.date),
+    };
+  });
+
+  res.send({ replies, commentId });
 };
 
-exports.deleteComment = function (req, res) {
-  var pageId = req.params.id;
-  var commentId = req.params.commentid;
+exports.deleteComment = async (req, res) => {
+  const commentId = req.params.commentid;
+  const deletedComment = await Comment.findByIdAndRemove(commentId);
 
-  Comment.findByIdAndRemove(commentId, "_id", function (err, comment) {
-    if (err) return res.status(500).send("error");
+  if (!deletedComment.inReplyTo)
+    await Comment.deleteMany({ inReplyTo: deletedComment.id });
 
-    if (comment.inReplyTo === null) {
-      Comment.remove({ _id: comment.replyes }, (err, result) => {
-        if (err) return res.status(500).send("error");
-      });
-
-      Page.findByIdAndUpdate(
-        pageId,
-        { $pull: { comments: commentId } },
-        (err, page) => {
-          if (err) return res.status(500).send("error");
-          res.send({ commentId: comment.id, reply: false });
-        }
-      );
-    } else {
-      Comment.findByIdAndUpdate(
-        comment.inReplyTo,
-        { $pull: { replyes: commentId } },
-        { new: true }
-      ).exec((err, comment) => {
-        res.send({
-          commentId: comment.id,
-          reply: true,
-          deletedCommentId: commentId,
-        });
-      });
-    }
+  res.send({
+    commentId: deletedComment.id,
+    reply: deletedComment.inReplyTo ? true : false,
   });
+
+  // const commentId = req.params.commentid;
+
+  // await Comment.findByIdAndRemove(commentId, "_id", function (err, comment) {
+  //   if (err) return res.status(500).send("error");
+
+  //   if (comment.inReplyTo === null) {
+  //     Comment.remove({ _id: comment.replies }, (err, result) => {
+  //       if (err) return res.status(500).send("error");
+  //     });
+
+  //     Page.findByIdAndUpdate(
+  //       pageId,
+  //       { $pull: { comments: commentId } },
+  //       (err, page) => {
+  //         if (err) return res.status(500).send("error");
+  //         res.send({ commentId: comment.id, reply: false });
+  //       }
+  //     );
+  //   } else {
+  //     Comment.findByIdAndUpdate(
+  //       comment.inReplyTo,
+  //       { $pull: { replies: commentId } },
+  //       { new: true }
+  //     ).exec((err, comment) => {
+  //       res.send({
+  //         commentId: comment.id,
+  //         reply: true,
+  //         deletedCommentId: commentId,
+  //       });
+  //     });
+  //   }
+  // });
 };
 
 exports.updateComment = (req, res) => {
