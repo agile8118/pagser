@@ -15,6 +15,10 @@ const commentSchema = mongoose.Schema({
   readByPageOwner: { type: Boolean, default: false },
   lovedByPageOwner: { type: Boolean, default: false },
   inReplyTo: { type: mongoose.Schema.Types.ObjectId, default: null },
+  inReplyToCommentReply: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: null,
+  },
 });
 
 commentSchema.plugin(mongoosePaginate);

@@ -273,7 +273,10 @@ export const fetchComments = (pageId) => async (dispatch) => {
 
   dispatch({
     type: COMMENTS_FETCHED,
-    payload: { comments: data.comments, userId: data.userId },
+    payload: {
+      comments: data.comments,
+      userId: data.userId,
+    },
   });
 };
 
@@ -281,13 +284,14 @@ export const fetchComments = (pageId) => async (dispatch) => {
 export const addComment = (
   comment,
   inReplyTo = null,
-  inReplyToReplyId = null
+  inReplyToCommentReply = null,
+  inReplyToUser = null
 ) => async (dispatch, getState) => {
   loadingModal("Adding your comment...");
   try {
     const { data } = await axios.post(
       `/api/comment/${getState().pageData.id}`,
-      { text: comment, inReplyTo },
+      { text: comment, inReplyTo, inReplyToCommentReply, inReplyToUser },
       {
         headers: {
           authorization: localStorage.getItem("token"),
@@ -302,15 +306,12 @@ export const addComment = (
         payload: data.comment,
       });
 
-      console.log(inReplyTo);
-      console.log(inReplyToReplyId);
-
       dispatch({
         type: ADD_REPLY,
         payload: {
           commentId: inReplyTo,
           status: "hide",
-          replyId: inReplyToReplyId,
+          replyId: inReplyToCommentReply,
         },
       });
 
@@ -349,11 +350,20 @@ export const hideReplies = (id) => {
 };
 
 // Show add reply form
-export const addReplyForm = (id, status, inReplyTo, toName = null) => {
-  return {
+export const addReplyForm = (id, status, inReplyTo, toName = null) => (
+  dispatch,
+  getState
+) => {
+  dispatch({
     type: ADD_REPLY,
-    payload: { commentId: id, status, replyId: inReplyTo, toName },
-  };
+    payload: {
+      commentId: id,
+      status,
+      replyId: inReplyTo,
+      toName,
+      userId: getState().user.id,
+    },
+  });
 };
 
 /* ----------------------- */

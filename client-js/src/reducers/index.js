@@ -192,15 +192,17 @@ export const comments = (state = [], action = {}) => {
     // Return the list of all comments
     case COMMENTS_FETCHED:
       return action.payload.comments;
+
     // Add and show comment replies
     case REPLIES_FETCH:
       return [...state].map((c) => {
         if (c.id === action.payload.commentId) {
-          c.replies = action.payload.replies;
           c.showReplies = true;
+          c.replies = action.payload.replies;
         }
         return c;
       });
+
     // Hide comment replies
     case HIDE_REPLIES:
       return [...state].map((c) => {
@@ -210,47 +212,44 @@ export const comments = (state = [], action = {}) => {
         }
         return c;
       });
+
     // Add the newly added comment to the comment list
     case COMMENT_ADDED:
       return [action.payload, ...state];
+
     // Show add reply form
     case ADD_REPLY:
-      console.log(action.payload);
-
       const status = action.payload.status === "show" ? "add-reply" : "normal";
-      const a = [...state];
-      return a.map((c) => {
+      return [...state].map((c) => {
+        // If commentId matched the comment in store, go for it and do the changes
+        // otherwise just return the comment without any modification
         if (c.id === action.payload.commentId) {
+          // If we need to change the status of a reply
           if (action.payload.replyId) {
-            if (
-              typeof c.replies === "number" &&
-              c.highlightedReplies.length > 0
-            ) {
-              c.highlightedReplies = c.highlightedReplies.map((rep) => {
-                if (rep.id === action.payload.replyId) {
-                  rep.status = status;
+            // Change the status of a reply in 'replies' store or in 'highlightedReplies' store
+            let type =
+              typeof c.replies === "number" && c.highlightedReplies.length > 0
+                ? "highlightedReplies"
+                : "replies";
+            c[type] = c[type].map((rep) => {
+              if (rep.id === action.payload.replyId) {
+                // Change the status of the reply comment to either show the reply form or hide it
+                rep.status = status;
+                // This will be the label value shown on add reply form to inform users
+                // who they're replying to, we won't show this label if user is replying to him/her self.
+                if (action.payload.userId !== rep.author.id)
                   rep.toName = action.payload.toName;
-                }
-                return rep;
-              });
-            } else {
-              c.replies = c.replies.map((rep) => {
-                if (rep.id === action.payload.replyId) {
-                  rep.status = status;
-                  console.log(rep.status);
-                  console.log(status);
-
-                  rep.toName = action.payload.toName;
-                }
-                return rep;
-              });
-            }
+              }
+              return rep;
+            });
+            // If we need to change the status of a main comment
           } else {
             c.status = status;
           }
         }
         return c;
       });
+
     // Add the reply to comment replies
     case REPLY_ADDED:
       return [...state].map((c) => {
@@ -264,6 +263,7 @@ export const comments = (state = [], action = {}) => {
         }
         return c;
       });
+
     // case COMMENT_EDITED:
     // case COMMENT_DELETED:
     // case COMMENT_RATED:

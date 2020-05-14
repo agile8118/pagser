@@ -59,6 +59,7 @@ const Comment = (props) => {
               text={comment.text}
               status={comment.status}
               viewer={comment.viewer}
+              inReplyToUser={comment.inReplyToUser}
               toName={comment.toName}
             />
           );
@@ -78,6 +79,7 @@ const Comment = (props) => {
               text={comment.text}
               status={comment.status}
               viewer={comment.viewer}
+              inReplyToUser={comment.inReplyToUser}
               toName={comment.toName}
             />
           );

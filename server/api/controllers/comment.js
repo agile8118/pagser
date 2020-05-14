@@ -11,12 +11,18 @@ exports.addComment = async (req, res) => {
     const userId = req.user.id;
     const text = req.body.text;
     const inReplyTo = req.body.inReplyTo;
+    // The id of the comment user has replied to
+    const inReplyToCommentReply = req.body.inReplyToCommentReply || null;
+    // The name of the comment author which user has replied to, we'll just use this to return back to
+    // client so that we'll be able to show a label on the comment reply
+    const inReplyToUser = req.body.inReplyToUser || null;
 
     const comment = await Comment.create({
       author: userId,
       text,
       page: pageId,
       inReplyTo,
+      inReplyToCommentReply,
     });
 
     const user = await User.findById(userId, "photo name");
@@ -31,6 +37,7 @@ exports.addComment = async (req, res) => {
       viewer: "owner",
       text: comment.text,
       inReplyTo: comment.inReplyTo,
+      inReplyToUser: inReplyToUser,
       replies: comment.inReplyTo ? [] : 0,
       date: util.timeSince(comment.date),
       highlightedReplies: [],
@@ -87,6 +94,7 @@ exports.fetchComments = async (req, res) => {
       return {
         id: comment.id,
         author: {
+          id: comment.author.id,
           name: comment.author.name,
           photo: comment.author.photo.secure_url,
         },
@@ -116,20 +124,34 @@ exports.fetchReplies = async (req, res) => {
   const commentId = req.params.id;
 
   // Find the replies of the selected comment
-  const results = await Comment.find({ inReplyTo: commentId }).populate({
-    path: "author",
-    model: "User",
-    select: "name photo",
-  });
+  const results = await Comment.find({ inReplyTo: commentId }).populate([
+    {
+      path: "author",
+      model: "User",
+      select: "name photo",
+    },
+    {
+      path: "inReplyToCommentReply",
+      model: "Comment",
+      select: "author",
+      populate: { path: "author" },
+    },
+  ]);
+
+  // console.log(results);
 
   const replies = results.map((r) => {
     return {
       id: r.id,
       author: {
+        id: r.author.id,
         name: r.author.name,
         photo: r.author.photo.secure_url,
       },
       viewer: r.author.id === userId ? "owner" : "spectator",
+      inReplyToUser: r.inReplyToCommentReply
+        ? r.inReplyToCommentReply.author.name
+        : null,
       text: r.text,
       date: util.timeSince(r.date),
     };
@@ -139,7 +161,7 @@ exports.fetchReplies = async (req, res) => {
 };
 
 exports.deleteComment = async (req, res) => {
-  const commentId = req.params.commentid;
+  const commentId = req.params.id;
   const deletedComment = await Comment.findByIdAndRemove(commentId);
 
   if (!deletedComment.inReplyTo)

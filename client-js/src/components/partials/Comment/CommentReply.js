@@ -42,7 +42,12 @@ const CommentReply = (props) => {
           </div>
         </div>
         <div className="comment__body">
-          <p>{props.text}</p>
+          <p>
+            {props.inReplyToUser && (
+              <span className="a-17">{props.inReplyToUser}</span>
+            )}
+            {props.text}
+          </p>
         </div>
       </div>
       {props.status === "add-reply" && (
@@ -50,7 +55,7 @@ const CommentReply = (props) => {
           ref={addReplyInput}
           toName={props.toName}
           onSubmit={(text) => {
-            props.addComment(text, props.parentCommentId, props.id);
+            props.addComment(text, props.parentCommentId, props.id, props.name);
           }}
           onCancel={() => {
             props.addReplyForm(props.parentCommentId, "hide", props.id);
