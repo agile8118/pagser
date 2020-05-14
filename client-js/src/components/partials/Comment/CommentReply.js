@@ -55,7 +55,7 @@ const CommentReply = (props) => {
           ref={addReplyInput}
           toName={props.toName}
           onSubmit={(text) => {
-            props.addComment(text, props.parentCommentId, props.id, props.name);
+            props.addComment(text, props.parentCommentId, props.id);
           }}
           onCancel={() => {
             props.addReplyForm(props.parentCommentId, "hide", props.id);

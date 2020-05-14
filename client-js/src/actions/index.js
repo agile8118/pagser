@@ -284,14 +284,13 @@ export const fetchComments = (pageId) => async (dispatch) => {
 export const addComment = (
   comment,
   inReplyTo = null,
-  inReplyToCommentReply = null,
-  inReplyToUser = null
+  inReplyToCommentReply = null
 ) => async (dispatch, getState) => {
   loadingModal("Adding your comment...");
   try {
     const { data } = await axios.post(
       `/api/comment/${getState().pageData.id}`,
-      { text: comment, inReplyTo, inReplyToCommentReply, inReplyToUser },
+      { text: comment, inReplyTo, inReplyToCommentReply },
       {
         headers: {
           authorization: localStorage.getItem("token"),

@@ -13,16 +13,22 @@ exports.addComment = async (req, res) => {
     const inReplyTo = req.body.inReplyTo;
     // The id of the comment user has replied to
     const inReplyToCommentReply = req.body.inReplyToCommentReply || null;
-    // The name of the comment author which user has replied to, we'll just use this to return back to
+
+    // Grab The name of the comment author which user has replied to, we'll just use this to return back to
     // client so that we'll be able to show a label on the comment reply
-    const inReplyToUser = req.body.inReplyToUser || null;
+    let repliedToC;
+    if (inReplyToCommentReply)
+      repliedToC = await Comment.findById(inReplyToCommentReply)
+        .select("author")
+        .populate({ path: "author", model: "User", select: "name" });
 
     const comment = await Comment.create({
       author: userId,
       text,
       page: pageId,
       inReplyTo,
-      inReplyToCommentReply,
+      inReplyToCommentReply:
+        repliedToC.author.id !== userId ? inReplyToCommentReply : null,
     });
 
     const user = await User.findById(userId, "photo name");
@@ -37,7 +43,9 @@ exports.addComment = async (req, res) => {
       viewer: "owner",
       text: comment.text,
       inReplyTo: comment.inReplyTo,
-      inReplyToUser: inReplyToUser,
+      inReplyToUser: comment.inReplyToCommentReply
+        ? repliedToC.author.name
+        : null,
       replies: comment.inReplyTo ? [] : 0,
       date: util.timeSince(comment.date),
       highlightedReplies: [],
