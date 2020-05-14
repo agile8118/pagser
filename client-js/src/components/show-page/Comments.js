@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
 import { ConfirmModal, Modal } from "../partials/Modals";
-import Comment from "../partials/Comment";
+import Comment from "../partials/Comment/";
 import Loading from "../partials/Loading";
 import { showSnackBar, loadingModal } from "../../lib/util";
 
@@ -32,12 +32,15 @@ class Comments extends Component {
           <Comment
             key={comment.id}
             id={comment.id}
+            showReplies={comment.showReplies}
+            status={comment.status} // Could be either add-reply or edit
             viewer={comment.viewer}
             photo={comment.author.photo}
             name={comment.author.name}
             date={comment.date}
             text={comment.text}
-            replies={comment.replies}
+            replies={comment.replies || []}
+            highlightedReplies={comment.highlightedReplies}
           />
         );
       });
@@ -63,7 +66,8 @@ class Comments extends Component {
           method="post"
           onSubmit={(e) => {
             e.preventDefault();
-            this.props.addComment(this.props.pageId, this.state.commentText);
+            this.props.addComment(this.state.commentText);
+            this.setState({ commentText: "" });
           }}
         >
           <label className="form__label display-inline-block">
@@ -95,8 +99,6 @@ class Comments extends Component {
   };
 
   render() {
-    console.log(this.props);
-
     return (
       <React.Fragment>
         <div className="page__comments" id="comments2">

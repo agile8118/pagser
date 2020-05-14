@@ -31,11 +31,12 @@ exports.addComment = async (req, res) => {
       viewer: "owner",
       text: comment.text,
       inReplyTo: comment.inReplyTo,
-      replies: comment.inReplyTo ? [] : null,
+      replies: comment.inReplyTo ? [] : 0,
       date: util.timeSince(comment.date),
+      highlightedReplies: [],
     };
 
-    res.send({ comment: formattedComment });
+    res.send({ comment: formattedComment, inReplyTo: comment.inReplyTo });
   } catch (e) {
     console.error(e);
     res.status(500).send({ message: "Internal server error" });
@@ -46,6 +47,7 @@ exports.addComment = async (req, res) => {
 exports.fetchComments = async (req, res) => {
   try {
     const pageId = req.params.pageId;
+    const highlightedRepliesIds = req.body.highlightedRepliesIds;
 
     let userId;
     try {
@@ -91,7 +93,8 @@ exports.fetchComments = async (req, res) => {
         viewer: comment.author.id === userId ? "owner" : "spectator",
         text: comment.text,
         date: util.timeSince(comment.date),
-        replies: reps.length,
+        replies: reps.length || 0,
+        highlightedReplies: [],
       };
     });
 

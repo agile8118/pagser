@@ -3,6 +3,7 @@
 
   &__group {
     margin: 2rem 0;
+    position: relative;
     &--sm {
       margin: 1rem 0;
     }
@@ -39,12 +40,12 @@
     display: block;
     resize: none;
     color: $color-text;
-    font-size: $default-font-size;
+    font-size: inherit;
+    font-family: inherit;
     width: 100%;
     padding: 1.1rem 1.2rem;
     border-radius: 0.5rem;
     border: 1px solid #ccc;
-    font-family: inherit;
 
     &:focus {
       border-color: rgba(41, 128, 185, 0.57);
@@ -75,6 +76,21 @@
       border-bottom: 2px solid $color-blue;
     }
   }
+
+  .form__input__text-label {
+    position: absolute;
+    top: 4px;
+    left: 3px;
+    background: #000;
+    border-radius: 4px;
+    padding: 0.1rem 0.8rem;
+    font-size: inherit;
+    color: #fff;
+  }
+
+  // .form__input__text-label + input {
+  //   padding-left: 7.3rem;
+  // }
 
   &__label {
     color: $color-text;

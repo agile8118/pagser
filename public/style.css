@@ -252,6 +252,9 @@ pre {
 .margin-right-1 {
   margin-right: 1rem !important; }
 
+.margin-left-3 {
+  margin-left: 3rem; }
+
 .margin-left-2 {
   margin-left: 2rem; }
 
@@ -1255,7 +1258,8 @@ pre {
   display: table; }
 
 .form__group {
-  margin: 2rem 0; }
+  margin: 2rem 0;
+  position: relative; }
   .form__group--sm {
     margin: 1rem 0; }
   .form__group--error input,
@@ -1276,12 +1280,12 @@ pre {
   display: block;
   resize: none;
   color: #555;
-  font-size: 1.6rem;
+  font-size: inherit;
+  font-family: inherit;
   width: 100%;
   padding: 1.1rem 1.2rem;
   border-radius: 0.5rem;
-  border: 1px solid #ccc;
-  font-family: inherit; }
+  border: 1px solid #ccc; }
   .form__input:focus, .form__textarea:focus {
     border-color: rgba(41, 128, 185, 0.57);
     outline: 0 none; }
@@ -1301,6 +1305,16 @@ pre {
   border-bottom: 1px solid #2980b9; }
   .form__input--lined:focus {
     border-bottom: 2px solid #2980b9; }
+
+.form .form__input__text-label {
+  position: absolute;
+  top: 4px;
+  left: 3px;
+  background: #000;
+  border-radius: 4px;
+  padding: 0.1rem 0.8rem;
+  font-size: inherit;
+  color: #fff; }
 
 .form__label {
   color: #555;
@@ -2315,10 +2329,12 @@ input:checked + .slider:before {
   margin: 4rem 0;
   display: flex;
   flex-direction: column;
-  color: #555; }
-  .comment .comment-reply {
+  color: #555;
+  font-size: 1.4rem; }
+  .comment .comment-replies {
+    margin-left: 3rem; }
+  .comment .comment-replies .comment {
     margin: 1rem 0;
-    margin-left: 3rem;
     background-color: #f9f9f9; }
   .comment__header {
     display: flex;
@@ -2331,7 +2347,7 @@ input:checked + .slider:before {
         margin-right: 0.8rem;
         margin-top: -0.3rem; }
     .comment__header__name-and-date {
-      font-size: 1.4rem;
+      font-size: inherit;
       margin-left: 1rem;
       display: flex;
       flex-direction: column;
@@ -2346,7 +2362,7 @@ input:checked + .slider:before {
     font-size: 1.4rem;
     line-height: 2.5rem;
     padding-bottom: 0.5rem; }
-  .comment__view-replys {
+  .comment__view-replies {
     text-align: right;
     display: inline-block;
     padding: 0;

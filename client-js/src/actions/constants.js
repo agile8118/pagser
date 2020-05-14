@@ -25,6 +25,8 @@ export const COMMENTS_FETCHED = "comments/fetched";
 export const COMMENT_ADDED = "comment/added";
 export const REPLY_ADDED = "comment/replyAdded";
 export const REPLIES_FETCH = "comment/repliesFetched";
+export const HIDE_REPLIES = "comment/hideReplies";
+export const ADD_REPLY = "comment/addReply";
 
 // General
 export const UPLOAD_PHOTO_MDL = "modals/uploadPhoto";

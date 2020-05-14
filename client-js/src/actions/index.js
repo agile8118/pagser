@@ -23,7 +23,9 @@ import {
   COMMENTS_FETCHED,
   COMMENT_ADDED,
   REPLY_ADDED,
+  HIDE_REPLIES,
   REPLIES_FETCH,
+  ADD_REPLY,
   // Generals
   ADD_TO_CL_MDL,
   UPLOAD_PHOTO_MDL,
@@ -276,12 +278,16 @@ export const fetchComments = (pageId) => async (dispatch) => {
 };
 
 // Send a request to server to add a comment for the page or a comment reply for another comment
-export const addComment = (pageId, comment) => async (dispatch) => {
+export const addComment = (
+  comment,
+  inReplyTo = null,
+  inReplyToReplyId = null
+) => async (dispatch, getState) => {
   loadingModal("Adding your comment...");
   try {
     const { data } = await axios.post(
-      `/api/comment/${pageId}`,
-      { text: comment, inReplyTo: null },
+      `/api/comment/${getState().pageData.id}`,
+      { text: comment, inReplyTo },
       {
         headers: {
           authorization: localStorage.getItem("token"),
@@ -296,6 +302,18 @@ export const addComment = (pageId, comment) => async (dispatch) => {
         payload: data.comment,
       });
 
+      console.log(inReplyTo);
+      console.log(inReplyToReplyId);
+
+      dispatch({
+        type: ADD_REPLY,
+        payload: {
+          commentId: inReplyTo,
+          status: "hide",
+          replyId: inReplyToReplyId,
+        },
+      });
+
       showSnackBar("Your comment reply added successfully.", "success");
     } else {
       dispatch({ type: COMMENT_ADDED, payload: data.comment });
@@ -303,7 +321,8 @@ export const addComment = (pageId, comment) => async (dispatch) => {
     }
   } catch (e) {
     loadingModal();
-    showSnackBar("Sorry an unkown error occurred.", "error");
+    console.log(e);
+    showSnackBar("Sorry an unknown error occurred.", "error");
   }
 };
 
@@ -319,6 +338,22 @@ export const fetchReplies = (id) => async (dispatch) => {
     type: REPLIES_FETCH,
     payload: { replies: data.replies, commentId: data.commentId },
   });
+};
+
+// Hide comment replies
+export const hideReplies = (id) => {
+  return {
+    type: HIDE_REPLIES,
+    payload: id,
+  };
+};
+
+// Show add reply form
+export const addReplyForm = (id, status, inReplyTo, toName = null) => {
+  return {
+    type: ADD_REPLY,
+    payload: { commentId: id, status, replyId: inReplyTo, toName },
+  };
 };
 
 /* ----------------------- */
