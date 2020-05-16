@@ -214,21 +214,23 @@ exports.deleteComment = async (req, res) => {
   // });
 };
 
-exports.updateComment = (req, res) => {
-  const commentId = req.params.commentid;
-  const commentText = req.body.text;
+exports.updateComment = async (req, res) => {
+  try {
+    const commentId = req.params.id;
+    const newComment = req.body.text;
 
-  Comment.findByIdAndUpdate(
-    commentId,
-    { text: commentText },
-    { new: true },
-    (err, comment) => {
-      if (err) return res.status(500).send("error");
-      if (comment.inReplyTo) {
-        res.status(200).send({ comment, reply: true });
-      } else {
-        res.status(200).send(comment);
-      }
-    }
-  );
+    const c = await Comment.findByIdAndUpdate(
+      commentId,
+      { text: newComment, edited: true },
+      { new: true }
+    );
+
+    res.status(200).send({
+      commentId: c.id,
+      newComment: c.text,
+      inReplyTo: c.inReplyTo || null,
+    });
+  } catch (err) {
+    res.status(500).send({ message: "Internal server error." });
+  }
 };

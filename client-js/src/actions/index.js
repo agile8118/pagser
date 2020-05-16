@@ -25,7 +25,8 @@ import {
   REPLY_ADDED,
   HIDE_REPLIES,
   REPLIES_FETCH,
-  ADD_REPLY,
+  CHANGE_COMMENT_STATUS,
+  COMMENT_EDITED,
   // Generals
   ADD_TO_CL_MDL,
   UPLOAD_PHOTO_MDL,
@@ -306,7 +307,7 @@ export const addComment = (
       });
 
       dispatch({
-        type: ADD_REPLY,
+        type: CHANGE_COMMENT_STATUS,
         payload: {
           commentId: inReplyTo,
           status: "hide",
@@ -319,6 +320,39 @@ export const addComment = (
       dispatch({ type: COMMENT_ADDED, payload: data.comment });
       showSnackBar("Your comment added successfully.", "success");
     }
+  } catch (e) {
+    loadingModal();
+    console.log(e);
+    showSnackBar("Sorry an unknown error occurred.", "error");
+  }
+};
+
+// Send a request to server to edit a comment
+export const editComment = (commentId, newComment) => async (dispatch) => {
+  loadingModal("Updating your comment...");
+  try {
+    const { data } = await axios.put(
+      `/api/comment/${commentId}`,
+      { text: newComment },
+      {
+        headers: {
+          authorization: localStorage.getItem("token"),
+        },
+      }
+    );
+
+    loadingModal();
+
+    dispatch({
+      type: COMMENT_EDITED,
+      payload: {
+        newComment: data.newComment,
+        commentId: data.commentId,
+        inReplyTo: data.inReplyTo,
+      },
+    });
+
+    showSnackBar("Your comment updated successfully.", "success");
   } catch (e) {
     loadingModal();
     console.log(e);
@@ -348,19 +382,34 @@ export const hideReplies = (id) => {
   };
 };
 
-// Show add reply form
-export const addReplyForm = (id, status, inReplyTo, toName = null) => (
+// Show/hide add reply form
+export const addReplyForm = (commentId, status, inReplyTo, toName = null) => (
   dispatch,
   getState
 ) => {
   dispatch({
-    type: ADD_REPLY,
+    type: CHANGE_COMMENT_STATUS,
     payload: {
-      commentId: id,
-      status,
+      commentId,
+      status: status === "show" ? "add-reply" : "normal",
       replyId: inReplyTo,
       toName,
       userId: getState().user.id,
+    },
+  });
+};
+
+// Show/hide edit comment form, first id is the main comment and
+// the last one is the id of the comment reply which is optional
+export const editCommentForm = (commentId, status, replyId = null) => (
+  dispatch
+) => {
+  dispatch({
+    type: CHANGE_COMMENT_STATUS,
+    payload: {
+      commentId,
+      status: status === "show" ? "edit" : "normal",
+      replyId,
     },
   });
 };

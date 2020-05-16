@@ -24,7 +24,8 @@ import {
   REPLY_ADDED,
   REPLIES_FETCH,
   HIDE_REPLIES,
-  ADD_REPLY,
+  CHANGE_COMMENT_STATUS,
+  COMMENT_EDITED,
   // Generals
   ADD_TO_CL_MDL,
   CONF_MDL,
@@ -217,9 +218,9 @@ export const comments = (state = [], action = {}) => {
     case COMMENT_ADDED:
       return [action.payload, ...state];
 
-    // Show add reply form
-    case ADD_REPLY:
-      const status = action.payload.status === "show" ? "add-reply" : "normal";
+    // Show/hide add reply or edit form
+    case CHANGE_COMMENT_STATUS:
+      const status = action.payload.status; // possible values: add-reply edit normal
       return [...state].map((c) => {
         // If commentId matched the comment in store, go for it and do the changes
         // otherwise just return the comment without any modification
@@ -237,7 +238,10 @@ export const comments = (state = [], action = {}) => {
                 rep.status = status;
                 // This will be the label value shown on add reply form to inform users
                 // who they're replying to, we won't show this label if user is replying to him/her self.
-                if (action.payload.userId !== rep.author.id)
+                if (
+                  status === "add-reply" &&
+                  action.payload.userId !== rep.author.id
+                )
                   rep.toName = action.payload.toName;
               }
               return rep;
@@ -264,8 +268,36 @@ export const comments = (state = [], action = {}) => {
         return c;
       });
 
-    // case COMMENT_EDITED:
-    // case COMMENT_DELETED:
+    case COMMENT_EDITED:
+      return [...state].map((c) => {
+        const mainId = action.payload.inReplyTo
+          ? action.payload.inReplyTo
+          : action.payload.commentId;
+        // Find the main comment
+        if (c.id === mainId) {
+          // If we need to change the text of a reply
+          if (action.payload.inReplyTo) {
+            // Change the text of a reply in 'replies' store or in 'highlightedReplies' store
+            let type =
+              typeof c.replies === "number" && c.highlightedReplies.length > 0
+                ? "highlightedReplies"
+                : "replies";
+            c[type] = c[type].map((rep) => {
+              if (rep.id === action.payload.commentId) {
+                // Change the text of the reply comment
+                rep.text = action.payload.newComment;
+                rep.status = "normal";
+              }
+              return rep;
+            });
+            // If we need to change the text of a main comment
+          } else {
+            c.text = action.payload.newComment;
+            c.status = "normal";
+          }
+        }
+        return c;
+      });
     // case COMMENT_RATED:
     default:
       return state;

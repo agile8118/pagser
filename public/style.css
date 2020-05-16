@@ -367,6 +367,14 @@ pre {
     opacity: 1;
     transform: translateX(50%) scale(1); } }
 
+@keyframes scaleInMiniDropdowns {
+  from {
+    opacity: 0;
+    transform: scale(0.9); }
+  to {
+    opacity: 1;
+    transform: scale(1); } }
+
 @keyframes scaleInCupertinoMdl {
   0% {
     opacity: 0;
@@ -1220,6 +1228,9 @@ pre {
   .dropdown--open .dropdown__content {
     display: block;
     animation: scaleInDropdowns 0.1s ease; }
+  .dropdown--open.dropdown-mini .dropdown__content {
+    display: block;
+    animation: scaleInMiniDropdowns 0.1s ease; }
   .dropdown--open button {
     background: #297fb92b; }
   .dropdown button {
@@ -1240,6 +1251,15 @@ pre {
     transform: translateX(50%);
     box-shadow: 0px 5px 5px 1px rgba(0, 0, 0, 0.1);
     transition: all 0.1s; }
+  .dropdown-mini .dropdown__content {
+    width: 10rem;
+    font-size: inherit;
+    top: -1.5rem;
+    right: -6rem;
+    transform: translateX(0); }
+    .dropdown-mini .dropdown__content a i {
+      margin-right: 0.6rem;
+      font-size: 115%; }
   .dropdown__item {
     background-color: #fff;
     display: block;
@@ -1309,6 +1329,7 @@ pre {
 
 .form__input--lined {
   border: none;
+  background-color: transparent;
   padding: 0.8rem 0.3rem;
   border-bottom: 1px solid #2980b9; }
   .form__input--lined:focus {
@@ -2378,24 +2399,15 @@ input:checked + .slider:before {
     font-size: 1.4rem; }
   .comment__ratings {
     display: flex;
-    margin-right: 1rem;
+    margin-right: 0.5rem;
     margin-top: -0.3rem; }
-    .comment__ratings div {
-      margin-right: 0.2rem; }
-      .comment__ratings div button {
-        margin-left: 0.4rem;
-        margin-top: 0; }
-
-.comment-in-reply-to-label {
-  font-size: 1.4rem;
-  color: #fff;
-  background: #333;
-  display: inline-block;
-  padding: 0px 7px;
-  border-radius: 5px;
-  margin-left: 0.2rem; }
-  .comment-in-reply-to-label button {
-    margin-left: 0.2rem; }
+    .comment__ratings div button {
+      margin-left: 0.4rem;
+      margin-top: 0; }
+  .comment .comment__ellipsis {
+    margin-right: -1.8rem;
+    margin-left: 1.7rem;
+    padding: 0; }
 
 .no-comment-message {
   color: #555;

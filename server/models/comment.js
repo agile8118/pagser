@@ -14,6 +14,7 @@ const commentSchema = mongoose.Schema({
   date: { type: Date, default: Date.now },
   readByPageOwner: { type: Boolean, default: false },
   lovedByPageOwner: { type: Boolean, default: false },
+  edited: { type: Boolean, default: false },
   inReplyTo: { type: mongoose.Schema.Types.ObjectId, default: null },
   inReplyToCommentReply: {
     type: mongoose.Schema.Types.ObjectId,
