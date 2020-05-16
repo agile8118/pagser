@@ -26,7 +26,10 @@ import {
   HIDE_REPLIES,
   CHANGE_COMMENT_STATUS,
   COMMENT_EDITED,
+  COMMENT_DELETED,
   // Generals
+  OPEN_MDL,
+  CLOSE_MDL,
   ADD_TO_CL_MDL,
   CONF_MDL,
   UPLOAD_PHOTO_MDL,
@@ -268,6 +271,7 @@ export const comments = (state = [], action = {}) => {
         return c;
       });
 
+    // Update the comment text
     case COMMENT_EDITED:
       return [...state].map((c) => {
         const mainId = action.payload.inReplyTo
@@ -298,6 +302,12 @@ export const comments = (state = [], action = {}) => {
         }
         return c;
       });
+
+    // Remove a parent comment from the list
+    case COMMENT_DELETED:
+      const index = state.findIndex((c) => c.id === action.payload.commentId);
+      return [...state.slice(0, index), ...state.slice(index + 1)];
+
     // case COMMENT_RATED:
     default:
       return state;
@@ -318,13 +328,30 @@ export const user = (state = {}, action = {}) => {
 /* ----------------------- */
 export const modals = (
   state = {
-    addToCL: { open: false, pageId: null },
+    addToCL: { open: false, pageId: null }, // Id is for a page
     uploadPhoto: { open: false, id: null }, // Id could be for user, collection or page
     confirmation: { open: false },
+    confDeleteComment: { open: false, id: null }, // Id is for a comment
   },
   action = {}
 ) => {
   switch (action.type) {
+    case OPEN_MDL:
+      return {
+        ...state,
+        [action.payload.name]: {
+          open: true,
+          id: action.payload.id,
+        },
+      };
+    case CLOSE_MDL:
+      return {
+        ...state,
+        [action.payload.name]: {
+          open: false,
+          id: null,
+        },
+      };
     case ADD_TO_CL_MDL:
       return {
         ...state,
@@ -351,6 +378,7 @@ export const modals = (
         addToCL: { ...state.addToCL, open: false },
         uploadPhoto: { ...state.uploadPhoto, open: false },
         confirmation: { open: false },
+        confMdlDeleteComment: { open: false, commentId: null },
       };
     default:
       return state;

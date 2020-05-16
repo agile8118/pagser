@@ -32,6 +32,7 @@ const CommentActions = React.forwardRef((props, ref) => {
           num={props.id}
           onChange={(name) => {
             if (name === "edit") props.onEdit();
+            if (name === "delete") props.onDelete();
           }}
         >
           <div data-role-name="btn-name" data-icon-class="fa fa-ellipsis-v" />

@@ -27,7 +27,10 @@ import {
   REPLIES_FETCH,
   CHANGE_COMMENT_STATUS,
   COMMENT_EDITED,
+  COMMENT_DELETED,
   // Generals
+  OPEN_MDL,
+  CLOSE_MDL,
   ADD_TO_CL_MDL,
   UPLOAD_PHOTO_MDL,
   CONF_MDL,
@@ -61,7 +64,7 @@ export const fetchPages = (kind, filterBy, sortBy) => async (dispatch) => {
     if (filterBy) dispatch({ type: FILTER_BY, payload: data.filterBy });
     if (sortBy) dispatch({ type: SORT_BY, payload: data.sortBy });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
 
@@ -322,7 +325,7 @@ export const addComment = (
     }
   } catch (e) {
     loadingModal();
-    console.log(e);
+    console.error(e);
     showSnackBar("Sorry an unknown error occurred.", "error");
   }
 };
@@ -355,7 +358,7 @@ export const editComment = (commentId, newComment) => async (dispatch) => {
     showSnackBar("Your comment updated successfully.", "success");
   } catch (e) {
     loadingModal();
-    console.log(e);
+    console.error(e);
     showSnackBar("Sorry an unknown error occurred.", "error");
   }
 };
@@ -414,6 +417,60 @@ export const editCommentForm = (commentId, status, replyId = null) => (
   });
 };
 
+export const deleteComment = () => async (dispatch, getState) => {
+  loadingModal("Loading...");
+  try {
+    const { data } = await axios.delete(
+      `/api/comment/${getState().modals.confDeleteComment.id}`,
+      {
+        headers: {
+          authorization: localStorage.getItem("token"),
+        },
+      }
+    );
+
+    loadingModal();
+
+    // If the comment deleted was a reply comment
+    if (typeof data.parent !== "boolean" && data.parent) {
+      // Fetch replies of that comment again
+      const res = await axios.get(`/api/comment/${data.parent}/replies`, {
+        headers: {
+          authorization: localStorage.getItem("token"),
+        },
+      });
+
+      dispatch({
+        type: REPLIES_FETCH,
+        payload: { replies: res.data.replies, commentId: res.data.commentId },
+      });
+    } else {
+      // In this case the comment that was deleted is a main comment, so we remove
+      // it entirely from the store along with all its replies
+      dispatch({
+        type: COMMENT_DELETED,
+        payload: {
+          commentId: data.commentId,
+        },
+      });
+    }
+
+    // Close the modal
+    dispatch({
+      type: CLOSE_MDL,
+      payload: {
+        name: "confDeleteComment",
+      },
+    });
+
+    showSnackBar("Your comment was deleted successfully.", "success");
+  } catch (e) {
+    loadingModal();
+    console.error(e);
+    showSnackBar("Sorry an unknown error occurred.", "error");
+  }
+};
+
 /* ----------------------- */
 /* General action creators */
 /* ----------------------- */
@@ -428,6 +485,22 @@ export const closeModal = () => {
 export const openConfModal = () => {
   return {
     type: CONF_MDL,
+  };
+};
+
+// Open any modal
+export const openMdl = (name, id) => {
+  return {
+    type: OPEN_MDL,
+    payload: { name, id },
+  };
+};
+
+// Close any modal
+export const closeMdl = (name, id) => {
+  return {
+    type: CLOSE_MDL,
+    payload: { name },
   };
 };
 

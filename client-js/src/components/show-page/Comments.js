@@ -1,12 +1,16 @@
 import React, { Component } from "react";
-import axios from "axios";
 import { connect } from "react-redux";
-import { ConfirmModal, Modal } from "../partials/Modals";
+import { ConfirmModal } from "../partials/Modals";
 import Comment from "../partials/Comment/";
 import Loading from "../partials/Loading";
-import { showSnackBar, loadingModal } from "../../lib/util";
 
-import { fetchComments, addComment } from "actions";
+import {
+  fetchComments,
+  addComment,
+  closeModal,
+  deleteComment,
+  closeMdl,
+} from "actions";
 
 class Comments extends Component {
   state = {
@@ -101,6 +105,19 @@ class Comments extends Component {
   render() {
     return (
       <React.Fragment>
+        <ConfirmModal
+          header="Delete Your Comment?"
+          open={this.props.confMdl.open}
+          btnName="Delete"
+          onConfirm={() => this.props.deleteComment()}
+          onCancel={() => this.props.closeMdl("confDeleteComment")}
+        >
+          <p>
+            Are you sure that you want to delete your comment? All the other
+            replies associated with this comment will also get removed.<br />
+            You <strong>cannot undo</strong> this action.
+          </p>
+        </ConfirmModal>
         <div className="page__comments" id="comments2">
           <div className="row">
             <div className="comments-wrapper">
@@ -125,10 +142,11 @@ const mapStateToProps = (state) => {
     comments: state.comments,
     pageId: state.pageData.id,
     userId: state.user.id,
+    confMdl: state.modals.confDeleteComment,
   };
 };
 
 export default connect(
   mapStateToProps,
-  { fetchComments, addComment }
+  { fetchComments, addComment, closeModal, deleteComment, closeMdl }
 )(Comments);

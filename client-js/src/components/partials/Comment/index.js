@@ -2,9 +2,17 @@ import React, { useRef } from "react";
 import { connect } from "react-redux";
 import CommentReply from "./CommentReply";
 import CommentActions from "./CommentActions";
+import CommentBody from "./CommentBody";
 import ReplyForm from "./addReplyForm";
 
-import { fetchReplies, hideReplies, addReplyForm, addComment } from "actions";
+import {
+  fetchReplies,
+  hideReplies,
+  addReplyForm,
+  addComment,
+  editCommentForm,
+  openMdl,
+} from "actions";
 
 const Comment = (props) => {
   const addReplyInput = useRef();
@@ -106,17 +114,27 @@ const Comment = (props) => {
         </div>
         <div className="comment__header__actions">
           <CommentActions
+            id={props.id}
             viewer={props.viewer}
             ref={addReplyInput}
+            status={props.status}
             onReply={() => {
               props.addReplyForm(props.id, "show");
+            }}
+            onEdit={() => {
+              props.editCommentForm(props.id, "show");
+            }}
+            onDelete={() => {
+              props.openMdl("confDeleteComment", props.id);
             }}
           />
         </div>
       </div>
-      <div className="comment__body">
-        <p>{props.text}</p>
-      </div>
+      <CommentBody
+        status={props.status} // Edit or normal
+        text={props.text}
+        id={props.id} // comment id (parent comment)
+      />
       {props.status == "add-reply" && (
         <ReplyForm
           ref={addReplyInput}
@@ -135,5 +153,12 @@ const Comment = (props) => {
 
 export default connect(
   null,
-  { fetchReplies, hideReplies, addReplyForm, addComment }
+  {
+    fetchReplies,
+    hideReplies,
+    addReplyForm,
+    addComment,
+    editCommentForm,
+    openMdl,
+  }
 )(Comment);

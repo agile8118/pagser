@@ -28,8 +28,11 @@ export const REPLIES_FETCH = "comment/repliesFetched";
 export const HIDE_REPLIES = "comment/hideReplies";
 export const CHANGE_COMMENT_STATUS = "comment/changeStatus";
 export const COMMENT_EDITED = "comment/edited";
+export const COMMENT_DELETED = "comment/deleted";
 
 // General
+export const OPEN_MDL = "modal/open";
+export const CLOSE_MDL = "modal/close";
 export const UPLOAD_PHOTO_MDL = "modals/uploadPhoto";
 export const ADD_TO_CL_MDL = "modals/addToCL";
 export const CLOSE_ALL_MDLS = "modals/closeAll";

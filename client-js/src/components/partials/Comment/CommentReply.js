@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { connect } from "react-redux";
 import CommentActions from "./CommentActions";
+import CommentBody from "./CommentBody";
 import ReplyForm from "./addReplyForm";
 
 import {
@@ -8,6 +9,7 @@ import {
   addComment,
   editCommentForm,
   editComment,
+  openMdl,
 } from "actions";
 
 const CommentReply = (props) => {
@@ -46,83 +48,21 @@ const CommentReply = (props) => {
                 );
               }}
               onEdit={() => {
-                props.editCommentForm(
-                  props.parentCommentId,
-                  "show",
-                  props.id,
-                  props.inReplyToUser
-                );
+                props.editCommentForm(props.parentCommentId, "show", props.id);
+              }}
+              onDelete={() => {
+                props.openMdl("confDeleteComment", props.id);
               }}
             />
           </div>
         </div>
-        <div className="comment__body">
-          {props.status === "edit" ? (
-            <form
-              className="form"
-              onSubmit={(e) => {
-                e.preventDefault();
-                props.editComment(
-                  props.id,
-                  e.target.children[0].children[1].value
-                );
-              }}
-            >
-              <div className="form__group">
-                {props.inReplyToUser && (
-                  <span
-                    className="form__input__text-label"
-                    ref={(elem) => {
-                      // Add a left padding to the input because of the name label
-                      if (elem)
-                        elem.nextSibling.style.paddingLeft = `${elem.clientWidth +
-                          10}px`;
-                    }}
-                  >
-                    {props.inReplyToUser}
-                  </span>
-                )}
-                <textarea
-                  rows={1}
-                  required
-                  className="form__input form__input--lined"
-                  ref={(el) => {
-                    if (el) {
-                      el.value = props.text;
-                      el.focus();
-                    }
-                  }}
-                />
-              </div>
-
-              <div className="right-content">
-                <button
-                  type="button"
-                  onClick={() =>
-                    props.editCommentForm(
-                      props.parentCommentId,
-                      "hide",
-                      props.id
-                    )
-                  }
-                  className="btn btn-sm btn-default  margin-right-1"
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="btn btn-sm btn-blue ">
-                  Update
-                </button>
-              </div>
-            </form>
-          ) : (
-            <p>
-              {props.inReplyToUser && (
-                <span className="a-17">{props.inReplyToUser}</span>
-              )}
-              {props.text}
-            </p>
-          )}
-        </div>
+        <CommentBody
+          status={props.status} // Edit or normal
+          inReplyToUser={props.inReplyToUser}
+          text={props.text}
+          id={props.parentCommentId} // comment id (parent comment)
+          replyId={props.id} // comment id (reply comment)
+        />
       </div>
       {props.status === "add-reply" && (
         <ReplyForm
@@ -142,5 +82,5 @@ const CommentReply = (props) => {
 
 export default connect(
   null,
-  { addReplyForm, addComment, editCommentForm, editComment }
+  { addReplyForm, addComment, editCommentForm, editComment, openMdl }
 )(CommentReply);

@@ -28,7 +28,9 @@ exports.addComment = async (req, res) => {
       page: pageId,
       inReplyTo,
       inReplyToCommentReply:
-        repliedToC.author.id !== userId ? inReplyToCommentReply : null,
+        repliedToC && repliedToC.author.id !== userId
+          ? inReplyToCommentReply
+          : null,
     });
 
     const user = await User.findById(userId, "photo name");
@@ -168,52 +170,7 @@ exports.fetchReplies = async (req, res) => {
   res.send({ replies, commentId });
 };
 
-exports.deleteComment = async (req, res) => {
-  const commentId = req.params.id;
-  const deletedComment = await Comment.findByIdAndRemove(commentId);
-
-  if (!deletedComment.inReplyTo)
-    await Comment.deleteMany({ inReplyTo: deletedComment.id });
-
-  res.send({
-    commentId: deletedComment.id,
-    reply: deletedComment.inReplyTo ? true : false,
-  });
-
-  // const commentId = req.params.commentid;
-
-  // await Comment.findByIdAndRemove(commentId, "_id", function (err, comment) {
-  //   if (err) return res.status(500).send("error");
-
-  //   if (comment.inReplyTo === null) {
-  //     Comment.remove({ _id: comment.replies }, (err, result) => {
-  //       if (err) return res.status(500).send("error");
-  //     });
-
-  //     Page.findByIdAndUpdate(
-  //       pageId,
-  //       { $pull: { comments: commentId } },
-  //       (err, page) => {
-  //         if (err) return res.status(500).send("error");
-  //         res.send({ commentId: comment.id, reply: false });
-  //       }
-  //     );
-  //   } else {
-  //     Comment.findByIdAndUpdate(
-  //       comment.inReplyTo,
-  //       { $pull: { replies: commentId } },
-  //       { new: true }
-  //     ).exec((err, comment) => {
-  //       res.send({
-  //         commentId: comment.id,
-  //         reply: true,
-  //         deletedCommentId: commentId,
-  //       });
-  //     });
-  //   }
-  // });
-};
-
+// Update a comment
 exports.updateComment = async (req, res) => {
   try {
     const commentId = req.params.id;
@@ -233,4 +190,27 @@ exports.updateComment = async (req, res) => {
   } catch (err) {
     res.status(500).send({ message: "Internal server error." });
   }
+};
+
+// Delete a comment along with all the replies associated with it
+exports.deleteComment = async (req, res) => {
+  const commentId = req.params.id;
+
+  const deletedComment = await Comment.findByIdAndRemove(commentId);
+  let parent;
+  if (!deletedComment.inReplyTo) {
+    await Comment.deleteMany({ inReplyTo: deletedComment.id });
+    parent = true;
+  } else {
+    parent = deletedComment.inReplyTo;
+  }
+
+  await Comment.deleteMany({
+    inReplyToCommentReply: deletedComment.id,
+  });
+
+  res.send({
+    commentId: deletedComment.id,
+    parent,
+  });
 };
