@@ -131,6 +131,7 @@ module.exports = (app) => {
   // *********** RATING ROUTES *********** //
   // ------------------------------------------------ //
   app.patch("/api/rate/page/:id", requireAuth, Rating.ratePage);
+  app.patch("/api/rate/comment/:id", requireAuth, Rating.rateComment);
   app.get("/api/liked-pages/", requireAuth, Rating.fetchLikedPages);
 
   // ------------------------------------------------ //
@@ -175,7 +176,7 @@ module.exports = (app) => {
     requireAuth,
     Collection.removePages
   );
-  // Delete a collection entierly
+  // Delete a collection entirely
   app.delete("/api/collection/:id", requireAuth, Collection.delete);
   // Fetch all the collection user has created
   app.get("/api/collections/created", requireAuth, Collection.fetchCreated);

@@ -10,6 +10,7 @@ import {
   editCommentForm,
   editComment,
   openMdl,
+  likeComment,
 } from "actions";
 
 const CommentReply = (props) => {
@@ -38,6 +39,7 @@ const CommentReply = (props) => {
               id={props.id}
               viewer={props.viewer}
               ref={addReplyInput}
+              likes={props.likes}
               status={props.status}
               onReply={() => {
                 props.addReplyForm(
@@ -46,6 +48,9 @@ const CommentReply = (props) => {
                   props.id,
                   props.name
                 );
+              }}
+              onLike={() => {
+                props.likeComment(props.id, props.parentCommentId);
               }}
               onEdit={() => {
                 props.editCommentForm(props.parentCommentId, "show", props.id);
@@ -82,5 +87,12 @@ const CommentReply = (props) => {
 
 export default connect(
   null,
-  { addReplyForm, addComment, editCommentForm, editComment, openMdl }
+  {
+    addReplyForm,
+    addComment,
+    editCommentForm,
+    editComment,
+    openMdl,
+    likeComment,
+  }
 )(CommentReply);

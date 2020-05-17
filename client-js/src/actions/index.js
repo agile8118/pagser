@@ -26,6 +26,7 @@ import {
   HIDE_REPLIES,
   REPLIES_FETCH,
   CHANGE_COMMENT_STATUS,
+  COMMENT_RATED,
   COMMENT_EDITED,
   COMMENT_DELETED,
   // Generals
@@ -417,6 +418,22 @@ export const editCommentForm = (commentId, status, replyId = null) => (
   });
 };
 
+export const likeComment = (commentId, inReplyTo) => async (dispatch) => {
+  try {
+    const { data } = await axios.patch(`/api/rate/comment/${commentId}`, null, {
+      headers: {
+        authorization: localStorage.getItem("token"),
+      },
+    });
+
+    dispatch({
+      type: COMMENT_RATED,
+      payload: { likes: data.likes, inReplyTo, commentId },
+    });
+  } catch (e) {}
+};
+
+// Send a request to server to delete a comment
 export const deleteComment = () => async (dispatch, getState) => {
   loadingModal("Loading...");
   try {

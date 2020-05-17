@@ -7,8 +7,11 @@ const CommentActions = React.forwardRef((props, ref) => {
     <React.Fragment>
       <div className="comment__ratings">
         <div>
-          <span>1</span>
-          <button className="btn-i btn-i-big btn-i-blue">
+          <span>{props.likes}</span>
+          <button
+            className="btn-i btn-i-big btn-i-blue"
+            onClick={() => props.onLike()}
+          >
             <i className="fa fa-thumbs-up" />
           </button>
         </div>

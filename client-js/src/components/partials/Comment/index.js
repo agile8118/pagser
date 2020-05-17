@@ -12,6 +12,7 @@ import {
   addComment,
   editCommentForm,
   openMdl,
+  likeComment,
 } from "actions";
 
 const Comment = (props) => {
@@ -66,6 +67,7 @@ const Comment = (props) => {
               date={comment.date}
               text={comment.text}
               status={comment.status}
+              likes={comment.likes}
               viewer={comment.viewer}
               inReplyToUser={comment.inReplyToUser}
               toName={comment.toName}
@@ -86,6 +88,7 @@ const Comment = (props) => {
               date={comment.date}
               text={comment.text}
               status={comment.status}
+              likes={comment.likes}
               viewer={comment.viewer}
               inReplyToUser={comment.inReplyToUser}
               toName={comment.toName}
@@ -118,8 +121,12 @@ const Comment = (props) => {
             viewer={props.viewer}
             ref={addReplyInput}
             status={props.status}
+            likes={props.likes}
             onReply={() => {
               props.addReplyForm(props.id, "show");
+            }}
+            onLike={() => {
+              props.likeComment(props.id);
             }}
             onEdit={() => {
               props.editCommentForm(props.id, "show");
@@ -160,5 +167,6 @@ export default connect(
     addComment,
     editCommentForm,
     openMdl,
+    likeComment,
   }
 )(Comment);

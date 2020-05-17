@@ -29,6 +29,7 @@ export const HIDE_REPLIES = "comment/hideReplies";
 export const CHANGE_COMMENT_STATUS = "comment/changeStatus";
 export const COMMENT_EDITED = "comment/edited";
 export const COMMENT_DELETED = "comment/deleted";
+export const COMMENT_RATED = "comment/rated";
 
 // General
 export const OPEN_MDL = "modal/open";

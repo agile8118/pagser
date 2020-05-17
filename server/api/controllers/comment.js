@@ -1,5 +1,6 @@
 const jwt = require("jwt-simple");
 const Comment = require("../../models/comment");
+const Rating = require("../../models/rating");
 const User = require("../../models/user");
 const util = require("../../lib/util");
 const keys = require("../../config/keys");
@@ -79,6 +80,7 @@ exports.fetchComments = async (req, res) => {
       inReplyTo: null,
     })
       .sort({ date: -1 })
+      .limit(10)
       .populate({
         path: "author",
         select: "name photo",
@@ -93,11 +95,17 @@ exports.fetchComments = async (req, res) => {
       "_id inReplyTo"
     );
 
+    const allLikes = await Rating.find({ comment: { $in: ids }, liked: true });
+
     // Make found comments ready for client
     const formattedComments = comments.map((comment) => {
       // Filter the replies for each comment
       const reps = replies.filter(
         (rep) => rep.inReplyTo.toString() === comment._id.toString()
+      );
+
+      const likes = allLikes.filter(
+        (l) => l.comment.toString() === comment._id.toString()
       );
 
       // Return each comment formatted and with replies attached to it
@@ -111,6 +119,7 @@ exports.fetchComments = async (req, res) => {
         viewer: comment.author.id === userId ? "owner" : "spectator",
         text: comment.text,
         date: util.timeSince(comment.date),
+        likes: likes.length,
         replies: reps.length || 0,
         highlightedReplies: [],
       };
@@ -148,9 +157,15 @@ exports.fetchReplies = async (req, res) => {
     },
   ]);
 
-  // console.log(results);
+  const ids = results.map((c) => c._id);
+
+  const allLikes = await Rating.find({ comment: { $in: ids }, liked: true });
 
   const replies = results.map((r) => {
+    const likes = allLikes.filter(
+      (l) => l.comment.toString() === r._id.toString()
+    );
+
     return {
       id: r.id,
       author: {
@@ -159,6 +174,7 @@ exports.fetchReplies = async (req, res) => {
         photo: r.author.photo.secure_url,
       },
       viewer: r.author.id === userId ? "owner" : "spectator",
+      likes: likes.length,
       inReplyToUser: r.inReplyToCommentReply
         ? r.inReplyToCommentReply.author.name
         : null,

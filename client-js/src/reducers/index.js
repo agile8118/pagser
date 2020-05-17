@@ -25,6 +25,7 @@ import {
   REPLIES_FETCH,
   HIDE_REPLIES,
   CHANGE_COMMENT_STATUS,
+  COMMENT_RATED,
   COMMENT_EDITED,
   COMMENT_DELETED,
   // Generals
@@ -308,7 +309,34 @@ export const comments = (state = [], action = {}) => {
       const index = state.findIndex((c) => c.id === action.payload.commentId);
       return [...state.slice(0, index), ...state.slice(index + 1)];
 
-    // case COMMENT_RATED:
+    case COMMENT_RATED:
+      return [...state].map((c) => {
+        const mainId = action.payload.inReplyTo
+          ? action.payload.inReplyTo
+          : action.payload.commentId;
+        // Find the main comment
+        if (c.id === mainId) {
+          // If we need to change the text of a reply
+          if (action.payload.inReplyTo) {
+            // Change the text of a reply in 'replies' store or in 'highlightedReplies' store
+            let type =
+              typeof c.replies === "number" && c.highlightedReplies.length > 0
+                ? "highlightedReplies"
+                : "replies";
+            c[type] = c[type].map((rep) => {
+              if (rep.id === action.payload.commentId) {
+                // Change the text of the reply comment
+                rep.likes = action.payload.likes;
+              }
+              return rep;
+            });
+            // If we need to change the text of a main comment
+          } else {
+            c.likes = action.payload.likes;
+          }
+        }
+        return c;
+      });
     default:
       return state;
   }

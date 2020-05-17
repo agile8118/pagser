@@ -43,6 +43,7 @@ class Comments extends Component {
             name={comment.author.name}
             date={comment.date}
             text={comment.text}
+            likes={comment.likes}
             replies={comment.replies || []}
             highlightedReplies={comment.highlightedReplies}
           />
