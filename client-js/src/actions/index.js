@@ -20,7 +20,9 @@ import {
   FETCH_ATTACH_FILES,
   SUBSCRIBE,
   // Comments
+  COMMENTS_FETCHING,
   COMMENTS_FETCHED,
+  NEW_COMMENTS_FETCHED,
   COMMENT_ADDED,
   REPLY_ADDED,
   HIDE_REPLIES,
@@ -270,6 +272,8 @@ export const subscribe = (authorId) => async (dispatch) => {
 /* ----------------------- */
 // Fetch the list of all comments of a page
 export const fetchComments = (pageId) => async (dispatch) => {
+  dispatch({ type: COMMENTS_FETCHING });
+
   const { data } = await axios.get(`/api/comments/${pageId}`, {
     headers: {
       authorization: localStorage.getItem("token"),
@@ -278,6 +282,32 @@ export const fetchComments = (pageId) => async (dispatch) => {
 
   dispatch({
     type: COMMENTS_FETCHED,
+    payload: {
+      comments: data.comments,
+      userId: data.userId,
+      length: data.length,
+    },
+  });
+};
+
+// Fetch new comments when user scrolls to bottom
+export const fetchNewComments = (pageId) => async (dispatch, getState) => {
+  dispatch({ type: COMMENTS_FETCHING });
+
+  const commentsLength = getState().comments.list.length;
+  let portion = commentsLength / 10 + 1;
+
+  const { data } = await axios.get(
+    `/api/comments/${pageId}?portion=${portion}`,
+    {
+      headers: {
+        authorization: localStorage.getItem("token"),
+      },
+    }
+  );
+
+  dispatch({
+    type: NEW_COMMENTS_FETCHED,
     payload: {
       comments: data.comments,
       userId: data.userId,
@@ -418,6 +448,7 @@ export const editCommentForm = (commentId, status, replyId = null) => (
   });
 };
 
+// Send a request to server to like or unlike a comment
 export const likeComment = (commentId, inReplyTo) => async (dispatch) => {
   try {
     const { data } = await axios.patch(`/api/rate/comment/${commentId}`, null, {

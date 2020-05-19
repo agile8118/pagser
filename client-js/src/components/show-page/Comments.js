@@ -6,6 +6,7 @@ import Loading from "../partials/Loading";
 
 import {
   fetchComments,
+  fetchNewComments,
   addComment,
   closeModal,
   deleteComment,
@@ -17,20 +18,47 @@ class Comments extends Component {
     commentText: "",
   };
 
+  isBottom(el) {
+    return el.getBoundingClientRect().bottom <= window.innerHeight;
+  }
+
   componentDidMount() {
     this.props.fetchComments(this.props.pageId);
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.comments.length !== prevProps.comments.length) {
+      document.addEventListener("scroll", this.trackScrolling);
+    }
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("scroll", this.trackScrolling);
+  }
+
+  trackScrolling = () => {
+    const wrappedElement = document.getElementById("comments2");
+
+    if (
+      this.isBottom(wrappedElement) &&
+      this.props.comments.length > 1 &&
+      this.props.comments.length % 10 === 0
+    ) {
+      this.props.fetchNewComments(this.props.pageId);
+      document.removeEventListener("scroll", this.trackScrolling);
+    }
+  };
+
   // Render the list of comments
   renderComments = () => {
-    if (this.props.comments && this.props.comments.length === 0)
+    if (this.props.comments.length === 0)
       return (
         <div className="no-comment-message margin-top-2">
           <p>No comment yet. Be the first one to comment on this page.</p>
         </div>
       );
 
-    if (this.props.comments && this.props.comments.length > 0)
+    if (this.props.comments.length > 0)
       return this.props.comments.map((comment) => {
         return (
           <Comment
@@ -122,10 +150,14 @@ class Comments extends Component {
         <div className="page__comments" id="comments2">
           <div className="row">
             <div className="comments-wrapper">
-              <h2 className="heading-tertiary center-content">Comments</h2>
-              {this.props.comments && this.renderAddComment()}
-              {this.props.comments && this.renderComments()}
-              {!this.props.comments && (
+              <h2 className="heading-tertiary center-content">
+                {this.props.length} Comments
+              </h2>
+              {(!this.props.isPending || this.props.comments.length > 0) &&
+                this.renderAddComment()}
+              {(!this.props.isPending || this.props.comments.length > 0) &&
+                this.renderComments()}
+              {this.props.isPending && (
                 <div className="center-content">
                   <Loading />
                 </div>
@@ -140,7 +172,9 @@ class Comments extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    comments: state.comments,
+    comments: state.comments.list || [],
+    length: state.comments.length,
+    isPending: state.comments.isPending,
     pageId: state.pageData.id,
     userId: state.user.id,
     confMdl: state.modals.confDeleteComment,
@@ -149,5 +183,12 @@ const mapStateToProps = (state) => {
 
 export default connect(
   mapStateToProps,
-  { fetchComments, addComment, closeModal, deleteComment, closeMdl }
+  {
+    fetchComments,
+    fetchNewComments,
+    addComment,
+    closeModal,
+    deleteComment,
+    closeMdl,
+  }
 )(Comments);

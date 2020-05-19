@@ -19,7 +19,9 @@ import {
   FETCH_ATTACH_FILES,
   SUBSCRIBE,
   // Comments
+  COMMENTS_FETCHING,
   COMMENTS_FETCHED,
+  NEW_COMMENTS_FETCHED,
   COMMENT_ADDED,
   REPLY_ADDED,
   REPLIES_FETCH,
@@ -192,11 +194,17 @@ export const pageData = (state = {}, action = {}) => {
   }
 };
 
-export const comments = (state = [], action = {}) => {
+/* ----------------------- */
+/* Reducers for comments  */
+/* ----------------------- */
+export const commentsList = (state = [], action = {}) => {
   switch (action.type) {
     // Return the list of all comments
     case COMMENTS_FETCHED:
       return action.payload.comments;
+
+    case NEW_COMMENTS_FETCHED:
+      return [...state, ...action.payload.comments];
 
     // Add and show comment replies
     case REPLIES_FETCH:
@@ -342,6 +350,31 @@ export const comments = (state = [], action = {}) => {
   }
 };
 
+export const commentsIsPending = (state = true, action = {}) => {
+  switch (action.type) {
+    case COMMENTS_FETCHING:
+      return true;
+    case COMMENTS_FETCHED:
+      return false;
+    case NEW_COMMENTS_FETCHED:
+      return false;
+    default:
+      return state;
+  }
+};
+
+export const commentsLength = (state = null, action = {}) => {
+  switch (action.type) {
+    case COMMENTS_FETCHED:
+      return action.payload.length;
+    default:
+      return state;
+  }
+};
+
+/* ----------------------- */
+/* Reducers for user  */
+/* ----------------------- */
 export const user = (state = {}, action = {}) => {
   switch (action.type) {
     case COMMENTS_FETCHED:
@@ -352,7 +385,7 @@ export const user = (state = {}, action = {}) => {
 };
 
 /* ----------------------- */
-/* General reducers */
+/* UI reducers */
 /* ----------------------- */
 export const modals = (
   state = {

@@ -3,6 +3,9 @@
     "all",
     "btns",
     "close",
-    "mdls"
+    "component",
+    "mdls",
+    "unmount",
+    "will"
   ]
 }

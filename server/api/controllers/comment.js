@@ -65,7 +65,8 @@ exports.addComment = async (req, res) => {
 exports.fetchComments = async (req, res) => {
   try {
     const pageId = req.params.pageId;
-    const highlightedRepliesIds = req.body.highlightedRepliesIds;
+    const portion = Number(req.query.portion) || 1;
+    // const highlightedRepliesIds = req.body.highlightedRepliesIds;
 
     let userId;
     try {
@@ -81,6 +82,7 @@ exports.fetchComments = async (req, res) => {
     })
       .sort({ date: -1 })
       .limit(10)
+      .skip((portion - 1) * 10)
       .populate({
         path: "author",
         select: "name photo",
@@ -125,7 +127,15 @@ exports.fetchComments = async (req, res) => {
       };
     });
 
-    res.send({ comments: formattedComments, userId });
+    const totalComments = await Comment.find({
+      page: pageId,
+    }).select("_id");
+
+    res.send({
+      comments: formattedComments,
+      userId,
+      length: totalComments.length,
+    });
   } catch (e) {
     console.error(e);
   }

@@ -21,7 +21,9 @@ export const FETCH_ATTACH_FILES = "attachFiles/fetched";
 export const SUBSCRIBE = "user/subscribe";
 
 // Comments
+export const COMMENTS_FETCHING = "comments/fetching";
 export const COMMENTS_FETCHED = "comments/fetched";
+export const NEW_COMMENTS_FETCHED = "comments/newFetched";
 export const COMMENT_ADDED = "comment/added";
 export const REPLY_ADDED = "comment/replyAdded";
 export const REPLIES_FETCH = "comment/repliesFetched";

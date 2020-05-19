@@ -60,7 +60,11 @@ exports.fetchLikedPages = async (req, res) => {
   try {
     const filterBy = req.query.filterBy;
 
-    const results = await Rating.find({ user: req.user.id, liked: true })
+    const results = await Rating.find({
+      user: req.user.id,
+      liked: true,
+      page: { $ne: null },
+    })
       .select("page")
       .sort({ date: -1 })
       .populate({
