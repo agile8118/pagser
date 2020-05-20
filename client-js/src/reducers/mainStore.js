@@ -9,10 +9,12 @@ import {
   status,
   selectedPages,
   modals,
+  user,
 } from "./index";
 
 const rootReducer = combineReducers({
   modals,
+  user,
   section,
   pages,
   filterBy,

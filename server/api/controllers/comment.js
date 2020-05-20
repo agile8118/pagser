@@ -141,6 +141,79 @@ exports.fetchComments = async (req, res) => {
   }
 };
 
+// Fetch comments user has authored
+exports.fetchUserComments = async (req, res) => {
+  try {
+    const results = await Comment.find({ author: req.user.id })
+      .select("author text page inReplyToCommentReply inReplyTo date")
+      .sort({ date: -1 })
+      .populate({
+        path: "page",
+        select: "contents.title type url",
+        populate: {
+          path: "author",
+          select: "username",
+        },
+      })
+      .populate({
+        path: "inReplyTo",
+        select: "author",
+        populate: {
+          path: "author",
+          select: "name username",
+        },
+      })
+      .populate({
+        path: "inReplyToCommentReply",
+        select: "author ",
+        populate: {
+          path: "author",
+          select: "name username",
+        },
+      });
+
+    const userComments = results.map((i) => {
+      let reply = {};
+      if (i.inReplyToCommentReply) {
+        reply.name =
+          req.user.id === i.inReplyToCommentReply.author.id
+            ? "yourself"
+            : i.inReplyToCommentReply.author.name;
+        reply.username = i.inReplyToCommentReply.author.username;
+      } else if (i.inReplyTo) {
+        reply.name =
+          req.user.id === i.inReplyTo.author.id
+            ? "yourself"
+            : i.inReplyTo.author.name;
+        reply.username = i.inReplyTo.author.username;
+      }
+
+      return {
+        id: i._id,
+        text: i.text,
+        page: {
+          id: i.page._id,
+          type: i.page.type,
+          url: i.page.url,
+          author: {
+            username: i.page.author.username,
+          },
+          title: i.page.contents.title,
+        },
+        reply,
+        inReplyToCommentReply: i.inReplyToCommentReply,
+        inReplyTo: i.inReplyTo,
+        date: util.timeSince(i.date),
+      };
+    });
+
+    res.send({ comments: userComments });
+  } catch (e) {
+    console.error(e);
+    res.status(500).send({ message: "Internal server error." });
+  }
+};
+
 // Fetch all replies of a comment
 exports.fetchReplies = async (req, res) => {
   let userId;

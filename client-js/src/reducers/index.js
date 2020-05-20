@@ -50,7 +50,8 @@ export const section = (state = "", action = {}) => {
       const sections = [
         "home",
         "subscriptions",
-        "history",
+        "history/pages",
+        "history/comments",
         "read-later",
         "liked-pages",
         "collections",
@@ -66,6 +67,15 @@ export const section = (state = "", action = {}) => {
 
       if (window.location.pathname.split("/")[1] === "collection") {
         return null;
+      }
+
+      if (window.location.pathname.split("/")[2] === "history") {
+        const index = sections.indexOf(
+          `${window.location.pathname.split("/")[2]}/${
+            window.location.pathname.split("/")[3]
+          }`
+        );
+        return sections[index] || "history/pages";
       }
 
       if (window.location.pathname.split("/")[2] === "pages") {

@@ -67,6 +67,11 @@ export const loadingModal = (message) => {
   }
 };
 
+export const pageUrl = (url, username, type) => {
+  if (type === "public") return `/public-pages/${url}`;
+  return `/${username}/${url}`;
+};
+
 export const hide = (selector) => {
   // If the element is a modal
   if (selector.match(/mdl/)) {

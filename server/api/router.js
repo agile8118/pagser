@@ -109,7 +109,7 @@ module.exports = (app) => {
   // ------------------------------------------------ //
   // *********** SUBSCRIPTIONS ROUTES *********** //
   // ------------------------------------------------ //
-  // Subscribe or onsubscribe the user
+  // Subscribe or unsubscribe the user
   app.post("/api/subscription/:id", requireAuth, Subscription.toggle);
   // Fetch the list of authors user has subscribed
   app.get("/api/subscriptions", requireAuth, Subscription.fetchSubscriptions);
@@ -137,7 +137,7 @@ module.exports = (app) => {
   // ------------------------------------------------ //
   // *********** COLLECTION ROUTES *********** //
   // ------------------------------------------------ //
-  // Retrive the data of a collection
+  // Retrieve the data of a collection
   app.get(
     "/api/collection/:id",
     validate.id,
@@ -216,6 +216,7 @@ module.exports = (app) => {
   // ------------------------------------------------ //
   // *********** COMMENT ROUTES *********** //
   // ------------------------------------------------ //
+  app.get("/api/comments/history", requireAuth, Comment.fetchUserComments);
   app.get("/api/comments/:pageId", Comment.fetchComments);
   app.get("/api/comment/:id/replies", Comment.fetchReplies);
   app.post("/api/comment/:pageId", requireAuth, Comment.addComment);
