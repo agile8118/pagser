@@ -1,10 +1,25 @@
 import { createStore, applyMiddleware, compose, combineReducers } from "redux";
 import reduxThunk from "redux-thunk";
 
-import { pageData, modals } from "./index";
+import {
+  pageData,
+  modals,
+  commentsList,
+  commentsIsPending,
+  commentsLength,
+  user,
+} from "./index";
+
+const commentReducer = combineReducers({
+  list: commentsList,
+  isPending: commentsIsPending,
+  length: commentsLength,
+});
 
 const rootReducer = combineReducers({
   pageData,
+  comments: commentReducer,
+  user,
   modals,
 });
 

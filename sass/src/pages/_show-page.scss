@@ -212,67 +212,6 @@
   }
 }
 
-.comment {
-  border: 1px solid $color-grey-light-3;
-  background-color: #fdfdfd;
-  border-radius: 5px;
-  padding: 2rem 4rem;
-  margin: 4rem 0;
-  display: flex;
-  flex-direction: column;
-  color: $color-text;
-
-  .comment-reply {
-    margin: 1rem 0;
-    margin-left: 3rem;
-    background-color: #f9f9f9;
-  }
-
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: 1rem;
-
-    &__name-and-date {
-      font-size: 1.4rem;
-      margin-left: 1rem;
-      display: flex;
-      flex-direction: column;
-      margin-top: 3px;
-
-      .a-2 {
-        font-style: italic;
-      }
-    }
-
-    &__image {
-      border-radius: 50%;
-      width: 5rem;
-      align-self: flex-start;
-    }
-  }
-
-  &__body {
-    font-size: 1.4rem;
-    line-height: 2.5rem;
-    padding-bottom: 0.5rem;
-  }
-}
-
-.comment-in-reply-to-label {
-  font-size: 1.4rem;
-  color: #fff;
-  background: #333;
-  display: inline-block;
-  padding: 0px 7px;
-  border-radius: 5px;
-  margin-left: 0.2rem;
-
-  button {
-    margin-left: 0.2rem;
-  }
-}
-
 .no-comment-message {
   color: $color-text;
   font-size: 1.6rem;

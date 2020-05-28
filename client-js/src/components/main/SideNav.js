@@ -32,13 +32,13 @@ const SideNav = ({ changeSection, section }) => {
           <i className="fa fa-file-text" />Subscriptions
         </Link>
         <Link
-          to="/feed/history"
+          to="/feed/history/pages"
           className={
-            section === "history"
+            section === "history/pages" || section === "history/comments"
               ? "sidenav__link sidenav__link--active"
               : "sidenav__link"
           }
-          onClick={() => changeSection("history")}
+          onClick={() => changeSection("history/pages")}
         >
           <i className="fa fa-history" />History
         </Link>

@@ -6,14 +6,13 @@ const keys = require("../config/keys");
 
 var middleware = {};
 
-middleware.checkCommentOwnership = function (req, res, next) {
-  var commentid = req.params.commentid;
-  Comment.findById(commentid, function (err, comment) {
-    if (err) return res.status(500).send("error");
+middleware.checkCommentOwnership = (req, res, next) => {
+  Comment.findById(req.params.id, (err, comment) => {
+    if (err) return res.status(500).send({ message: "Internal server error." });
     if (comment && comment.author.equals(req.user.id)) {
       next();
     } else {
-      res.status(403).send("You are not the owner");
+      res.status(403).send({ message: "You are not the owner" });
     }
   });
 };

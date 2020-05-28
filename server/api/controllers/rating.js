@@ -55,12 +55,16 @@ exports.ratePage = async (req, res) => {
   }
 };
 
-// Fetch users's liked pages
+// Fetch users' liked pages
 exports.fetchLikedPages = async (req, res) => {
   try {
     const filterBy = req.query.filterBy;
 
-    const results = await Rating.find({ user: req.user.id, liked: true })
+    const results = await Rating.find({
+      user: req.user.id,
+      liked: true,
+      page: { $ne: null },
+    })
       .select("page")
       .sort({ date: -1 })
       .populate({
@@ -91,6 +95,38 @@ exports.fetchLikedPages = async (req, res) => {
       pages = pages.filter((i) => i.type === "private");
 
     res.send({ results: pages, filterBy });
+  } catch (e) {
+    console.error(e);
+    res.status(500).send({ message: "Internal server error." });
+  }
+};
+
+// Like or unlike a comment
+exports.rateComment = async (req, res) => {
+  try {
+    const commentId = req.params.id;
+    const userId = req.user.id;
+
+    const rate = await Rating.findOne({ user: userId, comment: commentId });
+    if (rate) {
+      if (rate.liked) {
+        await Rating.findOneAndRemove({ user: userId, comment: commentId });
+      } else {
+        await Rating.findOneAndUpdate(
+          { user: userId, comment: commentId },
+          { liked: true }
+        );
+      }
+    } else {
+      await Rating.create({ user: userId, comment: commentId, liked: true });
+    }
+
+    // Send the number of likes of the comment to user
+    const likes = await Rating.find({ comment: commentId, liked: true });
+
+    res.send({
+      likes: likes.length,
+    });
   } catch (e) {
     console.error(e);
     res.status(500).send({ message: "Internal server error." });

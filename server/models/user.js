@@ -42,7 +42,9 @@ const userSchema = new Schema({
     code: String,
     time: Date,
   },
+  date: { type: Date, default: Date.now },
   loaded: { type: Boolean, default: true },
+  // @TODO: Date last login
 });
 
 userSchema.methods.comparePassword = function (candidatePassword, callback) {

@@ -10,6 +10,10 @@ const ratingSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Page",
   },
+  comment: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Comment",
+  },
   liked: { type: Boolean },
   date: { type: Date, default: Date.now },
 });

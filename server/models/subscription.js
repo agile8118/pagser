@@ -10,6 +10,7 @@ const subscriptionSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  date: { type: Date, default: Date.now },
 });
 
 const Subscription = mongoose.model("Subscription", subscriptionSchema);

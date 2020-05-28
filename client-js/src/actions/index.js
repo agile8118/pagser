@@ -19,7 +19,21 @@ import {
   READ_LATER,
   FETCH_ATTACH_FILES,
   SUBSCRIBE,
+  // Comments
+  COMMENTS_FETCHING,
+  COMMENTS_FETCHED,
+  NEW_COMMENTS_FETCHED,
+  COMMENT_ADDED,
+  REPLY_ADDED,
+  HIDE_REPLIES,
+  REPLIES_FETCH,
+  CHANGE_COMMENT_STATUS,
+  COMMENT_RATED,
+  COMMENT_EDITED,
+  COMMENT_DELETED,
   // Generals
+  OPEN_MDL,
+  CLOSE_MDL,
   ADD_TO_CL_MDL,
   UPLOAD_PHOTO_MDL,
   CONF_MDL,
@@ -53,7 +67,7 @@ export const fetchPages = (kind, filterBy, sortBy) => async (dispatch) => {
     if (filterBy) dispatch({ type: FILTER_BY, payload: data.filterBy });
     if (sortBy) dispatch({ type: SORT_BY, payload: data.sortBy });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
 
@@ -206,7 +220,7 @@ export const ratePage = (obj) => (dispatch) => {
   dispatch({ type: PAGE_RATED, payload: obj });
 };
 
-// Send a requst to server to add or remove a page from the read later list
+// Send a request to server to add or remove a page from the read later list
 export const readLater = (id) => async (dispatch) => {
   try {
     loadingModal("Loading...");
@@ -254,6 +268,258 @@ export const subscribe = (authorId) => async (dispatch) => {
 };
 
 /* ----------------------- */
+/* Comments action creators */
+/* ----------------------- */
+// Fetch the list of all comments of a page
+export const fetchComments = (pageId) => async (dispatch) => {
+  dispatch({ type: COMMENTS_FETCHING });
+
+  const { data } = await axios.get(`/api/comments/${pageId}`, {
+    headers: {
+      authorization: localStorage.getItem("token"),
+    },
+  });
+
+  dispatch({
+    type: COMMENTS_FETCHED,
+    payload: {
+      comments: data.comments,
+      userId: data.userId,
+      length: data.length,
+    },
+  });
+};
+
+// Fetch new comments when user scrolls to bottom
+export const fetchNewComments = (pageId) => async (dispatch, getState) => {
+  dispatch({ type: COMMENTS_FETCHING });
+
+  const commentsLength = getState().comments.list.length;
+  let portion = commentsLength / 10 + 1;
+
+  const { data } = await axios.get(
+    `/api/comments/${pageId}?portion=${portion}`,
+    {
+      headers: {
+        authorization: localStorage.getItem("token"),
+      },
+    }
+  );
+
+  dispatch({
+    type: NEW_COMMENTS_FETCHED,
+    payload: {
+      comments: data.comments,
+      userId: data.userId,
+    },
+  });
+};
+
+// Send a request to server to add a comment for the page or a comment reply for another comment
+export const addComment = (
+  comment,
+  inReplyTo = null,
+  inReplyToCommentReply = null
+) => async (dispatch, getState) => {
+  loadingModal("Adding your comment...");
+  try {
+    const { data } = await axios.post(
+      `/api/comment/${getState().pageData.id}`,
+      { text: comment, inReplyTo, inReplyToCommentReply },
+      {
+        headers: {
+          authorization: localStorage.getItem("token"),
+        },
+      }
+    );
+
+    loadingModal();
+    if (data.inReplyTo) {
+      dispatch({
+        type: REPLY_ADDED,
+        payload: data.comment,
+      });
+
+      dispatch({
+        type: CHANGE_COMMENT_STATUS,
+        payload: {
+          commentId: inReplyTo,
+          status: "hide",
+          replyId: inReplyToCommentReply,
+        },
+      });
+
+      showSnackBar("Your comment reply added successfully.", "success");
+    } else {
+      dispatch({ type: COMMENT_ADDED, payload: data.comment });
+      showSnackBar("Your comment added successfully.", "success");
+    }
+  } catch (e) {
+    loadingModal();
+    console.error(e);
+    showSnackBar("Sorry an unknown error occurred.", "error");
+  }
+};
+
+// Send a request to server to edit a comment
+export const editComment = (commentId, newComment) => async (dispatch) => {
+  loadingModal("Updating your comment...");
+  try {
+    const { data } = await axios.put(
+      `/api/comment/${commentId}`,
+      { text: newComment },
+      {
+        headers: {
+          authorization: localStorage.getItem("token"),
+        },
+      }
+    );
+
+    loadingModal();
+
+    dispatch({
+      type: COMMENT_EDITED,
+      payload: {
+        newComment: data.newComment,
+        commentId: data.commentId,
+        inReplyTo: data.inReplyTo,
+      },
+    });
+
+    showSnackBar("Your comment updated successfully.", "success");
+  } catch (e) {
+    loadingModal();
+    console.error(e);
+    showSnackBar("Sorry an unknown error occurred.", "error");
+  }
+};
+
+// Fetch all replies of a comment
+export const fetchReplies = (id) => async (dispatch) => {
+  const { data } = await axios.get(`/api/comment/${id}/replies`, {
+    headers: {
+      authorization: localStorage.getItem("token"),
+    },
+  });
+
+  dispatch({
+    type: REPLIES_FETCH,
+    payload: { replies: data.replies, commentId: data.commentId },
+  });
+};
+
+// Hide comment replies
+export const hideReplies = (id) => {
+  return {
+    type: HIDE_REPLIES,
+    payload: id,
+  };
+};
+
+// Show/hide add reply form
+export const addReplyForm = (commentId, status, inReplyTo, toName = null) => (
+  dispatch,
+  getState
+) => {
+  dispatch({
+    type: CHANGE_COMMENT_STATUS,
+    payload: {
+      commentId,
+      status: status === "show" ? "add-reply" : "normal",
+      replyId: inReplyTo,
+      toName,
+      userId: getState().user.id,
+    },
+  });
+};
+
+// Show/hide edit comment form, first id is the main comment and
+// the last one is the id of the comment reply which is optional
+export const editCommentForm = (commentId, status, replyId = null) => (
+  dispatch
+) => {
+  dispatch({
+    type: CHANGE_COMMENT_STATUS,
+    payload: {
+      commentId,
+      status: status === "show" ? "edit" : "normal",
+      replyId,
+    },
+  });
+};
+
+// Send a request to server to like or unlike a comment
+export const likeComment = (commentId, inReplyTo) => async (dispatch) => {
+  try {
+    const { data } = await axios.patch(`/api/rate/comment/${commentId}`, null, {
+      headers: {
+        authorization: localStorage.getItem("token"),
+      },
+    });
+
+    dispatch({
+      type: COMMENT_RATED,
+      payload: { likes: data.likes, inReplyTo, commentId },
+    });
+  } catch (e) {}
+};
+
+// Send a request to server to delete a comment
+export const deleteComment = () => async (dispatch, getState) => {
+  loadingModal("Loading...");
+  try {
+    const { data } = await axios.delete(
+      `/api/comment/${getState().modals.confDeleteComment.id}`,
+      {
+        headers: {
+          authorization: localStorage.getItem("token"),
+        },
+      }
+    );
+
+    loadingModal();
+
+    // If the comment deleted was a reply comment
+    if (typeof data.parent !== "boolean" && data.parent) {
+      // Fetch replies of that comment again
+      const res = await axios.get(`/api/comment/${data.parent}/replies`, {
+        headers: {
+          authorization: localStorage.getItem("token"),
+        },
+      });
+
+      dispatch({
+        type: REPLIES_FETCH,
+        payload: { replies: res.data.replies, commentId: res.data.commentId },
+      });
+    } else {
+      // In this case the comment that was deleted is a main comment, so we remove
+      // it entirely from the store along with all its replies
+      dispatch({
+        type: COMMENT_DELETED,
+        payload: {
+          commentId: data.commentId,
+        },
+      });
+    }
+
+    // Close the modal
+    dispatch({
+      type: CLOSE_MDL,
+      payload: {
+        name: "confDeleteComment",
+      },
+    });
+
+    showSnackBar("Your comment was deleted successfully.", "success");
+  } catch (e) {
+    loadingModal();
+    console.error(e);
+    showSnackBar("Sorry an unknown error occurred.", "error");
+  }
+};
+
+/* ----------------------- */
 /* General action creators */
 /* ----------------------- */
 // Close all modals
@@ -267,6 +533,22 @@ export const closeModal = () => {
 export const openConfModal = () => {
   return {
     type: CONF_MDL,
+  };
+};
+
+// Open any modal
+export const openMdl = (name, id) => {
+  return {
+    type: OPEN_MDL,
+    payload: { name, id },
+  };
+};
+
+// Close any modal
+export const closeMdl = (name, id) => {
+  return {
+    type: CLOSE_MDL,
+    payload: { name },
   };
 };
 

@@ -36,7 +36,8 @@ import EditPage from "./components/edit-page/EditPage";
 
 import Home from "./components/main/Home";
 import Subscriptions from "./components/main/Subscriptions";
-import History from "./components/main/History";
+import HistoryPages from "./components/main/history/Pages";
+import HistoryComments from "./components/main/history/Comments";
 import ReadLater from "./components/main/ReadLater";
 import LikedPages from "./components/main/LikedPages";
 import Collections from "./components/main/Collections";
@@ -165,7 +166,8 @@ if (containerName === "main") {
         <Switch>
           <Route path="/home" component={Home} />
           <Route path="/feed/subscriptions" component={Subscriptions} />
-          <Route path="/feed/history" component={History} />
+          <Route path="/feed/history/pages" component={HistoryPages} />
+          <Route path="/feed/history/comments" component={HistoryComments} />
           <Route path="/feed/read-later" component={ReadLater} />
           <Route path="/feed/liked-pages" component={LikedPages} />
           <Route path="/u/collections" component={Collections} />
@@ -174,6 +176,7 @@ if (containerName === "main") {
           <Route path="/u/pages/published" component={PagesPublished} />
           <Route path="/u/pages/draft" component={PagesDraft} />
           <Route path="/u/comments" component={UComments} />
+          <Redirect from="/feed/history" to="/feed/history/pages" />
           <Redirect from="/u/pages" to="/u/pages/published" />
         </Switch>
       </BrowserRouter>

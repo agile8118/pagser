@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import PageThumbnail from "../partials/PageThumbnail";
-import { ConfirmModal } from "../partials/Modals";
-import Dropdown from "../partials/Dropdown";
+import PageThumbnail from "../../partials/PageThumbnail";
+import { ConfirmModal } from "../../partials/Modals";
+import Dropdown from "../../partials/Dropdown";
+import Header from "./Header";
 
 import { fetchPages, changeStatus, selectPage, removePages } from "actions";
 
@@ -51,7 +52,7 @@ class History extends Component {
       return this.props.pages.map((item) => {
         return (
           <div
-            className="col-lg-1-of-5 col-md-1-of-4 col-sm-1-of-3 col-xs-1-of-2 col-xxs-1-of-1"
+            className="col-lg-1-of-5 col-md-1-of-5 col-sm-1-of-3 col-xs-1-of-2 col-xxs-1-of-1"
             key={item.id}
           >
             <PageThumbnail
@@ -158,6 +159,7 @@ class History extends Component {
           </p>
         </ConfirmModal>
         <div className="row">
+          <Header />
           <div className="header-nav">
             <h3 className="heading-tertiary">Your Reading History:</h3>
             <div className="header-nav__actions">

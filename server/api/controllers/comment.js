@@ -1,244 +1,315 @@
-const { Page } = require("../../models/page");
+const jwt = require("jwt-simple");
 const Comment = require("../../models/comment");
+const Rating = require("../../models/rating");
 const User = require("../../models/user");
 const util = require("../../lib/util");
-const jwt = require("jwt-simple");
 const keys = require("../../config/keys");
 
-exports.addComment = function(req, res) {
-  var pageId = req.params.id;
-  var userId = req.user.id;
-  var text = req.body.text;
-  var inReplyTo = req.body.inReplyTo;
+// Add a comment for a page
+exports.addComment = async (req, res) => {
+  try {
+    const pageId = req.params.pageId;
+    const userId = req.user.id;
+    const text = req.body.text;
+    const inReplyTo = req.body.inReplyTo;
+    // The id of the comment user has replied to
+    const inReplyToCommentReply = req.body.inReplyToCommentReply || null;
 
-  var comment = new Comment({ author: userId, text, page: pageId, inReplyTo });
-  comment.save(err => {
-    if (err) return res.send("error");
+    // Grab The name of the comment author which user has replied to, we'll just use this to return back to
+    // client so that we'll be able to show a label on the comment reply
+    let repliedToC;
+    if (inReplyToCommentReply)
+      repliedToC = await Comment.findById(inReplyToCommentReply)
+        .select("author")
+        .populate({ path: "author", model: "User", select: "name" });
 
-    if (!comment.inReplyTo) {
-      Page.findByIdAndUpdate(
-        pageId,
-        { $push: { comments: comment.id } },
-        { new: true },
-        (err, page) => {
-          if (err) return res.status(500).send("error");
-        }
-      );
-    } else {
-      Comment.findByIdAndUpdate(
-        inReplyTo,
-        { $push: { replyes: comment.id } },
-        (err, commet) => {}
-      );
-    }
+    const comment = await Comment.create({
+      author: userId,
+      text,
+      page: pageId,
+      inReplyTo,
+      inReplyToCommentReply:
+        repliedToC && repliedToC.author.id !== userId
+          ? inReplyToCommentReply
+          : null,
+    });
 
-    Comment.findById(comment.id, "text inReplyTo author date")
-      .populate("author", "name photo")
-      .exec(function(err, comment) {
-        if (err) {
-          return res.send("error");
-        }
+    const user = await User.findById(userId, "photo name");
 
-        var c = {
-          id: comment.id,
-          author: {
-            id: comment.author._id,
-            name: comment.author.name,
-            photo: comment.author.photo
-          },
-          viewer: "owner",
-          text: comment.text,
-          inReplyTo: comment.inReplyTo,
-          replyes: [],
-          date: util.timeSince(comment.date)
-        };
+    const formattedComment = {
+      id: comment.id,
+      author: {
+        id: user._id,
+        name: user.name,
+        photo: user.photo.secure_url,
+      },
+      viewer: "owner",
+      text: comment.text,
+      inReplyTo: comment.inReplyTo,
+      inReplyToUser: comment.inReplyToCommentReply
+        ? repliedToC.author.name
+        : null,
+      replies: comment.inReplyTo ? [] : 0,
+      date: util.timeSince(comment.date),
+      highlightedReplies: [],
+    };
 
-        res.send(c);
-      });
-  });
+    res.send({ comment: formattedComment, inReplyTo: comment.inReplyTo });
+  } catch (e) {
+    console.error(e);
+    res.status(500).send({ message: "Internal server error" });
+  }
 };
 
-exports.fetchComments = function(req, res) {
-  const pageId = req.params.id;
-  const commentsPage = req.query.page;
-
+// Fetch all comments for the show page
+exports.fetchComments = async (req, res) => {
   try {
-    var decoded = jwt.decode(req.headers.authorization, keys.jwtSecret);
-    var userId = decoded.sub;
+    const pageId = req.params.pageId;
+    const portion = Number(req.query.portion) || 1;
+    // const highlightedRepliesIds = req.body.highlightedRepliesIds;
+
+    let userId;
+    try {
+      userId = jwt.decode(req.headers.authorization, keys.jwtSecret).sub;
+    } catch (e) {
+      userId = false;
+    }
+
+    // Find all page comments which are not replies
+    const comments = await Comment.find({
+      page: pageId,
+      inReplyTo: null,
+    })
+      .sort({ date: -1 })
+      .limit(10)
+      .skip((portion - 1) * 10)
+      .populate({
+        path: "author",
+        select: "name photo",
+        model: "User",
+      });
+
+    const ids = comments.map((c) => c._id);
+
+    // Find the replies of the founded comments
+    const replies = await Comment.find(
+      { inReplyTo: { $in: ids } },
+      "_id inReplyTo"
+    );
+
+    const allLikes = await Rating.find({ comment: { $in: ids }, liked: true });
+
+    // Make found comments ready for client
+    const formattedComments = comments.map((comment) => {
+      // Filter the replies for each comment
+      const reps = replies.filter(
+        (rep) => rep.inReplyTo.toString() === comment._id.toString()
+      );
+
+      const likes = allLikes.filter(
+        (l) => l.comment.toString() === comment._id.toString()
+      );
+
+      // Return each comment formatted and with replies attached to it
+      return {
+        id: comment.id,
+        author: {
+          id: comment.author.id,
+          name: comment.author.name,
+          photo: comment.author.photo.secure_url,
+        },
+        viewer: comment.author.id === userId ? "owner" : "spectator",
+        text: comment.text,
+        date: util.timeSince(comment.date),
+        likes: likes.length,
+        replies: reps.length || 0,
+        highlightedReplies: [],
+      };
+    });
+
+    const totalComments = await Comment.find({
+      page: pageId,
+    }).select("_id");
+
+    res.send({
+      comments: formattedComments,
+      userId,
+      length: totalComments.length,
+    });
   } catch (e) {
-    var userId = false;
+    console.error(e);
+  }
+};
+
+// Fetch comments user has authored
+exports.fetchUserComments = async (req, res) => {
+  try {
+    const results = await Comment.find({ author: req.user.id })
+      .select("author text page inReplyToCommentReply inReplyTo date")
+      .sort({ date: -1 })
+      .populate({
+        path: "page",
+        select: "contents.title type url",
+        populate: {
+          path: "author",
+          select: "username",
+        },
+      })
+      .populate({
+        path: "inReplyTo",
+        select: "author",
+        populate: {
+          path: "author",
+          select: "name username",
+        },
+      })
+      .populate({
+        path: "inReplyToCommentReply",
+        select: "author ",
+        populate: {
+          path: "author",
+          select: "name username",
+        },
+      });
+
+    const userComments = results.map((i) => {
+      let reply = {};
+      if (i.inReplyToCommentReply) {
+        reply.name =
+          req.user.id === i.inReplyToCommentReply.author.id
+            ? "yourself"
+            : i.inReplyToCommentReply.author.name;
+        reply.username = i.inReplyToCommentReply.author.username;
+      } else if (i.inReplyTo) {
+        reply.name =
+          req.user.id === i.inReplyTo.author.id
+            ? "yourself"
+            : i.inReplyTo.author.name;
+        reply.username = i.inReplyTo.author.username;
+      }
+
+      return {
+        id: i._id,
+        text: i.text,
+        page: {
+          id: i.page._id,
+          type: i.page.type,
+          url: i.page.url,
+          author: {
+            username: i.page.author.username,
+          },
+          title: i.page.contents.title,
+        },
+        reply,
+        inReplyToCommentReply: i.inReplyToCommentReply,
+        inReplyTo: i.inReplyTo,
+        date: util.timeSince(i.date),
+      };
+    });
+
+    res.send({ comments: userComments });
+  } catch (e) {
+    console.error(e);
+    res.status(500).send({ message: "Internal server error." });
+  }
+};
+
+// Fetch all replies of a comment
+exports.fetchReplies = async (req, res) => {
+  let userId;
+  try {
+    userId = jwt.decode(req.headers.authorization, keys.jwtSecret).sub;
+  } catch (e) {
+    userId = false;
   }
 
-  Comment.paginate(
-    { page: pageId, inReplyTo: null },
+  const commentId = req.params.id;
+
+  // Find the replies of the selected comment
+  const results = await Comment.find({ inReplyTo: commentId }).populate([
     {
-      select: "text author date inReplyTo replyes",
-      limit: 10,
-      page: commentsPage,
-      sort: { date: -1 },
-      populate: [
-        {
-          path: "author",
-          select: "name photo",
-          model: "User"
-        },
-        {
-          path: "replyes",
-          select: "text author date inReplyTo",
-          model: "Comment",
-          populate: {
-            path: "author",
-            select: "name photo",
-            model: "User"
-          }
-        }
-      ]
+      path: "author",
+      model: "User",
+      select: "name photo",
     },
-    (err, results) => {
-      if (err) return res.status(500).send("error");
-      var data = results.docs.map(comment => {
-        if (comment.author.id === userId) {
-          return {
-            id: comment.id,
-            author: {
-              name: comment.author.name,
-              photo: comment.author.photo
-            },
-            viewer: "owner",
-            text: comment.text,
-            date: util.timeSince(comment.date),
-            inReplyTo: comment.inReplyTo,
-            replyes: comment.replyes.map(c => {
-              if (userId === c.author.id) {
-                return {
-                  id: c.id,
-                  author: {
-                    name: c.author.name,
-                    photo: c.author.photo
-                  },
-                  date: util.timeSince(c.date),
-                  text: c.text,
-                  inReplyTo: c.inReplyTo,
-                  viewer: "owner"
-                };
-              } else {
-                return {
-                  id: c.id,
-                  author: {
-                    name: c.author.name,
-                    photo: c.author.photo
-                  },
-                  date: util.timeSince(c.date),
-                  text: c.text,
-                  inReplyTo: c.inReplyTo,
-                  viewer: "spectator"
-                };
-              }
-            })
-          };
-        } else {
-          return {
-            id: comment.id,
-            author: {
-              name: comment.author.name,
-              photo: comment.author.photo
-            },
-            viewer: "spectator",
-            text: comment.text,
-            date: util.timeSince(comment.date),
-            inReplyTo: comment.inReplyTo,
-            replyes: comment.replyes.map(c => {
-              if (userId === c.author.id) {
-                return {
-                  id: c.id,
-                  author: {
-                    name: c.author.name,
-                    photo: c.author.photo
-                  },
-                  date: util.timeSince(c.date),
-                  text: c.text,
-                  inReplyTo: c.inReplyTo,
-                  viewer: "owner"
-                };
-              } else {
-                return {
-                  id: c.id,
-                  author: {
-                    name: c.author.name,
-                    photo: c.author.photo
-                  },
-                  date: util.timeSince(c.date),
-                  text: c.text,
-                  inReplyTo: c.inReplyTo,
-                  viewer: "spectator"
-                };
-              }
-            })
-          };
-        }
-      });
+    {
+      path: "inReplyToCommentReply",
+      model: "Comment",
+      select: "author",
+      populate: { path: "author" },
+    },
+  ]);
 
-      res.send({
-        comments: data,
-        page: results.page,
-        pages: results.pages,
-        userId
-      });
-    }
-  );
-};
+  const ids = results.map((c) => c._id);
 
-exports.deleteComment = function(req, res) {
-  var pageId = req.params.id;
-  var commentId = req.params.commentid;
+  const allLikes = await Rating.find({ comment: { $in: ids }, liked: true });
 
-  Comment.findByIdAndRemove(commentId, "_id", function(err, comment) {
-    if (err) return res.status(500).send("error");
+  const replies = results.map((r) => {
+    const likes = allLikes.filter(
+      (l) => l.comment.toString() === r._id.toString()
+    );
 
-    if (comment.inReplyTo === null) {
-      Comment.remove({ _id: comment.replyes }, (err, result) => {
-        if (err) return res.status(500).send("error");
-      });
-
-      Page.findByIdAndUpdate(
-        pageId,
-        { $pull: { comments: commentId } },
-        (err, page) => {
-          if (err) return res.status(500).send("error");
-          res.send({ commentId: comment.id, reply: false });
-        }
-      );
-    } else {
-      Comment.findByIdAndUpdate(
-        comment.inReplyTo,
-        { $pull: { replyes: commentId } },
-        { new: true }
-      ).exec((err, comment) => {
-        res.send({
-          commentId: comment.id,
-          reply: true,
-          deletedCommentId: commentId
-        });
-      });
-    }
+    return {
+      id: r.id,
+      author: {
+        id: r.author.id,
+        name: r.author.name,
+        photo: r.author.photo.secure_url,
+      },
+      viewer: r.author.id === userId ? "owner" : "spectator",
+      likes: likes.length,
+      inReplyToUser: r.inReplyToCommentReply
+        ? r.inReplyToCommentReply.author.name
+        : null,
+      text: r.text,
+      date: util.timeSince(r.date),
+    };
   });
+
+  res.send({ replies, commentId });
 };
 
-exports.updateComment = (req, res) => {
-  const commentId = req.params.commentid;
-  const commentText = req.body.text;
+// Update a comment
+exports.updateComment = async (req, res) => {
+  try {
+    const commentId = req.params.id;
+    const newComment = req.body.text;
 
-  Comment.findByIdAndUpdate(
-    commentId,
-    { text: commentText },
-    { new: true },
-    (err, comment) => {
-      if (err) return res.status(500).send("error");
-      if (comment.inReplyTo) {
-        res.status(200).send({ comment, reply: true });
-      } else {
-        res.status(200).send(comment);
-      }
-    }
-  );
+    const c = await Comment.findByIdAndUpdate(
+      commentId,
+      { text: newComment, edited: true },
+      { new: true }
+    );
+
+    res.status(200).send({
+      commentId: c.id,
+      newComment: c.text,
+      inReplyTo: c.inReplyTo || null,
+    });
+  } catch (err) {
+    res.status(500).send({ message: "Internal server error." });
+  }
+};
+
+// Delete a comment along with all the replies associated with it
+exports.deleteComment = async (req, res) => {
+  const commentId = req.params.id;
+
+  const deletedComment = await Comment.findByIdAndRemove(commentId);
+  let parent;
+  if (!deletedComment.inReplyTo) {
+    await Comment.deleteMany({ inReplyTo: deletedComment.id });
+    parent = true;
+  } else {
+    parent = deletedComment.inReplyTo;
+  }
+
+  await Comment.deleteMany({
+    inReplyToCommentReply: deletedComment.id,
+  });
+
+  res.send({
+    commentId: deletedComment.id,
+    parent,
+  });
 };

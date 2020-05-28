@@ -1,10 +1,17 @@
 import React from "react";
 
-const Dropdown = ({ num, children, onChange, select }) => {
+const Dropdown = ({
+  num,
+  children,
+  onChange,
+  select,
+  type,
+  className = "btn-text",
+}) => {
   // Make the button based on passed children
   let button = (
     <button
-      className="btn-text"
+      className={className}
       onClick={() => {}}
       data-role="dropdown"
       data-dropdown={num}
@@ -32,7 +39,7 @@ const Dropdown = ({ num, children, onChange, select }) => {
           className={className}
           data-role="dropdown"
           data-dropdown={num}
-          href="#"
+          href="javascript:void(0)"
           key={props["data-name"]}
           onClick={() => onChange(props["data-name"])}
         >
@@ -44,7 +51,8 @@ const Dropdown = ({ num, children, onChange, select }) => {
 
   return (
     <div
-      className="dropdown dropdown--close"
+      className={`dropdown ${type === "mini" &&
+        "dropdown-mini"} dropdown--close`}
       data-role="dropdown"
       data-dropdown={num}
     >
