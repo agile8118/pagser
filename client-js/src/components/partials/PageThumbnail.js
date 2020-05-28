@@ -21,7 +21,7 @@ const PageThumbnail = (props) => {
     }
 
     if (props.type === "draft") {
-      url = `/new-page/initial-step?id=${props.id}`;
+      url = `/new-page/page-contents?id=${props.id}`;
     }
 
     if (props.status === "normal" || !props.status) {

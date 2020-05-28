@@ -7,6 +7,7 @@ import Header from "./Header";
 class Comments extends Component {
   state = { comments: [] };
 
+  // Send a request to server to fetch the list of comments user has written
   async fetchComments() {
     loadingModal("Loading...");
     const { data } = await axios.get(`/api/comments/history`, {
@@ -23,11 +24,13 @@ class Comments extends Component {
     this.fetchComments();
   }
 
+  // Render list of comments user has written
   renderComments() {
     return this.state.comments.map((c) => {
-      let message;
+      // Decide what to show for the comment history label
+      let labelText;
       if (!c.reply.name)
-        message = (
+        labelText = (
           <span>
             You commented on page{" "}
             <strong>
@@ -52,7 +55,7 @@ class Comments extends Component {
               </a>
             </strong>
           );
-        message = (
+        labelText = (
           <span>
             You replied to {name} on page{" "}
             <strong>
@@ -69,7 +72,7 @@ class Comments extends Component {
 
       return (
         <React.Fragment key={c.id}>
-          <p className="comment-brief__label">{message}</p>
+          <p className="comment-brief__label">{labelText}</p>
           <div className="comment-brief">
             <div>
               {c.text}

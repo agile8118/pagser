@@ -23,12 +23,16 @@ class Comments extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchComments(this.props.pageId);
+    if (this.props.pageId) this.props.fetchComments(this.props.pageId);
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.comments.length !== prevProps.comments.length) {
       document.addEventListener("scroll", this.trackScrolling);
+    }
+
+    if (prevProps.pageId !== this.props.pageId) {
+      this.props.fetchComments(this.props.pageId);
     }
   }
 
