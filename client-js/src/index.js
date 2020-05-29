@@ -48,10 +48,16 @@ import PagesDraft from "./components/main/pages/Draft";
 import UComments from "./components/main/Comments";
 import SideNav from "./components/main/SideNav";
 
+import PublicProfileHeader from "./components/public-profile/Header";
+import PublicProfileHome from "./components/public-profile/Home";
+import PublicProfilePages from "./components/public-profile/Pages";
+import PublicProfileCollections from "./components/public-profile/Collections";
+
 // Stores
 import showPageStore from "./reducers/showPageStore";
 import mainStore from "./reducers/mainStore";
 import adminStore from "./reducers/adminStore";
+import publicProfileStore from "./reducers/publicProfileStore";
 
 const container = document.querySelector(".react-container");
 
@@ -151,6 +157,25 @@ if (containerName === "admin") {
         <Switch>
           <Route path="/profile" component={Profile} />
           <Route path="/settings" component={Settings} />
+        </Switch>
+      </BrowserRouter>
+    </Provider>,
+    container
+  );
+}
+
+if (containerName === "publicProfile") {
+  ReactDOM.render(
+    <Provider store={publicProfileStore}>
+      <BrowserRouter>
+        <PublicProfileHeader />
+        <Switch>
+          <Route path="/users/:username/pages" component={PublicProfilePages} />
+          <Route
+            path="/users/:username/collections"
+            component={PublicProfileCollections}
+          />
+          <Route path="/users/:username" component={PublicProfileHome} />
         </Switch>
       </BrowserRouter>
     </Provider>,

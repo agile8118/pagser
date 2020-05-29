@@ -24,9 +24,59 @@
 
     <%- include("partials/header") %>
 
-    <div class="container">
-      <h3 class="a-4 center-content">This part is comming soon where you can view a user pages, activities and
-        informations. Stay tuned!</h3>
+    <div class="pb-banner">
+      <div class="row">
+        <h1>Joseph H.</h1>
+        <h2>Software Engineer</h2>
+      </div>
+    </div>
+
+    <div class="row margin-bottom-8">
+      <div class="col-lg-1-of-3">
+        <div class="pb-left-items">
+          <img src="/images/users/placeholder.png" alt="">
+          <a href="" class="btn-i btn-i-blue"><i class="fa fa-linkedin" aria-hidden="true"></i>
+        </div>
+        </a>
+      </div>
+      <div class="col-lg-2-of-3 ">
+        <div class="pb-right-items">
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, perspiciatis. Nobis, totam nesciunt
+            cupiditate
+            adipisci consequatur reiciendis cumque laudantium? Officiis quod blanditiis ducimus minus quisquam numquam
+            illum
+            mollitia explicabo reprehenderit.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="react-container" name="publicProfile"></div>
+
+
+    <div class='cupertino-modal-container cupertino-modal-container--light display-none' id="loading-modal">
+      <div class="cupertino-modal cupertino-modal--loading">
+        <div class="cupertino-modal__content">
+          <h3 id="loading-modal-message"></h3>
+        </div>
+        <div class="center-content">
+          <div class="lds-css ng-scope">
+            <div class="lds-spinner">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <%- include("partials/footer") %>

@@ -42,56 +42,6 @@ import {
 /* ----------------------- */
 /* Reducers for main page */
 /* ----------------------- */
-export const section = (state = "", action = {}) => {
-  switch (action.type) {
-    case CHANGE_PAGE:
-      return action.payload;
-    default:
-      const sections = [
-        "home",
-        "subscriptions",
-        "history/pages",
-        "history/comments",
-        "read-later",
-        "liked-pages",
-        "collections",
-        "analytics",
-        "pages/published",
-        "pages/draft",
-        "comments",
-      ];
-
-      if (window.location.pathname.split("/")[1] === "home") {
-        return "home";
-      }
-
-      if (window.location.pathname.split("/")[1] === "collection") {
-        return null;
-      }
-
-      if (window.location.pathname.split("/")[2] === "history") {
-        const index = sections.indexOf(
-          `${window.location.pathname.split("/")[2]}/${
-            window.location.pathname.split("/")[3]
-          }`
-        );
-        return sections[index] || "history/pages";
-      }
-
-      if (window.location.pathname.split("/")[2] === "pages") {
-        const index = sections.indexOf(
-          `${window.location.pathname.split("/")[2]}/${
-            window.location.pathname.split("/")[3]
-          }`
-        );
-        return sections[index] || "pages/published";
-      }
-
-      const index = sections.indexOf(window.location.pathname.split("/")[2]);
-      return sections[index] || "";
-  }
-};
-
 export const pages = (state = [], action = {}) => {
   switch (action.type) {
     case FETCH_PAGES_PENDING:
@@ -397,6 +347,66 @@ export const user = (state = {}, action = {}) => {
 /* ----------------------- */
 /* UI reducers */
 /* ----------------------- */
+export const section = (state = "", action = {}) => {
+  switch (action.type) {
+    case CHANGE_PAGE:
+      return action.payload;
+    default:
+      // For public profile page
+      if (window.location.pathname.split("/")[1] === "users") {
+        if (window.location.pathname.split("/")[3] === "") return "home";
+        if (window.location.pathname.split("/")[3] === "collections")
+          return "collections";
+        if (window.location.pathname.split("/")[3] === "pages") return "pages";
+      }
+
+      // For main page
+      const sections = [
+        "home",
+        "subscriptions",
+        "history/pages",
+        "history/comments",
+        "read-later",
+        "liked-pages",
+        "collections",
+        "analytics",
+        "pages/published",
+        "pages/draft",
+        "comments",
+      ];
+
+      if (window.location.pathname.split("/")[1] === "home") {
+        return "home";
+      }
+
+      // Collection show page
+      if (window.location.pathname.split("/")[1] === "collection") {
+        return null;
+      }
+
+      if (window.location.pathname.split("/")[2] === "history") {
+        const index = sections.indexOf(
+          `${window.location.pathname.split("/")[2]}/${
+            window.location.pathname.split("/")[3]
+          }`
+        );
+        return sections[index] || "history/pages";
+      }
+
+      if (window.location.pathname.split("/")[2] === "pages") {
+        const index = sections.indexOf(
+          `${window.location.pathname.split("/")[2]}/${
+            window.location.pathname.split("/")[3]
+          }`
+        );
+        return sections[index] || "pages/published";
+      }
+
+      const index = sections.indexOf(window.location.pathname.split("/")[2]);
+      return sections[index] || "";
+  }
+};
+
 export const modals = (
   state = {
     addToCL: { open: false, pageId: null }, // Id is for a page
