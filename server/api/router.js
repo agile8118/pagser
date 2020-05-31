@@ -6,6 +6,7 @@ const Page = require("./controllers/page");
 const Comment = require("./controllers/comment");
 const Subscription = require("./controllers/subscription");
 const ReadLater = require("./controllers/readLater");
+const PB = require("./controllers/publicProfile");
 const History = require("./controllers/history");
 const Collection = require("./controllers/collection");
 const Rating = require("./controllers/rating");
@@ -94,6 +95,12 @@ module.exports = (app) => {
     validate.password,
     Settings.updateUserPassword
   );
+
+  // ------------------------------------------------ //
+  // *********** PUBLIC PROFILE ROUTES *********** //
+  // ------------------------------------------------ //
+  app.get("/api/users/:username/pages", PB.fetchPages);
+  app.get("/api/users/:username/collections", PB.fetchCollections);
 
   // ------------------------------------------------ //
   // *********** USER'S PAGES MANAGER ROUTES *********** //

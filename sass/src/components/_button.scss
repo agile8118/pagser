@@ -257,24 +257,28 @@
   .btn-lined {
     padding: 0 0.8rem;
     font-weight: 400;
-    padding-bottom: 0.5rem;
+    font-size: 1.4rem;
+    padding-bottom: 1rem;
     margin-bottom: 0rem;
     color: inherit;
     border: none;
+    width: 12rem;
+    text-transform: uppercase;
+    text-align: center;
 
     &:not(:last-child) {
-      margin-right: 20rem;
+      margin-right: 22rem;
     }
 
     &:hover {
-      border-bottom: 6px solid rgba(#2980b9, 0.8);
+      border-bottom: 4px solid rgba(#2980b9, 0.8);
     }
 
     &--active {
-      border-bottom: 6px solid #2980b9;
+      border-bottom: 4px solid #2980b9;
 
       &:hover {
-        border-bottom: 6px solid #2980b9;
+        border-bottom: 4px solid #2980b9;
       }
     }
   }

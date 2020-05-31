@@ -354,7 +354,7 @@ export const section = (state = "", action = {}) => {
     default:
       // For public profile page
       if (window.location.pathname.split("/")[1] === "users") {
-        if (window.location.pathname.split("/")[3] === "") return "home";
+        if (!window.location.pathname.split("/")[3]) return "home";
         if (window.location.pathname.split("/")[3] === "collections")
           return "collections";
         if (window.location.pathname.split("/")[3] === "pages") return "pages";

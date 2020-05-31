@@ -100,7 +100,7 @@ exports.fetch = async (req, res) => {
     if (filterBy === "private")
       pages = pages.filter((i) => i.type === "private");
 
-    res.send({ results: pages, sortBy, filterBy });
+    res.send({ pages, sortBy, filterBy });
   } catch (e) {
     res.status(500).send({ message: "Internal server error." });
   }
