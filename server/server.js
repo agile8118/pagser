@@ -52,6 +52,7 @@ const port = process.env.PORT || 3080;
 
 const { Page } = require("./models/page");
 const { Trash } = require("./models/trash");
+const User = require("./models/user");
 
 app.get("/home", function (req, res) {
   res.render("main");
@@ -69,12 +70,20 @@ app.get("/collection/:id", function (req, res) {
   res.render("main");
 });
 
-app.get("/users/:username/*", function (req, res) {
-  res.render("public-profile");
+app.get("/users/:username/*", async (req, res) => {
+  const user = await User.findOne({ username: req.params.username }).select(
+    "name photo links headline biography"
+  );
+
+  res.render("public-profile", { user });
 });
 
-app.get("/users/:username", function (req, res) {
-  res.render("public-profile");
+app.get("/users/:username", async (req, res) => {
+  const user = await User.findOne({ username: req.params.username }).select(
+    "name photo links headline biography"
+  );
+
+  res.render("public-profile", { user });
 });
 
 app.get("/login", function (req, res) {

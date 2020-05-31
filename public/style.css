@@ -2589,12 +2589,13 @@ input:checked + .slider:before {
     margin-bottom: 1rem; }
   .pb-left-items a {
     font-size: 2.3rem; }
+    .pb-left-items a:not(:last-child) {
+      margin-right: 1rem; }
 
 .pb-right-items {
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding-top: 5rem; }
+  padding-top: 2rem; }
   .pb-right-items p {
     color: #555;
     font-size: 1.6rem; }
