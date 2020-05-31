@@ -12,7 +12,11 @@ class Pages extends Component {
 
   renderPages() {
     if (this.props.pages === null)
-      return <div>This user doesn't have any public page.</div>;
+      return (
+        <div className="center-content">
+          <div className="a-14">User doesn't have any public page.</div>
+        </div>
+      );
 
     if (this.props.pages.length === 0)
       return (

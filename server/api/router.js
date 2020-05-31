@@ -201,6 +201,8 @@ module.exports = (app) => {
     requireAuth,
     Collection.fetchCreatedAndSaved
   );
+  // Fetch all the collections user has created and shared
+  app.get("/api/collections/shared/:username", Collection.fetchShared);
 
   // ------------------------------------------------ //
   // *********** NEW PAGE ROUTES *********** //

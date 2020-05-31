@@ -147,6 +147,25 @@ exports.fetchSaved = async (req, res) => {
   }
 };
 
+// Fetch all the pages user has created and shared
+exports.fetchShared = async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username }).select(
+      "_id"
+    );
+
+    const collections = await Collection.find({
+      user: user.id,
+      shared: true,
+    });
+
+    res.send({ collections: collections.length ? collections : null });
+  } catch (e) {
+    console.error(e);
+    res.status(500).send({ message: "Internal server error." });
+  }
+};
+
 // Fetch the data of one collection
 exports.fetchOne = async (req, res) => {
   try {
