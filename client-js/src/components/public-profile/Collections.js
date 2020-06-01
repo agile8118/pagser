@@ -7,6 +7,7 @@ class Collections extends Component {
   state = {
     collections: [],
   };
+  _isMounted = false;
 
   // Send a request to fetch the list of collections
   fetchCollections = async () => {
@@ -19,13 +20,20 @@ class Collections extends Component {
       }
     );
 
-    this.setState({
-      collections: data.collections,
-    });
+    if (this._isMounted) {
+      this.setState({
+        collections: data.collections,
+      });
+    }
   };
 
   componentDidMount() {
+    this._isMounted = true;
     this.fetchCollections();
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   // Render list of collections
