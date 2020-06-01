@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css?family=Lato:100,300,300i,400" rel="stylesheet">
     <link rel="stylesheet" href="/fonts/font-awesome.min.css">
     <link rel="stylesheet" href="/style.css">
-    <title>Public Profile | Pagher</title>
+    <title><%= user.name %> - <%= user.headline %> | Pagher</title>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -21,12 +21,81 @@
   </head>
 
   <body>
-
     <%- include("partials/header") %>
 
-    <div class="container">
-      <h3 class="a-4 center-content">This part is comming soon where you can view a user pages, activities and
-        informations. Stay tuned!</h3>
+    <div class="pb-banner">
+      <div class="row">
+        <h1><%= user.name %></h1>
+        <h2><%= user.headline %></h2>
+      </div>
+    </div>
+
+    <div class="row margin-bottom-6">
+      <div class="col-lg-1-of-3">
+        <div class="pb-left-items">
+          <img src="<%= user.photo.secure_url %>" alt="user image" id="user-image">
+          <div class="pb-left-items__link">
+            <% if (user.links.website) { %>
+              <a href="<%= user.links.website %>" target="_blank" class="btn-i btn-i-blue"><i class="fa fa-globe"
+                  aria-hidden="true"></i>
+              <% } %>
+    
+              <% if (user.links.linkedin) { %>
+              <a href="https://linkedin.com/<%= user.links.linkedin %>" target="_blank" class="btn-i btn-i-blue"><i class="fa fa-linkedin"
+                  aria-hidden="true"></i>
+              <% } %>
+    
+              <% if (user.links.twitter) { %>
+              <a href="https://twitter.com/<%= user.links.twitter %>" target="_blank" class="btn-i btn-i-blue"><i class="fa fa-twitter"
+                  aria-hidden="true"></i>
+              <% } %>
+    
+              <% if (user.links.youtube) { %>
+                <a href="https://youtube.com/<%= user.links.youtube %>" target="_blank" class="btn-i btn-i-blue"><i class="fa fa-youtube"
+                    aria-hidden="true"></i>
+              <% } %>
+    
+              <% if (user.links.facebook) { %>
+                <a href="https://facebook.com/<%= user.links.facebook %>" target="_blank" class="btn-i btn-i-blue"><i class="fa fa-facebook"
+                    aria-hidden="true"></i>
+              <% } %>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-lg-2-of-3 ">
+        <div class="pb-right-items">
+          <p><%= user.biography %></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="react-container" name="publicProfile"></div>
+
+    <div class='cupertino-modal-container cupertino-modal-container--light display-none' id="loading-modal">
+      <div class="cupertino-modal cupertino-modal--loading">
+        <div class="cupertino-modal__content">
+          <h3 id="loading-modal-message"></h3>
+        </div>
+        <div class="center-content">
+          <div class="lds-css ng-scope">
+            <div class="lds-spinner">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <%- include("partials/footer") %>

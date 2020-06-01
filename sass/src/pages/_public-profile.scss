@@ -1,0 +1,57 @@
+.pb-banner {
+  background-color: darken(#2980b9, 30%);
+  font-size: 1.6rem;
+  padding: 2.7rem 0 3.5rem 0;
+  margin-bottom: 7rem;
+  color: #fff;
+
+  h1 {
+    font-size: 3.1rem;
+    margin-bottom: 0.1rem;
+    font-weight: 400;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+    font-weight: 400;
+  }
+}
+
+.pb-left-items {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-right: 1rem;
+
+  img {
+    border-radius: 500px;
+    width: 18rem;
+    height: 18rem;
+    margin-bottom: 1rem;
+  }
+
+  a {
+    font-size: 2.3rem;
+    &:not(:last-child) {
+      margin-right: 1rem;
+    }
+  }
+}
+
+.pb-right-items {
+  display: flex;
+  align-items: center;
+  padding-top: 2rem;
+
+  p {
+    color: $color-text;
+    font-size: 1.6rem;
+  }
+}
+
+.pb-main {
+  background-color: #f7f8fa;
+  min-height: 60vh;
+  padding: 6rem 0;
+}

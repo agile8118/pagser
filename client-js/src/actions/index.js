@@ -52,18 +52,26 @@ export const changeSection = (section) => (dispatch, getState) => {
 
 export const fetchPages = (kind, filterBy, sortBy) => async (dispatch) => {
   try {
-    loadingModal("Loading...");
-    const { data } = await axios.get(
-      `/api/${kind}?sortBy=${sortBy}&filterBy=${filterBy}`,
-      {
-        headers: {
-          authorization: localStorage.getItem("token"),
-        },
-      }
-    );
+    dispatch({ type: FETCH_PAGES_PENDING });
+
+    const url =
+      kind === "PB-pages"
+        ? `/api/users/${window.location.pathname.split("/")[2]}/pages`
+        : `/api/${kind}?sortBy=${sortBy}&filterBy=${filterBy}`;
+
+    if (kind !== "PB-pages") loadingModal("Loading...");
+    const { data } = await axios.get(url, {
+      headers: {
+        authorization: localStorage.getItem("token"),
+      },
+    });
     loadingModal();
 
-    dispatch({ type: FETCH_PAGES_SUCCESS, payload: data.results });
+    // @TODO: make it so that we always use data.pages
+    dispatch({
+      type: FETCH_PAGES_SUCCESS,
+      payload: data.results || data.pages,
+    });
     if (filterBy) dispatch({ type: FILTER_BY, payload: data.filterBy });
     if (sortBy) dispatch({ type: SORT_BY, payload: data.sortBy });
   } catch (e) {
