@@ -45,7 +45,6 @@ import CollectionShow from "./components/main/CollectionShow";
 import Analytics from "./components/main/Analytics";
 import PagesPublished from "./components/main/pages/Published";
 import PagesDraft from "./components/main/pages/Draft";
-import UComments from "./components/main/Comments";
 import SideNav from "./components/main/SideNav";
 
 import PublicProfileHeader from "./components/public-profile/Header";
@@ -200,7 +199,6 @@ if (containerName === "main") {
           <Route path="/u/analytics" component={Analytics} />
           <Route path="/u/pages/published" component={PagesPublished} />
           <Route path="/u/pages/draft" component={PagesDraft} />
-          <Route path="/u/comments" component={UComments} />
           <Redirect from="/feed/history" to="/feed/history/pages" />
           <Redirect from="/u/pages" to="/u/pages/published" />
         </Switch>

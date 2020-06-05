@@ -31,11 +31,28 @@
       <div class="navigation__right">
         <a href="/new-page/initial-step" class="navigation__link navigation-btn js--create-page">Create a Page</a>
         <a href="/login" class="navigation__link display-none" id="js--login-md">Login</a>
-        <div class="nav-dropdown display-none" id="js--nav-dropdown-md">
-          <div class="nav-dropdown__button" onclick="navDropdownClicked()">
-            <a href="javascript:void(0);"><img class="js--user-image" src="/images/users/placeholder.png"></a>
+
+        <div class="nav-dropdown nav-dropdown-notification dropdown--close" id="js--nav-dropdown-md-notification"
+          data-role="dropdown" data-dropdown="notification-dropdown-md">
+          <div class="nav-dropdown__button" data-role="dropdown" data-dropdown="notification-dropdown-md">
+            <a href="javascript:void(0);" data-role="dropdown" data-dropdown="notification-dropdown-md"><i
+                data-role="dropdown" data-dropdown="notification-dropdown-md" class="fa fa-bell-o"
+                aria-hidden="true"></i>
+            </a>
           </div>
-          <div class="nav-dropdown__content display-none">
+          <div class="nav-dropdown__content">
+            You don't have any notifications yet.
+          </div>
+        </div>
+
+        <div class="nav-dropdown dropdown--close" id="js--nav-dropdown-md" data-role="dropdown"
+          data-dropdown="user-dropdown-md">
+          <div class="nav-dropdown__button" data-role="dropdown" data-dropdown="user-dropdown-md">
+            <a href="javascript:void(0);" data-role="dropdown" data-dropdown="user-dropdown-md"><img
+                data-role="dropdown" data-dropdown="user-dropdown-md" class="js--user-image"
+                src="/images/users/placeholder.png"></a>
+          </div>
+          <div class="nav-dropdown__content">
             <a href="/profile"><i class="fa fa-user"></i> Profile</a>
             <a href="/settings"><i class="fa fa-cogs"></i> Setting</a>
             <a href="javascript:void(0);" onclick="localStorage.removeItem('token');window.location = '/';"><i
@@ -64,11 +81,28 @@
         <a href="/new-page/initial-step" class="navigation__right-link navigation-btn js--create-page"><i
             class="fa fa-pencil-square-o"></i></a>
         <a href="/login" class="navigation__right-link display-none" id="js--login-sm">Login</a>
-        <div class="nav-dropdown display-none" id="js--nav-dropdown-sm">
-          <div class="nav-dropdown__button" onclick="navDropdownClicked()">
-            <a href="javascript:void(0);"><img class="js--user-image" src="/images/users/placeholder.png"></a>
+
+        <div class="nav-dropdown nav-dropdown-notification dropdown--close" data-role="dropdown"
+          data-dropdown="notification-dropdown-sm" id="js--nav-dropdown-sm-notification">
+          <div class="nav-dropdown__button" data-role="dropdown" data-dropdown="notification-dropdown-sm">
+            <a href="javascript:void(0);" data-role="dropdown" data-dropdown="notification-dropdown-sm"><i
+                data-role="dropdown" data-dropdown="notification-dropdown-sm" class="fa fa-bell-o"
+                aria-hidden="true"></i>
+            </a>
           </div>
-          <div class="nav-dropdown__content display-none">
+          <div class="nav-dropdown__content">
+            You don't have any notifications yet.
+          </div>
+        </div>
+
+        <div class="nav-dropdown dropdown--close" data-role="dropdown" data-dropdown="user-dropdown-sm"
+          id="js--nav-dropdown-sm">
+          <div class="nav-dropdown__button" data-role="dropdown" data-dropdown="user-dropdown-sm">
+            <a href="javascript:void(0);" data-role="dropdown" data-dropdown="user-dropdown-sm"><img
+                data-role="dropdown" data-dropdown="user-dropdown-sm" class="js--user-image"
+                src="/images/users/placeholder.png"></a>
+          </div>
+          <div class="nav-dropdown__content">
             <a href="/profile"><i class="fa fa-user"></i> Profile</a>
             <a href="/settings"><i class="fa fa-cogs"></i> Setting</a>
             <a href="javascript:void(0);" onclick="localStorage.removeItem('token');window.location = '/';"><i
