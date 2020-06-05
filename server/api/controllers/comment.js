@@ -85,7 +85,7 @@ exports.fetchComments = async (req, res) => {
       .skip((portion - 1) * 10)
       .populate({
         path: "author",
-        select: "name photo",
+        select: "name photo username",
         model: "User",
       });
 
@@ -117,6 +117,7 @@ exports.fetchComments = async (req, res) => {
           id: comment.author.id,
           name: comment.author.name,
           photo: comment.author.photo.secure_url,
+          username: comment.author.username,
         },
         viewer: comment.author.id === userId ? "owner" : "spectator",
         text: comment.text,
@@ -230,7 +231,7 @@ exports.fetchReplies = async (req, res) => {
     {
       path: "author",
       model: "User",
-      select: "name photo",
+      select: "name photo username",
     },
     {
       path: "inReplyToCommentReply",
@@ -255,6 +256,7 @@ exports.fetchReplies = async (req, res) => {
         id: r.author.id,
         name: r.author.name,
         photo: r.author.photo.secure_url,
+        username: r.author.username,
       },
       viewer: r.author.id === userId ? "owner" : "spectator",
       likes: likes.length,

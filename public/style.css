@@ -2205,8 +2205,18 @@ input:checked + .slider:before {
       display: flex;
       flex-direction: column;
       margin-top: 3px; }
-      .comment__header__name-and-date .a-2 {
-        font-style: italic; }
+    .comment__header__name a {
+      color: #555;
+      transition: all 0.2s; }
+      .comment__header__name a:hover {
+        opacity: 0.9; }
+    .comment__header__author-label {
+      font-size: 90%;
+      opacity: 0.8;
+      font-style: italic; }
+      .comment__header__author-label span {
+        letter-spacing: -2px;
+        margin: 0 6px; }
     .comment__header__image {
       border-radius: 50%;
       width: 5rem;
