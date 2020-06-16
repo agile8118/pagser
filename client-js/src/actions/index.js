@@ -132,6 +132,19 @@ export const changeStatus = (status) => (dispatch) => {
 /* ----------------------- */
 /* Actions for show page */
 /* ----------------------- */
+// Send a request to notify the server to increment the page views if eligible
+export const sendViewRequest = (pageId) => async () => {
+  await axios.post(
+    `/api/views/${pageId}`,
+    {},
+    {
+      headers: {
+        authorization: localStorage.getItem("token"),
+      },
+    }
+  );
+};
+
 export const fetchPublicPageData = () => async (dispatch) => {
   dispatch({ type: FETCH_PAGE_DATA_PENDING });
   const { data } = await axios.get(

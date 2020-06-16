@@ -89,3 +89,7 @@ export const show = (selector) => {
     document.querySelector(selector).classList.remove("display-none");
   }
 };
+
+export const isBottom = (el) => {
+  return el.getBoundingClientRect().bottom <= window.innerHeight;
+};

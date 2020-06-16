@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { ConfirmModal } from "../partials/Modals";
-import { loadingModal } from "../../lib/util";
+import { loadingModal, isBottom } from "../../lib/util";
 
 import { subscribe } from "actions";
 

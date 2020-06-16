@@ -4,7 +4,12 @@ import { connect } from "react-redux";
 import { Modal } from "../partials/Modals";
 import AddToClMdl from "../modals/AddToCL";
 
-import { fetchPublicPageData, readLater, addToCollectionOpen } from "actions";
+import {
+  fetchPublicPageData,
+  readLater,
+  addToCollectionOpen,
+  sendViewRequest,
+} from "actions";
 
 class Actions extends Component {
   state = {
@@ -16,6 +21,11 @@ class Actions extends Component {
     if (this.props.type && this.props.type === "public") {
       this.props.fetchPublicPageData();
     }
+
+    // Send a view request to server
+    setTimeout(() => {
+      this.props.sendViewRequest(this.props.id);
+    }, 15000);
   }
 
   onDeletePageSubmit() {
@@ -193,5 +203,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
   mapStateToProps,
-  { fetchPublicPageData, readLater, addToCollectionOpen }
+  { fetchPublicPageData, readLater, addToCollectionOpen, sendViewRequest }
 )(Actions);

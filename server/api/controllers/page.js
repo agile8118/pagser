@@ -67,6 +67,8 @@ cloudinary.config({
 
 // Fetch the data of a public page
 exports.fetchPublicPageData = async (req, res) => {
+  req.session.viewStartTrack = Date.now();
+
   try {
     var decoded = jwt.decode(req.headers.authorization, keys.jwtSecret);
     var userId = decoded.sub;
@@ -144,6 +146,8 @@ exports.fetchPublicPageData = async (req, res) => {
 
 // Fetch the data of a private page
 exports.fetchPrivatePageData = async (req, res) => {
+  req.session.viewStartTrack = Date.now();
+
   try {
     const decoded = jwt.decode(req.headers.authorization, keys.jwtSecret);
     var userId = decoded.sub;
