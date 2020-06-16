@@ -15,7 +15,7 @@ const SubscriptionThumbnail = (props) => {
         </div>
       </a>
       <a
-        href={`/users/${props.username}#pages`}
+        href={`/users/${props.username}/pages`}
         className="btn btn-default btn-round"
       >
         View latest pages

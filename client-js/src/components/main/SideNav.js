@@ -78,6 +78,17 @@ const SideNav = ({ changeSection, section }) => {
       </div>
       <div className="sidenav__section">
         <Link
+          to="/u/dashboard"
+          className={
+            section === "dashboard"
+              ? "sidenav__link sidenav__link--active"
+              : "sidenav__link"
+          }
+          onClick={() => changeSection("dashboard")}
+        >
+          <i className="fa fa-dashboard" />Dashboard
+        </Link>
+        <Link
           to="/u/analytics"
           className={
             section === "analytics"
@@ -87,6 +98,17 @@ const SideNav = ({ changeSection, section }) => {
           onClick={() => changeSection("analytics")}
         >
           <i className="fa fa-line-chart" />Analytics
+        </Link>
+        <Link
+          to="/u/monetization"
+          className={
+            section === "monetization"
+              ? "sidenav__link sidenav__link--active"
+              : "sidenav__link"
+          }
+          onClick={() => changeSection("monetization")}
+        >
+          <i className="fa fa-dollar" />Monetization
         </Link>
         <Link
           to="/u/pages"
@@ -100,17 +122,6 @@ const SideNav = ({ changeSection, section }) => {
           onClick={() => changeSection("pages/published")}
         >
           <i className="fa fa-envelope-open" />Your Pages
-        </Link>
-        <Link
-          to="/u/comments"
-          className={
-            section === "comments"
-              ? "sidenav__link sidenav__link--active"
-              : "sidenav__link"
-          }
-          onClick={() => changeSection("comments")}
-        >
-          <i className="fa fa-comments" />Comments
         </Link>
       </div>
       <div className="sidenav__footer">

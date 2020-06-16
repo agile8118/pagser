@@ -71,8 +71,8 @@ class Comments extends Component {
             showReplies={comment.showReplies}
             status={comment.status} // Could be either add-reply or edit
             viewer={comment.viewer}
-            photo={comment.author.photo}
-            name={comment.author.name}
+            author={comment.author}
+            pageAuthorId={this.props.pageAuthorId}
             date={comment.date}
             text={comment.text}
             likes={comment.likes}
@@ -180,6 +180,7 @@ const mapStateToProps = (state) => {
     length: state.comments.length,
     isPending: state.comments.isPending,
     pageId: state.pageData.id,
+    pageAuthorId: state.pageData.author._id,
     userId: state.user.id,
     confMdl: state.modals.confDeleteComment,
   };

@@ -1,3 +1,8 @@
+/**
+ @TODO this file will be in use once we wanted to show comments on user pages
+ in one place 
+**/
+
 import React, { Component } from "react";
 
 class Comments extends Component {

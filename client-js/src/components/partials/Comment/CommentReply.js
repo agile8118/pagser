@@ -23,14 +23,23 @@ const CommentReply = (props) => {
           <div className="display-flex">
             <img
               className="comment__header__image"
-              src={props.photo}
+              src={props.author.photo}
               alt="comment's author image"
               onError={(e) => {
                 e.target.src = "/images/users/placeholder.png";
               }}
             />
             <div className="comment__header__name-and-date">
-              <span>{props.name}</span>
+              <span className="comment__header__name">
+                <a target="_blank" href={`/users/${props.author.username}`}>
+                  {props.author.name}
+                </a>
+                {props.author.id === props.pageAuthorId && (
+                  <span className="comment__header__author-label">
+                    <span>-------</span>Author
+                  </span>
+                )}
+              </span>
               <span>{props.date}</span>
             </div>
           </div>

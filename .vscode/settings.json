@@ -6,6 +6,7 @@
     "component",
     "mdls",
     "unmount",
-    "will"
+    "will",
+    "xhttp"
   ]
 }
