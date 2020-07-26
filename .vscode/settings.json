@@ -6,6 +6,7 @@
     "cloudinary",
     "component",
     "mdls",
+    "tinymce",
     "unmount",
     "will",
     "xhttp"

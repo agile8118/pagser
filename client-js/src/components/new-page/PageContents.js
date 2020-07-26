@@ -15,9 +15,16 @@ class PageContents extends Component {
     targets: "",
     body: "",
     btnDisabled: true,
+    saved: true,
   };
 
   componentDidMount() {
+    // Send a request to server automatically to save the changes, we won't send a request
+    // if the changes are already saved
+    setInterval(() => {
+      if (!this.state.saved) this.updatePage();
+    }, 5000);
+
     const pageId = getParameterByName("id", window.location.href);
     const config = {
       headers: {
@@ -37,7 +44,7 @@ class PageContents extends Component {
             type: response.data.page.type,
           },
           () => {
-            this.checkIfAllOk.apply(this);
+            this.checkIfAllOk();
           }
         );
       })
@@ -50,20 +57,27 @@ class PageContents extends Component {
       });
   }
 
+  componentWillUpdate() {
+    window.addEventListener("beforeunload", (e) => {
+      e.preventDefault();
+      if (!this.state.saved)
+        return (e.returnValue =
+          "Unsaved changes, are you sure you want to close?");
+    });
+  }
+
   // This will send the current page data to server for saving.
   // This will run when user wants to change the current stage
   // either by going to the next or previous stage
-  updatePage(to) {
-    loadingModal("Loading...");
-    const pageId = getParameterByName("id", window.location.href);
-    const config = {
-      headers: {
-        authorization: localStorage.getItem("token"),
-      },
-    };
-    axios
-      .patch(
-        `/api/new-page/page-contents/${pageId}`,
+  async updatePage(to) {
+    if (to) loadingModal("Loading...");
+
+    try {
+      await axios.patch(
+        `/api/new-page/page-contents/${getParameterByName(
+          "id",
+          window.location.href
+        )}`,
         {
           page: {
             contents: {
@@ -74,28 +88,37 @@ class PageContents extends Component {
             },
           },
         },
-        config
-      )
-      .then((response) => {
+        {
+          headers: {
+            authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+
+      this.setState({ saved: true });
+
+      if (to) {
         loadingModal();
         this.props.history.push(to);
-      })
-      .catch((response) => {
+      }
+    } catch (e) {
+      if (to) {
         loadingModal();
         this.props.history.push(`/new-page/initial-step`);
-      });
+      }
+    }
   }
 
-  onBackButtonClicked() {
+  onBackButtonClicked = () => {
     this.updatePage(
       `/new-page/initial-step?id=${getParameterByName(
         "id",
         window.location.href
       )}`
     );
-  }
+  };
 
-  onNextButtonClicked() {
+  onNextButtonClicked = () => {
     const type = getParameterByName("type", window.location.href);
     if (type) {
       this.updatePage(
@@ -112,11 +135,11 @@ class PageContents extends Component {
         )}?type=${this.state.type}`
       );
     }
-  }
+  };
 
   // Check if the title provided by user is valid or not.
   // This will run by onblur and onchange event on title input
-  checkTitleValidation() {
+  checkTitleValidation = () => {
     switch (this.state.type) {
       case "private":
         if (!util.len(this.state.title, 1, 50)) {
@@ -141,11 +164,11 @@ class PageContents extends Component {
         }
         break;
     }
-  }
+  };
 
   // Check if the brief description provided by user is valid or not.
   // This will run by onblur and onchange event on briefDes input
-  checkBriefDesValidation() {
+  checkBriefDesValidation = () => {
     switch (this.state.type) {
       case "private":
         if (!util.len(this.state.briefDes, 0, 300)) {
@@ -170,11 +193,11 @@ class PageContents extends Component {
         }
         break;
     }
-  }
+  };
 
   // Check if the targets provided by user is valid or not.
   // This will run by onblur and onchange event on targets input
-  checkTargetsValidation() {
+  checkTargetsValidation = () => {
     switch (this.state.type) {
       case "private":
         if (!util.len(this.state.targets, 0, 300)) {
@@ -199,11 +222,11 @@ class PageContents extends Component {
         }
         break;
     }
-  }
+  };
 
   // Check if the Page Body provided by user is valid or not.
   // This will run by onchange event on TinyMCE input
-  checkPageBodyValidation() {
+  checkPageBodyValidation = () => {
     // Remove all html and extra spaces and then check
     var html = this.state.body;
     var div = document.createElement("div");
@@ -249,9 +272,9 @@ class PageContents extends Component {
         }
         break;
     }
-  }
+  };
 
-  checkIfAllOk() {
+  checkIfAllOk = () => {
     var title = this.state.title;
     var targets = this.state.targets;
     var briefDes = this.state.briefDes;
@@ -289,7 +312,7 @@ class PageContents extends Component {
         this.setState({ btnDisabled: true });
       }
     }
-  }
+  };
 
   // Render the next button, if button get clicked it will render a loading icon
   // instead while loading
@@ -298,7 +321,7 @@ class PageContents extends Component {
       <button
         className="btn btn-blue"
         onClick={() => {
-          this.onNextButtonClicked.apply(this);
+          this.onNextButtonClicked();
         }}
         disabled={this.state.btnDisabled}
       >
@@ -319,7 +342,7 @@ class PageContents extends Component {
           {/* Back button */}
           <button
             className="btn-text btn-text-big a-11"
-            onClick={this.onBackButtonClicked.bind(this)}
+            onClick={this.onBackButtonClicked}
           >
             <i className="fa fa-arrow-left" aria-hidden="true" /> Back
           </button>
@@ -342,13 +365,13 @@ class PageContents extends Component {
                 type="text"
                 value={this.state.title}
                 onChange={(e) => {
-                  this.setState({ title: e.target.value }, () => {
-                    this.checkTitleValidation.apply(this);
+                  this.setState({ title: e.target.value, saved: false }, () => {
+                    this.checkTitleValidation();
                   });
                 }}
                 onBlur={(e) => {
-                  this.checkTitleValidation.apply(this);
-                  this.checkIfAllOk.apply(this);
+                  this.checkTitleValidation();
+                  this.checkIfAllOk();
                 }}
                 placeholder="Choose a title for your page"
               />
@@ -368,13 +391,16 @@ class PageContents extends Component {
                 rows="3"
                 value={this.state.briefDes}
                 onChange={(e) => {
-                  this.setState({ briefDes: e.target.value }, () => {
-                    this.checkBriefDesValidation.apply(this);
-                  });
+                  this.setState(
+                    { briefDes: e.target.value, saved: false },
+                    () => {
+                      this.checkBriefDesValidation();
+                    }
+                  );
                 }}
                 onBlur={(e) => {
-                  this.checkBriefDesValidation.apply(this);
-                  this.checkIfAllOk.apply(this);
+                  this.checkBriefDesValidation();
+                  this.checkIfAllOk();
                 }}
                 placeholder="Describe briefly what your page is all about"
               />
@@ -394,13 +420,16 @@ class PageContents extends Component {
                 rows="3"
                 value={this.state.targets}
                 onChange={(e) => {
-                  this.setState({ targets: e.target.value }, () => {
-                    this.checkTargetsValidation.apply(this);
-                  });
+                  this.setState(
+                    { targets: e.target.value, saved: false },
+                    () => {
+                      this.checkTargetsValidation();
+                    }
+                  );
                 }}
                 onBlur={(e) => {
-                  this.checkTargetsValidation.apply(this);
-                  this.checkIfAllOk.apply(this);
+                  this.checkTargetsValidation();
+                  this.checkIfAllOk();
                 }}
                 placeholder="Describe briefly who this page is for"
               />
@@ -442,16 +471,27 @@ class PageContents extends Component {
                   }
                 }}
                 onChange={(e) => {
-                  this.setState({ body: e.target.getContent() }, () => {
-                    this.checkPageBodyValidation.apply(this);
-                    this.checkIfAllOk.apply(this);
-                  });
+                  this.setState(
+                    { body: e.target.getContent(), saved: false },
+                    () => {
+                      this.checkPageBodyValidation();
+                      this.checkIfAllOk();
+                    }
+                  );
                 }}
                 onBlur={(e) => {}}
               />
               <div className="form__input--message">
                 <span />
               </div>
+            </div>
+
+            <div>
+              {!this.state.saved ? (
+                <p>Saving changes...</p>
+              ) : (
+                <p>Changes saved!</p>
+              )}
             </div>
 
             {/* Read more link */}
@@ -482,7 +522,7 @@ class PageContents extends Component {
     return (
       <div>
         <ProgressBar width={50} />
-        <div className="page-new">{this.renderContents.apply(this)}</div>
+        <div className="page-new">{this.renderContents()}</div>
       </div>
     );
   }

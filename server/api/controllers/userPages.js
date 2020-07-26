@@ -1,5 +1,6 @@
 const { Page, DraftPage } = require("../../models/page");
 const User = require("../../models/user");
+const util = require("../../lib/util");
 
 // Fetch the pages user has published
 exports.fetchPublishedPages = async (req, res) => {
@@ -40,18 +41,20 @@ exports.fetchDraftPages = async (req, res) => {
   try {
     const results = await DraftPage.find(
       { author: req.user.id, status: "draft", "contents.title": { $gt: 0 } },
-      "contents.title contents.briefDes"
-    );
+      "contents.title contents.briefDes updatedAt"
+    ).sort({ updatedAt: -1 });
 
     let pages = results.map((i) => {
       return {
         id: i._id,
         contents: i.contents,
+        updatedAt: util.timeSince(i.updatedAt),
       };
     });
 
     res.send({ results: pages });
   } catch (e) {
+    console.error(e);
     res.status(500).send({ message: "Internal server error." });
   }
 };

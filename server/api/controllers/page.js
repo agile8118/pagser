@@ -287,7 +287,8 @@ exports.fetchDraftPageData = (req, res) => {
   }
 };
 
-exports.updateDraftPageData = (req, res) => {
+// Update draft page data
+exports.updateDraftPageData = async (req, res) => {
   const pageId = req.params.id;
   const stage = req.params.stage;
   const page = req.body.page;
@@ -317,21 +318,24 @@ exports.updateDraftPageData = (req, res) => {
 
       break;
     case "page-contents":
-      DraftPage.findById(pageId, (err, result) => {
-        if (err) return res.status(500).send("error");
-        result.contents = {
-          title: page.contents.title,
-          briefDes: page.contents.briefDes,
-          body: util.cleanHTML(page.contents.body),
-          targets: page.contents.targets || "",
-        };
-
-        result.save(function (err, page) {
-          if (err) return res.status(500).send("error");
-          res.status(200).send(result.id);
-        });
-      });
-
+      try {
+        const result = await DraftPage.findOneAndUpdate(
+          { _id: pageId },
+          {
+            updatedAt: new Date(),
+            contents: {
+              title: page.contents.title,
+              briefDes: page.contents.briefDes,
+              body: util.cleanHTML(page.contents.body),
+              targets: page.contents.targets || "",
+            },
+          },
+          { new: true }
+        );
+        res.status(200).send(result.id);
+      } catch (e) {
+        return res.status(500).send({ message: "Internal server error" });
+      }
       break;
     case "final-step":
       DraftPage.findById(pageId, (err, result) => {
