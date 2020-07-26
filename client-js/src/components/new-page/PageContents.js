@@ -536,6 +536,7 @@ class PageContents extends Component {
               </div>
             </div>
 
+            {/* @TODO: fix class names */}
             <div>
               {this.state.saved === false && (
                 <p className="text-orange">Saving changes...</p>
@@ -581,10 +582,25 @@ class PageContents extends Component {
 
   render() {
     return (
-      <div>
+      <React.Fragment>
         <ProgressBar width={50} />
+        <div className="page-new__note-box">
+          <h3>A note about saving:</h3>
+          <p>
+            We <strong>automatically save</strong> what you write and all other
+            changes you do, your page is saved as a draft until you decide to
+            publish your page. You can publish your page in the last step.
+          </p>
+          <p>
+            You can view all your draft pages{" "}
+            <a href="/u/pages/draft" target="_blank">
+              here
+            </a>.
+          </p>
+        </div>
+
         <div className="page-new">{this.renderContents()}</div>
-      </div>
+      </React.Fragment>
     );
   }
 }

@@ -2325,6 +2325,14 @@ input:checked + .slider:before {
   margin-top: 2.5rem;
   margin-bottom: 2rem; }
 
+.page-new__note-box {
+  font-size: 1.5rem;
+  background: #333;
+  color: #fff;
+  border-radius: 5px;
+  padding: 1rem 1.6rem;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); }
+
 .page-new {
   background-color: #fff;
   border-radius: 5px;
@@ -2333,7 +2341,7 @@ input:checked + .slider:before {
   padding: 5rem 4.5rem 3rem 4.5rem;
   border: 1px solid #dbe2e8;
   box-shadow: 2px 2px 3px 0 rgba(116, 123, 129, 0.12);
-  margin-top: 3rem;
+  margin-top: 2rem;
   position: relative; }
   @media (max-width: 37.5em) {
     .page-new {
