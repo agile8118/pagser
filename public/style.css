@@ -315,6 +315,24 @@ pre {
 .margin-bottom-0 {
   margin-bottom: 0 !important; }
 
+.text-green {
+  color: #fff;
+  border-radius: 5px;
+  background-color: #2ecc71;
+  padding: 0.2rem 0.6rem;
+  display: inline-block;
+  font-size: 1.4rem;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2); }
+
+.text-orange {
+  color: #fff;
+  border-radius: 5px;
+  background-color: #d59e29;
+  padding: 0.2rem 0.6rem;
+  display: inline-block;
+  font-size: 1.4rem;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2); }
+
 .u-two-item-row {
   display: block; }
   .u-two-item-row--1 {

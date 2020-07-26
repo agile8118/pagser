@@ -309,6 +309,7 @@ exports.updateDraftPageData = async (req, res) => {
           });
         } else {
           result.type = page.type;
+          result.updatedAt = new Date();
           result.save((err) => {
             if (err) return res.status(500).send("error");
             res.send({ id: result.id, message: "updated" });
@@ -338,23 +339,27 @@ exports.updateDraftPageData = async (req, res) => {
       }
       break;
     case "final-step":
-      DraftPage.findById(pageId, (err, result) => {
-        result.configurations = {
-          comments: page.configurations.comments,
-          rating: page.configurations.rating,
-          anonymously: page.configurations.anonymously,
-          links: page.configurations.links,
-        };
+      try {
+        await DraftPage.findOneAndUpdate(
+          { _id: pageId },
+          {
+            updatedAt: new Date(),
+            tags: page.tags,
+            url: page.url || "",
+            configurations: {
+              comments: page.configurations.comments,
+              rating: page.configurations.rating,
+              anonymously: page.configurations.anonymously,
+              links: page.configurations.links,
+            },
+          },
+          { new: true }
+        );
+        res.status(201).send("updated");
+      } catch (e) {
+        return res.status(500).send({ message: "Internal server error" });
+      }
 
-        result.url = page.url || "";
-        result.tags = page.tags;
-
-        result.save(function (err, page) {
-          if (!err) {
-            res.status(201).send("updated");
-          }
-        });
-      });
       break;
     default:
       res.status(404).send();
