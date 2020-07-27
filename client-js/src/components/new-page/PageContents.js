@@ -131,14 +131,14 @@ class PageContents extends Component {
       const type = getParameterByName("type", window.location.href);
       if (type) {
         this.updatePage(
-          `/new-page/final-step?id=${getParameterByName(
+          `/new-page/page-thumbnail?id=${getParameterByName(
             "id",
             window.location.href
           )}`
         );
       } else {
         this.updatePage(
-          `/new-page/final-step?id=${getParameterByName(
+          `/new-page/page-thumbnail?id=${getParameterByName(
             "id",
             window.location.href
           )}?type=${this.state.type}`
@@ -583,7 +583,7 @@ class PageContents extends Component {
   render() {
     return (
       <React.Fragment>
-        <ProgressBar width={50} />
+        <ProgressBar width={40} />
         <div className="page-new__note-box">
           <h3>A note about saving:</h3>
           <p>

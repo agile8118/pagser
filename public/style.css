@@ -221,6 +221,12 @@ pre {
   font-size: inherit;
   color: #fff; }
 
+.a-18 {
+  color: #555;
+  font-size: 1.6rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem; }
+
 .right-content {
   width: 100%;
   text-align: right !important; }

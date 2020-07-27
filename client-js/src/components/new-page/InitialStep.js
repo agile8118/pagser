@@ -143,7 +143,7 @@ class InitialStep extends Component {
   render() {
     return (
       <div>
-        <ProgressBar width={30} />
+        <ProgressBar width={20} />
         <div className="page-new">{this.renderContent()}</div>
       </div>
     );
