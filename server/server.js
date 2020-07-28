@@ -9,6 +9,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const apiRouter = require("./api/router");
 const session = require("express-session");
+const log = require("./lib/log");
 const MongoStore = require("connect-mongo")(session);
 const util = require("./lib/util");
 const keys = require("./config/keys");
@@ -45,6 +46,38 @@ app.use(
     cookie: { maxAge: 180 * 60 * 1000 }, // 3 hours
   })
 );
+
+app.use((req, res, next) => {
+  const requestStart = Date.now();
+  // Grab requester ip address
+  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+
+  // Once the request is finished
+  res.on("finish", () => {
+    // Get req status code and message
+    const { statusCode, statusMessage } = res;
+    // Calculate how much it took the request to finish
+    const processingTime = Date.now() - requestStart;
+
+    // Format the log message and send it to log function
+    log(
+      ip +
+        " -- " +
+        req.method +
+        " " +
+        req.url +
+        " " +
+        statusCode +
+        " " +
+        statusMessage +
+        " -- response-time: " +
+        processingTime +
+        " ms",
+      "info"
+    );
+  });
+  next();
+});
 
 apiRouter(app);
 
