@@ -1,5 +1,6 @@
 const Collection = require("../../models/collection");
 const User = require("../../models/user");
+const log = require("../../lib/log");
 
 // packages and constants for uploading
 const fs = require("fs");
@@ -48,7 +49,7 @@ exports.create = async (req, res) => {
 
     res.send({ message: "success", collection: cl });
   } catch (e) {
-    console.error(e);
+    log(e);
     res.status(500).send({ message: "Internal server error." });
   }
 };
@@ -74,7 +75,7 @@ exports.fetchCreatedAndSaved = async (req, res) => {
       savedCollections: sc,
     });
   } catch (e) {
-    console.error(e);
+    log(e);
     res.status(500).send({ message: "Internal server error." });
   }
 };
@@ -104,26 +105,31 @@ exports.fetchCreated = async (req, res) => {
 
     res.send({ collections, sortBy });
   } catch (e) {
-    console.error(e);
+    log(e);
     res.status(500).send({ message: "Internal server error." });
   }
 };
 
 // Fetch user created collections for add to collection modal
 exports.fetchCreatedFAP = async (req, res) => {
-  const results = await Collection.find({ user: req.user.id })
-    .select("name pages")
-    .sort({ date: -1 });
+  try {
+    const results = await Collection.find({ user: req.user.id })
+      .select("name pages")
+      .sort({ date: -1 });
 
-  const collections = results.map((cl) => {
-    return {
-      id: cl._id,
-      name: cl.name,
-      selected: cl.pages.indexOf(req.params.pageId) > -1,
-    };
-  });
+    const collections = results.map((cl) => {
+      return {
+        id: cl._id,
+        name: cl.name,
+        selected: cl.pages.indexOf(req.params.pageId) > -1,
+      };
+    });
 
-  res.send({ collections });
+    res.send({ collections });
+  } catch (e) {
+    log(e);
+    res.status(500).send({ message: "Internal server error." });
+  }
 };
 
 // Fetch collections user has saved
@@ -142,7 +148,7 @@ exports.fetchSaved = async (req, res) => {
       collections: sc,
     });
   } catch (e) {
-    console.error(e);
+    log(e);
     res.status(500).send({ message: "Internal server error." });
   }
 };
@@ -161,7 +167,7 @@ exports.fetchShared = async (req, res) => {
 
     res.send({ collections: collections.length ? collections : null });
   } catch (e) {
-    console.error(e);
+    log(e);
     res.status(500).send({ message: "Internal server error." });
   }
 };
@@ -206,67 +212,83 @@ exports.fetchOne = async (req, res) => {
 
     res.send({ collection, viewer, btn });
   } catch (e) {
-    console.error(e);
+    log(e);
     res.status(500).send({ message: "Internal server error." });
   }
 };
 
 // Add or remove the page from the selected collection
 exports.AddRemovePage = async (req, res) => {
-  const pageId = req.params.pageId;
-  const clId = req.params.id;
-  let selected;
+  try {
+    const pageId = req.params.pageId;
+    const clId = req.params.id;
+    let selected;
 
-  const cl = await Collection.findById(clId, "pages name");
-  if (cl.pages.indexOf(pageId) > -1) {
-    // Remove from collection
-    await Collection.findByIdAndUpdate(clId, { $pull: { pages: pageId } });
-    selected = false;
-  } else {
-    // Add to collection
-    await Collection.findByIdAndUpdate(clId, { $push: { pages: pageId } });
-    selected = true;
+    const cl = await Collection.findById(clId, "pages name");
+    if (cl.pages.indexOf(pageId) > -1) {
+      // Remove from collection
+      await Collection.findByIdAndUpdate(clId, { $pull: { pages: pageId } });
+      selected = false;
+    } else {
+      // Add to collection
+      await Collection.findByIdAndUpdate(clId, { $push: { pages: pageId } });
+      selected = true;
+    }
+
+    res.send({ message: "success", selected, clName: cl.name });
+  } catch (e) {
+    log(e);
+    res.status(500).send({ message: "Internal server error." });
   }
-
-  res.send({ message: "success", selected, clName: cl.name });
 };
 
 // Save or remove a collection created by others to user library
 exports.toggleLibrary = async (req, res) => {
-  const clId = req.params.id;
+  try {
+    const clId = req.params.id;
 
-  const { savedCollections } = await User.findById(
-    req.user.id,
-    "savedCollections"
-  );
+    const { savedCollections } = await User.findById(
+      req.user.id,
+      "savedCollections"
+    );
 
-  if (savedCollections.indexOf(clId) > -1) {
-    // Remove from library
-    await User.findByIdAndUpdate(req.user.id, {
-      $pull: { savedCollections: clId },
-    });
-    return res.send({ message: "success", status: "removed" });
-  } else {
-    // Add to library
-    await User.findByIdAndUpdate(req.user.id, {
-      $push: { savedCollections: clId },
-    });
-    return res.send({ message: "success", status: "added" });
+    if (savedCollections.indexOf(clId) > -1) {
+      // Remove from library
+      await User.findByIdAndUpdate(req.user.id, {
+        $pull: { savedCollections: clId },
+      });
+      return res.send({ message: "success", status: "removed" });
+    } else {
+      // Add to library
+      await User.findByIdAndUpdate(req.user.id, {
+        $push: { savedCollections: clId },
+      });
+      return res.send({ message: "success", status: "added" });
+    }
+  } catch (e) {
+    log(e);
+    res.status(500).send({ message: "Internal server error." });
   }
 };
 
 // Make the collection either public or private
 exports.sharing = async (req, res) => {
-  const { shared } = await Collection.findById(req.params.id, "shared");
+  try {
+    const { shared } = await Collection.findById(req.params.id, "shared");
 
-  await Collection.findByIdAndUpdate(req.params.id, { shared: !shared });
-  res.send({ message: "success", sharing: !shared });
+    await Collection.findByIdAndUpdate(req.params.id, { shared: !shared });
+    res.send({ message: "success", sharing: !shared });
+  } catch (e) {
+    log(e);
+    res.status(500).send({ message: "Internal server error." });
+  }
 };
 
 // Upload and update the collection photo
 exports.photo = async (req, res) => {
   upload(req, res, async (err) => {
     try {
+      log(err);
       if (err) res.status(500).send({ message: "Internal server error." });
 
       const filePath = req.file ? req.file.path : null;
@@ -319,6 +341,7 @@ exports.photo = async (req, res) => {
         },
         async (error, { secure_url, public_id }) => {
           fs.unlink(filePath, () => {});
+          log(error);
           if (error)
             return res.status(500).send({ message: "Internal server error." });
 
@@ -332,8 +355,9 @@ exports.photo = async (req, res) => {
           });
         }
       );
-    } catch (err) {
+    } catch (e) {
       if (req.file) fs.unlink(req.file.path, () => {});
+      log(e);
       res.status(500).send({ message: "Internal server error." });
     }
   });
@@ -342,7 +366,7 @@ exports.photo = async (req, res) => {
 // Update the name and description of the collection
 exports.updateInfo = async (req, res) => {
   try {
-    const cl = await Collection.findByIdAndUpdate(req.params.id, {
+    await Collection.findByIdAndUpdate(req.params.id, {
       name: req.body.name,
       description: req.body.description,
     });
@@ -351,6 +375,7 @@ exports.updateInfo = async (req, res) => {
       message: "updated",
     });
   } catch (e) {
+    log(e);
     res.status(500).send({ message: "Internal server error" });
   }
 };
@@ -364,7 +389,7 @@ exports.removePages = async (req, res) => {
 
     res.send({ message: "pages removed" });
   } catch (e) {
-    console.error(e);
+    log(e);
     res.status(500).send({ message: "Internal server error" });
   }
 };
@@ -375,7 +400,7 @@ exports.delete = async (req, res) => {
     await Collection.findByIdAndRemove(req.params.id);
     res.send({ message: "success" });
   } catch (e) {
-    console.error(e);
+    log(e);
     res.status(500).send({ message: "Internal server error" });
   }
 };
