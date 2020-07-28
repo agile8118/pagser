@@ -21,6 +21,7 @@ import AdminHeader from "./components/admin/Header";
 import InitialStep from "./components/new-page/InitialStep";
 import PageContents from "./components/new-page/PageContents";
 import PageThumbnail from "./components/new-page/PageThumbnail";
+import PageNewAttachFiles from "./components/new-page/AttachFiles";
 import FinalStep from "./components/new-page/FinalStep";
 import Message from "./components/new-page/Message";
 
@@ -85,6 +86,7 @@ if (containerName === "newPage") {
           <Route path="/new-page/initial-step" component={InitialStep} />
           <Route path="/new-page/page-contents" component={PageContents} />
           <Route path="/new-page/page-thumbnail" component={PageThumbnail} />
+          <Route path="/new-page/attach-files" component={PageNewAttachFiles} />
           <Route path="/new-page/final-step" component={FinalStep} />
           <Route path="/new-page/message" component={Message} />
           <Redirect from="/new-page" to="/new-page/initial-step" />

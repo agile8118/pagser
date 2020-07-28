@@ -138,7 +138,7 @@ class FinalStepPrivate extends Component {
     this.updatePage(() => {
       loadingModal();
       this.props.history.push(
-        `/new-page/page-contents?id=${getParameterByName(
+        `/new-page/attach-files?id=${getParameterByName(
           "id",
           window.location.href
         )}`
@@ -174,7 +174,7 @@ class FinalStepPrivate extends Component {
 
               <div className="center-content">
                 <h3 className="heading-tertiary">
-                  do some configurations and choose a url
+                  Do some configurations and choose a url
                 </h3>
               </div>
 

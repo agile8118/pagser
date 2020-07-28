@@ -6,14 +6,14 @@ import UploadPhoto from "../modals/UploadPhoto";
 
 import { openUploadPhoto, openConfModal, closeModal } from "actions";
 
-class PageThumbnail extends Component {
+class AttachFiles extends Component {
   state = { error: "" };
 
   componentDidMount() {}
 
   onBackButtonClicked = () => {
     this.props.history.push(
-      `/new-page/page-contents?id=${getParameterByName(
+      `/new-page/page-thumbnail?id=${getParameterByName(
         "id",
         window.location.href
       )}`
@@ -22,7 +22,7 @@ class PageThumbnail extends Component {
 
   onNextButtonClicked = () => {
     this.props.history.push(
-      `/new-page/attach-files?id=${getParameterByName(
+      `/new-page/final-step?id=${getParameterByName(
         "id",
         window.location.href
       )}`
@@ -42,24 +42,24 @@ class PageThumbnail extends Component {
 
         {/* Stage title */}
         <div className="center-content">
-          <h3 className="heading-tertiary">Choose a page thumbnail</h3>
+          <h3 className="heading-tertiary">Add attach files</h3>
         </div>
 
         <p className="a-18">
-          Upload a beautiful photo to be set as a thumbnail of your page:
+          Add attach files for your page in pretty much any format if you want:
         </p>
 
         <button
           className="btn btn-blue btn-sm btn-round margin-bottom-2"
           onClick={() => this.props.openUploadPhoto()}
         >
-          <i className="fa fa-upload" /> Upload a Page Photo
+          <i className="fa fa-upload" /> Add an Attach File
         </button>
 
         <p className="a-18 italic">
-          You can always upload a new photo after you published your page, you
-          can also skip uploading a photo for now and do it after you published
-          your page.
+          You can always add/remove attach files after you published your page,
+          you can also skip this for now and do it after you published your
+          page.
         </p>
 
         {/* Upload photo modal */}
@@ -96,23 +96,8 @@ class PageThumbnail extends Component {
   render() {
     return (
       <React.Fragment>
-        <ProgressBar width={60} />
+        <ProgressBar width={80} />
         <div className="page-new">{this.renderContents()}</div>
-
-        <div className="page-new__note-box">
-          <h3>Why it's important to choose a thumbnail for your page?</h3>
-          <p>
-            A good page thumbnail will really help to increase your page views
-            and let other users to distinguish your page more and make it more
-            recognizable if they add it to their collections or other places.
-          </p>
-          <p>
-            <strong>
-              We highly recommend that you choose a photo for your page
-              thumbnail.
-            </strong>
-          </p>
-        </div>
       </React.Fragment>
     );
   }
@@ -131,4 +116,4 @@ export default connect(
     openConfModal,
     closeModal,
   }
-)(PageThumbnail);
+)(AttachFiles);

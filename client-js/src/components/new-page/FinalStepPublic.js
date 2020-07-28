@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import tagsInput from "tags-input";
 import axios from "axios";
-import { ROOT_URL } from "../../lib/keys";
 import { getParameterByName, loadingModal } from "../../lib/util";
 import ProgressBar from "../partials/ProgressBar";
 import Loading from "../partials/Loading";
@@ -56,6 +55,8 @@ class FinalStepPublic extends Component {
         }
       });
 
+    // To fix width issue client-js/node_modules/tags-input/tags-input.js and in setInputWidth
+    // function change the value to a higher value (5 -> 10)
     tagsInput(document.querySelector('input[type="tags"]'));
 
     var tags = document.querySelector("#tags");
@@ -173,7 +174,7 @@ class FinalStepPublic extends Component {
     this.updatePage(() => {
       loadingModal();
       this.props.history.push(
-        `/new-page/page-contents?id=${getParameterByName(
+        `/new-page/attach-files?id=${getParameterByName(
           "id",
           window.location.href
         )}`
@@ -255,7 +256,6 @@ class FinalStepPublic extends Component {
   render() {
     let loadingClass = "";
     let contentClass = "";
-    console.log(this.state);
     if (this.state.rating === false || this.state.rating === true) {
       loadingClass = "display-none";
       contentClass = "";
@@ -279,7 +279,7 @@ class FinalStepPublic extends Component {
             </button>
             <div className="center-content">
               <h3 className="heading-tertiary">
-                do some configurations and choose some tags
+                Do some configurations and choose some tags
               </h3>
             </div>
 
