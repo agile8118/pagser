@@ -65,15 +65,14 @@ app.use((req, res, next) => {
         " -- " +
         req.method +
         " " +
-        req.url +
+        req.originalUrl +
         " " +
         statusCode +
         " " +
         statusMessage +
         " -- response-time: " +
         processingTime +
-        " ms",
-      "info"
+        " ms"
     );
   });
   next();
@@ -104,19 +103,29 @@ app.get("/collection/:id", function (req, res) {
 });
 
 app.get("/users/:username/*", async (req, res) => {
-  const user = await User.findOne({ username: req.params.username }).select(
-    "name photo links headline biography"
-  );
+  try {
+    const user = await User.findOne({ username: req.params.username }).select(
+      "name photo links headline biography"
+    );
 
-  res.render("public-profile", { user });
+    res.render("public-profile", { user });
+  } catch (e) {
+    log(e);
+    return res.status(500).send({ message: "Internal server error" });
+  }
 });
 
 app.get("/users/:username", async (req, res) => {
-  const user = await User.findOne({ username: req.params.username }).select(
-    "name photo links headline biography"
-  );
+  try {
+    const user = await User.findOne({ username: req.params.username }).select(
+      "name photo links headline biography"
+    );
 
-  res.render("public-profile", { user });
+    res.render("public-profile", { user });
+  } catch (e) {
+    log(e);
+    return res.status(500).send({ message: "Internal server error" });
+  }
 });
 
 app.get("/login", function (req, res) {
@@ -167,6 +176,7 @@ app.get("/public-pages/:url", async (req, res) => {
       res.render("show-page/public", { page, timeAgo });
     }
   } catch (e) {
+    log(e);
     return res.status(500).send({ message: "Internal server error" });
   }
 });
@@ -210,6 +220,13 @@ app.get("*", function (req, res) {
 
 const server = http.createServer(app);
 server.listen(port, function () {
+  log(
+    "Starting the server..." +
+      "\n----------------------------------\n" +
+      "Server has started on port " +
+      port +
+      "\n----------------------------------"
+  );
   console.log("****************************");
   console.log("Server has started on", port);
   console.log("****************************");
