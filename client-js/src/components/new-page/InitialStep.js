@@ -107,8 +107,7 @@ class InitialStep extends Component {
               Choose this one if you want your page to be visible to everyone,
               your page can be founded by search engines if you supply it with
               good content. Public pages will be shown in your public profile
-              unless you create it anonymously. Spam public pages will be
-              deleted.
+              unless you create it anonymously.
             </div>
             <label className="control control--radio font-weight-400">
               Private
@@ -124,8 +123,12 @@ class InitialStep extends Component {
             <div className="page-new__types__details">
               Choose this if you want your page to be visible by only a specific
               kind of persons, such as your friends, workmates, students ,etc.
-              You can also set a password for it. Your private pages will not
-              been shown on your public profile.
+              You can restrict to only certain people to be able to view it.
+              Your private pages will not been shown on your public profile.{" "}
+              <strong>
+                The only way for others to find the page is by the URL that you
+                will give them.
+              </strong>
             </div>
           </div>
           <div className="center-content">{this.renderButton()}</div>
@@ -143,7 +146,7 @@ class InitialStep extends Component {
   render() {
     return (
       <div>
-        <ProgressBar width={30} />
+        <ProgressBar width={20} />
         <div className="page-new">{this.renderContent()}</div>
       </div>
     );

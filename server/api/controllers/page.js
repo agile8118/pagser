@@ -67,6 +67,8 @@ cloudinary.config({
 
 // Fetch the data of a public page
 exports.fetchPublicPageData = async (req, res) => {
+  req.session.viewStartTrack = Date.now();
+
   try {
     var decoded = jwt.decode(req.headers.authorization, keys.jwtSecret);
     var userId = decoded.sub;
@@ -144,6 +146,8 @@ exports.fetchPublicPageData = async (req, res) => {
 
 // Fetch the data of a private page
 exports.fetchPrivatePageData = async (req, res) => {
+  req.session.viewStartTrack = Date.now();
+
   try {
     const decoded = jwt.decode(req.headers.authorization, keys.jwtSecret);
     var userId = decoded.sub;
@@ -283,7 +287,8 @@ exports.fetchDraftPageData = (req, res) => {
   }
 };
 
-exports.updateDraftPageData = (req, res) => {
+// Update draft page data
+exports.updateDraftPageData = async (req, res) => {
   const pageId = req.params.id;
   const stage = req.params.stage;
   const page = req.body.page;
@@ -304,6 +309,7 @@ exports.updateDraftPageData = (req, res) => {
           });
         } else {
           result.type = page.type;
+          result.updatedAt = new Date();
           result.save((err) => {
             if (err) return res.status(500).send("error");
             res.send({ id: result.id, message: "updated" });
@@ -313,40 +319,47 @@ exports.updateDraftPageData = (req, res) => {
 
       break;
     case "page-contents":
-      DraftPage.findById(pageId, (err, result) => {
-        if (err) return res.status(500).send("error");
-        result.contents = {
-          title: page.contents.title,
-          briefDes: page.contents.briefDes,
-          body: util.cleanHTML(page.contents.body),
-          targets: page.contents.targets || "",
-        };
-
-        result.save(function (err, page) {
-          if (err) return res.status(500).send("error");
-          res.status(200).send(result.id);
-        });
-      });
-
+      try {
+        const result = await DraftPage.findOneAndUpdate(
+          { _id: pageId },
+          {
+            updatedAt: new Date(),
+            contents: {
+              title: page.contents.title,
+              briefDes: page.contents.briefDes,
+              body: util.cleanHTML(page.contents.body),
+              targets: page.contents.targets || "",
+            },
+          },
+          { new: true }
+        );
+        res.status(200).send(result.id);
+      } catch (e) {
+        return res.status(500).send({ message: "Internal server error" });
+      }
       break;
     case "final-step":
-      DraftPage.findById(pageId, (err, result) => {
-        result.configurations = {
-          comments: page.configurations.comments,
-          rating: page.configurations.rating,
-          anonymously: page.configurations.anonymously,
-          links: page.configurations.links,
-        };
+      try {
+        await DraftPage.findOneAndUpdate(
+          { _id: pageId },
+          {
+            updatedAt: new Date(),
+            tags: page.tags,
+            url: page.url || "",
+            configurations: {
+              comments: page.configurations.comments,
+              rating: page.configurations.rating,
+              anonymously: page.configurations.anonymously,
+              links: page.configurations.links,
+            },
+          },
+          { new: true }
+        );
+        res.status(201).send("updated");
+      } catch (e) {
+        return res.status(500).send({ message: "Internal server error" });
+      }
 
-        result.url = page.url || "";
-        result.tags = page.tags;
-
-        result.save(function (err, page) {
-          if (!err) {
-            res.status(201).send("updated");
-          }
-        });
-      });
       break;
     default:
       res.status(404).send();

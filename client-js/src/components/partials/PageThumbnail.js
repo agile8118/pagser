@@ -43,6 +43,9 @@ const PageThumbnail = (props) => {
             <h4>{title}</h4>
             <p>{briefDes}</p>
           </div>
+          {props.label && (
+            <span className="page-thumbnail__type">{props.label}</span>
+          )}
         </a>
       </div>
     );

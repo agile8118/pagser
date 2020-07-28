@@ -5,9 +5,9 @@ const path = require("path");
 const compression = require("compression");
 const http = require("http");
 const helmet = require("helmet");
-const apiRouter = require("./api/router");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const apiRouter = require("./api/router");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 const util = require("./lib/util");
@@ -27,7 +27,7 @@ mongoose.connect(
 mongoose.Promise = global.Promise;
 
 app.use(helmet());
-app.use(cors());
+app.use(cors({ origin: "https://pagher.com/" }));
 
 app.use(compression());
 app.use(express.static(publicPath));

@@ -1,3 +1,12 @@
+.page-new__note-box {
+  font-size: 1.5rem;
+  background: #333;
+  color: #fff;
+  border-radius: 5px;
+  padding: 1rem 1.6rem;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
 .page-new {
   background-color: #fff;
   border-radius: 5px;
@@ -6,7 +15,7 @@
   padding: 5rem 4.5rem 3rem 4.5rem;
   border: 1px solid #dbe2e8;
   box-shadow: $default-box-shadow;
-  margin-top: 3rem;
+  margin-top: 2rem;
   position: relative;
 
   @include respond(xs) {

@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { ConfirmModal } from "../partials/Modals";
 import Comment from "../partials/Comment/";
 import Loading from "../partials/Loading";
+import { isBottom } from "../../lib/util";
 
 import {
   fetchComments,
@@ -17,10 +18,6 @@ class Comments extends Component {
   state = {
     commentText: "",
   };
-
-  isBottom(el) {
-    return el.getBoundingClientRect().bottom <= window.innerHeight;
-  }
 
   componentDidMount() {
     if (this.props.pageId) this.props.fetchComments(this.props.pageId);
@@ -44,7 +41,7 @@ class Comments extends Component {
     const wrappedElement = document.getElementById("comments2");
 
     if (
-      this.isBottom(wrappedElement) &&
+      isBottom(wrappedElement) &&
       this.props.comments.length > 1 &&
       this.props.comments.length % 10 === 0
     ) {
@@ -180,7 +177,7 @@ const mapStateToProps = (state) => {
     length: state.comments.length,
     isPending: state.comments.isPending,
     pageId: state.pageData.id,
-    pageAuthorId: state.pageData.author._id,
+    pageAuthorId: state.pageData.author ? state.pageData.author._id : null,
     userId: state.user.id,
     confMdl: state.modals.confDeleteComment,
   };

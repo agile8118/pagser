@@ -221,6 +221,12 @@ pre {
   font-size: inherit;
   color: #fff; }
 
+.a-18 {
+  color: #555;
+  font-size: 1.6rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem; }
+
 .right-content {
   width: 100%;
   text-align: right !important; }
@@ -314,6 +320,24 @@ pre {
 
 .margin-bottom-0 {
   margin-bottom: 0 !important; }
+
+.text-green {
+  color: #fff;
+  border-radius: 5px;
+  background-color: #2ecc71;
+  padding: 0.2rem 0.6rem;
+  display: inline-block;
+  font-size: 1.4rem;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2); }
+
+.text-orange {
+  color: #fff;
+  border-radius: 5px;
+  background-color: #d59e29;
+  padding: 0.2rem 0.6rem;
+  display: inline-block;
+  font-size: 1.4rem;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2); }
 
 .u-two-item-row {
   display: block; }
@@ -2307,6 +2331,14 @@ input:checked + .slider:before {
   margin-top: 2.5rem;
   margin-bottom: 2rem; }
 
+.page-new__note-box {
+  font-size: 1.5rem;
+  background: #333;
+  color: #fff;
+  border-radius: 5px;
+  padding: 1rem 1.6rem;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); }
+
 .page-new {
   background-color: #fff;
   border-radius: 5px;
@@ -2315,7 +2347,7 @@ input:checked + .slider:before {
   padding: 5rem 4.5rem 3rem 4.5rem;
   border: 1px solid #dbe2e8;
   box-shadow: 2px 2px 3px 0 rgba(116, 123, 129, 0.12);
-  margin-top: 3rem;
+  margin-top: 2rem;
   position: relative; }
   @media (max-width: 37.5em) {
     .page-new {

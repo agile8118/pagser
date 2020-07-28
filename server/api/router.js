@@ -1,7 +1,7 @@
 const Authentication = require("./controllers/authentication");
 const Controller = require("./controllers");
-const Profile = require("./controllers/Profile");
-const Settings = require("./controllers/Settings");
+const Profile = require("./controllers/profile");
+const Settings = require("./controllers/settings");
 const Page = require("./controllers/page");
 const Comment = require("./controllers/comment");
 const Subscription = require("./controllers/subscription");
@@ -11,6 +11,7 @@ const History = require("./controllers/history");
 const Collection = require("./controllers/collection");
 const Rating = require("./controllers/rating");
 const UserPages = require("./controllers/userPages");
+const Analytics = require("./controllers/analytics");
 const passportService = require("./services/passport");
 const passport = require("passport");
 const validate = require("../middleware/validate");
@@ -203,6 +204,11 @@ module.exports = (app) => {
   );
   // Fetch all the collections user has created and shared
   app.get("/api/collections/shared/:username", Collection.fetchShared);
+
+  // ------------------------------------------------ //
+  // *********** ANALYTICS ROUTES *********** //
+  // ------------------------------------------------ //
+  app.post("/api/views/:id", Analytics.view);
 
   // ------------------------------------------------ //
   // *********** NEW PAGE ROUTES *********** //

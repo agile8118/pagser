@@ -30,6 +30,7 @@ class Published extends Component {
               target="_blank"
               id={item.id}
               noPhoto={true}
+              label={`Last updated: ${item.updatedAt}`}
               type="draft"
               status={this.props.status}
               selected={

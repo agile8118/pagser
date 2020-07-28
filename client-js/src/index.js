@@ -20,6 +20,8 @@ import AdminHeader from "./components/admin/Header";
 
 import InitialStep from "./components/new-page/InitialStep";
 import PageContents from "./components/new-page/PageContents";
+import PageThumbnail from "./components/new-page/PageThumbnail";
+import PageNewAttachFiles from "./components/new-page/AttachFiles";
 import FinalStep from "./components/new-page/FinalStep";
 import Message from "./components/new-page/Message";
 
@@ -57,6 +59,7 @@ import showPageStore from "./reducers/showPageStore";
 import mainStore from "./reducers/mainStore";
 import adminStore from "./reducers/adminStore";
 import publicProfileStore from "./reducers/publicProfileStore";
+import newPageStore from "./reducers/newPageStore";
 
 const container = document.querySelector(".react-container");
 
@@ -77,15 +80,19 @@ if (containerName === "auth") {
 
 if (containerName === "newPage") {
   ReactDOM.render(
-    <BrowserRouter>
-      <Switch>
-        <Route path="/new-page/initial-step" component={InitialStep} />
-        <Route path="/new-page/page-contents" component={PageContents} />
-        <Route path="/new-page/final-step" component={FinalStep} />
-        <Route path="/new-page/message" component={Message} />
-        <Redirect from="/new-page" to="/new-page/initial-step" />
-      </Switch>
-    </BrowserRouter>,
+    <Provider store={newPageStore}>
+      <BrowserRouter>
+        <Switch>
+          <Route path="/new-page/initial-step" component={InitialStep} />
+          <Route path="/new-page/page-contents" component={PageContents} />
+          <Route path="/new-page/page-thumbnail" component={PageThumbnail} />
+          <Route path="/new-page/attach-files" component={PageNewAttachFiles} />
+          <Route path="/new-page/final-step" component={FinalStep} />
+          <Route path="/new-page/message" component={Message} />
+          <Redirect from="/new-page" to="/new-page/initial-step" />
+        </Switch>
+      </BrowserRouter>
+    </Provider>,
     container
   );
 }

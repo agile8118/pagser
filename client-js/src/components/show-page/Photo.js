@@ -76,7 +76,7 @@ const Photo = (props) => {
               text="Upload a beautiful photo to be set as a featured image of your page:"
               cropMsg="Choose an area to be shown as for the page thumbnail, this won't
                 crop your image, this is just the area that will be shown as the
-                thubmnail."
+                thumbnail."
               inputLabelName="Choose a photo"
               url={`/api/pages/${props.id}/photo`}
               minWidth={1200}
