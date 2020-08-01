@@ -182,6 +182,19 @@ class FinalStepPrivate extends Component {
                 <div className="switches">
                   <div className="form__group" className="switches__entity">
                     <label>Disable Comments</label>
+                    <div className="tooltip tooltip-top tooltip--info">
+                      <a href="javascript:void(0)">
+                        <i
+                          className="fa fa-question-circle"
+                          aria-hidden="true"
+                        />
+                      </a>{" "}
+                      <span className="tooltip__text">
+                        lorem ipsum dolor sit amet, consectetur adiplorem ipsum
+                        dolor sit amet, consectetur adiplorem ipsum dolor sit
+                        amet, consectetur adip
+                      </span>
+                    </div>
                     <i
                       className={
                         !this.state.comments
@@ -197,6 +210,19 @@ class FinalStepPrivate extends Component {
 
                   <div className="form__group" className="switches__entity">
                     <label>Disable Rating</label>
+                    <div className="tooltip tooltip-top tooltip--info">
+                      <a href="javascript:void(0)">
+                        <i
+                          className="fa fa-question-circle"
+                          aria-hidden="true"
+                        />
+                      </a>{" "}
+                      <span className="tooltip__text">
+                        lorem ipsum dolor sit amet, consectetur adiplorem ipsum
+                        dolor sit amet, consectetur adiplorem ipsum dolor sit
+                        amet, consectetur adip
+                      </span>
+                    </div>
                     <i
                       className={
                         !this.state.rating
@@ -212,6 +238,19 @@ class FinalStepPrivate extends Component {
 
                   <div className="form__group" className="switches__entity">
                     <label>Create This Page Anonymously</label>
+                    <div className="tooltip tooltip-top tooltip--info">
+                      <a href="javascript:void(0)">
+                        <i
+                          className="fa fa-question-circle"
+                          aria-hidden="true"
+                        />
+                      </a>
+                      <span className="tooltip__text">
+                        lorem ipsum dolor sit amet, consectetur adiplorem ipsum
+                        dolor sit amet, consectetur adiplorem ipsum dolor sit
+                        amet, consectetur adip
+                      </span>
+                    </div>
                     <i
                       className={
                         this.state.anonymously
