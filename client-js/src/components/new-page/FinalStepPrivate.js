@@ -188,7 +188,7 @@ class FinalStepPrivate extends Component {
                           className="fa fa-question-circle"
                           aria-hidden="true"
                         />
-                      </a>{" "}
+                      </a>
                       <span className="tooltip__text">
                         lorem ipsum dolor sit amet, consectetur adiplorem ipsum
                         dolor sit amet, consectetur adiplorem ipsum dolor sit
@@ -216,7 +216,7 @@ class FinalStepPrivate extends Component {
                           className="fa fa-question-circle"
                           aria-hidden="true"
                         />
-                      </a>{" "}
+                      </a>
                       <span className="tooltip__text">
                         lorem ipsum dolor sit amet, consectetur adiplorem ipsum
                         dolor sit amet, consectetur adiplorem ipsum dolor sit
