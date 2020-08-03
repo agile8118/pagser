@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { connect } from "react-redux";
 import CommentActions from "./CommentActions";
 import CommentBody from "./CommentBody";
-import ReplyForm from "./addReplyForm";
+import ReplyForm from "./AddReplyForm";
 
 import {
   addReplyForm,
@@ -94,14 +94,11 @@ const CommentReply = (props) => {
   );
 };
 
-export default connect(
-  null,
-  {
-    addReplyForm,
-    addComment,
-    editCommentForm,
-    editComment,
-    openMdl,
-    likeComment,
-  }
-)(CommentReply);
+export default connect(null, {
+  addReplyForm,
+  addComment,
+  editCommentForm,
+  editComment,
+  openMdl,
+  likeComment,
+})(CommentReply);
