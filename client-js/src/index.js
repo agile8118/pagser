@@ -44,7 +44,9 @@ import ReadLater from "./components/main/ReadLater";
 import LikedPages from "./components/main/LikedPages";
 import Collections from "./components/main/Collections";
 import CollectionShow from "./components/main/CollectionShow";
+import Dashboard from "./components/main/Dashboard";
 import Analytics from "./components/main/Analytics";
+import Monetization from "./components/main/Monetization";
 import PagesPublished from "./components/main/pages/Published";
 import PagesDraft from "./components/main/pages/Draft";
 import SideNav from "./components/main/SideNav";
@@ -203,7 +205,9 @@ if (containerName === "main") {
           <Route path="/feed/liked-pages" component={LikedPages} />
           <Route path="/u/collections" component={Collections} />
           <Route path="/collection/:id" component={CollectionShow} />
+          <Route path="/u/dashboard" component={Dashboard} />
           <Route path="/u/analytics" component={Analytics} />
+          <Route path="/u/monetization" component={Monetization} />
           <Route path="/u/pages/published" component={PagesPublished} />
           <Route path="/u/pages/draft" component={PagesDraft} />
           <Redirect from="/feed/history" to="/feed/history/pages" />
