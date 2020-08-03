@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import CommentReply from "./CommentReply";
 import CommentActions from "./CommentActions";
 import CommentBody from "./CommentBody";
-import ReplyForm from "./addReplyForm";
+import ReplyForm from "./AddReplyForm";
 
 import {
   fetchReplies,
@@ -167,15 +167,12 @@ const Comment = (props) => {
   );
 };
 
-export default connect(
-  null,
-  {
-    fetchReplies,
-    hideReplies,
-    addReplyForm,
-    addComment,
-    editCommentForm,
-    openMdl,
-    likeComment,
-  }
-)(Comment);
+export default connect(null, {
+  fetchReplies,
+  hideReplies,
+  addReplyForm,
+  addComment,
+  editCommentForm,
+  openMdl,
+  likeComment,
+})(Comment);
