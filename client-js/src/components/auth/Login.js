@@ -3,7 +3,7 @@ import axios from "axios";
 import { getParameterByName } from "../../lib/util";
 import Alert from "../partials/Alert";
 import { Modal } from "../partials/Modals";
-import Loading from "../partials/Loading.js";
+import Loading from "../partials/Loading";
 
 class Login extends Component {
   state = {
