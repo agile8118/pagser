@@ -9,7 +9,7 @@ before_install:
 
 script:
   - npm run build
-  - zip -r latest public scripts server storage package.json package-lock.json appspec.yml
+  - zip -r latest public scripts server storage package.json views package-lock.json appspec.yml
   - mkdir -p dpl_cd_upload
   - mv latest.zip dpl_cd_upload/latest.zip
 
