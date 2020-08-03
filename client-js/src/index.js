@@ -15,7 +15,7 @@ import Register from "./components/auth/Register";
 import ForgotPassword from "./components/auth/ForgotPassword";
 
 import Profile from "./components/admin/Profile";
-import Settings from "./components/admin/settings/Settings";
+import Settings from "./components/admin/settings/Settings.js";
 import AdminHeader from "./components/admin/Header";
 
 import InitialStep from "./components/new-page/InitialStep";

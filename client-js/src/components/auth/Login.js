@@ -3,7 +3,7 @@ import axios from "axios";
 import { getParameterByName } from "../../lib/util";
 import Alert from "../partials/Alert";
 import { Modal } from "../partials/Modals";
-import Loading from "../partials/Loading";
+import Loading from "../partials/Loading.js";
 
 class Login extends Component {
   state = {
@@ -53,9 +53,7 @@ class Login extends Component {
       })
       .then((response) => {
         this.setState({
-          alertMessage: `Instructions on how to reset your password were sent to ${
-            this.state.email
-          }`,
+          alertMessage: `Instructions on how to reset your password were sent to ${this.state.email}`,
           alertType: "success",
           forgotPassMdl: false,
         });
