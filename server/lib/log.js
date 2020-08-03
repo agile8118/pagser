@@ -1,6 +1,6 @@
 const fs = require("fs");
-
-/* 
+const path = require("path");
+/*
   if the message parameter is object we log error and if it's string we log info
 */
 module.exports = (message) => {
@@ -20,7 +20,8 @@ module.exports = (message) => {
     ("0" + d.getUTCSeconds()).slice(-2);
 
   // Base log directory
-  let dir = "./logs";
+  let dir = path.join(__dirname, "../../logs");
+
   // If we don't have logs folder, create it
   if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 

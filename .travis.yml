@@ -30,6 +30,6 @@ deploy:
     key: latest.zip
     bundle_type: zip
     application: appDeployment
-    deployment_group: deploymentGroup
+    deployment_group: pagherGroupDeployment
     region: us-east-1
     on: *2
