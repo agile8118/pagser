@@ -13,12 +13,6 @@ class FinalStepPublic extends Component {
     links: "",
     anonymously: "",
     tags: "",
-    classes: {
-      comments: "fa fa-2x fa-toggle-off",
-      rating: "fa fa-2x fa-toggle-off",
-      links: "fa fa-2x fa-toggle-off",
-      anonymously: "fa fa-2x fa-toggle-off",
-    },
     btnDisabled: true,
   };
 
@@ -182,59 +176,20 @@ class FinalStepPublic extends Component {
     });
   }
 
-  onSwithClicked(e) {
-    if (e.target.classList.contains("fa-toggle-off")) {
-      e.target.classList.remove("fa-toggle-off");
-      e.target.classList.add("fa-toggle-on");
-
-      switch (e.target.getAttribute("role")) {
-        case "comments":
-          this.setState({ comments: false }, () => {
-            this.stateChanged();
-          });
-          break;
-        case "rating":
-          this.setState({ rating: false }, () => {
-            this.stateChanged();
-          });
-          break;
-        case "links":
-          this.setState({ links: false }, () => {
-            this.stateChanged();
-          });
-          break;
-        case "anonymously":
-          this.setState({ anonymously: true }, () => {
-            this.stateChanged();
-          });
-          break;
-      }
-    } else {
-      e.target.classList.remove("fa-toggle-on");
-      e.target.classList.add("fa-toggle-off");
-
-      switch (e.target.getAttribute("role")) {
-        case "comments":
-          this.setState({ comments: true }, () => {
-            this.stateChanged();
-          });
-          break;
-        case "rating":
-          this.setState({ rating: true }, () => {
-            this.stateChanged();
-          });
-          break;
-        case "links":
-          this.setState({ links: true }, () => {
-            this.stateChanged();
-          });
-          break;
-        case "anonymously":
-          this.setState({ anonymously: false }, () => {
-            this.stateChanged();
-          });
-          break;
-      }
+  onSwitchClicked(role) {
+    switch (role) {
+      case "comments":
+        this.setState({ comments: !this.state.comments });
+        break;
+      case "rating":
+        this.setState({ rating: !this.state.rating });
+        break;
+      case "links":
+        this.setState({ links: !this.state.links });
+        break;
+      case "anonymously":
+        this.setState({ anonymously: !this.state.anonymously });
+        break;
     }
   }
 
@@ -285,63 +240,75 @@ class FinalStepPublic extends Component {
 
             <div className="page-new__final-step">
               <div className="switches">
-                <div
-                  className="form__group"
-                  id="swith-on-off"
-                  className="switches__entity"
-                >
+                <div className="form__group" className="switches__entity">
                   <label>Disable Comments</label>
-                  <i
-                    className={this.state.classes.comments}
-                    role="comments"
-                    aria-hidden="true"
-                    onClick={this.onSwithClicked.bind(this)}
-                  />
+                  <button
+                    className="btn-i btn-i-blue"
+                    onClick={() => this.onSwitchClicked("comments")}
+                  >
+                    <i
+                      className={
+                        this.state.comments
+                          ? "fa fa-2x fa-toggle-on"
+                          : "fa fa-2x fa-toggle-off"
+                      }
+                      aria-hidden="true"
+                    />
+                  </button>
                   <input type="hidden" value="false" />
                 </div>
 
-                <div
-                  className="form__group"
-                  id="swith-on-off"
-                  className="switches__entity"
-                >
+                <div className="form__group" className="switches__entity">
                   <label>Disable Rating</label>
-                  <i
-                    className={this.state.classes.rating}
-                    role="rating"
-                    aria-hidden="true"
-                    onClick={this.onSwithClicked.bind(this)}
-                  />
+                  <button
+                    className="btn-i btn-i-blue"
+                    onClick={() => this.onSwitchClicked("rating")}
+                  >
+                    <i
+                      className={
+                        this.state.rating
+                          ? "fa fa-2x fa-toggle-on"
+                          : "fa fa-2x fa-toggle-off"
+                      }
+                      aria-hidden="true"
+                    />
+                  </button>
                   <input type="hidden" value="false" />
                 </div>
 
-                <div
-                  className="form__group"
-                  id="swith-on-off"
-                  className="switches__entity"
-                >
+                <div className="form__group" className="switches__entity">
                   <label>Do Not Display Related Pages and Tags</label>
-                  <i
-                    className={this.state.classes.links}
-                    role="links"
-                    aria-hidden="true"
-                    onClick={this.onSwithClicked.bind(this)}
-                  />
+                  <button
+                    className="btn-i btn-i-blue"
+                    onClick={() => this.onSwitchClicked("links")}
+                  >
+                    <i
+                      className={
+                        this.state.links
+                          ? "fa fa-2x fa-toggle-on"
+                          : "fa fa-2x fa-toggle-off"
+                      }
+                      aria-hidden="true"
+                    />
+                  </button>
                   <input type="hidden" value="false" />
                 </div>
 
-                <div
-                  className="form__group"
-                  id="swith-on-off"
-                  className="switches__entity"
-                >
+                <div className="form__group" className="switches__entity">
                   <label>Create This Page Anonymously</label>
-                  <i
-                    className={this.state.classes.anonymously}
-                    role="anonymously"
-                    aria-hidden="true"
-                    onClick={this.onSwithClicked.bind(this)}
-                  />
+                  <button
+                    className="btn-i btn-i-blue"
+                    onClick={() => this.onSwitchClicked("anonymously")}
+                  >
+                    <i
+                      className={
+                        this.state.anonymously
+                          ? "fa fa-2x fa-toggle-on"
+                          : "fa fa-2x fa-toggle-off"
+                      }
+                      aria-hidden="true"
+                    />
+                  </button>
                   <input type="hidden" value="false" />
                 </div>
               </div>

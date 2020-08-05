@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import { getParameterByName, loadingModal } from "../../lib/util";
 import ProgressBar from "../partials/ProgressBar";
+import Loading from "../partials/Loading";
 import ChooseUrl from "../partials/ChooseUrl";
 
 class FinalStepPrivate extends Component {
@@ -49,8 +50,8 @@ class FinalStepPrivate extends Component {
       });
   }
 
-  onSwithClicked = (e) => {
-    switch (e.target.getAttribute("role")) {
+  onSwitchClicked = (role) => {
+    switch (role) {
       case "comments":
         this.setState({ comments: !this.state.comments });
         break;
@@ -114,9 +115,7 @@ class FinalStepPrivate extends Component {
         .then((response) => {
           loadingModal();
           this.props.history.push(
-            `/new-page/message?type=private&status=success&url=${
-              response.data.url
-            }&username=${response.data.username}`
+            `/new-page/message?type=private&status=success&url=${response.data.url}&username=${response.data.username}`
           );
         })
         .catch((error) => {
@@ -195,16 +194,19 @@ class FinalStepPrivate extends Component {
                         amet, consectetur adip
                       </span>
                     </div>
-                    <i
-                      className={
-                        !this.state.comments
-                          ? "fa fa-2x fa-toggle-on"
-                          : "fa fa-2x fa-toggle-off"
-                      }
-                      role="comments"
-                      aria-hidden="true"
-                      onClick={this.onSwithClicked}
-                    />
+                    <button
+                      className="btn-i btn-i-blue"
+                      onClick={() => this.onSwitchClicked("comments")}
+                    >
+                      <i
+                        className={
+                          !this.state.comments
+                            ? "fa fa-2x fa-toggle-on"
+                            : "fa fa-2x fa-toggle-off"
+                        }
+                        aria-hidden="true"
+                      />
+                    </button>
                     <input type="hidden" value="false" />
                   </div>
 
@@ -223,16 +225,19 @@ class FinalStepPrivate extends Component {
                         amet, consectetur adip
                       </span>
                     </div>
-                    <i
-                      className={
-                        !this.state.rating
-                          ? "fa fa-2x fa-toggle-on"
-                          : "fa fa-2x fa-toggle-off"
-                      }
-                      role="rating"
-                      aria-hidden="true"
-                      onClick={this.onSwithClicked}
-                    />
+                    <button
+                      className="btn-i btn-i-blue"
+                      onClick={() => this.onSwitchClicked("rating")}
+                    >
+                      <i
+                        className={
+                          !this.state.rating
+                            ? "fa fa-2x fa-toggle-on"
+                            : "fa fa-2x fa-toggle-off"
+                        }
+                        aria-hidden="true"
+                      />
+                    </button>
                     <input type="hidden" value="false" />
                   </div>
 
@@ -251,16 +256,19 @@ class FinalStepPrivate extends Component {
                         amet, consectetur adip
                       </span>
                     </div>
-                    <i
-                      className={
-                        this.state.anonymously
-                          ? "fa fa-2x fa-toggle-on"
-                          : "fa fa-2x fa-toggle-off"
-                      }
-                      role="anonymously"
-                      aria-hidden="true"
-                      onClick={this.onSwithClicked}
-                    />
+                    <button
+                      className="btn-i btn-i-blue"
+                      onClick={() => this.onSwitchClicked("anonymously")}
+                    >
+                      <i
+                        className={
+                          this.state.anonymously
+                            ? "fa fa-2x fa-toggle-on"
+                            : "fa fa-2x fa-toggle-off"
+                        }
+                        aria-hidden="true"
+                      />
+                    </button>
                     <input type="hidden" value="false" />
                   </div>
                 </div>
@@ -302,22 +310,7 @@ class FinalStepPrivate extends Component {
             <ProgressBar width={100} />
             <div className="page-new">
               <div className="center-content">
-                <div className="lds-css ng-scope">
-                  <div className="lds-spinner">
-                    <div />
-                    <div />
-                    <div />
-                    <div />
-                    <div />
-                    <div />
-                    <div />
-                    <div />
-                    <div />
-                    <div />
-                    <div />
-                    <div />
-                  </div>
-                </div>
+                <Loading />
               </div>
             </div>
           </div>

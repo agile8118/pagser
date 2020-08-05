@@ -88,16 +88,11 @@
       border-top: 1px solid #f7f7f7;
     }
 
-    i {
-      color: #2980b9;
+    .btn-i {
+      float: right;
       position: relative;
       font-size: 2.4rem;
       top: 4px;
-      float: right;
-
-      &:hover {
-        cursor: pointer;
-      }
     }
   }
 }
