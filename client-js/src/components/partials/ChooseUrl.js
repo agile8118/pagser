@@ -4,7 +4,7 @@ import { convertToUrl } from "../../lib/util";
 class ChooseUrl extends Component {
   constructor(props) {
     super(props);
-    this.state = { url: this.props.url || "" };
+    this.state = { url: this.props.url === null ? null : this.props.url };
     this.errMsg = React.createRef();
   }
 
@@ -16,6 +16,16 @@ class ChooseUrl extends Component {
       this.props.usedUrls.indexOf(this.state.url) === -1
     ) {
       this.props.onSuccess(this.state.url);
+    } else if (this.state.url !== null) {
+      if (this.props.usedUrls.indexOf(this.state.url) !== -1) {
+        this.errMsg.current.innerText = `You have already used "${this.state.url}" url, choose something else.`;
+        this.errMsg.current.classList.remove("display-none");
+        this.props.onError();
+      } else {
+        this.errMsg.current.innerText = "Please choose a URL for your page.";
+        this.errMsg.current.classList.remove("display-none");
+        this.props.onError();
+      }
     }
   }
 
@@ -48,11 +58,11 @@ class ChooseUrl extends Component {
         </label>
         <input
           type="text"
-          value={this.state.url}
+          value={this.state.url || ""}
           className="form__input"
           placeholder="Choose a URL for your page"
           onBlur={this.checkExistence}
-          onChange={e => {
+          onChange={(e) => {
             this.setState({ url: convertToUrl(e.target.value) }, () => {
               // check for URL validation on change
               this.checkExistence();
@@ -70,7 +80,7 @@ class ChooseUrl extends Component {
             way other persons can view this page is to have this URL. <br /> You
             should share this URl in order for others to view it.
           </p>
-        </div>{" "}
+        </div>
       </div>
     );
   }

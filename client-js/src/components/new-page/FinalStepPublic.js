@@ -13,158 +13,154 @@ class FinalStepPublic extends Component {
     links: "",
     anonymously: "",
     tags: "",
-    btnDisabled: true,
+    errors: {
+      tags: null,
+    },
   };
 
-  componentDidMount() {
-    const pageId = getParameterByName("id", window.location.href) || "id";
-    const config = {
-      headers: {
-        authorization: localStorage.getItem("token"),
-      },
-    };
-
-    axios
-      .get(`/api/new-page/final-step/${pageId}`, config)
-      .then((response) => {
-        const page = response.data.page;
-        this.setState(
-          {
-            type: page.type,
-            comments: page.configurations.comments,
-            rating: page.configurations.rating,
-            anonymously: page.configurations.anonymously,
-            links: page.configurations.links,
+  async componentDidMount() {
+    try {
+      const { data } = await axios.get(
+        `/api/new-page/final-step/${
+          getParameterByName("id", window.location.href) || "id"
+        }`,
+        {
+          headers: {
+            authorization: localStorage.getItem("token"),
           },
-          () => {
-            this.stateChanged("classes");
-          }
-        );
-      })
-      .catch((error) => {
-        if (error.response.status === 401) {
-          window.location.href = "/login?redirected=new-page";
-        } else {
-          this.props.history.push(`/new-page/initial-step`);
         }
+      );
+
+      this.setState({
+        type: data.page.type,
+        comments: data.page.configurations.comments,
+        rating: data.page.configurations.rating,
+        anonymously: data.page.configurations.anonymously,
+        links: data.page.configurations.links,
+        tags: data.page.tags ? data.page.tags[0] : "",
       });
+    } catch (e) {
+      console.log(e);
+      if (error.response.status === 401) {
+        window.location.href = "/login?redirected=new-page";
+      } else {
+        this.props.history.push(`/new-page/initial-step`);
+      }
+    }
 
     // To fix width issue client-js/node_modules/tags-input/tags-input.js and in setInputWidth
     // function change the value to a higher value (5 -> 10)
     tagsInput(document.querySelector('input[type="tags"]'));
 
-    var tags = document.querySelector("#tags");
-    tags.addEventListener("change", log);
-    var self = this;
-    function log(e) {
+    const self = this;
+    document.querySelector("#tags").addEventListener("change", function () {
       self.setState({ tags: this.value }, () => {
-        self.stateChanged();
+        self.updatePage();
+        self.checkTagsValidation();
       });
-    }
-  }
-
-  updatePage(callback) {
-    loadingModal("Loading...");
-    const pageId = getParameterByName("id", window.location.href);
-    const page = {
-      type: "public",
-      configurations: {
-        comments: this.state.comments,
-        rating: this.state.rating,
-        links: this.state.links,
-        anonymously: this.state.anonymously,
-      },
-      tags: this.state.tags,
-    };
-    const config = {
-      headers: {
-        authorization: localStorage.getItem("token"),
-      },
-    };
-    axios
-      .patch(`/api/new-page/final-step/${pageId}`, { page }, config)
-      .then((response) => {
-        callback();
-      })
-      .catch((response) => {
-        loadingModal();
-        this.props.history.push(`/new-page/initial-step`);
-      });
-  }
-
-  stateChanged() {
-    const tags = this.state.tags.split(",");
-    const tagError = document.querySelector("#js--tags-url-error-message");
-    if (tags.length > 4 && this.state.tags.replace(/,/g, "").length <= 200) {
-      this.setState({ btnDisabled: false });
-      tagError.innerText = "";
-      tagError.classList.add("display-none");
-    } else if (this.state.tags.replace(/,/g, "").length > 200) {
-      tagError.innerText = "Tags must be less than 200 characters";
-      tagError.classList.remove("display-none");
-      this.setState({ btnDisabled: true });
-    } else {
-      this.setState({ btnDisabled: true });
-    }
-    var classes = {};
-    if (this.state.comments === true) {
-      classes.comments = "fa fa-2x fa-toggle-off";
-    } else {
-      classes.comments = "fa fa-2x fa-toggle-on";
-    }
-
-    if (this.state.links === true) {
-      classes.links = "fa fa-2x fa-toggle-off";
-    } else {
-      classes.links = "fa fa-2x fa-toggle-on";
-    }
-
-    if (this.state.anonymously === true) {
-      classes.anonymously = "fa fa-2x fa-toggle-on";
-    } else {
-      classes.anonymously = "fa fa-2x fa-toggle-off";
-    }
-
-    if (this.state.rating === true) {
-      classes.rating = "fa fa-2x fa-toggle-off";
-    } else {
-      classes.rating = "fa fa-2x fa-toggle-on";
-    }
-    this.setState({ classes });
-  }
-
-  onButtonClicked() {
-    const pageId = getParameterByName("id", window.location.href);
-    const config = {
-      headers: {
-        authorization: localStorage.getItem("token"),
-      },
-    };
-    this.updatePage(() => {
-      axios
-        .post(`/api/new-page/${pageId}`, null, config)
-        .then((response) => {
-          loadingModal();
-          this.props.history.push(
-            `/new-page/message?type=public&status=success&url=${response.data}`
-          );
-        })
-        .catch((error) => {
-          loadingModal();
-          if (error.response.data.error === "error with contents") {
-            this.props.history.push(
-              `/new-page/message?type=public&status=error-contents&id=${pageId}`
-            );
-          } else {
-            this.props.history.push(
-              `/new-page/message?type=public&status=error`
-            );
-          }
-        });
     });
   }
 
-  onBackButtonClicked() {
+  async updatePage(callback) {
+    if (callback) loadingModal("Loading...");
+
+    try {
+      const page = {
+        type: "public",
+        configurations: {
+          comments: this.state.comments,
+          rating: this.state.rating,
+          links: this.state.links,
+          anonymously: this.state.anonymously,
+        },
+        tags: this.state.tags,
+      };
+
+      await axios.patch(
+        `/api/new-page/final-step/${getParameterByName(
+          "id",
+          window.location.href
+        )}`,
+        { page },
+        {
+          headers: {
+            authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+      if (callback) callback();
+    } catch (e) {
+      loadingModal();
+      this.props.history.push(`/new-page/initial-step`);
+    }
+  }
+
+  // Check if the tags are valid
+  checkTagsValidation = () => {
+    if (this.state.tags.split(",").length < 5) {
+      this.setState({
+        errors: {
+          ...this.state.errors,
+          tags: "Please choose at least 5 tags",
+        },
+      });
+      return false;
+    }
+
+    if (this.state.tags.replace(/,/g, "").length >= 200) {
+      this.setState({
+        errors: {
+          ...this.state.errors,
+          tags: "Tags must be less than 200 characters",
+        },
+      });
+      return false;
+    }
+
+    this.setState({
+      errors: {
+        ...this.state.errors,
+        tags: null,
+      },
+    });
+    return true;
+  };
+
+  // Toggle each switch button
+  onSwitchClicked(role) {
+    switch (role) {
+      case "comments":
+        this.setState({ comments: !this.state.comments }, () => {
+          this.updatePage(() => {
+            loadingModal();
+          });
+        });
+        break;
+      case "rating":
+        this.setState({ rating: !this.state.rating }, () => {
+          this.updatePage(() => {
+            loadingModal();
+          });
+        });
+        break;
+      case "links":
+        this.setState({ links: !this.state.links }, () => {
+          this.updatePage(() => {
+            loadingModal();
+          });
+        });
+        break;
+      case "anonymously":
+        this.setState({ anonymously: !this.state.anonymously }, () => {
+          this.updatePage(() => {
+            loadingModal();
+          });
+        });
+        break;
+    }
+  }
+
+  onBackButtonClicked = () => {
     this.updatePage(() => {
       loadingModal();
       this.props.history.push(
@@ -174,39 +170,38 @@ class FinalStepPublic extends Component {
         )}`
       );
     });
-  }
+  };
 
-  onSwitchClicked(role) {
-    switch (role) {
-      case "comments":
-        this.setState({ comments: !this.state.comments });
-        break;
-      case "rating":
-        this.setState({ rating: !this.state.rating });
-        break;
-      case "links":
-        this.setState({ links: !this.state.links });
-        break;
-      case "anonymously":
-        this.setState({ anonymously: !this.state.anonymously });
-        break;
-    }
-  }
+  onPublishButtonClicked = () => {
+    if (!this.checkTagsValidation())
+      return document.querySelector("#tags").focus();
 
-  renderButton() {
-    return (
-      <button
-        onClick={() => {
-          this.onButtonClicked.apply(this);
-        }}
-        className="btn btn-blue"
-        id="publish-button"
-        disabled={this.state.btnDisabled}
-      >
-        Publish
-      </button>
-    );
-  }
+    this.updatePage(async () => {
+      try {
+        const pageId = getParameterByName("id", window.location.href);
+
+        await axios.post(`/api/new-page/${pageId}`, null, {
+          headers: {
+            authorization: localStorage.getItem("token"),
+          },
+        });
+
+        loadingModal();
+        this.props.history.push(
+          `/new-page/message?type=public&status=success&url=${response.data}`
+        );
+      } catch (e) {
+        loadingModal();
+        if (error.response.data.error === "error with contents") {
+          this.props.history.push(
+            `/new-page/message?type=public&status=error-contents&id=${pageId}`
+          );
+        } else {
+          this.props.history.push(`/new-page/message?type=public&status=error`);
+        }
+      }
+    });
+  };
 
   render() {
     let loadingClass = "";
@@ -228,7 +223,7 @@ class FinalStepPublic extends Component {
           <div className={contentClass}>
             <button
               className="btn-text btn-text-big a-11"
-              onClick={this.onBackButtonClicked.bind(this)}
+              onClick={this.onBackButtonClicked}
             >
               <i className="fa fa-arrow-left" aria-hidden="true" /> Back
             </button>
@@ -248,7 +243,7 @@ class FinalStepPublic extends Component {
                   >
                     <i
                       className={
-                        this.state.comments
+                        !this.state.comments
                           ? "fa fa-2x fa-toggle-on"
                           : "fa fa-2x fa-toggle-off"
                       }
@@ -266,7 +261,7 @@ class FinalStepPublic extends Component {
                   >
                     <i
                       className={
-                        this.state.rating
+                        !this.state.rating
                           ? "fa fa-2x fa-toggle-on"
                           : "fa fa-2x fa-toggle-off"
                       }
@@ -284,7 +279,7 @@ class FinalStepPublic extends Component {
                   >
                     <i
                       className={
-                        this.state.links
+                        !this.state.links
                           ? "fa fa-2x fa-toggle-on"
                           : "fa fa-2x fa-toggle-off"
                       }
@@ -314,15 +309,24 @@ class FinalStepPublic extends Component {
               </div>
               <div className="form__group">
                 <label className="form__label" htmlFor="tags">
-                  Tags <span>(Minimum to 5)</span>
+                  Tags
                 </label>
-                <input type="tags" className="tags-input" id="tags" />
-                <span id="js--tags-url-error-message" className="display-none">
-                  Tags must be less than 200 characters
+                <input
+                  type="tags"
+                  className="tags-input"
+                  id="tags"
+                  defaultValue={this.state.tags}
+                />
+                <span
+                  className={`a-10 ${
+                    !this.state.errors.tags && "display-none"
+                  }`}
+                >
+                  {this.state.errors.tags}
                 </span>
               </div>
 
-              <div>
+              <div className="margin-top-1">
                 <p className="small-paragraph">
                   Please read{" "}
                   <a href="#" target="_blank">
@@ -334,7 +338,14 @@ class FinalStepPublic extends Component {
               </div>
             </div>
 
-            <div className="center-content">{this.renderButton()}</div>
+            <div className="center-content">
+              <button
+                onClick={this.onPublishButtonClicked}
+                className="btn btn-blue"
+              >
+                Publish
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@ const ReadLater = require("../../models/readLater");
 const History = require("../../models/history");
 const Rating = require("../../models/rating");
 const util = require("../../lib/util");
+const log = require("../../lib/log");
 const crypto = require("crypto");
 const multer = require("multer");
 const readChunk = require("read-chunk");
@@ -295,14 +296,14 @@ exports.updateDraftPageData = async (req, res) => {
 
   switch (stage) {
     case "initial-step":
-      var obj = {
+      let obj = {
         type: page.type,
       };
       obj.author = req.user.id;
 
       DraftPage.findById(pageId, (err, result) => {
         if (err || !result) {
-          var newPage = new DraftPage(obj);
+          const newPage = new DraftPage(obj);
           newPage.save(function (err, newPage) {
             if (err) return res.status(500).send("error");
             res.status(201).send({ id: newPage.id, message: "created" });
@@ -335,31 +336,35 @@ exports.updateDraftPageData = async (req, res) => {
         );
         res.status(200).send(result.id);
       } catch (e) {
+        log(e);
         return res.status(500).send({ message: "Internal server error" });
       }
       break;
     case "final-step":
       try {
-        await DraftPage.findOneAndUpdate(
-          { _id: pageId },
-          {
-            updatedAt: new Date(),
-            tags: page.tags,
-            url: page.url || "",
-            configurations: {
-              comments: page.configurations.comments,
-              rating: page.configurations.rating,
-              anonymously: page.configurations.anonymously,
-              links: page.configurations.links,
-            },
+        let obj = {
+          updatedAt: new Date(),
+          tags: page.tags,
+          url: page.url || "",
+          configurations: {
+            comments: page.configurations.comments,
+            rating: page.configurations.rating,
+            anonymously: page.configurations.anonymously,
+            links: page.configurations.links,
           },
-          { new: true }
-        );
-        res.status(201).send("updated");
+        };
+
+        // We don't want to update the tags if the type is private, likewise we don't
+        // want to update the url if the type is public
+        if (page.type === "public") delete obj.url;
+        if (page.type === "private") delete obj.tags;
+
+        await DraftPage.findOneAndUpdate({ _id: pageId }, obj, { new: true });
+        res.status(201).send({ message: "updated" });
       } catch (e) {
+        log(e);
         return res.status(500).send({ message: "Internal server error" });
       }
-
       break;
     default:
       res.status(404).send();

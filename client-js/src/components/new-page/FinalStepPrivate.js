@@ -1,72 +1,119 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { getParameterByName, loadingModal } from "../../lib/util";
+import { getParameterByName, loadingModal, convertToUrl } from "../../lib/util";
 import ProgressBar from "../partials/ProgressBar";
 import Loading from "../partials/Loading";
-import ChooseUrl from "../partials/ChooseUrl";
 
 class FinalStepPrivate extends Component {
   state = {
     type: "private",
     username: "",
-    comments: "",
-    rating: "",
-    anonymously: "",
-    url: "",
+    comments: null,
+    rating: null,
+    anonymously: null,
+    url: null,
     usedUrls: [],
-    btnDisabled: true,
     loaded: false,
+    errors: {
+      url: null,
+    },
   };
 
-  componentDidMount() {
-    const pageId = getParameterByName("id", window.location.href) || "id";
-    const config = {
-      headers: {
-        authorization: localStorage.getItem("token"),
-      },
-    };
+  url = React.createRef();
 
-    axios
-      .get(`/api/new-page/final-step/${pageId}`, config)
-      .then((response) => {
-        const page = response.data.page;
-        this.setState({
-          type: page.type,
-          comments: page.configurations.comments,
-          rating: page.configurations.rating,
-          anonymously: page.configurations.anonymously,
-          username: page.author.username,
-          url: page.url || "",
-          usedUrls: response.data.urls,
-          loaded: true,
-        });
-      })
-      .catch((error) => {
-        if (error.response.status === 401) {
-          window.location.href = "/login?redirected=new-page";
-        } else {
-          this.props.history.push(`/new-page/initial-step`);
-        }
+  async componentDidMount() {
+    const pageId = getParameterByName("id", window.location.href) || "id";
+
+    try {
+      const { data } = await axios.get(`/api/new-page/final-step/${pageId}`, {
+        headers: {
+          authorization: localStorage.getItem("token"),
+        },
       });
+
+      this.setState({
+        type: data.page.type,
+        comments: data.page.configurations.comments,
+        rating: data.page.configurations.rating,
+        anonymously: data.page.configurations.anonymously,
+        username: data.page.author.username,
+        url: data.page.url || null,
+        usedUrls: data.urls,
+        loaded: true,
+      });
+    } catch (error) {
+      if (error.response.status === 401) {
+        window.location.href = "/login?redirected=new-page";
+      } else {
+        this.props.history.push(`/new-page/initial-step`);
+      }
+    }
   }
 
+  // Toggle each switch button
   onSwitchClicked = (role) => {
     switch (role) {
       case "comments":
-        this.setState({ comments: !this.state.comments });
+        this.setState({ comments: !this.state.comments }, () => {
+          this.updatePage(() => {
+            loadingModal();
+          });
+        });
         break;
       case "rating":
-        this.setState({ rating: !this.state.rating });
+        this.setState({ rating: !this.state.rating }, () => {
+          this.updatePage(() => {
+            loadingModal();
+          });
+        });
         break;
       case "anonymously":
-        this.setState({ anonymously: !this.state.anonymously });
+        this.setState({ anonymously: !this.state.anonymously }, () => {
+          this.updatePage(() => {
+            loadingModal();
+          });
+        });
         break;
     }
   };
 
+  // Check to see if a chosen URL is valid
+  checkUrlValidation = () => {
+    if (
+      this.state.url &&
+      this.state.url.length > 0 &&
+      this.state.usedUrls.indexOf(this.state.url) === -1
+    ) {
+      this.setState({
+        errors: {
+          ...this.state.errors,
+          url: null,
+        },
+      });
+      return true;
+    } else if (this.state.usedUrls.indexOf(this.state.url) !== -1) {
+      this.setState({
+        errors: {
+          ...this.state.errors,
+          url: `You have already used "${this.state.url}" url, choose something else.`,
+        },
+      });
+      return false;
+    } else {
+      this.setState({
+        errors: {
+          ...this.state.errors,
+          url: "Please choose a URL for your page.",
+        },
+      });
+      return false;
+    }
+  };
+
   // Sends a request to server to update the draft page
-  updatePage(callback) {
-    loadingModal("Loading...");
+  async updatePage(callback) {
+    if (callback) loadingModal("Loading...");
+
     const page = {
       id: getParameterByName("id", window.location.href),
       type: this.state.type,
@@ -78,13 +125,9 @@ class FinalStepPrivate extends Component {
       url: this.state.url,
       password: this.state.pass,
     };
-    const config = {
-      headers: {
-        authorization: localStorage.getItem("token"),
-      },
-    };
-    axios
-      .patch(
+
+    try {
+      await axios.patch(
         `/api/new-page/final-step/${getParameterByName(
           "id",
           window.location.href
@@ -92,33 +135,37 @@ class FinalStepPrivate extends Component {
         {
           page,
         },
-        config
-      )
-      .then((response) => {
-        callback();
-      })
-      .catch((response) => {
-        this.props.history.push(`/new-page/initial-step`);
-      });
+        {
+          headers: {
+            authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+
+      if (callback) callback();
+    } catch (e) {
+      if (callback) loadingModal();
+      this.props.history.push(`/new-page/initial-step`);
+    }
   }
 
   onSubmitButtonClicked = () => {
-    const pageId = getParameterByName("id", window.location.href);
-    const config = {
-      headers: {
-        authorization: localStorage.getItem("token"),
-      },
-    };
-    this.updatePage(() => {
-      axios
-        .post(`/api/new-page/${pageId}`, null, config)
-        .then((response) => {
+    if (this.checkUrlValidation()) {
+      this.updatePage(async () => {
+        try {
+          const pageId = getParameterByName("id", window.location.href);
+
+          await axios.post(`/api/new-page/${pageId}`, null, {
+            headers: {
+              authorization: localStorage.getItem("token"),
+            },
+          });
+
           loadingModal();
           this.props.history.push(
             `/new-page/message?type=private&status=success&url=${response.data.url}&username=${response.data.username}`
           );
-        })
-        .catch((error) => {
+        } catch (e) {
           loadingModal();
           if (error.response.data.error === "error with contents") {
             this.props.history.push(
@@ -129,8 +176,11 @@ class FinalStepPrivate extends Component {
               `/new-page/message?type=private&status=error`
             );
           }
-        });
-    });
+        }
+      });
+    } else {
+      this.url.current.focus();
+    }
   };
 
   onBackButtonClicked() {
@@ -143,18 +193,6 @@ class FinalStepPrivate extends Component {
         )}`
       );
     });
-  }
-
-  renderButton() {
-    return (
-      <button
-        className="btn btn-blue"
-        onClick={this.onSubmitButtonClicked}
-        disabled={this.state.btnDisabled}
-      >
-        Publish
-      </button>
-    );
   }
 
   render() {
@@ -182,7 +220,7 @@ class FinalStepPrivate extends Component {
                   <div className="form__group" className="switches__entity">
                     <label>Disable Comments</label>
                     <div className="tooltip tooltip-top tooltip--info">
-                      <a href="javascript:void(0)">
+                      <a href="#!">
                         <i
                           className="fa fa-question-circle"
                           aria-hidden="true"
@@ -213,7 +251,7 @@ class FinalStepPrivate extends Component {
                   <div className="form__group" className="switches__entity">
                     <label>Disable Rating</label>
                     <div className="tooltip tooltip-top tooltip--info">
-                      <a href="javascript:void(0)">
+                      <a href="#!">
                         <i
                           className="fa fa-question-circle"
                           aria-hidden="true"
@@ -244,7 +282,7 @@ class FinalStepPrivate extends Component {
                   <div className="form__group" className="switches__entity">
                     <label>Create This Page Anonymously</label>
                     <div className="tooltip tooltip-top tooltip--info">
-                      <a href="javascript:void(0)">
+                      <a href="#!">
                         <i
                           className="fa fa-question-circle"
                           aria-hidden="true"
@@ -273,32 +311,60 @@ class FinalStepPrivate extends Component {
                   </div>
                 </div>
 
-                <div>
-                  <p className="small-paragraph">
-                    Please read{" "}
-                    <a href="#" target="_blank">
-                      this
-                    </a>{" "}
-                    quick guide before you change any of the configurations.
-                  </p>
-                </div>
-
                 <div className="form__group url">
-                  <ChooseUrl
-                    url={this.state.url}
-                    username={this.state.username}
-                    usedUrls={this.state.usedUrls}
-                    onError={() => {
-                      this.setState({ btnDisabled: true });
+                  <label htmlFor="url" className="form__label">
+                    URL
+                  </label>
+                  <input
+                    type="text"
+                    ref={this.url}
+                    value={this.state.url || ""}
+                    className="form__input"
+                    placeholder="Choose a URL for your page"
+                    onBlur={() => {
+                      this.updatePage();
+                      this.checkUrlValidation();
                     }}
-                    onSuccess={(url) => {
-                      this.setState({ btnDisabled: false, url });
+                    onChange={(e) => {
+                      this.setState(
+                        { url: convertToUrl(e.target.value) },
+                        () => {
+                          // check for URL validation on change
+                          this.checkUrlValidation();
+                        }
+                      );
                     }}
                   />
+                  <span
+                    className={`a-10 ${
+                      !this.state.errors.url && "display-none"
+                    }`}
+                  >
+                    {this.state.errors.url}
+                  </span>
+                  <p className="url__display">
+                    pagher.com/{this.state.username}/{this.state.url}
+                  </p>
+                  <div className="url__note">
+                    <strong>Important note about URL:</strong>
+                    <p>
+                      This URL will be for your page, please copy this becasue
+                      the only way other persons can view this page is to have
+                      this URL. <br /> You should share this URl in order for
+                      others to view it.
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <div className="center-content">{this.renderButton()}</div>
+              <div className="center-content">
+                <button
+                  className="btn btn-blue"
+                  onClick={this.onSubmitButtonClicked}
+                >
+                  Publish
+                </button>
+              </div>
             </div>
           </div>
         </div>

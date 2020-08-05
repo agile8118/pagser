@@ -2478,7 +2478,7 @@ input:checked + .slider:before {
 
 .switches {
   margin-top: 4rem;
-  margin-bottom: 3.5rem;
+  margin-bottom: 2.5rem;
   color: #555;
   font-size: 1.6rem; }
   .switches__entity {
