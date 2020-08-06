@@ -36,6 +36,8 @@ import {
   ADD_TO_CL_MDL,
   CONF_MDL,
   UPLOAD_PHOTO_MDL,
+  UPLOAD_ATTACH_FILE_MDL,
+  CONF_DELETE_ATTACH_FILE_MDL,
   CLOSE_ALL_MDLS,
 } from "actions/constants";
 
@@ -413,7 +415,9 @@ export const modals = (
   state = {
     addToCL: { open: false, pageId: null }, // Id is for a page
     uploadPhoto: { open: false, id: null }, // Id could be for user, collection or page
+    uploadAttachFile: { open: false, id: null }, // Id could be for user, collection or page
     confirmation: { open: false },
+    confDeleteAttachFile: { open: false, id: null, name: null },
     confDeleteComment: { open: false, id: null }, // Id is for a comment
   },
   action = {}
@@ -453,14 +457,34 @@ export const modals = (
           id: action.payload.id,
         },
       };
+    case UPLOAD_ATTACH_FILE_MDL:
+      return {
+        ...state,
+        uploadAttachFile: {
+          ...state.uploadAttachFile,
+          open: action.payload.open,
+          id: action.payload.id,
+        },
+      };
+    case CONF_DELETE_ATTACH_FILE_MDL:
+      return {
+        ...state,
+        confDeleteAttachFile: {
+          open: true,
+          id: action.payload.id,
+          name: action.payload.name,
+        },
+      };
     case CONF_MDL:
-      return { ...state, confirmation: { open: true } };
+      return { ...state, confirmation: { open: true, id: action.payload.id } };
     case CLOSE_ALL_MDLS:
       return {
         ...state,
         addToCL: { ...state.addToCL, open: false },
         uploadPhoto: { ...state.uploadPhoto, open: false },
+        uploadAttachFile: { ...state.uploadAttachFile, open: false },
         confirmation: { open: false },
+        confDeleteAttachFile: { open: false },
         confMdlDeleteComment: { open: false, commentId: null },
       };
     default:

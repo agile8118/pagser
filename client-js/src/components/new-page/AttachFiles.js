@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { getParameterByName } from "../../lib/util";
 import { connect } from "react-redux";
 import ProgressBar from "../partials/ProgressBar";
-import UploadPhoto from "../modals/UploadPhoto";
+import UploadAttachFile from "../modals/UploadAttachFile";
 
 import { openUploadPhoto, openConfModal, closeModal } from "actions";
 

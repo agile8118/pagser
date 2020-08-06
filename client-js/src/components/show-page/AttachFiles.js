@@ -4,69 +4,14 @@ import axios from "axios";
 import Loading from "../partials/Loading";
 import InputFile from "../partials/InputFile";
 import { Modal } from "../partials/Modals";
+import { ConfirmModal } from "../partials/Modals";
+import UploadAttachFile from "../modals/UploadAttachFile";
+
 import { loadingModal } from "../../lib/util";
 
 import * as actions from "actions";
 
 class AttachFiles extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      inputLabelName: "Upload a File",
-      attachFileMdl: false,
-      error: "",
-    };
-
-    this.uploadBtn = React.createRef();
-    this.cancelBtn = React.createRef();
-    this.mdlLoading = React.createRef();
-    this.mdlOptions = React.createRef();
-  }
-
-  onFileInputChange = (e, fileName) => {
-    this.setState({ inputLabelName: fileName, error: "" });
-    this.cancelBtn.current.classList.remove("display-none");
-    this.uploadBtn.current.classList.remove("display-none");
-  };
-
-  onUploadClick = async () => {
-    this.setState({ error: "" });
-    this.mdlOptions.current.classList.add("display-none");
-    this.mdlLoading.current.classList.remove("display-none");
-
-    let formData = new FormData();
-    const file = document.querySelector("#file-input").files[0];
-    formData.append("file", file);
-
-    try {
-      await axios.post(`/api/pages/${this.props.id}/attach-files`, formData, {
-        headers: {
-          authorization: localStorage.getItem("token"),
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      this.reset();
-      this.setState({ attachFileMdl: false });
-      this.props.fetchAttachFiles(this.props.id, "File uploaded successfully.");
-    } catch ({ response }) {
-      this.reset();
-      this.setState({
-        error: response.data.error,
-      });
-    }
-  };
-
-  reset() {
-    this.mdlOptions.current.classList.remove("display-none");
-    this.mdlLoading.current.classList.add("display-none");
-    this.uploadBtn.current.classList.add("display-none");
-    this.cancelBtn.current.classList.add("display-none");
-
-    this.setState({ inputLabelName: "Upload a File", error: "" });
-  }
-
   // Render all attach files of the page
   renderFiles() {
     if (this.props.viewer.status === "owner")
@@ -82,23 +27,10 @@ class AttachFiles extends Component {
             {" " + file.name}
             <button
               className="btn-i"
-              onClick={async (e) => {
+              onClick={(e) => {
+                // This will prevent the file from starting to get downloaded
                 e.preventDefault();
-                loadingModal("Deleting the attach file...");
-
-                await axios.delete(
-                  `/api/pages/${this.props.id}/attach-files/${file._id}`,
-                  {
-                    headers: {
-                      authorization: localStorage.getItem("token"),
-                    },
-                  }
-                );
-
-                this.props.fetchAttachFiles(
-                  this.props.id,
-                  "File deleted successfully."
-                );
+                this.props.openConfDeleteAttachFile(file._id, file.name);
               }}
             >
               <i className="fa fa-times" aria-hidden="true" />
@@ -121,82 +53,36 @@ class AttachFiles extends Component {
     });
   }
 
-  // Render the add an attach file buttton
+  // Render the add an attach file button
   renderButton() {
-    if (this.props.viewer.status === "owner")
+    if (
+      this.props.viewer.status === "owner" &&
+      this.props.attachFiles.length < 5
+    )
       // If user is the owner of the page
       return (
         <React.Fragment>
           <button
             className="btn btn-round btn-blue btn-sm"
             onClick={() => {
-              this.setState({ attachFileMdl: true });
+              this.props.openUploadAttachFile();
             }}
           >
             <i className="fa fa-upload" /> Add an attach file
           </button>
 
-          <Modal
+          <UploadAttachFile
             header="Add an attach file"
-            open={this.state.attachFileMdl}
-            onClose={() => {
-              this.setState({ attachFileMdl: false });
+            text="You can upload maximum of 5 files 10MB each for every page."
+            size={10000000}
+            url={`/api/pages/${this.props.id}/attach-files`}
+            success={() => {
+              this.props.fetchAttachFiles(
+                this.props.id,
+                "File uploaded successfully."
+              );
             }}
-          >
-            <p>You can upload maximum of 5 files 10MB each for every page.</p>
-            <div className="left-content">
-              <p className="image__upload--error">{this.state.error}</p>
-            </div>
-
-            <InputFile
-              addClass="margin-bottom-2"
-              label={this.state.inputLabelName}
-              id="file-input"
-              size={10000000}
-              onChange={this.onFileInputChange}
-              onClick={() => {
-                this.setState({ error: "" });
-              }}
-              onError={(msg) => {
-                this.setState({
-                  error: msg,
-                  inputLabelName: "Upload a File",
-                });
-                this.cancelBtn.current.classList.add("display-none");
-                this.uploadBtn.current.classList.add("display-none");
-              }}
-            />
-
-            <div
-              ref={this.mdlOptions}
-              className="image__upload--options right-content"
-            >
-              <a
-                ref={this.cancelBtn}
-                className="btn btn-round btn-blue-o display-none"
-                onClick={() => {
-                  this.reset();
-                  this.setState({ attachFileMdl: false });
-                }}
-              >
-                Cancel
-              </a>
-              <a
-                ref={this.uploadBtn}
-                className="btn btn-round btn-blue display-none"
-                onClick={this.onUploadClick}
-              >
-                Upload
-              </a>
-            </div>
-
-            <div
-              ref={this.mdlLoading}
-              className="image__upload--loading margin-top-1 center-content display-none"
-            >
-              <Loading />
-            </div>
-          </Modal>
+          />
         </React.Fragment>
       );
     // If viewer is not the owner of the page just return a simple div
@@ -207,8 +93,44 @@ class AttachFiles extends Component {
     if (!this.props.isPending)
       return (
         <div className="page__attach-files">
+          <ConfirmModal
+            header="Remove the attach file"
+            open={this.props.confMdl.open}
+            onConfirm={async () => {
+              this.props.closeModal();
+
+              loadingModal("Deleting the attach file...");
+              await axios.delete(
+                `/api/pages/${this.props.id}/attach-files/${this.props.confMdl.id}`,
+                {
+                  headers: {
+                    authorization: localStorage.getItem("token"),
+                  },
+                }
+              );
+              this.props.fetchAttachFiles(
+                this.props.id,
+                "File deleted successfully."
+              );
+            }}
+            onCancel={() => this.props.closeModal()}
+          >
+            <p>
+              Are you sure that you want to delete this attach file{" "}
+              <strong>'{this.props.confMdl.name}'</strong>? Action cannot be
+              undone.
+            </p>
+          </ConfirmModal>
+
           <div className="file-links">{this.renderFiles.apply(this)}</div>
           {this.renderButton.apply(this)}
+          {this.props.attachFiles.length === 5 &&
+            this.props.viewer.status === "owner" && (
+              <em>
+                You can only have 5 attach files for each page, if you want to
+                upload a new one remove one of the attach files first.
+              </em>
+            )}
         </div>
       );
     // If it is still loading...
@@ -224,10 +146,8 @@ const mapStateToProps = (state) => {
       status: state.pageData.status,
     },
     isPending: state.pageData.isPending,
+    confMdl: state.modals.confDeleteAttachFile || {},
   };
 };
 
-export default connect(
-  mapStateToProps,
-  actions
-)(AttachFiles);
+export default connect(mapStateToProps, actions)(AttachFiles);
