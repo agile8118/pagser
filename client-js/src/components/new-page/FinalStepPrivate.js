@@ -348,7 +348,7 @@ class FinalStepPrivate extends Component {
                   <div className="url__note">
                     <strong>Important note about URL:</strong>
                     <p>
-                      This URL will be for your page, please copy this becasue
+                      This URL will be for your page, please copy this because
                       the only way other persons can view this page is to have
                       this URL. <br /> You should share this URl in order for
                       others to view it.

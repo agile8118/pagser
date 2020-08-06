@@ -341,7 +341,7 @@ exports.photo = async (req, res) => {
         },
         async (error, { secure_url, public_id }) => {
           fs.unlink(filePath, () => {});
-          log(error);
+
           if (error)
             return res.status(500).send({ message: "Internal server error." });
 
@@ -350,13 +350,13 @@ exports.photo = async (req, res) => {
           });
 
           res.send({
-            message: "image-changed",
+            message: "image-uploaded",
             image: secure_url,
           });
         }
       );
     } catch (e) {
-      if (req.file) fs.unlink(req.file.path, () => {});
+      if (req.file && req.file.path) fs.unlink(req.file.path, () => {});
       log(e);
       res.status(500).send({ message: "Internal server error." });
     }

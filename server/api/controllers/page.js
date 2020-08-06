@@ -259,6 +259,17 @@ exports.fetchDraftPageData = (req, res) => {
         }
       });
       break;
+
+    case "page-thumbnail":
+      DraftPage.findById(pageId, "_id photo", (err, page) => {
+        if (err) return res.status(500).send("error");
+        if (page) {
+          res.send({ page });
+        } else {
+          res.status(404).send();
+        }
+      });
+      break;
     case "final-step":
       DraftPage.findById(pageId)
         .select("configurations url password tags type author")
@@ -504,188 +515,150 @@ exports.updatePage = (req, res) => {
 
 // upload or update a photo to be set as page featured image
 exports.uploadPagePhoto = (req, res) => {
-  try {
-    const imageFolderPath = "./public/images/pages/";
-    const pageId = req.params.id;
+  upload(req, res, async (err) => {
+    try {
+      if (err) res.status(500).send({ message: "Internal server error." });
 
-    upload(req, res, function (err) {
-      if (err) {
-        return res.send(err);
-      }
-      if (!req.file) {
-        return res.send("no file uploaded.");
-      }
-      const imgName = req.file.filename;
-      try {
-        var cropData = JSON.parse(req.body.cropData);
-      } catch (err) {
-        return res.status(400).send("error with data");
-      }
-      const buffer = readChunk.sync(`${imageFolderPath}${imgName}`, 0, 4100);
-      if (req.file.size > 8000000) {
-        fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
-        return res.send("maximum image file size is 8MB");
-      }
+      if (!req.file)
+        return res.status(400).send({ message: "No file uploaded." });
+
+      // const imageFolderPath = "./public/images/pages/";
+      const filePath = req.file ? req.file.path : null;
+      const pageId = req.params.id;
+      const type = req.query.type; // To see if the page is draft
+      const cropData = JSON.parse(req.body.cropData);
+
+      // Check file type
+      const buffer = readChunk.sync(filePath, 0, 4100);
+      if (!fileType(buffer))
+        return res.status(400).send({ message: "Bad request" });
       if (
-        (fileType(buffer) && fileType(buffer).mime === "image/png") ||
-        (fileType(buffer) && fileType(buffer).mime === "image/jpg") ||
-        (fileType(buffer) && fileType(buffer).mime === "image/jpeg")
+        !(
+          fileType(buffer).mime !== "image/png" ||
+          fileType(buffer).mime !== "image/jpg" ||
+          fileType(buffer).mime !== "image/jpeg"
+        )
       ) {
-        var image = new Jimp(`${imageFolderPath}${imgName}`, function (
-          err,
-          image
-        ) {
-          if (image.bitmap.width < 1200 || image.bitmap.height < 675) {
-            fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
-            return res.send(
-              "image dimentions must be at least 1200 * 675 pixels"
-            );
-          }
-
-          image
-            .quality(60)
-            .resize(1200, Jimp.AUTO)
-            .write(`${imageFolderPath}${imgName}`, function (err, image) {
-              if (err) {
-                fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
-                return res.send("error");
-              }
-
-              cloudinary.v2.uploader.upload(
-                `${imageFolderPath}${imgName}`,
-                { folder: "images/pages" },
-                function (error, result) {
-                  Page.findById(pageId, (err, page) => {
-                    if (!page) {
-                      return res.status(400).send("err");
-                    }
-                    if (page.photo) {
-                      cloudinary.v2.uploader.destroy(page.photo.public_id);
-                    }
-                    try {
-                      page.photo.public_id = result.public_id;
-                      page.photo.secure_url = result.secure_url;
-                    } catch (e) {
-                      res.status(500).send({ error: "An error occurred" });
-                      fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
-                    }
-
-                    page.save((err) => {
-                      if (!err) {
-                        try {
-                          res.send({ image: page.photo.secure_url });
-                        } catch (e) {
-                          res.status(500).send({ error: "An error occurred" });
-                          fs.unlink(
-                            `${imageFolderPath}${imgName}`,
-                            (err) => {}
-                          );
-                        }
-                      }
-                    });
-                  });
-                }
-              );
-            });
-        });
-
-        var cropedImage = new Jimp(`${imageFolderPath}${imgName}`, function (
-          err,
-          image
-        ) {
-          var x = Number(cropData.x);
-          var y = Number(cropData.y);
-          var width = Number(cropData.width);
-          var height = Number(cropData.height);
-
-          try {
-            image
-              .crop(x, y, width, height)
-              .quality(60)
-              .resize(400, 225)
-              .write(`${imageFolderPath}croped-${imgName}`, function (
-                err,
-                image
-              ) {
-                if (err) {
-                  fs.unlink(`${imageFolderPath}croped-${imgName}`, (err) => {});
-                }
-
-                cloudinary.v2.uploader.upload(
-                  `${imageFolderPath}croped-${imgName}`,
-                  { folder: "images/pages/croped" },
-                  function (error, result) {
-                    Page.findById(pageId, (err, page) => {
-                      if (!page) {
-                      }
-                      if (page.cropedPhoto) {
-                        cloudinary.v2.uploader.destroy(
-                          page.cropedPhoto.public_id
-                        );
-                      }
-                      try {
-                        page.cropedPhoto.public_id = result.public_id;
-                        page.cropedPhoto.secure_url = result.secure_url;
-                      } catch (e) {
-                        fs.unlink(
-                          `${imageFolderPath}croped-${imgName}`,
-                          (err) => {}
-                        );
-                      }
-
-                      page.save((err) => {
-                        if (!err) {
-                          try {
-                            fs.unlink(
-                              `${imageFolderPath}croped-${imgName}`,
-                              (err) => {}
-                            );
-                            fs.unlink(
-                              `${imageFolderPath}${imgName}`,
-                              (err) => {}
-                            );
-                          } catch (e) {
-                            fs.unlink(
-                              `${imageFolderPath}croped-${imgName}`,
-                              (err) => {}
-                            );
-                          }
-                        }
-                      });
-                    });
-                  }
-                );
-              });
-          } catch (e) {
-            res.status(500).send("An unkown error occurred.");
-            fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
-          }
-        });
-      } else {
-        res.send("image format is not supported");
-        fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
+        fs.unlink(filePath, () => {});
+        return res.status(400).send({ message: "Bad request" });
       }
-    });
-  } catch (e) {
-    res.status(500).send("An unkown error occurred.");
-  }
+
+      // Check file size
+      if (req.file.size > 8000000) {
+        fs.unlink(filePath, (err) => {});
+        return res
+          .status(400)
+          .send({ message: "Maximum image file size is 8MB" });
+      }
+
+      let page;
+      if (type === "draft") {
+        page = await DraftPage.findById(pageId);
+      } else {
+        page = await Page.findById(pageId);
+      }
+
+      // If the page already has a photo
+      if (page.photo) {
+        // Remove the photo
+        cloudinary.v2.uploader.destroy(page.photo.public_id);
+        cloudinary.v2.uploader.destroy(page.cropedPhoto.public_id);
+      }
+
+      // Upload and resize the image (cloudinary)
+      cloudinary.v2.uploader.upload(
+        filePath,
+        {
+          folder: "images/pages/",
+          transformation: [{ width: 1200, crop: "scale" }],
+        },
+        async (error, { secure_url, public_id }) => {
+          if (error)
+            return res.status(500).send({ message: "Internal server error." });
+
+          // Update the photo data on database
+          if (type === "draft") {
+            await DraftPage.findByIdAndUpdate(req.params.id, {
+              photo: { secure_url, public_id },
+            });
+          } else {
+            await Page.findByIdAndUpdate(req.params.id, {
+              photo: { secure_url, public_id },
+            });
+          }
+
+          res.send({
+            message: "image-uploaded",
+            image: secure_url,
+          });
+        }
+      );
+
+      // Upload, crop and resize the image - smaller version (cloudinary)
+      cloudinary.v2.uploader.upload(
+        filePath,
+        {
+          folder: "images/pages/croped",
+          transformation: [
+            {
+              width: Math.round(Number(cropData.width)),
+              height: Math.round(Number(cropData.height)),
+              x: Math.round(Number(cropData.x)),
+              y: Math.round(Number(cropData.y)),
+              crop: "crop",
+            },
+            { width: 400, height: 225, crop: "scale" },
+          ],
+        },
+        async (error, { secure_url, public_id }) => {
+          // Delete the uploaded file from the temp storage
+          fs.unlink(filePath, () => {});
+
+          if (error)
+            return res.status(500).send({ message: "Internal server error." });
+
+          // Update the photo data on database
+          if (type === "draft") {
+            await DraftPage.findByIdAndUpdate(req.params.id, {
+              cropedPhoto: { secure_url, public_id },
+            });
+          } else {
+            await Page.findByIdAndUpdate(req.params.id, {
+              cropedPhoto: { secure_url, public_id },
+            });
+          }
+        }
+      );
+    } catch (e) {
+      if (req.file && req.file.path) fs.unlink(req.file.path, () => {});
+      log(e);
+      res.status(500).send({ message: "Internal server error." });
+    }
+  });
 };
 
-// remove page photo
-exports.removePagePhoto = (req, res) => {
-  const pageId = req.params.id;
+// Remove page photo from a published or draft page
+exports.removePagePhoto = async (req, res) => {
+  try {
+    const pageId = req.params.id;
+    const type = req.query.type;
 
-  Page.findById(pageId, (err, page) => {
-    if (err || !page) return res.send("error");
+    let page;
+    if (type === "draft") {
+      page = await DraftPage.findById(pageId, "photo cropedPhoto");
+    } else {
+      page = await Page.findById(pageId, "photo cropedPhoto");
+    }
+
     cloudinary.v2.uploader.destroy(page.photo.public_id);
     cloudinary.v2.uploader.destroy(page.cropedPhoto.public_id);
     page.photo = { public_id: "", secure_url: "" };
     page.cropedPhoto = { public_id: "", secure_url: "" };
-    page.save((err) => {
-      if (err || !page) return res.send("error");
-      res.send("photo removed");
-    });
-  });
+    await page.save();
+    res.send({ message: "photo removed" });
+  } catch (e) {
+    res.status(500).send({ message: "Internal server error." });
+  }
 };
 
 // get attach file

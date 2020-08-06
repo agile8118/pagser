@@ -134,14 +134,14 @@ class PageContents extends Component {
           `/new-page/page-thumbnail?id=${getParameterByName(
             "id",
             window.location.href
-          )}`
+          )}&type=${type}`
         );
       } else {
         this.updatePage(
           `/new-page/page-thumbnail?id=${getParameterByName(
             "id",
             window.location.href
-          )}?type=${this.state.type}`
+          )}&type=${this.state.type}`
         );
       }
     } else {
@@ -595,7 +595,8 @@ class PageContents extends Component {
             You can view all your draft pages{" "}
             <a href="/u/pages/draft" target="_blank">
               here
-            </a>.
+            </a>
+            .
           </p>
         </div>
 

@@ -17,18 +17,23 @@ middleware.checkCommentOwnership = (req, res, next) => {
   });
 };
 
-middleware.checkPageOwnership = function (req, res, next) {
-  var pageId = req.params.id;
-  var userId = req.user.id;
+middleware.checkPageOwnership = async (req, res, next) => {
+  const pageId = req.params.id;
+  const userId = req.user.id;
+  const type = req.query.type;
 
-  Page.findOne({ _id: pageId, author: userId }, function (err, page) {
-    if (err) return res.status(400).send();
-    if (page) {
-      next();
-    } else {
-      res.status(403).send();
-    }
-  });
+  let page = null;
+  if (type === "draft") {
+    page = await DraftPage.findOne({ _id: pageId, author: userId });
+  } else {
+    page = await Page.findOne({ _id: pageId, author: userId });
+  }
+
+  if (page) {
+    next();
+  } else {
+    res.status(403).send({ message: "Not authorized." });
+  }
 };
 
 middleware.checkDraftPageOwnership = function (req, res, next) {

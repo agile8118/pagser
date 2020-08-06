@@ -211,24 +211,6 @@ module.exports = (app) => {
   app.post("/api/views/:id", Analytics.view);
 
   // ------------------------------------------------ //
-  // *********** NEW PAGE ROUTES *********** //
-  // ------------------------------------------------ //
-  app.get(
-    "/api/new-page/:stage/:id",
-    requireAuth,
-    middleware.checkDraftPageOwnership,
-    Page.fetchDraftPageData
-  );
-
-  app.patch(
-    "/api/new-page/:stage/:id",
-    requireAuth,
-    middleware.checkDraftPageOwnership,
-    Page.updateDraftPageData
-  );
-  app.post("/api/new-page/:id", requireAuth, Page.create);
-
-  // ------------------------------------------------ //
   // *********** COMMENT ROUTES *********** //
   // ------------------------------------------------ //
   app.get("/api/comments/history", requireAuth, Comment.fetchUserComments);
@@ -249,26 +231,45 @@ module.exports = (app) => {
   );
 
   // ------------------------------------------------ //
+  // *********** NEW PAGE ROUTES *********** //
+  // ------------------------------------------------ //
+  app.get(
+    "/api/new-page/:stage/:id",
+    requireAuth,
+    middleware.checkDraftPageOwnership,
+    Page.fetchDraftPageData
+  );
+
+  app.patch(
+    "/api/new-page/:stage/:id",
+    requireAuth,
+    middleware.checkDraftPageOwnership,
+    Page.updateDraftPageData
+  );
+  app.post("/api/new-page/:id", requireAuth, Page.create);
+
+  // ------------------------------------------------ //
   // *********** PAGE ROUTES *********** //
   // ------------------------------------------------ //
-  app.get("/api/public-pages/:url", Page.fetchPublicPageData);
   app.put(
     "/api/pages/:id/photo",
     requireAuth,
     middleware.checkPageOwnership,
     Page.uploadPagePhoto
   );
-  app.put(
-    "/api/pages/:id",
-    requireAuth,
-    middleware.checkPageOwnership,
-    Page.updatePage
-  );
   app.delete(
     "/api/pages/:id/photo",
     requireAuth,
     middleware.checkPageOwnership,
     Page.removePagePhoto
+  );
+
+  app.get("/api/public-pages/:url", Page.fetchPublicPageData);
+  app.put(
+    "/api/pages/:id",
+    requireAuth,
+    middleware.checkPageOwnership,
+    Page.updatePage
   );
   app.delete(
     "/api/pages/:id",
