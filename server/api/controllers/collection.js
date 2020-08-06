@@ -288,7 +288,6 @@ exports.sharing = async (req, res) => {
 exports.photo = async (req, res) => {
   upload(req, res, async (err) => {
     try {
-      log(err);
       if (err) res.status(500).send({ message: "Internal server error." });
 
       const filePath = req.file ? req.file.path : null;

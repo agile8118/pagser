@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import axios from "axios";
-import Loading from "../partials/Loading";
-import InputFile from "../partials/InputFile";
-import { Modal } from "../partials/Modals";
 import { ConfirmModal } from "../partials/Modals";
 import UploadAttachFile from "../modals/UploadAttachFile";
 

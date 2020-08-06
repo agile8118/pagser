@@ -249,7 +249,7 @@ module.exports = (app) => {
   app.post("/api/new-page/:id", requireAuth, Page.create);
 
   // ------------------------------------------------ //
-  // *********** PAGE ROUTES *********** //
+  // *********** SAME ROUTES IN NEW PAGE AND PAGE  *********** //
   // ------------------------------------------------ //
   app.put(
     "/api/pages/:id/photo",
@@ -263,7 +263,28 @@ module.exports = (app) => {
     middleware.checkPageOwnership,
     Page.removePagePhoto
   );
+  // add an attach file to a page
+  app.post(
+    "/api/pages/:id/attach-files",
+    requireAuth,
+    middleware.checkPageOwnership,
+    Page.addAttachFile
+  );
+  // get one attach file
+  app.get("/api/pages/:id/attach-files/:name", Page.getAttachFile);
+  // get attach files
+  app.get("/api/pages/:id/attach-files", Page.getAttachFiles);
+  // delete an attach file
+  app.delete(
+    "/api/pages/:id/attach-files/:fileId",
+    requireAuth,
+    middleware.checkPageOwnership,
+    Page.deleteAttachFile
+  );
 
+  // ------------------------------------------------ //
+  // *********** PAGE ROUTES *********** //
+  // ------------------------------------------------ //
   app.get("/api/public-pages/:url", Page.fetchPublicPageData);
   app.put(
     "/api/pages/:id",
@@ -280,26 +301,4 @@ module.exports = (app) => {
   app.get("/api/pages/:url/edit", requireAuth, Page.fetchEditPageData);
   app.get("/api/:username/:url/edit", requireAuth, Page.fetchEditPageData);
   app.get("/api/:username/:url", Page.fetchPrivatePageData);
-
-  // get one attach file
-  app.get("/api/pages/:id/attach-files/:name", Page.getAttachFile);
-
-  // get attach files
-  app.get("/api/pages/:id/attach-files", Page.getAttachFiles);
-
-  // delete an attach file
-  app.delete(
-    "/api/pages/:id/attach-files/:fileId",
-    requireAuth,
-    middleware.checkPageOwnership,
-    Page.deleteAttachFile
-  );
-
-  // add an attach file to a page
-  app.post(
-    "/api/pages/:id/attach-files",
-    requireAuth,
-    middleware.checkPageOwnership,
-    Page.addAttachFile
-  );
 };

@@ -679,126 +679,142 @@ exports.getAttachFile = (req, res) => {
 };
 
 // get attach files
-exports.getAttachFiles = (req, res) => {
-  const pageId = req.params.id;
+exports.getAttachFiles = async (req, res) => {
+  try {
+    const pageId = req.params.id;
+    const type = req.query.type;
 
-  Page.findById(pageId, "attachFiles author", (err, page) => {
-    if (err) return res.status(500).send("error");
+    let page;
+    if (type === "draft") {
+      page = await DraftPage.findById(pageId, "attachFiles");
+    } else {
+      page = await Page.findById(pageId, "attachFiles");
+    }
+
     res.send({ attachFiles: page.attachFiles });
-  });
+  } catch (e) {
+    log(e);
+    if (err) res.status(500).send({ message: "Internal server error." });
+  }
 };
 
 // add an attach file for a page
 exports.addAttachFile = (req, res) => {
-  const pageId = req.params.id;
+  uploadFile(req, res, async (err) => {
+    try {
+      if (err) res.status(500).send({ message: "Internal server error." });
 
-  uploadFile(req, res, (err) => {
-    const file = req.file;
+      const pageId = req.params.id;
+      const type = req.query.type;
+      const filePath = req.file ? req.file.path : null;
+      const fileName = req.file.originalname;
 
-    Page.findById(pageId, "attachFiles", (err, page) => {
-      if (err || !page) return res.status(500).send("error");
-
-      var uploadedFileInDatabase = page.attachFiles.filter((item) => {
-        return item.name === file.originalname;
-      });
-
-      if (
-        file.size <= 10000000 &&
-        file.originalname.length < 100 &&
-        page.attachFiles.length < 5 &&
-        uploadedFileInDatabase.length === 0
-      ) {
-        const fileStream = fs.createReadStream(
-          path.join(__dirname, "../../../storage/" + file.originalname)
-        );
-
-        const key = `${pageId}/${file.originalname}`;
-
-        S3.createBucket(function () {
-          const params = {
-            Bucket: BUCKET_NAME,
-            Key: key,
-            Body: fileStream,
-          };
-          S3.upload(params, function (err, data) {
-            fs.unlink(
-              path.join(__dirname, "../../../storage/" + file.originalname),
-              (err) => {}
-            );
-
-            if (err)
-              return res.status(500).send({ message: "An error occurred" });
-
-            const url = `https://${BUCKET_NAME}.s3.amazonaws.com/${key}`;
-
-            Page.findByIdAndUpdate(
-              pageId,
-              { $push: { attachFiles: { name: file.originalname, url } } },
-              { new: true },
-              (err, newPage) => {
-                if (err) return res.status(500).send("error");
-                res.send({ message: "file uploaded" });
-              }
-            );
-          });
-        });
-      } else if (file.size > 10000000) {
-        var errorMessage = "Maximum file size is 10MB";
-        handleIssueWithFile(errorMessage);
-      } else if (file.originalname.length > 100) {
-        var errorMessage = "File name should be less that 100 characters.";
-        handleIssueWithFile(errorMessage);
-      } else if (page.attachFiles.length >= 5) {
-        var errorMessage =
-          "You have already uploaded 5 attach files for this page.";
-        handleIssueWithFile(errorMessage);
-      } else if (uploadedFileInDatabase.length > 0) {
-        var errorMessage =
-          "You have already uploaded a file with this name for the page.";
-        handleIssueWithFile(errorMessage);
-      } else {
-        var errorMessage = "There is an error with the file you have uploaded.";
-        handleIssueWithFile(errorMessage);
+      // Validate file size
+      if (req.file.size > 10000000) {
+        fs.unlink(filePath, () => {});
+        return res.status(400).send({ error: "Maximum file size is 10MB." });
       }
-    });
 
-    function handleIssueWithFile(errorMessage) {
-      fs.unlink(
-        path.join(__dirname, "../../../storage/" + file.originalname),
-        (err) => {}
-      );
-      res.status(400).send({ error: errorMessage });
+      // Validate file name length
+      if (fileName.length > 100) {
+        fs.unlink(filePath, () => {});
+        return res
+          .status(400)
+          .send({ error: "File name should be less that 100 characters." });
+      }
+
+      // Grab either a published or draft page from database
+      let page;
+      if (type === "draft") {
+        page = await DraftPage.findById(pageId, "attachFiles");
+      } else {
+        page = await Page.findById(pageId, "attachFiles");
+      }
+
+      // Validate if there are less than attach files for the page
+      if (page.attachFiles.length >= 5) {
+        fs.unlink(filePath, () => {});
+        return res.status(400).send({
+          error: "You have already uploaded 5 attach files for this page.",
+        });
+      }
+
+      // Validate if the file name is not duplicated
+      const uploadedFileInDatabase = page.attachFiles.filter((item) => {
+        return item.name === fileName;
+      });
+      if (uploadedFileInDatabase.length > 0) {
+        fs.unlink(filePath, () => {});
+        return res.status(400).send({
+          error:
+            "You have already uploaded a file with this name for the page.",
+        });
+      }
+
+      const fileStream = fs.createReadStream(filePath);
+      const key = `${pageId}/${fileName}`;
+      S3.createBucket(() => {
+        const params = {
+          Bucket: BUCKET_NAME,
+          Key: key,
+          Body: fileStream,
+        };
+        S3.upload(params, async (err, data) => {
+          fs.unlink(filePath, () => {});
+
+          const url = `https://${BUCKET_NAME}.s3.amazonaws.com/${key}`;
+
+          const obj = {
+            $push: { attachFiles: { name: fileName, url } },
+          };
+          if (type === "draft") {
+            await DraftPage.findByIdAndUpdate(pageId, obj, { new: true });
+          } else {
+            await Page.findByIdAndUpdate(pageId, obj, { new: true });
+          }
+
+          res.send({ message: "file uploaded" });
+        });
+      });
+    } catch (e) {
+      log(e);
+      res.status(500).send({ message: "Internal server error." });
     }
   });
 };
 
-// delete an attach file
-exports.deleteAttachFile = (req, res) => {
-  const pageId = req.params.id;
-  const fileId = req.params.fileId;
+// Delete an attach file
+exports.deleteAttachFile = async (req, res) => {
+  try {
+    const pageId = req.params.id;
+    const fileId = req.params.fileId;
+    const type = req.query.type;
 
-  Page.findByIdAndUpdate(
-    pageId,
-    { $pull: { attachFiles: { _id: fileId } } },
-    { new: false },
-    (err, page) => {
-      if (err) return res.status(500).send("error");
-
-      const removedFile = page.attachFiles.filter((file) => {
-        return file._id.equals(fileId);
-      });
-
-      const params = {
-        Bucket: BUCKET_NAME,
-        Key: `${pageId}/${removedFile[0].name}`,
-      };
-
-      S3.deleteObject(params, function (err, data) {
-        if (err) return res.status(500).send("error");
-        res.send({ message: "file deleted" });
-      });
+    const obj = { $pull: { attachFiles: { _id: fileId } } };
+    let page;
+    if (type === "draft") {
+      page = await DraftPage.findByIdAndUpdate(pageId, obj, { new: false });
+    } else {
+      page = await Page.findByIdAndUpdate(pageId, obj, { new: false });
     }
-  );
+
+    const selectedFile = page.attachFiles.filter((file) => {
+      return file._id.equals(fileId);
+    });
+
+    S3.deleteObject(
+      {
+        Bucket: BUCKET_NAME,
+        Key: `${pageId}/${selectedFile[0].name}`,
+      },
+      (err, data) => {
+        res.send({ message: "file deleted" });
+      }
+    );
+  } catch (e) {
+    log(e);
+    res.status(500).send({ message: "Internal server error." });
+  }
 };
 
 // move a page to trash
