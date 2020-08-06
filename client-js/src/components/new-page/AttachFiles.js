@@ -109,11 +109,8 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  {
-    openUploadPhoto,
-    openConfModal,
-    closeModal,
-  }
-)(AttachFiles);
+export default connect(mapStateToProps, {
+  openUploadPhoto,
+  openConfModal,
+  closeModal,
+})(AttachFiles);

@@ -2,52 +2,21 @@ import React, { Component } from "react";
 import tagsInput from "tags-input";
 import axios from "axios";
 import { getParameterByName, loadingModal } from "../../lib/util";
-import ProgressBar from "../partials/ProgressBar";
-import Loading from "../partials/Loading";
 
 class FinalStepPublic extends Component {
   state = {
     type: "public",
-    comments: "",
-    rating: "",
-    links: "",
-    anonymously: "",
-    tags: "",
+    comments: this.props.comments,
+    rating: this.props.rating,
+    links: this.props.links,
+    anonymously: this.props.anonymously,
+    tags: this.props.tags,
     errors: {
       tags: null,
     },
   };
 
   async componentDidMount() {
-    try {
-      const { data } = await axios.get(
-        `/api/new-page/final-step/${
-          getParameterByName("id", window.location.href) || "id"
-        }`,
-        {
-          headers: {
-            authorization: localStorage.getItem("token"),
-          },
-        }
-      );
-
-      this.setState({
-        type: data.page.type,
-        comments: data.page.configurations.comments,
-        rating: data.page.configurations.rating,
-        anonymously: data.page.configurations.anonymously,
-        links: data.page.configurations.links,
-        tags: data.page.tags ? data.page.tags[0] : "",
-      });
-    } catch (e) {
-      console.log(e);
-      if (error.response.status === 401) {
-        window.location.href = "/login?redirected=new-page";
-      } else {
-        this.props.history.push(`/new-page/initial-step`);
-      }
-    }
-
     // To fix width issue client-js/node_modules/tags-input/tags-input.js and in setInputWidth
     // function change the value to a higher value (5 -> 10)
     tagsInput(document.querySelector('input[type="tags"]'));
@@ -204,151 +173,132 @@ class FinalStepPublic extends Component {
   };
 
   render() {
-    let loadingClass = "";
-    let contentClass = "";
-    if (this.state.rating === false || this.state.rating === true) {
-      loadingClass = "display-none";
-      contentClass = "";
-    } else {
-      contentClass = "display-none";
-      loadingClass = "";
-    }
     return (
-      <div id="new-page-container">
-        <ProgressBar width={100} />
-        <div className="page-new">
-          <div className={`center-content ${loadingClass}`}>
-            <Loading />
-          </div>
-          <div className={contentClass}>
-            <button
-              className="btn-text btn-text-big a-11"
-              onClick={this.onBackButtonClicked}
-            >
-              <i className="fa fa-arrow-left" aria-hidden="true" /> Back
-            </button>
-            <div className="center-content">
-              <h3 className="heading-tertiary">
-                Do some configurations and choose some tags
-              </h3>
-            </div>
+      <React.Fragment>
+        <button
+          className="btn-text btn-text-big a-11"
+          onClick={this.onBackButtonClicked}
+        >
+          <i className="fa fa-arrow-left" aria-hidden="true" /> Back
+        </button>
+        <div className="center-content">
+          <h3 className="heading-tertiary">
+            Do some configurations and choose some tags
+          </h3>
+        </div>
 
-            <div className="page-new__final-step">
-              <div className="switches">
-                <div className="form__group" className="switches__entity">
-                  <label>Disable Comments</label>
-                  <button
-                    className="btn-i btn-i-blue"
-                    onClick={() => this.onSwitchClicked("comments")}
-                  >
-                    <i
-                      className={
-                        !this.state.comments
-                          ? "fa fa-2x fa-toggle-on"
-                          : "fa fa-2x fa-toggle-off"
-                      }
-                      aria-hidden="true"
-                    />
-                  </button>
-                  <input type="hidden" value="false" />
-                </div>
-
-                <div className="form__group" className="switches__entity">
-                  <label>Disable Rating</label>
-                  <button
-                    className="btn-i btn-i-blue"
-                    onClick={() => this.onSwitchClicked("rating")}
-                  >
-                    <i
-                      className={
-                        !this.state.rating
-                          ? "fa fa-2x fa-toggle-on"
-                          : "fa fa-2x fa-toggle-off"
-                      }
-                      aria-hidden="true"
-                    />
-                  </button>
-                  <input type="hidden" value="false" />
-                </div>
-
-                <div className="form__group" className="switches__entity">
-                  <label>Do Not Display Related Pages and Tags</label>
-                  <button
-                    className="btn-i btn-i-blue"
-                    onClick={() => this.onSwitchClicked("links")}
-                  >
-                    <i
-                      className={
-                        !this.state.links
-                          ? "fa fa-2x fa-toggle-on"
-                          : "fa fa-2x fa-toggle-off"
-                      }
-                      aria-hidden="true"
-                    />
-                  </button>
-                  <input type="hidden" value="false" />
-                </div>
-
-                <div className="form__group" className="switches__entity">
-                  <label>Create This Page Anonymously</label>
-                  <button
-                    className="btn-i btn-i-blue"
-                    onClick={() => this.onSwitchClicked("anonymously")}
-                  >
-                    <i
-                      className={
-                        this.state.anonymously
-                          ? "fa fa-2x fa-toggle-on"
-                          : "fa fa-2x fa-toggle-off"
-                      }
-                      aria-hidden="true"
-                    />
-                  </button>
-                  <input type="hidden" value="false" />
-                </div>
-              </div>
-              <div className="form__group">
-                <label className="form__label" htmlFor="tags">
-                  Tags
-                </label>
-                <input
-                  type="tags"
-                  className="tags-input"
-                  id="tags"
-                  defaultValue={this.state.tags}
-                />
-                <span
-                  className={`a-10 ${
-                    !this.state.errors.tags && "display-none"
-                  }`}
-                >
-                  {this.state.errors.tags}
-                </span>
-              </div>
-
-              <div className="margin-top-1">
-                <p className="small-paragraph">
-                  Please read{" "}
-                  <a href="#" target="_blank">
-                    this
-                  </a>{" "}
-                  quick guide before you change any of the configurations and
-                  choose any tags.
-                </p>
-              </div>
-            </div>
-
-            <div className="center-content">
+        <div className="page-new__final-step">
+          <div className="switches">
+            <div className="form__group" className="switches__entity">
+              <label>Disable Comments</label>
               <button
-                onClick={this.onPublishButtonClicked}
-                className="btn btn-blue"
+                className="btn-i btn-i-blue"
+                onClick={() => this.onSwitchClicked("comments")}
               >
-                Publish
+                <i
+                  className={
+                    !this.state.comments
+                      ? "fa fa-2x fa-toggle-on"
+                      : "fa fa-2x fa-toggle-off"
+                  }
+                  aria-hidden="true"
+                />
               </button>
+              <input type="hidden" value="false" />
             </div>
+
+            <div className="form__group" className="switches__entity">
+              <label>Disable Rating</label>
+              <button
+                className="btn-i btn-i-blue"
+                onClick={() => this.onSwitchClicked("rating")}
+              >
+                <i
+                  className={
+                    !this.state.rating
+                      ? "fa fa-2x fa-toggle-on"
+                      : "fa fa-2x fa-toggle-off"
+                  }
+                  aria-hidden="true"
+                />
+              </button>
+              <input type="hidden" value="false" />
+            </div>
+
+            <div className="form__group" className="switches__entity">
+              <label>Do Not Display Related Pages and Tags</label>
+              <button
+                className="btn-i btn-i-blue"
+                onClick={() => this.onSwitchClicked("links")}
+              >
+                <i
+                  className={
+                    !this.state.links
+                      ? "fa fa-2x fa-toggle-on"
+                      : "fa fa-2x fa-toggle-off"
+                  }
+                  aria-hidden="true"
+                />
+              </button>
+              <input type="hidden" value="false" />
+            </div>
+
+            <div className="form__group" className="switches__entity">
+              <label>Create This Page Anonymously</label>
+              <button
+                className="btn-i btn-i-blue"
+                onClick={() => this.onSwitchClicked("anonymously")}
+              >
+                <i
+                  className={
+                    this.state.anonymously
+                      ? "fa fa-2x fa-toggle-on"
+                      : "fa fa-2x fa-toggle-off"
+                  }
+                  aria-hidden="true"
+                />
+              </button>
+              <input type="hidden" value="false" />
+            </div>
+          </div>
+          <div className="form__group">
+            <label className="form__label" htmlFor="tags">
+              Tags
+            </label>
+            <input
+              type="tags"
+              className="tags-input"
+              id="tags"
+              defaultValue={this.state.tags}
+            />
+            <span
+              className={`a-10 ${!this.state.errors.tags && "display-none"}`}
+            >
+              {this.state.errors.tags}
+            </span>
+          </div>
+
+          <div className="margin-top-1">
+            <p className="small-paragraph">
+              Please read{" "}
+              <a href="#" target="_blank">
+                this
+              </a>{" "}
+              quick guide before you change any of the configurations and choose
+              any tags.
+            </p>
           </div>
         </div>
-      </div>
+
+        <div className="center-content">
+          <button
+            onClick={this.onPublishButtonClicked}
+            className="btn btn-blue"
+          >
+            Publish
+          </button>
+        </div>
+      </React.Fragment>
     );
   }
 }

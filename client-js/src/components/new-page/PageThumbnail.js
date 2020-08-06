@@ -39,6 +39,7 @@ class PageThumbnail extends Component {
     }
   }
 
+  // Delete the photo user's uploaded
   async deletePagePhoto() {
     loadingModal("Removing the photo...");
 
