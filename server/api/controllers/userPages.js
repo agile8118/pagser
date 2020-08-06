@@ -11,7 +11,7 @@ exports.fetchPublishedPages = async (req, res) => {
     const results = await Page.find(
       { author: req.user.id, status: "published" },
       "type url cropedPhoto contents.title contents.briefDes"
-    );
+    ).sort({ date: -1 });
 
     let pages = results.map((i) => {
       return {

@@ -149,7 +149,7 @@ class FinalStepPublic extends Component {
       try {
         const pageId = getParameterByName("id", window.location.href);
 
-        await axios.post(`/api/new-page/${pageId}`, null, {
+        const { data } = await axios.post(`/api/new-page/${pageId}`, null, {
           headers: {
             authorization: localStorage.getItem("token"),
           },
@@ -157,9 +157,9 @@ class FinalStepPublic extends Component {
 
         loadingModal();
         this.props.history.push(
-          `/new-page/message?type=public&status=success&url=${response.data}`
+          `/new-page/message?type=public&status=success&url=${data}`
         );
-      } catch (e) {
+      } catch (error) {
         loadingModal();
         if (error.response.data.error === "error with contents") {
           this.props.history.push(

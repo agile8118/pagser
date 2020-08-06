@@ -249,7 +249,7 @@ module.exports = (app) => {
   app.post("/api/new-page/:id", requireAuth, Page.create);
 
   // ------------------------------------------------ //
-  // *********** SAME ROUTES IN NEW PAGE AND PAGE  *********** //
+  // *********** SHARED ROUTES BETWEEN NEW PAGE AND PAGE  *********** //
   // ------------------------------------------------ //
   app.put(
     "/api/pages/:id/photo",

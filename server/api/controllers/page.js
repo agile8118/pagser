@@ -12,7 +12,6 @@ const crypto = require("crypto");
 const multer = require("multer");
 const readChunk = require("read-chunk");
 const fileType = require("file-type");
-const Jimp = require("jimp");
 const cloudinary = require("cloudinary");
 const AWS = require("aws-sdk");
 const fs = require("fs");
@@ -382,83 +381,117 @@ exports.updateDraftPageData = async (req, res) => {
   }
 };
 
-exports.create = function (req, res) {
-  const pageId = req.params.id;
-  const userId = req.user.id;
+// Create and publish a page from a draft page
+exports.create = async (req, res) => {
+  try {
+    const pageId = req.params.id;
+    const userId = req.user.id;
 
-  DraftPage.findOne({ _id: pageId, author: userId }, (err, result) => {
-    if (err || !result) return res.status(400).send();
+    const draftPage = await DraftPage.findOne({ _id: pageId, author: userId });
 
     if (
-      util.validatePage(result, "type") &&
-      util.validatePage(result, "contents") &&
-      util.validatePage(result, "configurations") &&
-      util.validatePage(result, "tags") &&
-      util.validatePage(result, "url")
-    ) {
-      switch (result.type) {
-        case "public":
-          var page = new Page({
-            type: result.type,
-            url: util.convertToUrl(result.contents.title),
-            author: result.author,
-            configurations: result.configurations,
-            tags: result.tags,
-            contents: result.contents,
-          });
-
-          Page.findOne(
-            { url: page.url, type: "public" },
-            "url",
-            (err, result) => {
-              if (err) return res.status(500).send("error");
-              if (result) {
-                page.url =
-                  page.url + "_" + crypto.randomBytes(1).toString("hex");
-              }
-              page.save((err) => {
-                if (err) {
-                  return res.status(400).send("err");
-                }
-                res.status(200).send(page.url);
-                DraftPage.findByIdAndRemove(pageId, (err, result) => {});
-              });
-            }
-          );
-          break;
-
-        case "private":
-          var page = new Page({
-            type: result.type,
-            url: result.url,
-            author: result.author,
-            configurations: {
-              anonymously: result.configurations.anonymously,
-              rating: result.configurations.rating,
-              comments: result.configurations.comments,
-            },
-            contents: result.contents,
-            password: result.password,
-          });
-          page.save((err) => {
-            if (err) {
-              return res.status(400).send("err");
-            }
-            User.findById(result.author, "username", (err, user) => {
-              res.status(200).send({ url: page.url, username: user.username });
-            });
-            DraftPage.findByIdAndRemove(pageId, (err, result) => {});
-          });
-          break;
-        default:
-          return res.status(400).send();
-      }
-    } else {
+      !util.validatePage(draftPage, "type") ||
+      !util.validatePage(draftPage, "contents") ||
+      !util.validatePage(draftPage, "configurations") ||
+      !util.validatePage(draftPage, "tags") ||
+      !util.validatePage(draftPage, "url")
+    )
       return res.status(400).send({ error: "error with contents" });
+
+    if (draftPage.type === "public") {
+      const page = new Page({
+        type: draftPage.type,
+        url: util.convertToUrl(draftPage.contents.title),
+        author: draftPage.author,
+        configurations: draftPage.configurations,
+        tags: draftPage.tags,
+        photo: draftPage.photo,
+        cropedPhoto: draftPage.cropedPhoto,
+        attachFiles: draftPage.attachFiles,
+        contents: draftPage.contents,
+      });
+
+      const result = await Page.findOne(
+        { url: page.url, type: "public" },
+        "url"
+      );
+      if (result)
+        page.url = page.url + "_" + crypto.randomBytes(1).toString("hex");
+
+      await page.save();
+
+      // DraftPage.findByIdAndRemove(pageId, (err, result) => {});
+      return res.status(200).send(page.url);
     }
-  });
+
+    if (draftPage.type === "private") {
+      const page = new Page({
+        type: draftPage.type,
+        url: draftPage.url,
+        author: draftPage.author,
+        configurations: {
+          anonymously: draftPage.configurations.anonymously,
+          rating: draftPage.configurations.rating,
+          comments: draftPage.configurations.comments,
+        },
+        contents: draftPage.contents,
+        photo: draftPage.photo,
+        cropedPhoto: draftPage.cropedPhoto,
+        attachFiles: draftPage.attachFiles,
+      });
+
+      await page.save();
+
+      const user = await User.findById(draftPage.author, "username");
+
+      // DraftPage.findByIdAndRemove(pageId, (err, result) => {});
+      return res.status(200).send({ url: page.url, username: user.username });
+    }
+  } catch (e) {
+    log(e);
+    return res.status(500).send({ message: "Internal server error" });
+  }
 };
 
+// Fetch data in edit page section
+exports.fetchEditPageData = (req, res) => {
+  const pageUrl = req.params.url;
+  const username = req.params.username || null;
+  const userId = req.user.id;
+
+  if (username) {
+    Page.findOne(
+      { url: pageUrl, author: userId, type: "private" },
+      "contents configurations url type _id",
+      (err, page) => {
+        if (err) return res.status(500).send("error");
+        Page.find(
+          { author: userId, status: "published", type: "private" },
+          "url",
+          (err, results) => {
+            if (err) return res.status(500).send("error");
+            var urls = results.map((result) => {
+              if (result.url !== page.url) {
+                return result.url;
+              }
+            });
+            res.send({ page, urls });
+          }
+        );
+      }
+    );
+  } else {
+    Page.findOne(
+      { url: pageUrl, type: "public" },
+      "contents configurations tags type _id",
+      (err, page) => {
+        res.send({ page, urls: null });
+      }
+    );
+  }
+};
+
+// Update a page
 exports.updatePage = (req, res) => {
   const page = req.body.page;
   const pageId = req.params.id;
@@ -513,7 +546,7 @@ exports.updatePage = (req, res) => {
   }
 };
 
-// upload or update a photo to be set as page featured image
+// Upload or update a photo to be set as page featured image
 exports.uploadPagePhoto = (req, res) => {
   upload(req, res, async (err) => {
     try {
@@ -661,7 +694,7 @@ exports.removePagePhoto = async (req, res) => {
   }
 };
 
-// get attach file
+// Send an attach file to user for download
 exports.getAttachFile = (req, res) => {
   const pageId = req.params.id;
   const fileName = req.params.name;
@@ -678,7 +711,7 @@ exports.getAttachFile = (req, res) => {
   fileStream.pipe(res);
 };
 
-// get attach files
+// Get all attach files
 exports.getAttachFiles = async (req, res) => {
   try {
     const pageId = req.params.id;
@@ -698,7 +731,7 @@ exports.getAttachFiles = async (req, res) => {
   }
 };
 
-// add an attach file for a page
+// Add an attach file for a page
 exports.addAttachFile = (req, res) => {
   uploadFile(req, res, async (err) => {
     try {
@@ -762,10 +795,8 @@ exports.addAttachFile = (req, res) => {
         S3.upload(params, async (err, data) => {
           fs.unlink(filePath, () => {});
 
-          const url = `https://${BUCKET_NAME}.s3.amazonaws.com/${key}`;
-
           const obj = {
-            $push: { attachFiles: { name: fileName, url } },
+            $push: { attachFiles: { name: fileName } },
           };
           if (type === "draft") {
             await DraftPage.findByIdAndUpdate(pageId, obj, { new: true });
@@ -817,7 +848,7 @@ exports.deleteAttachFile = async (req, res) => {
   }
 };
 
-// move a page to trash
+// Move a page to trash
 exports.delete = (req, res) => {
   const pageId = req.params.id;
 
@@ -855,42 +886,4 @@ exports.delete = (req, res) => {
       res.send("ok");
     });
   });
-};
-
-// fetch data in edit page section
-exports.fetchEditPageData = (req, res) => {
-  const pageUrl = req.params.url;
-  const username = req.params.username || null;
-  const userId = req.user.id;
-
-  if (username) {
-    Page.findOne(
-      { url: pageUrl, author: userId, type: "private" },
-      "contents configurations url type _id",
-      (err, page) => {
-        if (err) return res.status(500).send("error");
-        Page.find(
-          { author: userId, status: "published", type: "private" },
-          "url",
-          (err, results) => {
-            if (err) return res.status(500).send("error");
-            var urls = results.map((result) => {
-              if (result.url !== page.url) {
-                return result.url;
-              }
-            });
-            res.send({ page, urls });
-          }
-        );
-      }
-    );
-  } else {
-    Page.findOne(
-      { url: pageUrl, type: "public" },
-      "contents configurations tags type _id",
-      (err, page) => {
-        res.send({ page, urls: null });
-      }
-    );
-  }
 };

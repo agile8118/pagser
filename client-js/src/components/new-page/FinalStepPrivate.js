@@ -120,37 +120,35 @@ class FinalStepPrivate extends Component {
   }
 
   onSubmitButtonClicked = () => {
-    if (this.checkUrlValidation()) {
-      this.updatePage(async () => {
-        try {
-          const pageId = getParameterByName("id", window.location.href);
+    if (!this.checkUrlValidation()) return this.url.current.focus();
 
-          await axios.post(`/api/new-page/${pageId}`, null, {
-            headers: {
-              authorization: localStorage.getItem("token"),
-            },
-          });
+    this.updatePage(async () => {
+      try {
+        const pageId = getParameterByName("id", window.location.href);
 
-          loadingModal();
+        const { data } = await axios.post(`/api/new-page/${pageId}`, null, {
+          headers: {
+            authorization: localStorage.getItem("token"),
+          },
+        });
+
+        loadingModal();
+        this.props.history.push(
+          `/new-page/message?type=private&status=success&url=${data.url}&username=${data.username}`
+        );
+      } catch (error) {
+        loadingModal();
+        if (error.response.data.error === "error with contents") {
           this.props.history.push(
-            `/new-page/message?type=private&status=success&url=${response.data.url}&username=${response.data.username}`
+            `/new-page/message?type=private&status=error-contents&id=${pageId}`
           );
-        } catch (e) {
-          loadingModal();
-          if (error.response.data.error === "error with contents") {
-            this.props.history.push(
-              `/new-page/message?type=private&status=error-contents&id=${pageId}`
-            );
-          } else {
-            this.props.history.push(
-              `/new-page/message?type=private&status=error`
-            );
-          }
+        } else {
+          this.props.history.push(
+            `/new-page/message?type=private&status=error`
+          );
         }
-      });
-    } else {
-      this.url.current.focus();
-    }
+      }
+    });
   };
 
   onBackButtonClicked() {
