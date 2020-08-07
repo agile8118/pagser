@@ -367,7 +367,10 @@ exports.updateDraftPageData = async (req, res) => {
         // We don't want to update the tags if the type is private, likewise we don't
         // want to update the url if the type is public
         if (page.type === "public") delete obj.url;
-        if (page.type === "private") delete obj.tags;
+        if (page.type === "private") {
+          delete obj.tags;
+          delete obj.configurations.links;
+        }
 
         await DraftPage.findOneAndUpdate({ _id: pageId }, obj, { new: true });
         res.status(201).send({ message: "updated" });

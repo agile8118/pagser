@@ -191,6 +191,16 @@ class FinalStepPublic extends Component {
           <div className="switches">
             <div className="form__group" className="switches__entity">
               <label>Disable Comments</label>
+              <div className="tooltip tooltip-top tooltip--info">
+                <a href="#!">
+                  <i className="fa fa-question-circle" aria-hidden="true" />
+                </a>
+                <span className="tooltip__text">
+                  lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor
+                  sit amet, consectetur adiplorem ipsum dolor sit amet,
+                  consectetur adip
+                </span>
+              </div>
               <button
                 className="btn-i btn-i-blue"
                 onClick={() => this.onSwitchClicked("comments")}
@@ -209,6 +219,16 @@ class FinalStepPublic extends Component {
 
             <div className="form__group" className="switches__entity">
               <label>Disable Rating</label>
+              <div className="tooltip tooltip-top tooltip--info">
+                <a href="#!">
+                  <i className="fa fa-question-circle" aria-hidden="true" />
+                </a>
+                <span className="tooltip__text">
+                  lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor
+                  sit amet, consectetur adiplorem ipsum dolor sit amet,
+                  consectetur adip
+                </span>
+              </div>
               <button
                 className="btn-i btn-i-blue"
                 onClick={() => this.onSwitchClicked("rating")}
@@ -227,6 +247,16 @@ class FinalStepPublic extends Component {
 
             <div className="form__group" className="switches__entity">
               <label>Do Not Display Related Pages and Tags</label>
+              <div className="tooltip tooltip-top tooltip--info">
+                <a href="#!">
+                  <i className="fa fa-question-circle" aria-hidden="true" />
+                </a>
+                <span className="tooltip__text">
+                  lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor
+                  sit amet, consectetur adiplorem ipsum dolor sit amet,
+                  consectetur adip
+                </span>
+              </div>
               <button
                 className="btn-i btn-i-blue"
                 onClick={() => this.onSwitchClicked("links")}
@@ -245,6 +275,16 @@ class FinalStepPublic extends Component {
 
             <div className="form__group" className="switches__entity">
               <label>Create This Page Anonymously</label>
+              <div className="tooltip tooltip-top tooltip--info">
+                <a href="#!">
+                  <i className="fa fa-question-circle" aria-hidden="true" />
+                </a>
+                <span className="tooltip__text">
+                  lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor
+                  sit amet, consectetur adiplorem ipsum dolor sit amet,
+                  consectetur adip
+                </span>
+              </div>
               <button
                 className="btn-i btn-i-blue"
                 onClick={() => this.onSwitchClicked("anonymously")}
