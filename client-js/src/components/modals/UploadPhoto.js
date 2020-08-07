@@ -46,11 +46,7 @@ class UploadPhoto extends Component {
     formData.append("img", document.querySelector("#image-input").files[0]);
     formData.set(
       "cropData",
-      `{ "x": "${this.state.cropData.x}", "y": "${
-        this.state.cropData.y
-      }", "width": "${this.state.cropData.width}", "height": "${
-        this.state.cropData.height
-      }" }`
+      `{ "x": "${this.state.cropData.x}", "y": "${this.state.cropData.y}", "width": "${this.state.cropData.width}", "height": "${this.state.cropData.height}" }`
     );
 
     try {
@@ -66,7 +62,7 @@ class UploadPhoto extends Component {
       this.props.success(data.image);
       showSnackBar("Photo uploaded successfully.", "success");
       this.setState({ status: "clean" });
-    } catch ({ response }) {
+    } catch (error) {
       document.querySelector("#reset-btn").click();
       this.setState({ status: "clean" });
       showSnackBar("There was an error with uploading your photo.", "error");
@@ -102,11 +98,11 @@ class UploadPhoto extends Component {
           },
         });
       },
-      ready: function() {
+      ready: function () {
         const self = this;
         document
           .querySelector("#reset-btn")
-          .addEventListener("click", function() {
+          .addEventListener("click", function () {
             if (self.cropper) {
               self.cropper.destroy();
             }
@@ -211,7 +207,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  { closeModal }
-)(UploadPhoto);
+export default connect(mapStateToProps, { closeModal })(UploadPhoto);

@@ -211,24 +211,6 @@ module.exports = (app) => {
   app.post("/api/views/:id", Analytics.view);
 
   // ------------------------------------------------ //
-  // *********** NEW PAGE ROUTES *********** //
-  // ------------------------------------------------ //
-  app.get(
-    "/api/new-page/:stage/:id",
-    requireAuth,
-    middleware.checkDraftPageOwnership,
-    Page.fetchDraftPageData
-  );
-
-  app.patch(
-    "/api/new-page/:stage/:id",
-    requireAuth,
-    middleware.checkDraftPageOwnership,
-    Page.updateDraftPageData
-  );
-  app.post("/api/new-page/:id", requireAuth, Page.create);
-
-  // ------------------------------------------------ //
   // *********** COMMENT ROUTES *********** //
   // ------------------------------------------------ //
   app.get("/api/comments/history", requireAuth, Comment.fetchUserComments);
@@ -249,26 +231,66 @@ module.exports = (app) => {
   );
 
   // ------------------------------------------------ //
-  // *********** PAGE ROUTES *********** //
+  // *********** NEW PAGE ROUTES *********** //
   // ------------------------------------------------ //
-  app.get("/api/public-pages/:url", Page.fetchPublicPageData);
+  app.get(
+    "/api/new-page/:stage/:id",
+    requireAuth,
+    middleware.checkDraftPageOwnership,
+    Page.fetchDraftPageData
+  );
+
+  app.patch(
+    "/api/new-page/:stage/:id",
+    requireAuth,
+    middleware.checkDraftPageOwnership,
+    Page.updateDraftPageData
+  );
+  app.post("/api/new-page/:id", requireAuth, Page.create);
+
+  // ------------------------------------------------ //
+  // *********** SHARED ROUTES BETWEEN NEW PAGE AND PAGE  *********** //
+  // ------------------------------------------------ //
   app.put(
     "/api/pages/:id/photo",
     requireAuth,
     middleware.checkPageOwnership,
     Page.uploadPagePhoto
   );
-  app.put(
-    "/api/pages/:id",
-    requireAuth,
-    middleware.checkPageOwnership,
-    Page.updatePage
-  );
   app.delete(
     "/api/pages/:id/photo",
     requireAuth,
     middleware.checkPageOwnership,
     Page.removePagePhoto
+  );
+  // add an attach file to a page
+  app.post(
+    "/api/pages/:id/attach-files",
+    requireAuth,
+    middleware.checkPageOwnership,
+    Page.addAttachFile
+  );
+  // get one attach file
+  app.get("/api/pages/:id/attach-files/:name", Page.getAttachFile);
+  // get attach files
+  app.get("/api/pages/:id/attach-files", Page.getAttachFiles);
+  // delete an attach file
+  app.delete(
+    "/api/pages/:id/attach-files/:fileId",
+    requireAuth,
+    middleware.checkPageOwnership,
+    Page.deleteAttachFile
+  );
+
+  // ------------------------------------------------ //
+  // *********** PAGE ROUTES *********** //
+  // ------------------------------------------------ //
+  app.get("/api/public-pages/:url", Page.fetchPublicPageData);
+  app.put(
+    "/api/pages/:id",
+    requireAuth,
+    middleware.checkPageOwnership,
+    Page.updatePage
   );
   app.delete(
     "/api/pages/:id",
@@ -279,26 +301,4 @@ module.exports = (app) => {
   app.get("/api/pages/:url/edit", requireAuth, Page.fetchEditPageData);
   app.get("/api/:username/:url/edit", requireAuth, Page.fetchEditPageData);
   app.get("/api/:username/:url", Page.fetchPrivatePageData);
-
-  // get one attach file
-  app.get("/api/pages/:id/attach-files/:name", Page.getAttachFile);
-
-  // get attach files
-  app.get("/api/pages/:id/attach-files", Page.getAttachFiles);
-
-  // delete an attach file
-  app.delete(
-    "/api/pages/:id/attach-files/:fileId",
-    requireAuth,
-    middleware.checkPageOwnership,
-    Page.deleteAttachFile
-  );
-
-  // add an attach file to a page
-  app.post(
-    "/api/pages/:id/attach-files",
-    requireAuth,
-    middleware.checkPageOwnership,
-    Page.addAttachFile
-  );
 };

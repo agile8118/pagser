@@ -7,11 +7,11 @@ const ReadLater = require("../../models/readLater");
 const History = require("../../models/history");
 const Rating = require("../../models/rating");
 const util = require("../../lib/util");
+const log = require("../../lib/log");
 const crypto = require("crypto");
 const multer = require("multer");
 const readChunk = require("read-chunk");
 const fileType = require("file-type");
-const Jimp = require("jimp");
 const cloudinary = require("cloudinary");
 const AWS = require("aws-sdk");
 const fs = require("fs");
@@ -258,6 +258,17 @@ exports.fetchDraftPageData = (req, res) => {
         }
       });
       break;
+
+    case "page-thumbnail":
+      DraftPage.findById(pageId, "_id photo", (err, page) => {
+        if (err) return res.status(500).send("error");
+        if (page) {
+          res.send({ page });
+        } else {
+          res.status(404).send();
+        }
+      });
+      break;
     case "final-step":
       DraftPage.findById(pageId)
         .select("configurations url password tags type author")
@@ -295,14 +306,14 @@ exports.updateDraftPageData = async (req, res) => {
 
   switch (stage) {
     case "initial-step":
-      var obj = {
+      let obj = {
         type: page.type,
       };
       obj.author = req.user.id;
 
       DraftPage.findById(pageId, (err, result) => {
         if (err || !result) {
-          var newPage = new DraftPage(obj);
+          const newPage = new DraftPage(obj);
           newPage.save(function (err, newPage) {
             if (err) return res.status(500).send("error");
             res.status(201).send({ id: newPage.id, message: "created" });
@@ -335,114 +346,185 @@ exports.updateDraftPageData = async (req, res) => {
         );
         res.status(200).send(result.id);
       } catch (e) {
+        log(e);
         return res.status(500).send({ message: "Internal server error" });
       }
       break;
     case "final-step":
       try {
-        await DraftPage.findOneAndUpdate(
-          { _id: pageId },
-          {
-            updatedAt: new Date(),
-            tags: page.tags,
-            url: page.url || "",
-            configurations: {
-              comments: page.configurations.comments,
-              rating: page.configurations.rating,
-              anonymously: page.configurations.anonymously,
-              links: page.configurations.links,
-            },
+        let obj = {
+          updatedAt: new Date(),
+          tags: page.tags,
+          url: page.url || "",
+          configurations: {
+            comments: page.configurations.comments,
+            rating: page.configurations.rating,
+            anonymously: page.configurations.anonymously,
+            links: page.configurations.links,
           },
-          { new: true }
-        );
-        res.status(201).send("updated");
+        };
+
+        // We don't want to update the tags if the type is private, likewise we don't
+        // want to update the url if the type is public
+        if (page.type === "public") delete obj.url;
+        if (page.type === "private") {
+          delete obj.tags;
+          delete obj.configurations.links;
+        }
+
+        await DraftPage.findOneAndUpdate({ _id: pageId }, obj, { new: true });
+        res.status(201).send({ message: "updated" });
       } catch (e) {
+        log(e);
         return res.status(500).send({ message: "Internal server error" });
       }
-
       break;
     default:
       res.status(404).send();
   }
 };
 
-exports.create = function (req, res) {
-  const pageId = req.params.id;
-  const userId = req.user.id;
+// Create and publish a page from a draft page
+exports.create = async (req, res) => {
+  try {
+    const draftPageId = req.params.id;
+    const userId = req.user.id;
+    let newPageId;
+    let resObj;
 
-  DraftPage.findOne({ _id: pageId, author: userId }, (err, result) => {
-    if (err || !result) return res.status(400).send();
+    const draftPage = await DraftPage.findOne({
+      _id: draftPageId,
+      author: userId,
+    });
 
     if (
-      util.validatePage(result, "type") &&
-      util.validatePage(result, "contents") &&
-      util.validatePage(result, "configurations") &&
-      util.validatePage(result, "tags") &&
-      util.validatePage(result, "url")
-    ) {
-      switch (result.type) {
-        case "public":
-          var page = new Page({
-            type: result.type,
-            url: util.convertToUrl(result.contents.title),
-            author: result.author,
-            configurations: result.configurations,
-            tags: result.tags,
-            contents: result.contents,
-          });
-
-          Page.findOne(
-            { url: page.url, type: "public" },
-            "url",
-            (err, result) => {
-              if (err) return res.status(500).send("error");
-              if (result) {
-                page.url =
-                  page.url + "_" + crypto.randomBytes(1).toString("hex");
-              }
-              page.save((err) => {
-                if (err) {
-                  return res.status(400).send("err");
-                }
-                res.status(200).send(page.url);
-                DraftPage.findByIdAndRemove(pageId, (err, result) => {});
-              });
-            }
-          );
-          break;
-
-        case "private":
-          var page = new Page({
-            type: result.type,
-            url: result.url,
-            author: result.author,
-            configurations: {
-              anonymously: result.configurations.anonymously,
-              rating: result.configurations.rating,
-              comments: result.configurations.comments,
-            },
-            contents: result.contents,
-            password: result.password,
-          });
-          page.save((err) => {
-            if (err) {
-              return res.status(400).send("err");
-            }
-            User.findById(result.author, "username", (err, user) => {
-              res.status(200).send({ url: page.url, username: user.username });
-            });
-            DraftPage.findByIdAndRemove(pageId, (err, result) => {});
-          });
-          break;
-        default:
-          return res.status(400).send();
-      }
-    } else {
+      !util.validatePage(draftPage, "type") ||
+      !util.validatePage(draftPage, "contents") ||
+      !util.validatePage(draftPage, "configurations") ||
+      !util.validatePage(draftPage, "tags") ||
+      !util.validatePage(draftPage, "url")
+    )
       return res.status(400).send({ error: "error with contents" });
+
+    if (draftPage.type === "public") {
+      const page = new Page({
+        type: draftPage.type,
+        url: util.convertToUrl(draftPage.contents.title),
+        author: draftPage.author,
+        configurations: draftPage.configurations,
+        tags: draftPage.tags,
+        photo: draftPage.photo,
+        cropedPhoto: draftPage.cropedPhoto,
+        attachFiles: draftPage.attachFiles,
+        contents: draftPage.contents,
+      });
+
+      const result = await Page.findOne(
+        { url: page.url, type: "public" },
+        "url"
+      );
+      if (result)
+        page.url = page.url + "_" + crypto.randomBytes(1).toString("hex");
+
+      await page.save();
+      newPageId = page.id;
+      resObj = page.url;
     }
-  });
+
+    if (draftPage.type === "private") {
+      const page = new Page({
+        type: draftPage.type,
+        url: draftPage.url,
+        author: draftPage.author,
+        configurations: {
+          anonymously: draftPage.configurations.anonymously,
+          rating: draftPage.configurations.rating,
+          comments: draftPage.configurations.comments,
+        },
+        contents: draftPage.contents,
+        photo: draftPage.photo,
+        cropedPhoto: draftPage.cropedPhoto,
+        attachFiles: draftPage.attachFiles,
+      });
+
+      await page.save();
+      newPageId = page.id;
+      const user = await User.findById(draftPage.author, "username");
+      resObj = { url: page.url, username: user.username };
+    }
+
+    // Copy attach files the from draft page to the published page
+    console.log(draftPage.attachFiles);
+    draftPage.attachFiles.map((file) => {
+      console.log(file);
+
+      S3.copyObject(
+        {
+          Bucket: BUCKET_NAME,
+          CopySource: `${BUCKET_NAME}/${draftPage.id}/${file.name}`,
+          Key: `${newPageId}/${file.name}`,
+        },
+        (err, data) => {
+          S3.deleteObject(
+            {
+              Bucket: BUCKET_NAME,
+              Key: `${draftPage.id}/${file.name}`,
+            },
+            (err, data) => {}
+          );
+        }
+      );
+    });
+
+    // Delete the draft file
+    DraftPage.findByIdAndRemove(draftPageId, (err, result) => {});
+
+    return res.status(200).send(resObj);
+  } catch (e) {
+    log(e);
+    return res.status(500).send({ message: "Internal server error" });
+  }
 };
 
+// Fetch data in edit page section
+exports.fetchEditPageData = (req, res) => {
+  const pageUrl = req.params.url;
+  const username = req.params.username || null;
+  const userId = req.user.id;
+
+  if (username) {
+    Page.findOne(
+      { url: pageUrl, author: userId, type: "private" },
+      "contents configurations url type _id",
+      (err, page) => {
+        if (err) return res.status(500).send("error");
+        Page.find(
+          { author: userId, status: "published", type: "private" },
+          "url",
+          (err, results) => {
+            if (err) return res.status(500).send("error");
+            var urls = results.map((result) => {
+              if (result.url !== page.url) {
+                return result.url;
+              }
+            });
+            res.send({ page, urls });
+          }
+        );
+      }
+    );
+  } else {
+    Page.findOne(
+      { url: pageUrl, type: "public" },
+      "contents configurations tags type _id",
+      (err, page) => {
+        res.send({ page, urls: null });
+      }
+    );
+  }
+};
+
+// Update a page
 exports.updatePage = (req, res) => {
   const page = req.body.page;
   const pageId = req.params.id;
@@ -497,333 +579,312 @@ exports.updatePage = (req, res) => {
   }
 };
 
-// upload or update a photo to be set as page featured image
+// Upload or update a photo to be set as page featured image
 exports.uploadPagePhoto = (req, res) => {
-  try {
-    const imageFolderPath = "./public/images/pages/";
-    const pageId = req.params.id;
+  upload(req, res, async (err) => {
+    try {
+      if (err) res.status(500).send({ message: "Internal server error." });
 
-    upload(req, res, function (err) {
-      if (err) {
-        return res.send(err);
-      }
-      if (!req.file) {
-        return res.send("no file uploaded.");
-      }
-      const imgName = req.file.filename;
-      try {
-        var cropData = JSON.parse(req.body.cropData);
-      } catch (err) {
-        return res.status(400).send("error with data");
-      }
-      const buffer = readChunk.sync(`${imageFolderPath}${imgName}`, 0, 4100);
-      if (req.file.size > 8000000) {
-        fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
-        return res.send("maximum image file size is 8MB");
-      }
+      if (!req.file)
+        return res.status(400).send({ message: "No file uploaded." });
+
+      // const imageFolderPath = "./public/images/pages/";
+      const filePath = req.file ? req.file.path : null;
+      const pageId = req.params.id;
+      const type = req.query.type; // To see if the page is draft
+      const cropData = JSON.parse(req.body.cropData);
+
+      // Check file type
+      const buffer = readChunk.sync(filePath, 0, 4100);
+      if (!fileType(buffer))
+        return res.status(400).send({ message: "Bad request" });
       if (
-        (fileType(buffer) && fileType(buffer).mime === "image/png") ||
-        (fileType(buffer) && fileType(buffer).mime === "image/jpg") ||
-        (fileType(buffer) && fileType(buffer).mime === "image/jpeg")
+        !(
+          fileType(buffer).mime !== "image/png" ||
+          fileType(buffer).mime !== "image/jpg" ||
+          fileType(buffer).mime !== "image/jpeg"
+        )
       ) {
-        var image = new Jimp(`${imageFolderPath}${imgName}`, function (
-          err,
-          image
-        ) {
-          if (image.bitmap.width < 1200 || image.bitmap.height < 675) {
-            fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
-            return res.send(
-              "image dimentions must be at least 1200 * 675 pixels"
-            );
-          }
-
-          image
-            .quality(60)
-            .resize(1200, Jimp.AUTO)
-            .write(`${imageFolderPath}${imgName}`, function (err, image) {
-              if (err) {
-                fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
-                return res.send("error");
-              }
-
-              cloudinary.v2.uploader.upload(
-                `${imageFolderPath}${imgName}`,
-                { folder: "images/pages" },
-                function (error, result) {
-                  Page.findById(pageId, (err, page) => {
-                    if (!page) {
-                      return res.status(400).send("err");
-                    }
-                    if (page.photo) {
-                      cloudinary.v2.uploader.destroy(page.photo.public_id);
-                    }
-                    try {
-                      page.photo.public_id = result.public_id;
-                      page.photo.secure_url = result.secure_url;
-                    } catch (e) {
-                      res.status(500).send({ error: "An error occurred" });
-                      fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
-                    }
-
-                    page.save((err) => {
-                      if (!err) {
-                        try {
-                          res.send({ image: page.photo.secure_url });
-                        } catch (e) {
-                          res.status(500).send({ error: "An error occurred" });
-                          fs.unlink(
-                            `${imageFolderPath}${imgName}`,
-                            (err) => {}
-                          );
-                        }
-                      }
-                    });
-                  });
-                }
-              );
-            });
-        });
-
-        var cropedImage = new Jimp(`${imageFolderPath}${imgName}`, function (
-          err,
-          image
-        ) {
-          var x = Number(cropData.x);
-          var y = Number(cropData.y);
-          var width = Number(cropData.width);
-          var height = Number(cropData.height);
-
-          try {
-            image
-              .crop(x, y, width, height)
-              .quality(60)
-              .resize(400, 225)
-              .write(`${imageFolderPath}croped-${imgName}`, function (
-                err,
-                image
-              ) {
-                if (err) {
-                  fs.unlink(`${imageFolderPath}croped-${imgName}`, (err) => {});
-                }
-
-                cloudinary.v2.uploader.upload(
-                  `${imageFolderPath}croped-${imgName}`,
-                  { folder: "images/pages/croped" },
-                  function (error, result) {
-                    Page.findById(pageId, (err, page) => {
-                      if (!page) {
-                      }
-                      if (page.cropedPhoto) {
-                        cloudinary.v2.uploader.destroy(
-                          page.cropedPhoto.public_id
-                        );
-                      }
-                      try {
-                        page.cropedPhoto.public_id = result.public_id;
-                        page.cropedPhoto.secure_url = result.secure_url;
-                      } catch (e) {
-                        fs.unlink(
-                          `${imageFolderPath}croped-${imgName}`,
-                          (err) => {}
-                        );
-                      }
-
-                      page.save((err) => {
-                        if (!err) {
-                          try {
-                            fs.unlink(
-                              `${imageFolderPath}croped-${imgName}`,
-                              (err) => {}
-                            );
-                            fs.unlink(
-                              `${imageFolderPath}${imgName}`,
-                              (err) => {}
-                            );
-                          } catch (e) {
-                            fs.unlink(
-                              `${imageFolderPath}croped-${imgName}`,
-                              (err) => {}
-                            );
-                          }
-                        }
-                      });
-                    });
-                  }
-                );
-              });
-          } catch (e) {
-            res.status(500).send("An unkown error occurred.");
-            fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
-          }
-        });
-      } else {
-        res.send("image format is not supported");
-        fs.unlink(`${imageFolderPath}${imgName}`, (err) => {});
+        fs.unlink(filePath, () => {});
+        return res.status(400).send({ message: "Bad request" });
       }
-    });
-  } catch (e) {
-    res.status(500).send("An unkown error occurred.");
-  }
+
+      // Check file size
+      if (req.file.size > 8000000) {
+        fs.unlink(filePath, (err) => {});
+        return res
+          .status(400)
+          .send({ message: "Maximum image file size is 8MB" });
+      }
+
+      let page;
+      if (type === "draft") {
+        page = await DraftPage.findById(pageId);
+      } else {
+        page = await Page.findById(pageId);
+      }
+
+      // If the page already has a photo
+      if (page.photo) {
+        // Remove the photo
+        cloudinary.v2.uploader.destroy(page.photo.public_id);
+        cloudinary.v2.uploader.destroy(page.cropedPhoto.public_id);
+      }
+
+      // Upload and resize the image (cloudinary)
+      cloudinary.v2.uploader.upload(
+        filePath,
+        {
+          folder: "images/pages/",
+          transformation: [{ width: 1200, crop: "scale" }],
+        },
+        async (error, { secure_url, public_id }) => {
+          if (error)
+            return res.status(500).send({ message: "Internal server error." });
+
+          // Update the photo data on database
+          if (type === "draft") {
+            await DraftPage.findByIdAndUpdate(req.params.id, {
+              photo: { secure_url, public_id },
+            });
+          } else {
+            await Page.findByIdAndUpdate(req.params.id, {
+              photo: { secure_url, public_id },
+            });
+          }
+
+          res.send({
+            message: "image-uploaded",
+            image: secure_url,
+          });
+        }
+      );
+
+      // Upload, crop and resize the image - smaller version (cloudinary)
+      cloudinary.v2.uploader.upload(
+        filePath,
+        {
+          folder: "images/pages/croped",
+          transformation: [
+            {
+              width: Math.round(Number(cropData.width)),
+              height: Math.round(Number(cropData.height)),
+              x: Math.round(Number(cropData.x)),
+              y: Math.round(Number(cropData.y)),
+              crop: "crop",
+            },
+            { width: 400, height: 225, crop: "scale" },
+          ],
+        },
+        async (error, { secure_url, public_id }) => {
+          // Delete the uploaded file from the temp storage
+          fs.unlink(filePath, () => {});
+
+          if (error)
+            return res.status(500).send({ message: "Internal server error." });
+
+          // Update the photo data on database
+          if (type === "draft") {
+            await DraftPage.findByIdAndUpdate(req.params.id, {
+              cropedPhoto: { secure_url, public_id },
+            });
+          } else {
+            await Page.findByIdAndUpdate(req.params.id, {
+              cropedPhoto: { secure_url, public_id },
+            });
+          }
+        }
+      );
+    } catch (e) {
+      if (req.file && req.file.path) fs.unlink(req.file.path, () => {});
+      log(e);
+      res.status(500).send({ message: "Internal server error." });
+    }
+  });
 };
 
-// remove page photo
-exports.removePagePhoto = (req, res) => {
-  const pageId = req.params.id;
+// Remove page photo from a published or draft page
+exports.removePagePhoto = async (req, res) => {
+  try {
+    const pageId = req.params.id;
+    const type = req.query.type;
 
-  Page.findById(pageId, (err, page) => {
-    if (err || !page) return res.send("error");
+    let page;
+    if (type === "draft") {
+      page = await DraftPage.findById(pageId, "photo cropedPhoto");
+    } else {
+      page = await Page.findById(pageId, "photo cropedPhoto");
+    }
+
     cloudinary.v2.uploader.destroy(page.photo.public_id);
     cloudinary.v2.uploader.destroy(page.cropedPhoto.public_id);
     page.photo = { public_id: "", secure_url: "" };
     page.cropedPhoto = { public_id: "", secure_url: "" };
-    page.save((err) => {
-      if (err || !page) return res.send("error");
-      res.send("photo removed");
-    });
-  });
+    await page.save();
+    res.send({ message: "photo removed" });
+  } catch (e) {
+    res.status(500).send({ message: "Internal server error." });
+  }
 };
 
-// get attach file
+// Send an attach file to user for download
 exports.getAttachFile = (req, res) => {
-  const pageId = req.params.id;
-  const fileName = req.params.name;
+  try {
+    const pageId = req.params.id;
+    const fileName = req.params.name;
 
-  const key = `${pageId}/${fileName}`;
+    const key = `${pageId}/${fileName}`;
 
-  const options = {
-    Bucket: BUCKET_NAME,
-    Key: key,
-  };
-
-  res.attachment(key);
-  const fileStream = S3.getObject(options).createReadStream();
-  fileStream.pipe(res);
+    res.attachment(key);
+    const fileStream = S3.getObject({
+      Bucket: BUCKET_NAME,
+      Key: key,
+    }).createReadStream();
+    fileStream.pipe(res);
+  } catch (e) {
+    log(e);
+    res.status(500).send({ message: "Internal server error" });
+  }
 };
 
-// get attach files
-exports.getAttachFiles = (req, res) => {
-  const pageId = req.params.id;
+// Get all attach files
+exports.getAttachFiles = async (req, res) => {
+  try {
+    const pageId = req.params.id;
+    const type = req.query.type;
 
-  Page.findById(pageId, "attachFiles author", (err, page) => {
-    if (err) return res.status(500).send("error");
+    let page;
+    if (type === "draft") {
+      page = await DraftPage.findById(pageId, "attachFiles");
+    } else {
+      page = await Page.findById(pageId, "attachFiles");
+    }
+
     res.send({ attachFiles: page.attachFiles });
+  } catch (e) {
+    log(e);
+    if (err) res.status(500).send({ message: "Internal server error." });
+  }
+};
+
+// Add an attach file for a page
+exports.addAttachFile = (req, res) => {
+  uploadFile(req, res, async (err) => {
+    try {
+      if (err) res.status(500).send({ message: "Internal server error." });
+
+      const pageId = req.params.id;
+      const type = req.query.type;
+      const filePath = req.file ? req.file.path : null;
+      const fileName = req.file.originalname;
+
+      // Validate file size
+      if (req.file.size > 10000000) {
+        fs.unlink(filePath, () => {});
+        return res.status(400).send({ error: "Maximum file size is 10MB." });
+      }
+
+      // Validate file name length
+      if (fileName.length > 100) {
+        fs.unlink(filePath, () => {});
+        return res
+          .status(400)
+          .send({ error: "File name should be less that 100 characters." });
+      }
+
+      // Grab either a published or draft page from database
+      let page;
+      if (type === "draft") {
+        page = await DraftPage.findById(pageId, "attachFiles");
+      } else {
+        page = await Page.findById(pageId, "attachFiles");
+      }
+
+      // Validate if there are less than attach files for the page
+      if (page.attachFiles.length >= 5) {
+        fs.unlink(filePath, () => {});
+        return res.status(400).send({
+          error: "You have already uploaded 5 attach files for this page.",
+        });
+      }
+
+      // Validate if the file name is not duplicated
+      const uploadedFileInDatabase = page.attachFiles.filter((item) => {
+        return item.name === fileName;
+      });
+      if (uploadedFileInDatabase.length > 0) {
+        fs.unlink(filePath, () => {});
+        return res.status(400).send({
+          error:
+            "You have already uploaded a file with this name for the page.",
+        });
+      }
+
+      const fileStream = fs.createReadStream(filePath);
+      const key = `${pageId}/${fileName}`;
+      S3.createBucket(() => {
+        const params = {
+          Bucket: BUCKET_NAME,
+          Key: key,
+          Body: fileStream,
+        };
+        S3.upload(params, async (err, data) => {
+          fs.unlink(filePath, () => {});
+
+          const obj = {
+            $push: { attachFiles: { name: fileName } },
+          };
+          if (type === "draft") {
+            await DraftPage.findByIdAndUpdate(pageId, obj, { new: true });
+          } else {
+            await Page.findByIdAndUpdate(pageId, obj, { new: true });
+          }
+
+          res.send({ message: "file uploaded" });
+        });
+      });
+    } catch (e) {
+      log(e);
+      res.status(500).send({ message: "Internal server error." });
+    }
   });
 };
 
-// add an attach file for a page
-exports.addAttachFile = (req, res) => {
-  const pageId = req.params.id;
+// Delete an attach file
+exports.deleteAttachFile = async (req, res) => {
+  try {
+    const pageId = req.params.id;
+    const fileId = req.params.fileId;
+    const type = req.query.type;
 
-  uploadFile(req, res, (err) => {
-    const file = req.file;
+    const obj = { $pull: { attachFiles: { _id: fileId } } };
+    let page;
+    if (type === "draft") {
+      page = await DraftPage.findByIdAndUpdate(pageId, obj, { new: false });
+    } else {
+      page = await Page.findByIdAndUpdate(pageId, obj, { new: false });
+    }
 
-    Page.findById(pageId, "attachFiles", (err, page) => {
-      if (err || !page) return res.status(500).send("error");
-
-      var uploadedFileInDatabase = page.attachFiles.filter((item) => {
-        return item.name === file.originalname;
-      });
-
-      if (
-        file.size <= 10000000 &&
-        file.originalname.length < 100 &&
-        page.attachFiles.length < 5 &&
-        uploadedFileInDatabase.length === 0
-      ) {
-        const fileStream = fs.createReadStream(
-          path.join(__dirname, "../../../storage/" + file.originalname)
-        );
-
-        const key = `${pageId}/${file.originalname}`;
-
-        S3.createBucket(function () {
-          const params = {
-            Bucket: BUCKET_NAME,
-            Key: key,
-            Body: fileStream,
-          };
-          S3.upload(params, function (err, data) {
-            fs.unlink(
-              path.join(__dirname, "../../../storage/" + file.originalname),
-              (err) => {}
-            );
-
-            if (err)
-              return res.status(500).send({ message: "An error occurred" });
-
-            const url = `https://${BUCKET_NAME}.s3.amazonaws.com/${key}`;
-
-            Page.findByIdAndUpdate(
-              pageId,
-              { $push: { attachFiles: { name: file.originalname, url } } },
-              { new: true },
-              (err, newPage) => {
-                if (err) return res.status(500).send("error");
-                res.send({ message: "file uploaded" });
-              }
-            );
-          });
-        });
-      } else if (file.size > 10000000) {
-        var errorMessage = "Maximum file size is 10MB";
-        handleIssueWithFile(errorMessage);
-      } else if (file.originalname.length > 100) {
-        var errorMessage = "File name should be less that 100 characters.";
-        handleIssueWithFile(errorMessage);
-      } else if (page.attachFiles.length >= 5) {
-        var errorMessage =
-          "You have already uploaded 5 attach files for this page.";
-        handleIssueWithFile(errorMessage);
-      } else if (uploadedFileInDatabase.length > 0) {
-        var errorMessage =
-          "You have already uploaded a file with this name for the page.";
-        handleIssueWithFile(errorMessage);
-      } else {
-        var errorMessage = "There is an error with the file you have uploaded.";
-        handleIssueWithFile(errorMessage);
-      }
+    const selectedFile = page.attachFiles.filter((file) => {
+      return file._id.equals(fileId);
     });
 
-    function handleIssueWithFile(errorMessage) {
-      fs.unlink(
-        path.join(__dirname, "../../../storage/" + file.originalname),
-        (err) => {}
-      );
-      res.status(400).send({ error: errorMessage });
-    }
-  });
-};
-
-// delete an attach file
-exports.deleteAttachFile = (req, res) => {
-  const pageId = req.params.id;
-  const fileId = req.params.fileId;
-
-  Page.findByIdAndUpdate(
-    pageId,
-    { $pull: { attachFiles: { _id: fileId } } },
-    { new: false },
-    (err, page) => {
-      if (err) return res.status(500).send("error");
-
-      const removedFile = page.attachFiles.filter((file) => {
-        return file._id.equals(fileId);
-      });
-
-      const params = {
+    S3.deleteObject(
+      {
         Bucket: BUCKET_NAME,
-        Key: `${pageId}/${removedFile[0].name}`,
-      };
-
-      S3.deleteObject(params, function (err, data) {
-        if (err) return res.status(500).send("error");
+        Key: `${pageId}/${selectedFile[0].name}`,
+      },
+      (err, data) => {
         res.send({ message: "file deleted" });
-      });
-    }
-  );
+      }
+    );
+  } catch (e) {
+    log(e);
+    res.status(500).send({ message: "Internal server error." });
+  }
 };
 
-// move a page to trash
+// Move a page to trash
 exports.delete = (req, res) => {
   const pageId = req.params.id;
 
@@ -861,42 +922,4 @@ exports.delete = (req, res) => {
       res.send("ok");
     });
   });
-};
-
-// fetch data in edit page section
-exports.fetchEditPageData = (req, res) => {
-  const pageUrl = req.params.url;
-  const username = req.params.username || null;
-  const userId = req.user.id;
-
-  if (username) {
-    Page.findOne(
-      { url: pageUrl, author: userId, type: "private" },
-      "contents configurations url type _id",
-      (err, page) => {
-        if (err) return res.status(500).send("error");
-        Page.find(
-          { author: userId, status: "published", type: "private" },
-          "url",
-          (err, results) => {
-            if (err) return res.status(500).send("error");
-            var urls = results.map((result) => {
-              if (result.url !== page.url) {
-                return result.url;
-              }
-            });
-            res.send({ page, urls });
-          }
-        );
-      }
-    );
-  } else {
-    Page.findOne(
-      { url: pageUrl, type: "public" },
-      "contents configurations tags type _id",
-      (err, page) => {
-        res.send({ page, urls: null });
-      }
-    );
-  }
 };

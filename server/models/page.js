@@ -54,11 +54,20 @@ const DraftPageSchema = new Schema({
     links: { type: Boolean, default: true },
   },
   url: String,
+  cropedPhoto: {
+    public_id: { type: String, default: "" },
+    secure_url: { type: String, default: "" },
+  },
+  photo: {
+    public_id: { type: String, default: "" },
+    secure_url: { type: String, default: "" },
+  },
   author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
   date: { type: Date, default: Date.now },
+  attachFiles: [{ name: String, url: String }],
   updatedAt: { type: Date },
   status: { type: String, default: "draft" },
 });

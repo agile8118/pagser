@@ -97,6 +97,22 @@ ol {
   }
 }
 
+.white-link {
+  color: #fff;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.blue-link {
+  color: $color-blue;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 pre {
   white-space: pre-wrap;
   white-space: -moz-pre-wrap;

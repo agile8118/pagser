@@ -128,22 +128,12 @@ class PageContents extends Component {
 
   onNextButtonClicked = () => {
     if (this.checkIfAllOk()) {
-      const type = getParameterByName("type", window.location.href);
-      if (type) {
-        this.updatePage(
-          `/new-page/page-thumbnail?id=${getParameterByName(
-            "id",
-            window.location.href
-          )}`
-        );
-      } else {
-        this.updatePage(
-          `/new-page/page-thumbnail?id=${getParameterByName(
-            "id",
-            window.location.href
-          )}?type=${this.state.type}`
-        );
-      }
+      this.updatePage(
+        `/new-page/page-thumbnail?id=${getParameterByName(
+          "id",
+          window.location.href
+        )}`
+      );
     } else {
       if (!this.checkTitleValidation()) {
         this.title.current.focus();
@@ -595,7 +585,8 @@ class PageContents extends Component {
             You can view all your draft pages{" "}
             <a href="/u/pages/draft" target="_blank">
               here
-            </a>.
+            </a>
+            .
           </p>
         </div>
 

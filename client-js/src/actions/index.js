@@ -36,7 +36,9 @@ import {
   CLOSE_MDL,
   ADD_TO_CL_MDL,
   UPLOAD_PHOTO_MDL,
+  UPLOAD_ATTACH_FILE_MDL,
   CONF_MDL,
+  CONF_DELETE_ATTACH_FILE_MDL,
   CLOSE_ALL_MDLS,
 } from "./constants";
 
@@ -550,10 +552,18 @@ export const closeModal = () => {
   };
 };
 
+export const openConfDeleteAttachFile = (id, name) => {
+  return {
+    type: CONF_DELETE_ATTACH_FILE_MDL,
+    payload: { id, name },
+  };
+};
+
 // Open confirmation modal
-export const openConfModal = () => {
+export const openConfModal = (id = null) => {
   return {
     type: CONF_MDL,
+    payload: { id },
   };
 };
 
@@ -583,6 +593,13 @@ export const addToCollectionOpen = (pageId) => async (dispatch) => {
 export const openUploadPhoto = (id) => async (dispatch) => {
   dispatch({
     type: UPLOAD_PHOTO_MDL,
+    payload: { open: true, id },
+  });
+};
+
+export const openUploadAttachFile = (id) => async (dispatch) => {
+  dispatch({
+    type: UPLOAD_ATTACH_FILE_MDL,
     payload: { open: true, id },
   });
 };

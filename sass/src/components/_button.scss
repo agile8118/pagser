@@ -132,12 +132,17 @@
   border: none;
   font-size: 1.6rem;
 
+  i {
+    color: inherit;
+    font-size: inherit;
+  }
+
   &:hover,
   &:focus {
     color: darken($color-text, 10%);
   }
 
-  &:focus {
+  &:active {
     outline: none;
   }
 }
