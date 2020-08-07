@@ -384,10 +384,15 @@ exports.updateDraftPageData = async (req, res) => {
 // Create and publish a page from a draft page
 exports.create = async (req, res) => {
   try {
-    const pageId = req.params.id;
+    const draftPageId = req.params.id;
     const userId = req.user.id;
+    let newPageId;
+    let resObj;
 
-    const draftPage = await DraftPage.findOne({ _id: pageId, author: userId });
+    const draftPage = await DraftPage.findOne({
+      _id: draftPageId,
+      author: userId,
+    });
 
     if (
       !util.validatePage(draftPage, "type") ||
@@ -419,9 +424,8 @@ exports.create = async (req, res) => {
         page.url = page.url + "_" + crypto.randomBytes(1).toString("hex");
 
       await page.save();
-
-      // DraftPage.findByIdAndRemove(pageId, (err, result) => {});
-      return res.status(200).send(page.url);
+      newPageId = page.id;
+      resObj = page.url;
     }
 
     if (draftPage.type === "private") {
@@ -441,12 +445,38 @@ exports.create = async (req, res) => {
       });
 
       await page.save();
-
+      newPageId = page.id;
       const user = await User.findById(draftPage.author, "username");
-
-      // DraftPage.findByIdAndRemove(pageId, (err, result) => {});
-      return res.status(200).send({ url: page.url, username: user.username });
+      resObj = { url: page.url, username: user.username };
     }
+
+    // Copy attach files the from draft page to the published page
+    console.log(draftPage.attachFiles);
+    draftPage.attachFiles.map((file) => {
+      console.log(file);
+
+      S3.copyObject(
+        {
+          Bucket: BUCKET_NAME,
+          CopySource: `${BUCKET_NAME}/${draftPage.id}/${file.name}`,
+          Key: `${newPageId}/${file.name}`,
+        },
+        (err, data) => {
+          S3.deleteObject(
+            {
+              Bucket: BUCKET_NAME,
+              Key: `${draftPage.id}/${file.name}`,
+            },
+            (err, data) => {}
+          );
+        }
+      );
+    });
+
+    // Delete the draft file
+    DraftPage.findByIdAndRemove(draftPageId, (err, result) => {});
+
+    return res.status(200).send(resObj);
   } catch (e) {
     log(e);
     return res.status(500).send({ message: "Internal server error" });
@@ -696,19 +726,22 @@ exports.removePagePhoto = async (req, res) => {
 
 // Send an attach file to user for download
 exports.getAttachFile = (req, res) => {
-  const pageId = req.params.id;
-  const fileName = req.params.name;
+  try {
+    const pageId = req.params.id;
+    const fileName = req.params.name;
 
-  const key = `${pageId}/${fileName}`;
+    const key = `${pageId}/${fileName}`;
 
-  const options = {
-    Bucket: BUCKET_NAME,
-    Key: key,
-  };
-
-  res.attachment(key);
-  const fileStream = S3.getObject(options).createReadStream();
-  fileStream.pipe(res);
+    res.attachment(key);
+    const fileStream = S3.getObject({
+      Bucket: BUCKET_NAME,
+      Key: key,
+    }).createReadStream();
+    fileStream.pipe(res);
+  } catch (e) {
+    log(e);
+    res.status(500).send({ message: "Internal server error" });
+  }
 };
 
 // Get all attach files
