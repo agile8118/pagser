@@ -9,70 +9,72 @@ class Message extends Component {
     const url = getParameterByName("url", window.location.href);
     const id = getParameterByName("id", window.location.href);
     const username = getParameterByName("username", window.location.href);
+
     if (type === "public" && status === "success") {
       return (
         <div>
           <div className="middle-box middle-box--success margin-bottom-1">
             You have successfully published your public page, you can view that
             from the link below. Other users can like, dislike or comment on
-            your page if you haven not disabled them, so make sure that you keep
-            track of them in your admin area. Also you can <strong>edit</strong>,{" "}
-            <strong>set a feature image</strong> or{" "}
-            <strong>add attach files</strong> for your page in view section of
-            your page.
+            your page if you haven't disabled them and we will send you
+            notifications about them. You can view all the public and private
+            pages you've created in{" "}
+            <strong>
+              <a className="white-link" href="/u/pages">
+                pages section.
+              </a>
+            </strong>
           </div>
           <div className="center-content middle-box--link">
-            <a className="btn-link" href={`/public-pages/${url}`}>
+            <a className="blue-link" href={`/public-pages/${url}`}>
               View your public page
             </a>
           </div>
         </div>
       );
     }
-    if (type === "public" && status === "error") {
-      return (
-        <div>
-          <div className="middle-box middle-box--error margin-bottom-1">
-            Sorry something went wrong. Please create your page from scratch via
-            the link below.
-          </div>
-          <div className="center-content middle-box--link">
-            <a className="btn-link" href={`/new-page/initial-step`}>
-              Create a new page
-            </a>
-          </div>
-        </div>
-      );
-    }
+
     if (type === "private" && status === "success") {
       return (
         <div>
           <div className="middle-box middle-box--success margin-bottom-1">
             You have successfully created your private page, you can view that
-            from the link below. To share this page for the persons you want,
-            you should share the link of your page (link below). Also, you can{" "}
-            <strong>edit</strong>, <strong>set a featured image</strong> or{" "}
-            <strong>add attach files</strong> for your page in view section of
-            your page.
+            from the link below. To share this page with the persons you want,
+            you should share the link of your page with them (link below). You
+            can view all the public and private pages you've created in{" "}
+            <strong>
+              <a className="white-link" href="/u/pages">
+                pages section.
+              </a>
+            </strong>
           </div>
           <div className="center-content middle-box--link">
-            <a className="btn-link" href={`/${username}/${url}`}>
+            <a className="blue-link" href={`/${username}/${url}`}>
               View your private page
             </a>
           </div>
         </div>
       );
     }
-    if (type === "private" && status === "error") {
+
+    if (status === "error") {
       return (
         <div>
           <div className="middle-box middle-box--error margin-bottom-1">
-            Sorry something went wrong. Please create your page from scratch via
-            the link below.
+            Sorry something went wrong because of us! We will review what
+            happened as soon as possible and let you know what was the issue. In
+            the meanwhile please create your page again from scratch or view
+            your draft pages via the links below. We apologize for the
+            inconvenience that happened.
           </div>
           <div className="center-content middle-box--link">
-            <a className="btn-link" href={`/new-page/initial-step`}>
+            <a className="blue-link" href={`/new-page/initial-step`}>
               Create a new page
+            </a>
+            <br />
+
+            <a className="blue-link" href="/u/pages/draft">
+              View your draft pages
             </a>
           </div>
         </div>
@@ -83,12 +85,11 @@ class Message extends Component {
       return (
         <div>
           <div className="middle-box middle-box--error margin-bottom-1">
-            There was something wrong with the contents you have supplied,
-            please review your page contents and make sure that everything is
-            alright.
+            There was something wrong with the contents you've provided, please
+            review your page contents and make sure that everything is OK.
           </div>
           <div className="center-content middle-box--link">
-            <a className="btn-link" href={`/new-page/initial-step?id=${id}`}>
+            <a className="blue-link" href={`/new-page/initial-step?id=${id}`}>
               Review your page
             </a>
           </div>

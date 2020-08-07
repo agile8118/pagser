@@ -115,6 +115,16 @@ ol {
   .black-link:hover {
     color: #0f0f0f; }
 
+.white-link {
+  color: #fff; }
+  .white-link:hover {
+    text-decoration: underline; }
+
+.blue-link {
+  color: #2980b9; }
+  .blue-link:hover {
+    text-decoration: underline; }
+
 pre {
   white-space: pre-wrap;
   white-space: -moz-pre-wrap;
