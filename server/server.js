@@ -21,7 +21,8 @@ const publicPath = path.join(__dirname, "../public");
 mongoose.connect(
   process.env.NODE_ENV === "production" ? keys.mlab_url : keys.mlab_local_url,
   {
-    useMongoClient: true,
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
   }
 );
 

@@ -315,7 +315,7 @@ exports.photo = async (req, res) => {
       }
 
       const cl = await Collection.findById(req.params.id);
-      // Collection has a image
+      // Collection has an image
       if (cl.photo.secure_url) {
         // Remove the image from cloudinary
         cloudinary.v2.uploader.destroy(cl.photo.public_id);
