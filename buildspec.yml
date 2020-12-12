@@ -18,6 +18,8 @@ phases:
 artifacts:
   files:
     - public/**/*
+    - storage/*
+    - views/**/*
     - scripts/*
     - server/**/*
     - appspec.yml
