@@ -23,7 +23,7 @@ class Profile extends Component {
   _isMounted = false;
 
   componentDidMount() {
-    document.title = "Profile | Pagher";
+    document.title = "Profile | Pagser";
 
     this._isMounted = true;
 

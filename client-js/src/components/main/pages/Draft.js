@@ -10,7 +10,7 @@ class Published extends Component {
   state = { confModal: false };
 
   componentDidMount() {
-    document.title = "Draft Pages | Pagher";
+    document.title = "Draft Pages | Pagser";
     this.props.fetchPages("user-pages/draft");
   }
 
@@ -102,10 +102,8 @@ class Published extends Component {
           }}
         >
           <p>
-            Are you sure that you want to delete the selected draft page{this
-              .props.selectedPages.length > 1
-              ? "s "
-              : ""}
+            Are you sure that you want to delete the selected draft page
+            {this.props.selectedPages.length > 1 ? "s " : ""}
             ? <br /> You have selected {this.props.selectedPages.length} draft
             page{this.props.selectedPages.length > 1 ? "s " : ""} and you cannot
             undo the action.
@@ -137,7 +135,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  { fetchPages, changeStatus, selectPage, removePages }
-)(Published);
+export default connect(mapStateToProps, {
+  fetchPages,
+  changeStatus,
+  selectPage,
+  removePages,
+})(Published);

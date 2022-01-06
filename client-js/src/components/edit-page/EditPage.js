@@ -464,7 +464,7 @@ class EditPage extends Component {
             />
             <span id="js--url-error-message" className="display-none" />
             <p className="url__display">
-              pagher.com/{window.location.pathname.split("/")[1]}/
+              pagser.com/{window.location.pathname.split("/")[1]}/
               {this.state.url}
             </p>
           </div>

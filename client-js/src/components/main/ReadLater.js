@@ -10,7 +10,7 @@ class ReadLater extends Component {
   state = { confModal: false };
 
   componentDidMount() {
-    document.title = "Reading List | Pagher";
+    document.title = "Reading List | Pagser";
     this.props.fetchPages("read-later", this.props.filterBy, this.props.sortBy);
   }
 
@@ -175,16 +175,12 @@ class ReadLater extends Component {
           }}
         >
           <p>
-            Are you sure that you want to remove the selected page{this.props
-              .selectedPages.length > 1
-              ? "s"
-              : ""}{" "}
-            from your read later list? <br /> You have selected{" "}
-            {this.props.selectedPages.length} page{this.props.selectedPages
-              .length > 1
-              ? "s"
-              : ""}{" "}
-            and you cannot undo the action.
+            Are you sure that you want to remove the selected page
+            {this.props.selectedPages.length > 1 ? "s" : ""} from your read
+            later list? <br /> You have selected{" "}
+            {this.props.selectedPages.length} page
+            {this.props.selectedPages.length > 1 ? "s" : ""} and you cannot undo
+            the action.
           </p>
         </ConfirmModal>
         <div className="row">
@@ -214,7 +210,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  { fetchPages, changeStatus, selectPage, removePages }
-)(ReadLater);
+export default connect(mapStateToProps, {
+  fetchPages,
+  changeStatus,
+  selectPage,
+  removePages,
+})(ReadLater);

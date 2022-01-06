@@ -123,7 +123,7 @@ class Login extends Component {
 
   render() {
     document.querySelector("#js--login-btn").classList.add("display-none");
-    document.querySelector("title").innerHTML = "Login | Pagher";
+    document.querySelector("title").innerHTML = "Login | Pagser";
     return (
       <React.Fragment>
         <Modal

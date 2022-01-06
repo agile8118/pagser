@@ -7,7 +7,7 @@ import { fetchPages } from "actions";
 
 class History extends Component {
   componentDidMount() {
-    document.title = "Liked Pages | Pagher";
+    document.title = "Liked Pages | Pagser";
     this.props.fetchPages("liked-pages", this.props.filterBy);
   }
 
@@ -93,7 +93,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  { fetchPages }
-)(History);
+export default connect(mapStateToProps, { fetchPages })(History);

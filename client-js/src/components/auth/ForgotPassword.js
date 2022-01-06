@@ -129,7 +129,7 @@ class ForgotPassword extends Component {
   }
   render() {
     if (this.state.status === "showform") {
-      document.querySelector("title").innerHTML = `Reset Password | Pagher`;
+      document.querySelector("title").innerHTML = `Reset Password | Pagser`;
       return (
         <div className="auth">
           <h3 className="heading-tertiary">Create a new password</h3>

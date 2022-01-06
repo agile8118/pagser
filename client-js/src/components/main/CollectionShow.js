@@ -37,7 +37,7 @@ class CollectionShow extends Component {
         },
       });
 
-      document.title = `${data.collection.name || ""} | Pagher`;
+      document.title = `${data.collection.name || ""} | Pagser`;
 
       this.setState({
         btn: data.btn,
@@ -510,18 +510,13 @@ class CollectionShow extends Component {
             <React.Fragment>
               <div className="header-nav margin-top-4">
                 <h3 className="heading-tertiary">
-                  {this.state.pages.length} Page{this.state.pages.length > 1
-                    ? "s"
-                    : ""}{" "}
-                  In This Collection:
+                  {this.state.pages.length} Page
+                  {this.state.pages.length > 1 ? "s" : ""} In This Collection:
                 </h3>
                 {this.state.pagesStatus === "editing" && (
                   <div className="header-nav__label">
-                    {this.state.selectedPages.length} page{this.state
-                      .selectedPages.length > 1
-                      ? "s"
-                      : ""}{" "}
-                    selected
+                    {this.state.selectedPages.length} page
+                    {this.state.selectedPages.length > 1 ? "s" : ""} selected
                   </div>
                 )}
                 {this.state.viewer === "owner" && (
@@ -625,7 +620,4 @@ class CollectionShow extends Component {
   }
 }
 
-export default connect(
-  null,
-  { openUploadPhoto }
-)(CollectionShow);
+export default connect(null, { openUploadPhoto })(CollectionShow);

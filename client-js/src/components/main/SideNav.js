@@ -18,7 +18,8 @@ const SideNav = ({ changeSection, section }) => {
           }
           onClick={() => changeSection("home")}
         >
-          <i className="fa fa-home" />Home
+          <i className="fa fa-home" />
+          Home
         </Link>
         <Link
           to="/feed/subscriptions"
@@ -29,7 +30,8 @@ const SideNav = ({ changeSection, section }) => {
           }
           onClick={() => changeSection("subscriptions")}
         >
-          <i className="fa fa-file-text" />Subscriptions
+          <i className="fa fa-file-text" />
+          Subscriptions
         </Link>
         <Link
           to="/feed/history/pages"
@@ -40,7 +42,8 @@ const SideNav = ({ changeSection, section }) => {
           }
           onClick={() => changeSection("history/pages")}
         >
-          <i className="fa fa-history" />History
+          <i className="fa fa-history" />
+          History
         </Link>
         <Link
           to="/feed/read-later"
@@ -51,7 +54,8 @@ const SideNav = ({ changeSection, section }) => {
           }
           onClick={() => changeSection("read-later")}
         >
-          <i className="fa fa-bookmark" />Read Later
+          <i className="fa fa-bookmark" />
+          Read Later
         </Link>
         <Link
           to="/feed/liked-pages"
@@ -62,7 +66,8 @@ const SideNav = ({ changeSection, section }) => {
           }
           onClick={() => changeSection("liked-pages")}
         >
-          <i className="fa fa-thumbs-up" />Liked Pages
+          <i className="fa fa-thumbs-up" />
+          Liked Pages
         </Link>
         <Link
           to="/u/collections"
@@ -73,7 +78,8 @@ const SideNav = ({ changeSection, section }) => {
           }
           onClick={() => changeSection("collections")}
         >
-          <i className="fa fa-th-large" />Collections
+          <i className="fa fa-th-large" />
+          Collections
         </Link>
       </div>
       <div className="sidenav__section">
@@ -86,7 +92,8 @@ const SideNav = ({ changeSection, section }) => {
           }
           onClick={() => changeSection("dashboard")}
         >
-          <i className="fa fa-dashboard" />Dashboard
+          <i className="fa fa-dashboard" />
+          Dashboard
         </Link>
         <Link
           to="/u/analytics"
@@ -97,7 +104,8 @@ const SideNav = ({ changeSection, section }) => {
           }
           onClick={() => changeSection("analytics")}
         >
-          <i className="fa fa-line-chart" />Analytics
+          <i className="fa fa-line-chart" />
+          Analytics
         </Link>
         <Link
           to="/u/monetization"
@@ -108,7 +116,8 @@ const SideNav = ({ changeSection, section }) => {
           }
           onClick={() => changeSection("monetization")}
         >
-          <i className="fa fa-dollar" />Monetization
+          <i className="fa fa-dollar" />
+          Monetization
         </Link>
         <Link
           to="/u/pages"
@@ -121,7 +130,8 @@ const SideNav = ({ changeSection, section }) => {
           }
           onClick={() => changeSection("pages/published")}
         >
-          <i className="fa fa-envelope-open" />Your Pages
+          <i className="fa fa-envelope-open" />
+          Your Pages
         </Link>
       </div>
       <div className="sidenav__footer">
@@ -139,7 +149,7 @@ const SideNav = ({ changeSection, section }) => {
             <a href="/privacy-policy">Privacy Policy</a>
           </li>
         </ul>
-        <span>&copy; 2020 Pagher, Inc.</span>
+        <span>&copy; 2020 Pagser, Inc.</span>
       </div>
     </div>
   );
@@ -151,7 +161,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  { changeSection }
-)(SideNav);
+export default connect(mapStateToProps, { changeSection })(SideNav);

@@ -1,17 +1,49 @@
 <nav class="navigation navigation-md">
-  <a href="javascript:void(0)" onclick="sidenavTogglerClicked()" class="navigation__link navigation__link--icon"><i
-      class="fa fa-bars" aria-hidden="true"></i></a>
-  <a href="/" class="navigation__logo"><img id="pagherLogoMd" src="/images/pagher-logo.svg" alt="Pagher logo">Pagher</a>
+  <a
+    href="javascript:void(0)"
+    onclick="sidenavTogglerClicked()"
+    class="navigation__link navigation__link--icon"
+    ><i class="fa fa-bars" aria-hidden="true"></i
+  ></a>
+  <a href="/" class="navigation__logo"
+    ><img
+      id="pagserLogoMd"
+      src="/images/pagser-logo.svg"
+      alt="Pagser logo"
+    />Pagser</a
+  >
 
   <div class="navigation__right">
-    <a href="/new-page/initial-step" class="navigation__link navigation-btn js--create-page">Create a Page</a>
-    <a href="/login" class="navigation__link display-none" id="js--login-md">Login</a>
+    <a
+      href="/new-page/initial-step"
+      class="navigation__link navigation-btn js--create-page"
+      >Create a Page</a
+    >
+    <a href="/login" class="navigation__link display-none" id="js--login-md"
+      >Login</a
+    >
 
-    <div class="nav-dropdown nav-dropdown-notification dropdown--close" id="js--nav-dropdown-md-notification"
-      data-role="dropdown" data-dropdown="notification-dropdown-md">
-      <div class="nav-dropdown__button" data-role="dropdown" data-dropdown="notification-dropdown-md">
-        <a href="javascript:void(0);" data-role="dropdown" data-dropdown="notification-dropdown-md"><i
-            data-role="dropdown" data-dropdown="notification-dropdown-md" class="fa fa-bell-o" aria-hidden="true"></i>
+    <div
+      class="nav-dropdown nav-dropdown-notification dropdown--close"
+      id="js--nav-dropdown-md-notification"
+      data-role="dropdown"
+      data-dropdown="notification-dropdown-md"
+    >
+      <div
+        class="nav-dropdown__button"
+        data-role="dropdown"
+        data-dropdown="notification-dropdown-md"
+      >
+        <a
+          href="javascript:void(0);"
+          data-role="dropdown"
+          data-dropdown="notification-dropdown-md"
+          ><i
+            data-role="dropdown"
+            data-dropdown="notification-dropdown-md"
+            class="fa fa-bell-o"
+            aria-hidden="true"
+          ></i>
         </a>
       </div>
       <div class="nav-dropdown__content">
@@ -19,22 +51,41 @@
       </div>
     </div>
 
-    <div class="nav-dropdown dropdown--close" id="js--nav-dropdown-md" data-role="dropdown"
-      data-dropdown="user-dropdown-md">
-      <div class="nav-dropdown__button" data-role="dropdown" data-dropdown="user-dropdown-md">
-        <a href="javascript:void(0);" data-role="dropdown" data-dropdown="user-dropdown-md"><img data-role="dropdown"
-            data-dropdown="user-dropdown-md" class="js--user-image" src="/images/users/placeholder.png"></a>
+    <div
+      class="nav-dropdown dropdown--close"
+      id="js--nav-dropdown-md"
+      data-role="dropdown"
+      data-dropdown="user-dropdown-md"
+    >
+      <div
+        class="nav-dropdown__button"
+        data-role="dropdown"
+        data-dropdown="user-dropdown-md"
+      >
+        <a
+          href="javascript:void(0);"
+          data-role="dropdown"
+          data-dropdown="user-dropdown-md"
+          ><img
+            data-role="dropdown"
+            data-dropdown="user-dropdown-md"
+            class="js--user-image"
+            src="/images/users/placeholder.png"
+        /></a>
       </div>
       <div class="nav-dropdown__content">
         <a href="/profile"><i class="fa fa-user"></i> Profile</a>
         <a href="/settings"><i class="fa fa-cogs"></i> Setting</a>
-        <a href="javascript:void(0);" onclick="localStorage.removeItem('token');window.location = '/';"><i
-            class="fa fa-sign-out"></i> Logout</a>
+        <a
+          href="javascript:void(0);"
+          onclick="localStorage.removeItem('token');window.location = '/';"
+          ><i class="fa fa-sign-out"></i> Logout</a
+        >
         <span class="switch-theme__text">Theme:</span>
         <div class="switch-theme">
           <span class="switch-theme__light"></span>
           <label class="switch">
-            <input type="checkbox" class="js--themeSwitch">
+            <input type="checkbox" class="js--themeSwitch" />
             <span class="slider round"></span>
           </label>
           <span class="switch-theme__dark"></span>
@@ -45,20 +96,53 @@
 </nav>
 
 <nav class="navigation navigation-sm">
-  <a href="javascript:void(0)" onclick="sidenavTogglerClicked()" class="navigation__link navigation__link--icon"><i
-      class="fa fa-bars" aria-hidden="true"></i></a>
-  <a href="/" class="navigation__logo"><img id="pagherLogoSm" src="/images/pagher-logo.svg" alt="Pagher logo">Pagher</a>
+  <a
+    href="javascript:void(0)"
+    onclick="sidenavTogglerClicked()"
+    class="navigation__link navigation__link--icon"
+    ><i class="fa fa-bars" aria-hidden="true"></i
+  ></a>
+  <a href="/" class="navigation__logo"
+    ><img
+      id="pagserLogoSm"
+      src="/images/pagser-logo.svg"
+      alt="Pagser logo"
+    />Pagser</a
+  >
   <div class="navigation__right">
+    <a
+      href="/new-page/initial-step"
+      class="navigation__right-link navigation-btn js--create-page"
+      ><i class="fa fa-pencil-square-o"></i
+    ></a>
+    <a
+      href="/login"
+      class="navigation__right-link display-none"
+      id="js--login-sm"
+      >Login</a
+    >
 
-    <a href="/new-page/initial-step" class="navigation__right-link navigation-btn js--create-page"><i
-        class="fa fa-pencil-square-o"></i></a>
-    <a href="/login" class="navigation__right-link display-none" id="js--login-sm">Login</a>
-
-    <div class="nav-dropdown nav-dropdown-notification dropdown--close" data-role="dropdown"
-      data-dropdown="notification-dropdown-sm" id="js--nav-dropdown-sm-notification">
-      <div class="nav-dropdown__button" data-role="dropdown" data-dropdown="notification-dropdown-sm">
-        <a href="javascript:void(0);" data-role="dropdown" data-dropdown="notification-dropdown-sm"><i
-            data-role="dropdown" data-dropdown="notification-dropdown-sm" class="fa fa-bell-o" aria-hidden="true"></i>
+    <div
+      class="nav-dropdown nav-dropdown-notification dropdown--close"
+      data-role="dropdown"
+      data-dropdown="notification-dropdown-sm"
+      id="js--nav-dropdown-sm-notification"
+    >
+      <div
+        class="nav-dropdown__button"
+        data-role="dropdown"
+        data-dropdown="notification-dropdown-sm"
+      >
+        <a
+          href="javascript:void(0);"
+          data-role="dropdown"
+          data-dropdown="notification-dropdown-sm"
+          ><i
+            data-role="dropdown"
+            data-dropdown="notification-dropdown-sm"
+            class="fa fa-bell-o"
+            aria-hidden="true"
+          ></i>
         </a>
       </div>
       <div class="nav-dropdown__content">
@@ -66,22 +150,41 @@
       </div>
     </div>
 
-    <div class="nav-dropdown dropdown--close" data-role="dropdown" data-dropdown="user-dropdown-sm"
-      id="js--nav-dropdown-sm">
-      <div class="nav-dropdown__button" data-role="dropdown" data-dropdown="user-dropdown-sm">
-        <a href="javascript:void(0);" data-role="dropdown" data-dropdown="user-dropdown-sm"><img data-role="dropdown"
-            data-dropdown="user-dropdown-sm" class="js--user-image" src="/images/users/placeholder.png"></a>
+    <div
+      class="nav-dropdown dropdown--close"
+      data-role="dropdown"
+      data-dropdown="user-dropdown-sm"
+      id="js--nav-dropdown-sm"
+    >
+      <div
+        class="nav-dropdown__button"
+        data-role="dropdown"
+        data-dropdown="user-dropdown-sm"
+      >
+        <a
+          href="javascript:void(0);"
+          data-role="dropdown"
+          data-dropdown="user-dropdown-sm"
+          ><img
+            data-role="dropdown"
+            data-dropdown="user-dropdown-sm"
+            class="js--user-image"
+            src="/images/users/placeholder.png"
+        /></a>
       </div>
       <div class="nav-dropdown__content">
         <a href="/profile"><i class="fa fa-user"></i> Profile</a>
         <a href="/settings"><i class="fa fa-cogs"></i> Setting</a>
-        <a href="javascript:void(0);" onclick="localStorage.removeItem('token');window.location = '/';"><i
-            class="fa fa-sign-out"></i> Logout</a>
+        <a
+          href="javascript:void(0);"
+          onclick="localStorage.removeItem('token');window.location = '/';"
+          ><i class="fa fa-sign-out"></i> Logout</a
+        >
         <span class="switch-theme__text">Theme:</span>
         <div class="switch-theme">
           <span class="switch-theme__light"></span>
           <label class="switch">
-            <input type="checkbox" class="js--themeSwitch">
+            <input type="checkbox" class="js--themeSwitch" />
             <span class="slider round"></span>
           </label>
           <span class="switch-theme__dark"></span>
@@ -94,17 +197,35 @@
 <div class="sidenav sidenav--close" id="js--sidenav">
   <div class="sidenav__section">
     <a href="/home" class="sidenav__link"><i class="fa fa-home"></i>Home</a>
-    <a href="/feed/subscriptions" class="sidenav__link"><i class="fa fa-file-text"></i>Subscriptions</a>
-    <a href="/feed/history" class="sidenav__link"><i class="fa fa-history"></i>History</a>
-    <a href="/feed/read-later" class="sidenav__link"><i class="fa fa-bookmark"></i>Read Later</a>
-    <a href="/feed/liked-pages" class="sidenav__link"><i class="fa fa-thumbs-up"></i>Liked Pages</a>
-    <a href="/u/collections" class="sidenav__link"><i class="fa fa-th-large"></i>Collections</a>
+    <a href="/feed/subscriptions" class="sidenav__link"
+      ><i class="fa fa-file-text"></i>Subscriptions</a
+    >
+    <a href="/feed/history" class="sidenav__link"
+      ><i class="fa fa-history"></i>History</a
+    >
+    <a href="/feed/read-later" class="sidenav__link"
+      ><i class="fa fa-bookmark"></i>Read Later</a
+    >
+    <a href="/feed/liked-pages" class="sidenav__link"
+      ><i class="fa fa-thumbs-up"></i>Liked Pages</a
+    >
+    <a href="/u/collections" class="sidenav__link"
+      ><i class="fa fa-th-large"></i>Collections</a
+    >
   </div>
   <div class="sidenav__section">
-    <a href="/u/analytics" class="sidenav__link"><i class="fa fa-dashboard"></i>Dashboard</a>
-    <a href="/u/analytics" class="sidenav__link"><i class="fa fa-line-chart"></i>Analytics</a>
-    <a href="/u/analytics" class="sidenav__link"><i class="fa fa-dollar"></i>Monetization</a>
-    <a href="/u/pages" class="sidenav__link"><i class="fa fa-envelope-open"></i>Your Pages</a>
+    <a href="/u/analytics" class="sidenav__link"
+      ><i class="fa fa-dashboard"></i>Dashboard</a
+    >
+    <a href="/u/analytics" class="sidenav__link"
+      ><i class="fa fa-line-chart"></i>Analytics</a
+    >
+    <a href="/u/analytics" class="sidenav__link"
+      ><i class="fa fa-dollar"></i>Monetization</a
+    >
+    <a href="/u/pages" class="sidenav__link"
+      ><i class="fa fa-envelope-open"></i>Your Pages</a
+    >
   </div>
   <div class="sidenav__footer">
     <ul class="">
@@ -113,7 +234,7 @@
       <li class=""><a href="/terms-of-use">Terms of Use</a></li>
       <li class=""><a href="/privacy-policy">Privacy Policy</a></li>
     </ul>
-    <span>&copy; 2020 Pagher, Inc.</span>
+    <span>&copy; 2020 Pagser, Inc.</span>
   </div>
 </div>
 

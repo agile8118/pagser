@@ -18,18 +18,15 @@ var app = express();
 
 const publicPath = path.join(__dirname, "../public");
 
-mongoose.connect(
-  process.env.NODE_ENV === "production" ? keys.mlab_url : keys.mlab_local_url,
-  {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-  }
-);
+mongoose.connect(keys.mongodb_url, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+});
 
 mongoose.Promise = global.Promise;
 
 app.use(helmet());
-app.use(cors({ origin: "https://pagher.com/" }));
+app.use(cors({ origin: "https://pagser.com/" }));
 
 app.use(compression());
 app.use(express.static(publicPath));

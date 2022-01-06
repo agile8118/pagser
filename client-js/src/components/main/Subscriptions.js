@@ -7,7 +7,7 @@ class Subscriptions extends Component {
   state = { subscriptions: [] };
 
   async componentDidMount() {
-    document.title = "Subscriptions | Pagher";
+    document.title = "Subscriptions | Pagser";
 
     loadingModal("Loading...");
     try {

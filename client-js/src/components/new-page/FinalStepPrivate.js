@@ -293,7 +293,7 @@ class FinalStepPrivate extends Component {
               {this.state.errors.url}
             </span>
             <p className="url__display">
-              pagher.com/{this.state.username}/{this.state.url}
+              pagser.com/{this.state.username}/{this.state.url}
             </p>
             <div className="url__note">
               <strong>Important note about URL:</strong>

@@ -8,7 +8,7 @@ import { fetchPages } from "actions";
 
 class Published extends Component {
   componentDidMount() {
-    document.title = "Published Pages | Pagher";
+    document.title = "Published Pages | Pagser";
     this.props.fetchPages("user-pages/published", this.props.filterBy);
   }
 
@@ -97,7 +97,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  { fetchPages }
-)(Published);
+export default connect(mapStateToProps, { fetchPages })(Published);

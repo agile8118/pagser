@@ -1,5 +1,5 @@
 module.exports = {
-  mlab_url: process.env.MLABURL,
+  mongodb_url: process.env.MONGODB_URL,
   jwtSecret: process.env.JWTSECRET,
   sessionSecret: process.env.SESSIONSECRET,
   domain: process.env.DOMAIN,
@@ -7,5 +7,5 @@ module.exports = {
   cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
   accessKeyId: process.env.ACCESS_KEY_ID,
   secretAccessKey: process.env.SECRET_ACCESS_KEY,
-  mailgunApiKey: process.env.MAILGUN_API_KEY
+  mailgunApiKey: process.env.MAILGUN_API_KEY,
 };

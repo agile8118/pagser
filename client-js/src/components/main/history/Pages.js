@@ -11,7 +11,7 @@ class History extends Component {
   state = { confModal: false };
 
   componentDidMount() {
-    document.title = "History | Pagher";
+    document.title = "History | Pagser";
     this.props.fetchPages("history", this.props.filterBy);
   }
 
@@ -146,16 +146,11 @@ class History extends Component {
           }}
         >
           <p>
-            Are you sure that you want to remove the selected page{this.props
-              .selectedPages.length > 1
-              ? "s"
-              : ""}{" "}
-            from your history? <br /> You have selected{" "}
-            {this.props.selectedPages.length} page{this.props.selectedPages
-              .length > 1
-              ? "s"
-              : ""}{" "}
-            and you cannot undo the action.
+            Are you sure that you want to remove the selected page
+            {this.props.selectedPages.length > 1 ? "s" : ""} from your history?{" "}
+            <br /> You have selected {this.props.selectedPages.length} page
+            {this.props.selectedPages.length > 1 ? "s" : ""} and you cannot undo
+            the action.
           </p>
         </ConfirmModal>
         <div className="row">
@@ -185,7 +180,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  { fetchPages, changeStatus, selectPage, removePages }
-)(History);
+export default connect(mapStateToProps, {
+  fetchPages,
+  changeStatus,
+  selectPage,
+  removePages,
+})(History);

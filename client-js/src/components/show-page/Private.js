@@ -89,9 +89,9 @@ class Index extends Component {
 
   render() {
     if (this.props.isPending === false && this.props.id !== "notfound") {
-      document.querySelector("title").innerHTML = `${
-        this.props.contents.title
-      } | Pagher`;
+      document.querySelector(
+        "title"
+      ).innerHTML = `${this.props.contents.title} | Pagser`;
       return (
         <div>
           <div className="row">
@@ -132,7 +132,7 @@ class Index extends Component {
     }
     if (this.props.id === "notfound") {
       document.querySelector("body").classList.add("body-grey");
-      document.querySelector("title").innerHTML = "Page Not Found | Pagher";
+      document.querySelector("title").innerHTML = "Page Not Found | Pagser";
       return (
         <h3 className="a-1 center-content">
           Sorry but no page with this URL werer found. <br /> Maybe the author
@@ -181,7 +181,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  actions
-)(Index);
+export default connect(mapStateToProps, actions)(Index);

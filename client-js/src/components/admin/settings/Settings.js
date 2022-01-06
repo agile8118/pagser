@@ -3,7 +3,7 @@ import Email from "./Email";
 import Password from "./Password";
 
 const Settings = () => {
-  document.title = "Settings | Pagher";
+  document.title = "Settings | Pagser";
   return (
     <div className="row">
       <div className="admin">

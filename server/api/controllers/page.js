@@ -20,7 +20,7 @@ const path = require("path");
 const keys = require("../../config/keys");
 
 // Configurations for AWS S3
-const BUCKET_NAME = "pagher-attach-files-2341";
+const BUCKET_NAME = "pagser-attach-files-2341";
 const IAM_USER_KEY = keys.accessKeyId;
 const IAM_USER_SECRET = keys.secretAccessKey;
 

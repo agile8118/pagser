@@ -301,9 +301,7 @@ class Register extends Component {
   onVerifyCodeSubmit() {
     this.setState({ loading: true });
 
-    const code = `${this.state.digits.first}${this.state.digits.second}${
-      this.state.digits.third
-    }${this.state.digits.fourth}${this.state.digits.fifth}`;
+    const code = `${this.state.digits.first}${this.state.digits.second}${this.state.digits.third}${this.state.digits.fourth}${this.state.digits.fifth}`;
 
     axios
       .post(`/register/validatecode`, {
@@ -686,7 +684,7 @@ class Register extends Component {
   render() {
     document.querySelector("#js--login-btn").classList.add("display-none");
     if (this.state.status === "showform") {
-      document.querySelector("title").innerHTML = "Register | Pagher";
+      document.querySelector("title").innerHTML = "Register | Pagser";
       return (
         <div>
           <div className="auth">

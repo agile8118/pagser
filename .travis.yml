@@ -21,15 +21,15 @@
 #     skip_cleanup: true
 #     on: &2
 #       branch: master
-#     bucket: pagher-deployment-storage
+#     bucket: pagser-deployment-storage
 #     region: us-east-1
 #   - provider: codedeploy
 #     access_key_id: $AWS_ACCESS_KEY
 #     secret_access_key: $AWS_SECRET_KEY
-#     bucket: pagher-deployment-storage
+#     bucket: pagser-deployment-storage
 #     key: latest.zip
 #     bundle_type: zip
 #     application: appDeployment
-#     deployment_group: pagherGroupDeployment
+#     deployment_group: pagserGroupDeployment
 #     region: us-east-1
 #     on: *2

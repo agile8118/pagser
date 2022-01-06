@@ -75,7 +75,7 @@ class Collections extends Component {
   };
 
   componentDidMount() {
-    document.title = "Collections | Pagher";
+    document.title = "Collections | Pagser";
     this.fetchCollections("created-saved");
   }
 
