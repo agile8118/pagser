@@ -1,0 +1,51 @@
+{
+  "name": "@pagser/server",
+  "version": "1.0.0",
+  "description": "",
+  "engines": {
+    "node": "16.14.0"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "build": "cd ./client-js && npm run build && cd .. && cd ./sass && npm run build && cd ..",
+    "start": "node src/index.js",
+    "prod": "pm2 start ecosystem.config.js",
+    "start:node": "nodemon --watch server server/server.js",
+    "start:sass": "cd ./sass && npm start",
+    "start:client-js": "cd ./client-js && npm start",
+    "start:dev": "concurrently \"npm run start:node\" \"npm run start:sass\" \"npm run start:client-js\""
+  },
+  "author": "Joseph Heidari <agile.8272@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.809.0",
+    "axios": "^0.18.1",
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.19.0",
+    "cloudinary": "^1.23.0",
+    "compression": "^1.7.4",
+    "connect-mongo": "^2.0.3",
+    "cors": "^2.8.5",
+    "ejs": "^2.7.4",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "file-type": "^7.7.1",
+    "helmet": "^3.23.3",
+    "jimp": "^0.2.28",
+    "jwt-simple": "^0.5.6",
+    "mailgun-js": "^0.22.0",
+    "method-override": "^2.3.10",
+    "mongoose": "^5.11.7",
+    "mongoose-paginate": "^5.0.3",
+    "multer": "^1.4.2",
+    "passport": "^0.3.2",
+    "passport-jwt": "^2.2.1",
+    "passport-local": "^1.0.0",
+    "sanitize-html": "^1.27.5",
+    "validator": "^8.2.0"
+  },
+  "devDependencies": {
+    "concurrently": "^5.3.0",
+    "nodemon": "^1.19.4"
+  }
+}

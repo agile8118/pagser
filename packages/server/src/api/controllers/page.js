@@ -20,7 +20,7 @@ const path = require("path");
 const keys = require("../../config/keys");
 
 // Configurations for AWS S3
-const BUCKET_NAME = "pagser-attach-files-2341";
+const BUCKET_NAME = "pagser";
 const IAM_USER_KEY = keys.accessKeyId;
 const IAM_USER_SECRET = keys.secretAccessKey;
 
@@ -740,6 +740,7 @@ exports.getAttachFile = (req, res) => {
       Bucket: BUCKET_NAME,
       Key: key,
     }).createReadStream();
+
     fileStream.pipe(res);
   } catch (e) {
     log(e);

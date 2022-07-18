@@ -18,6 +18,7 @@ var sendEmail = (to, subject, html, callback) => {
   };
 
   mg.messages().send(data, function (error, body) {
+    console.log(error);
     if (error) callback("error", error);
     else callback("success", body);
   });
