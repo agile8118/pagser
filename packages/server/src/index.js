@@ -136,7 +136,7 @@ app.get("/register", function (req, res) {
   res.render("auth");
 });
 
-app.get("/forgotpassword", function (req, res) {
+app.get("/forgot-password", function (req, res) {
   res.render("auth");
 });
 
