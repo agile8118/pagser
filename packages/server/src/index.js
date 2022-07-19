@@ -25,6 +25,8 @@ mongoose.connect(keys.mongodb_url, {
 
 mongoose.Promise = global.Promise;
 
+require("./database");
+
 app.use(helmet());
 app.use(cors({ origin: "https://pagser.com/" }));
 

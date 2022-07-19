@@ -5,3 +5,9 @@ note.txt
 ecosystem.config.js
 deploy.sh
 logs/
+
+# production
+/build
+build/
+/dist
+dist/
