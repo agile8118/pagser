@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import util from "../../lib/forms";
+import { Input } from "@pagser/reusable";
 import { getParameterByName } from "../../lib";
 
 const ForgotPassword = () => {
   const [password, setPassword] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [confirmPasswordDisabled, setConfirmPasswordDisabled] = useState(true);
+  const [confirmPasswordSuccess, setConfirmPasswordSuccess] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [status, setStatus] = useState("showform");
+
+  const [status, setStatus] = useState("show-form");
   const [message, setMessage] = useState("");
   const [btnDisabled, setBtnDisabled] = useState(false);
 
@@ -26,17 +34,23 @@ const ForgotPassword = () => {
     }
   };
 
+  const confirmPasswordReset = () => {
+    setConfirmPassword("");
+    setConfirmPasswordDisabled(true);
+    setConfirmPasswordError("");
+  };
+
   const onInputFocusOut = (value, fieldName) => {
     if (fieldName === "password") {
       if (util.isEmpty(value)) {
-        util.inputError("password", "Please choose a password.");
-        util.confirmPasswordReset.apply(this);
+        setPasswordError("Please choose a password.");
+        confirmPasswordReset();
       }
     }
 
     if (fieldName === "confirmPassword") {
       if (util.isEmpty(value)) {
-        util.inputError("confirm-password", "Please confirm your password.");
+        setConfirmPasswordError("Please choose a password.");
       }
     }
   };
@@ -44,23 +58,18 @@ const ForgotPassword = () => {
   const onInputChange = (value, fieldName) => {
     if (fieldName === "password") {
       setPassword(value);
-
-      util.confirmPasswordReset.apply(this);
+      confirmPasswordReset();
 
       if (!util.isHardPassword(value) && !util.isEmpty(value)) {
-        util.inputError(
-          "password",
+        setPasswordError(
           "Password should contain a capital letter, letters and numbers."
         );
-        util.confirmPasswordReset.apply(this);
+        confirmPasswordReset();
       }
 
       if (!util.len(value, 8, 30) && !util.isEmpty(value)) {
-        util.inputError(
-          "password",
-          "Password should contain 8 to 30 charecters."
-        );
-        util.confirmPasswordReset.apply(this);
+        setPasswordError("Password should contain 8 to 30 characters.");
+        confirmPasswordReset();
       }
 
       if (
@@ -68,11 +77,9 @@ const ForgotPassword = () => {
         !util.isEmpty(value) &&
         util.isHardPassword(value, 8, 30)
       ) {
-        util.inputOK("password");
-        const confirmPasswordEl = document.querySelector("#confirm-password")
-          ?.children[0] as HTMLInputElement;
-        confirmPasswordEl.disabled = false;
-        confirmPasswordEl.classList.remove("form__input--disabled");
+        setPasswordSuccess(true);
+        setPasswordError("");
+        setConfirmPasswordDisabled(false);
       }
     }
 
@@ -80,11 +87,12 @@ const ForgotPassword = () => {
       setConfirmPassword(value);
 
       if (password !== value) {
-        util.inputError("confirm-password", "Passwords do not match up.");
+        setConfirmPasswordError("Passwords do not match up.");
       }
 
       if (!util.isEmpty(confirmPassword) && password === value) {
-        util.inputOK("confirm-password");
+        setConfirmPasswordError("");
+        setConfirmPasswordSuccess(true);
       }
     }
   };
@@ -117,7 +125,7 @@ const ForgotPassword = () => {
 
   let EL;
 
-  if (status === "showform") {
+  if (status === "show-form") {
     const titleEl = document.querySelector("title") as HTMLElement;
     titleEl.innerHTML = `Reset Password | Pagser`;
 
@@ -135,41 +143,37 @@ const ForgotPassword = () => {
             onFormSubmit();
           }}
         >
-          <div className="form__group" id="password">
-            <input
+          <div className="form-group">
+            <Input
               type="password"
-              className="form__input"
-              onBlur={(event) => {
-                onInputFocusOut(event.target.value, "password");
-              }}
-              onChange={(event) => {
-                onInputChange(event.target.value, "password");
-              }}
-              placeholder="Password"
               value={password}
+              error={passwordError}
+              onChange={(value) => {
+                onInputChange(value, "password");
+              }}
+              success={passwordSuccess}
+              onBlur={(value) => {
+                onInputFocusOut(value, "password");
+              }}
+              label="Password"
             />
-            <div className="form__input--message">
-              <span />
-            </div>
           </div>
 
-          <div className="form__group" id="confirm-password">
-            <input
+          <div className="form-group">
+            <Input
               type="password"
-              className="form__input form__input--disabled"
-              disabled
-              onBlur={(event) => {
-                onInputFocusOut(event.target.value, "confirmPassword");
-              }}
-              onChange={(event) => {
-                onInputChange(event.target.value, "confirmPassword");
-              }}
-              placeholder="Confirm Password"
+              error={confirmPasswordError}
               value={confirmPassword}
+              success={confirmPasswordSuccess}
+              onChange={(value) => {
+                onInputChange(value, "confirmPassword");
+              }}
+              onBlur={(value) => {
+                onInputFocusOut(value, "confirmPassword");
+              }}
+              disabled={confirmPasswordDisabled}
+              label="Confirm Password"
             />
-            <div className="form__input--message">
-              <span />
-            </div>
           </div>
 
           <div className="form__group">
