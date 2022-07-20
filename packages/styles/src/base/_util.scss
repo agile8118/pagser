@@ -3,6 +3,11 @@
   width: 100%;
 }
 
+.u-flex-text-center {
+  display: flex;
+  justify-content: center;
+}
+
 .right-content {
   width: 100%;
   text-align: right !important;
@@ -60,6 +65,14 @@
 
 .margin-left-2 {
   margin-left: 2rem;
+}
+
+.u-margin-left-03 {
+  margin-left: 0.3rem !important;
+}
+
+.u-margin-left-05 {
+  margin-left: 0.5rem !important;
 }
 
 .margin-left-07 {

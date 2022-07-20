@@ -1,5 +1,5 @@
 import React from "react";
-import Loading from "../Loading";
+import Loading from "../InlineLoading";
 
 interface componentProps {
   className?: string;
@@ -87,6 +87,10 @@ const Button = (props: componentProps) => {
 
   className += " " + props.className;
 
+  let loadingColor;
+  if (props.color === "blue") loadingColor = "blue";
+  if (!props.outlined) loadingColor = "light";
+
   return (
     <button
       style={props.style}
@@ -96,17 +100,14 @@ const Button = (props: componentProps) => {
       disabled={props.loading ? true : props.disabled}
     >
       {props.children}
-      {props.loading && <Loading />}
+      {props.loading && (
+        <Loading
+          className="u-margin-left-03"
+          color={loadingColor as "blue" | "light"}
+        />
+      )}
     </button>
   );
 };
-
-// color={
-//   props.color === 'gray'
-//       ? 'light'
-//       : props.outlined
-//       ? props.color
-//       : 'light'
-// }
 
 export default Button;

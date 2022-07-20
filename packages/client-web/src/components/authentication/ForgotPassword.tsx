@@ -4,6 +4,8 @@ import { validate, util } from "@pagser/common";
 import { Input, Button } from "@pagser/reusable";
 
 const ForgotPassword = () => {
+  const [loading, setLoading] = useState(false);
+
   const [password, setPassword] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState(false);
   const [passwordError, setPasswordError] = useState("");
@@ -97,6 +99,7 @@ const ForgotPassword = () => {
   };
 
   const onFormSubmit = () => {
+    setLoading(true);
     axios
       .post(`/api/resetpassword`, {
         userId: util.getParameterByName("i"),
@@ -104,9 +107,11 @@ const ForgotPassword = () => {
         password: password,
       })
       .then((response) => {
+        setLoading(false);
         setStatus("success");
       })
       .catch((error) => {
+        setLoading(false);
         if (error.response.data.error === "invalid link") {
           setStatus("error");
           setMessage(
@@ -175,31 +180,16 @@ const ForgotPassword = () => {
             />
           </div>
 
-          <div className="form__group u-text-center">
+          <div className="form__group u-flex-text-center">
             <Button
-              // rounded={true}
-              // rounded={true}
-              // rounded={true}
-              // rounded={true}
-              // disabled={true}
-              // size="small"
-              color="green"
-              // loading={true}
-              // block={true}
-              // outlined={true}
+              type="submit"
+              loading={loading}
+              rounded={true}
+              disabled={btnDisabled}
+              color="blue"
             >
               Reset
             </Button>
-          </div>
-
-          <div className="form__group">
-            <button
-              type="submit"
-              className="btn btn-blue btn-round"
-              disabled={btnDisabled}
-            >
-              Reset
-            </button>
           </div>
         </form>
       </div>

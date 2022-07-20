@@ -241,6 +241,10 @@ pre {
   text-align: center !important;
   width: 100%; }
 
+.u-flex-text-center {
+  display: flex;
+  justify-content: center; }
+
 .right-content {
   width: 100%;
   text-align: right !important; }
@@ -285,6 +289,12 @@ pre {
 
 .margin-left-2 {
   margin-left: 2rem; }
+
+.u-margin-left-03 {
+  margin-left: 0.3rem !important; }
+
+.u-margin-left-05 {
+  margin-left: 0.5rem !important; }
 
 .margin-left-07 {
   margin-left: 0.7rem !important; }
@@ -1144,7 +1154,7 @@ pre {
   border: none;
   line-height: 0;
   border-radius: 0.7rem;
-  padding: 1.8rem 1.6rem;
+  padding: 1.9rem 2rem;
   font-size: 1.6rem;
   transition: all 0.2s;
   cursor: pointer;
@@ -2186,6 +2196,70 @@ input[type="file"] {
   40% {
     -webkit-transform: scale(1);
     transform: scale(1); } }
+
+/* Loading icon 3 */
+.lds-ellipsis {
+  display: inline-block;
+  position: relative;
+  width: 2.5rem;
+  height: 0.5rem; }
+
+.lds-ellipsis div {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0); }
+
+.lds-ellipsis div.lds-ellipsis--default {
+  background: #3c3c72; }
+
+.lds-ellipsis div.lds-ellipsis--dark {
+  background: #555; }
+
+.lds-ellipsis div.lds-ellipsis--blue {
+  background: #2980b9; }
+
+.lds-ellipsis div.lds-ellipsis--green {
+  background: #2ecc71; }
+
+.lds-ellipsis div.lds-ellipsis--light {
+  background: #fff; }
+
+.lds-ellipsis div:nth-child(1) {
+  left: 3px;
+  animation: lds-ellipsis1 0.6s infinite; }
+
+.lds-ellipsis div:nth-child(2) {
+  left: 3px;
+  animation: lds-ellipsis2 0.6s infinite; }
+
+.lds-ellipsis div:nth-child(3) {
+  left: 12px;
+  animation: lds-ellipsis2 0.6s infinite; }
+
+.lds-ellipsis div:nth-child(4) {
+  left: 16px;
+  animation: lds-ellipsis3 0.6s infinite; }
+
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0); }
+  100% {
+    transform: scale(1); } }
+
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1); }
+  100% {
+    transform: scale(0); } }
+
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0); }
+  100% {
+    transform: translate(8px, 0); } }
 
 .page-thumbnail {
   color: #555;
