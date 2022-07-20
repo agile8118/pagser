@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { validate, util } from "@pagser/common";
-import { Input } from "@pagser/reusable";
+import { Input, Button } from "@pagser/reusable";
 
 const ForgotPassword = () => {
   const [password, setPassword] = useState("");
@@ -173,6 +173,23 @@ const ForgotPassword = () => {
               disabled={confirmPasswordDisabled}
               label="Confirm Password"
             />
+          </div>
+
+          <div className="form__group u-text-center">
+            <Button
+              // rounded={true}
+              // rounded={true}
+              // rounded={true}
+              // rounded={true}
+              // disabled={true}
+              // size="small"
+              color="green"
+              // loading={true}
+              // block={true}
+              // outlined={true}
+            >
+              Reset
+            </Button>
           </div>
 
           <div className="form__group">

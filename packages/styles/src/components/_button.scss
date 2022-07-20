@@ -1,3 +1,381 @@
+.button {
+  border: none;
+  line-height: 0;
+  border-radius: 0.7rem;
+  padding: 1.8rem 1.6rem;
+  font-size: 1.6rem;
+  transition: all 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  align-items: center;
+  justify-content: center;
+  height: 1px;
+  display: flex;
+  align-items: center;
+  font-family: inherit;
+
+  &:hover {
+      color: inherit;
+  }
+
+  &-rounded {
+      border-radius: 500px !important;
+  }
+
+  &-block {
+      width: 100%;
+  }
+}
+
+// colors
+.button-default {
+  background: #e1e0e0;
+  color: #5c5b5b;
+  border: 1px solid #dcdada;
+
+  &:hover {
+    background-color: darken(#e1e0e0, 8%);
+    border-color: darken(#e1e0e0, 8%);
+    color: #5c5b5b;
+  }
+
+  &:focus {
+      box-shadow: 0 0 0 3px rgba(#e1e0e0, 0.3);
+  }
+
+  &:disabled {
+      cursor: not-allowed;
+      background: #ebebe4;
+      border-color: #ccc;
+      color: #757575;
+
+      &:hover {
+        background: #ebebe4;
+        border-color: #ccc;
+        color: #757575;
+      }
+  }
+
+  &-outlined {
+      background-color: #fff;
+      color: #5c5b5b;
+      border: 1px solid #5c5b5b;
+
+      &:hover,
+      &:active {
+          background-color: #5c5b5b;
+          color: #fff;
+      }
+
+      &:focus {
+          box-shadow: 0 0 0 3px rgba(#5c5b5b, 0.3);
+      }
+
+      &:disabled {
+          cursor: not-allowed;
+          border-color: lighten(#5c5b5b, 20%);
+          background-color: #fff;
+          color: lighten(#5c5b5b, 20%);
+
+          &:hover {
+              border-color: lighten(#5c5b5b, 20%);
+          }
+      }
+  }
+}
+
+.button-blue {
+  color: #fff;
+  background-color: $color-blue;
+  border: 1px solid $color-dark-blue;
+
+
+  &:hover {
+      color: #fff;
+      background-color: darken($color-blue, 5%);
+      border-color: darken($color-blue, 5%);
+  }
+
+  &:focus {
+      box-shadow: 0 0 0 3px rgba($color-blue, 0.3);
+  }
+
+  &:disabled {
+      cursor: not-allowed;
+      background: lighten($color-blue, 20%);
+      border-color: lighten($color-blue, 20%);
+
+      &:hover {
+          background: lighten($color-blue, 20%);
+          border-color: lighten($color-blue, 20%);
+      }
+  }
+
+  &-outlined {
+      background-color: #fff;
+      color: $color-blue;
+      border: 1px solid $color-blue;
+
+      &:hover,
+      &:active {
+          background-color: $color-blue;
+          color: #fff;
+      }
+
+      &:focus {
+          box-shadow: 0 0 0 3px rgba($color-blue, 0.3);
+      }
+
+      &:disabled {
+          cursor: not-allowed;
+          border-color: lighten($color-blue, 20%);
+          background-color: #fff;
+          color: lighten($color-blue, 20%);
+
+          &:hover {
+              border-color: lighten($color-blue, 20%);
+          }
+      }
+  }
+}
+
+
+.button-gray {
+  background-color: $color-gray;
+  color: #fff;
+  border: 1px solid $color-gray;
+
+  &:hover {
+      color: #fff;
+      background-color: darken($color-gray, 5%);
+      border-color: darken($color-gray, 5%);
+  }
+
+  &:focus {
+      box-shadow: 0 0 0 3px rgba($color-gray, 0.3);
+  }
+
+  &:disabled {
+      cursor: not-allowed;
+      background: lighten($color-gray, 20%);
+      border-color: lighten($color-gray, 20%);
+
+      &:hover {
+          background: lighten($color-gray, 20%);
+          border-color: lighten($color-gray, 20%);
+      }
+  }
+
+  &-outlined {
+      background-color: #fff;
+      color: $color-gray;
+      border: 1px solid $color-gray;
+
+      &:hover,
+      &:active {
+          background-color: $color-gray;
+          color: #fff;
+      }
+
+      &:focus {
+          box-shadow: 0 0 0 3px rgba($color-gray, 0.3);
+      }
+
+      &:disabled {
+          cursor: not-allowed;
+          border-color: lighten($color-gray, 20%);
+          background-color: #fff;
+          color: lighten($color-gray, 20%);
+
+          &:hover {
+              border-color: lighten($color-gray, 20%);
+          }
+      }
+  }
+}
+
+.button-red {
+  background-color: $color-red;
+  color: #fff;
+  border: 1px solid $color-red;
+
+  &:hover {
+      color: #fff;
+      background-color: darken($color-red, 5%);
+      border-color: darken($color-red, 5%);
+  }
+
+  &:focus {
+      box-shadow: 0 0 0 3px rgba($color-red, 0.3);
+  }
+
+  &:disabled {
+      cursor: not-allowed;
+      background: lighten($color-red, 20%);
+      border-color: lighten($color-red, 20%);
+
+      &:hover {
+          background: lighten($color-red, 20%);
+          border-color: lighten($color-red, 20%);
+      }
+  }
+
+  &-outlined {
+      background-color: #fff;
+      color: $color-red;
+      border: 1px solid $color-red;
+
+      &:hover,
+      &:active {
+          background-color: $color-red;
+          color: #fff;
+      }
+
+      &:focus {
+          box-shadow: 0 0 0 3px rgba($color-red, 0.3);
+      }
+
+      &:disabled {
+          cursor: not-allowed;
+          border-color: lighten($color-red, 20%);
+          background-color: #fff;
+          color: lighten($color-red, 20%);
+
+          &:hover {
+              border-color: lighten($color-red, 20%);
+          }
+      }
+  }
+}
+
+.button-green {
+  background-color: $color-green;
+  color: #fff;
+  border: 1px solid $color-green;
+
+  &:hover {
+      color: #fff;
+      background-color: darken($color-green, 5%);
+      border-color: darken($color-green, 5%);
+  }
+
+  &:focus {
+      box-shadow: 0 0 0 3px rgba($color-green, 0.3);
+  }
+
+  &:disabled {
+      cursor: not-allowed;
+      background: lighten($color-green, 20%);
+      border-color: lighten($color-green, 20%);
+
+      &:hover {
+          background: lighten($color-green, 20%);
+          border-color: lighten($color-green, 20%);
+      }
+  }
+
+  &-outlined {
+      background-color: #fff;
+      color: $color-green;
+      border: 1px solid $color-green;
+
+      &:hover,
+      &:active {
+          background-color: $color-green;
+          color: #fff;
+      }
+
+      &:focus {
+          box-shadow: 0 0 0 3px rgba($color-green, 0.3);
+      }
+
+      &:disabled {
+          cursor: not-allowed;
+          border-color: lighten($color-green, 20%);
+          background-color: #fff;
+          color: lighten($color-green, 20%);
+
+          &:hover {
+              border-color: lighten($color-green, 20%);
+          }
+      }
+  }
+}
+
+// Size modifiers
+.button-small {
+  padding: 1.5rem 1.2rem;
+  font-size: 1.4rem;
+  border-radius: 0.5rem;
+}
+
+
+.button-big {
+  padding: 2.2rem 2.6rem;
+  font-size: 1.6rem;
+  font-weight: normal;
+  border-width: 2px;
+}
+
+// Types
+.button-text {
+  background-color: transparent;
+  border: none;
+  padding-top: 0;
+  padding-bottom: 0;
+  font-weight: 400;
+
+  &:hover {
+      text-decoration: underline !important;
+  }
+
+  &:disabled {
+      cursor: not-allowed;
+      text-decoration: none;
+
+      &:hover {
+          text-decoration: none;
+      }
+  }
+}
+
+.button-text-default {
+  color: $color-default;
+
+  &:hover {
+      color: $color-default;
+  }
+
+  &:disabled {
+      background: lighten($color-default, 20%);
+
+      &:hover {
+          background: lighten($color-default, 20%);
+      }
+  }
+}
+
+.button-text-gray {
+  color: $color-text;
+
+  &:hover {
+      color: $color-text;
+  }
+
+  &:disabled {
+      background: lighten($color-text, 20%);
+
+      &:hover {
+          background: lighten($color-text, 20%);
+      }
+  }
+}
+
+
+// LEGACY
+
+
 // ** normal buttons  ** //
 .btn {
   display: inline-block;
