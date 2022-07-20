@@ -4,7 +4,7 @@ interface componentProps {
   message?: string;
   type?: TType;
   onClose?: any;
-  additionalClasses?: "string";
+  additionalClasses?: string;
 }
 
 export const Alert = (props: componentProps) => {

@@ -13,7 +13,6 @@ const Register = () => {
 
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
-  const [usernameSuccess, setUsernameSuccess] = useState(false);
 
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -29,7 +28,7 @@ const Register = () => {
   const [confirmPasswordSuccess, setConfirmPasswordSuccess] = useState(false);
 
   const [usernameIsOK, setUsernameIsOK] = useState<boolean | null>(null);
-  const [status, setStatus] = useState("show-form");
+  const [status, setStatus] = useState("verify-email");
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [alertType, setAlertType] = useState<TAlertType>("success");
   const [loading, setLoading] = useState(false);
@@ -408,7 +407,17 @@ const Register = () => {
   }
 
   if (status === "verify-email") {
-    EL = <VerifyEmail />;
+    EL = (
+      <VerifyEmail
+        name={name}
+        username={username}
+        email={email}
+        password={password}
+        onEmailChange={(newEmail) => {
+          setEmail(newEmail);
+        }}
+      />
+    );
   }
 
   return EL;

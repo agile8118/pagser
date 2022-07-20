@@ -85,7 +85,13 @@ const Login = () => {
       return (
         <div>
           <div className="form__group u-flex-text-center">
-            <Button rounded={true} outlined={true} size="big" color="blue">
+            <Button
+              type="submit"
+              rounded={true}
+              outlined={true}
+              size="big"
+              color="blue"
+            >
               Sign In
             </Button>
           </div>
