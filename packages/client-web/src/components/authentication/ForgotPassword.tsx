@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import util from "../../lib/forms";
+import { validate, util } from "@pagser/common";
 import { Input } from "@pagser/reusable";
-import { getParameterByName } from "../../lib";
 
 const ForgotPassword = () => {
   const [password, setPassword] = useState("");
@@ -24,8 +23,8 @@ const ForgotPassword = () => {
 
   const checkAll = () => {
     if (
-      util.isHardPassword(password) &&
-      !util.isEmpty(password) &&
+      validate.isHardPassword(password) &&
+      !validate.isEmpty(password) &&
       password === confirmPassword
     ) {
       setBtnDisabled(false);
@@ -42,14 +41,14 @@ const ForgotPassword = () => {
 
   const onInputFocusOut = (value, fieldName) => {
     if (fieldName === "password") {
-      if (util.isEmpty(value)) {
+      if (validate.isEmpty(value)) {
         setPasswordError("Please choose a password.");
         confirmPasswordReset();
       }
     }
 
     if (fieldName === "confirmPassword") {
-      if (util.isEmpty(value)) {
+      if (validate.isEmpty(value)) {
         setConfirmPasswordError("Please choose a password.");
       }
     }
@@ -60,22 +59,22 @@ const ForgotPassword = () => {
       setPassword(value);
       confirmPasswordReset();
 
-      if (!util.isHardPassword(value) && !util.isEmpty(value)) {
+      if (!validate.isHardPassword(value) && !validate.isEmpty(value)) {
         setPasswordError(
           "Password should contain a capital letter, letters and numbers."
         );
         confirmPasswordReset();
       }
 
-      if (!util.len(value, 8, 30) && !util.isEmpty(value)) {
+      if (!validate.len(value, 8, 30) && !validate.isEmpty(value)) {
         setPasswordError("Password should contain 8 to 30 characters.");
         confirmPasswordReset();
       }
 
       if (
-        util.len(value, 8, 30) &&
-        !util.isEmpty(value) &&
-        util.isHardPassword(value, 8, 30)
+        validate.len(value, 8, 30) &&
+        !validate.isEmpty(value) &&
+        validate.isHardPassword(value)
       ) {
         setPasswordSuccess(true);
         setPasswordError("");
@@ -90,7 +89,7 @@ const ForgotPassword = () => {
         setConfirmPasswordError("Passwords do not match up.");
       }
 
-      if (!util.isEmpty(confirmPassword) && password === value) {
+      if (!validate.isEmpty(confirmPassword) && password === value) {
         setConfirmPasswordError("");
         setConfirmPasswordSuccess(true);
       }
@@ -100,8 +99,8 @@ const ForgotPassword = () => {
   const onFormSubmit = () => {
     axios
       .post(`/api/resetpassword`, {
-        userId: getParameterByName("i"),
-        token: { code: getParameterByName("t") },
+        userId: util.getParameterByName("i"),
+        token: { code: util.getParameterByName("t") },
         password: password,
       })
       .then((response) => {
@@ -133,8 +132,8 @@ const ForgotPassword = () => {
       <div className="auth">
         <h3 className="heading-tertiary">Create a new password</h3>
         <p className="small-copy">
-          After resetting your account, you will prompted to login with your new
-          password.
+          After resetting your password, you will prompted to login with your
+          new password.
         </p>
         <form
           method="post"

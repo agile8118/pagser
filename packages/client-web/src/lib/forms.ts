@@ -105,17 +105,17 @@ func.inputNone = (fieldGroupId, spanNumber = 1) => {
   fieldGroup.children[spanNumber].children[0].innerHTML = "";
 };
 
-func.enableButton = (buttonId) => {
-  const button = document.querySelector(`#${buttonId}`) as HTMLButtonElement;
-  button.classList.remove("btn-disabled");
-  button.removeAttribute("disabled");
-};
+// func.enableButton = (buttonId) => {
+//   const button = document.querySelector(`#${buttonId}`) as HTMLButtonElement;
+//   button.classList.remove("btn-disabled");
+//   button.removeAttribute("disabled");
+// };
 
-func.disableButton = (buttonId) => {
-  const button = document.querySelector(`#${buttonId}`) as HTMLButtonElement;
-  button.classList.add("btn-disabled");
-  button.setAttribute("disabled", "true");
-};
+// func.disableButton = (buttonId) => {
+//   const button = document.querySelector(`#${buttonId}`) as HTMLButtonElement;
+//   button.classList.add("btn-disabled");
+//   button.setAttribute("disabled", "true");
+// };
 
 // reset confirm password input to the initial rendered
 func.confirmPasswordReset = function () {
