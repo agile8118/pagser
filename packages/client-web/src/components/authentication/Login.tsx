@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Loading, Alert, Modal, TAlertType } from "@pagser/reusable";
+import { Loading, Alert, Modal, TAlertType, Button } from "@pagser/reusable";
 import { getParameterByName } from "../../lib";
 
 const Login = () => {
@@ -84,17 +84,17 @@ const Login = () => {
     if (loading === false) {
       return (
         <div>
-          <div className="form__group">
-            <button className="btn btn-round btn-blue-o btn-big">
+          <div className="form__group u-flex-text-center">
+            <Button rounded={true} outlined={true} size="big" color="blue">
               Sign In
-            </button>
+            </Button>
           </div>
           <button
             type="button"
             onClick={() => {
               setForgotPassMdl(true);
             }}
-            className="btn-text btn-text-underlined"
+            className="button-text"
           >
             Forgot your password?
           </button>
@@ -124,7 +124,7 @@ const Login = () => {
           setForgotPassMdl(false);
         }}
       >
-        <p>Put your email address here and we will send you instructions.</p>
+        <p>Put your email address here and we'll send you the instructions.</p>
         <form
           onSubmit={(event) => {
             event.preventDefault();

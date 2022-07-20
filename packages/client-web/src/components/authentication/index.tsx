@@ -8,6 +8,7 @@ import {
 
 import Login from "./Login";
 import ForgotPassword from "./ForgotPassword";
+import Register from "./Register";
 
 function Authentication(props) {
   return (
@@ -15,8 +16,7 @@ function Authentication(props) {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        {/* <Route path="/register" component={Register} />
-      <Route path="/forgotpassword" component={ForgotPassword} /> */}
+        <Route path="/register" element={<Register />} />
       </Routes>
     </Router>
   );

@@ -312,10 +312,9 @@
 
 
 .button-big {
+  font-size: 2rem;
+  font-weight: 300;
   padding: 2.2rem 2.6rem;
-  font-size: 1.6rem;
-  font-weight: normal;
-  border-width: 2px;
 }
 
 // Types
@@ -324,7 +323,10 @@
   border: none;
   padding-top: 0;
   padding-bottom: 0;
+  color: $color-blue;
+  font-size: inherit;
   font-weight: 400;
+  cursor: pointer;
 
   &:hover {
       text-decoration: underline !important;

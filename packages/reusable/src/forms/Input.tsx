@@ -4,6 +4,7 @@ interface Props {
   value?: string;
   size?: "big" | "small";
   rounded?: boolean;
+  id?: string;
   required?: boolean;
   error?: string;
   shouldDivideNumberByThree?: boolean;
@@ -47,8 +48,8 @@ const Input = (props: Props) => {
   }
 
   if (props.rounded) className += " form-text--rounded";
-  if (props.success) className += " form-text--success";
-  if (props.error) className += " form-text--error";
+  if (props.success && !props.disabled) className += " form-text--success";
+  if (props.error && !props.disabled) className += " form-text--error";
   if (props.disabled) className += " form-text--disabled";
 
   let shouldDivideNumberByThree = true;
@@ -66,6 +67,7 @@ const Input = (props: Props) => {
         <input
           ref={input}
           className="form-text__input"
+          id={props.id}
           disabled={props.disabled}
           value={
             props.type === "number" && value
@@ -105,7 +107,7 @@ const Input = (props: Props) => {
         </label>
       </div>
 
-      {props.error && (
+      {props.error && !props.disabled && (
         <span className="input-error">
           <i className="fa fa-exclamation-circle"></i>
           {props.error}
