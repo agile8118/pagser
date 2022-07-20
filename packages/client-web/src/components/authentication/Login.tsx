@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Loading, Alert, Modal, TAlertType, Button } from "@pagser/reusable";
-import { getParameterByName } from "../../lib";
+import {
+  Loading,
+  Alert,
+  Modal,
+  TAlertType,
+  Button,
+  Input,
+} from "@pagser/reusable";
+import { util } from "@pagser/common";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -10,12 +17,14 @@ const Login = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState<TAlertType>("success");
   const [loading, setLoading] = useState(false);
+  const [loadingForgotPassword, setLoadingForgotPassword] = useState(false);
+
   const [forgotPassMdl, setForgotPassMdl] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const redirectedFrom = getParameterByName(
+    const redirectedFrom = util.getParameterByName(
       "redirected",
       window.location.href
     );
@@ -39,13 +48,10 @@ const Login = () => {
 
   // Call server to send an email to reset the password
   const onForgotPasswordSubmit = () => {
-    const emailElement = document?.querySelector("#forgotpassword-email")
-      ?.children[0] as HTMLInputElement;
-    const email = emailElement.value;
-
+    setLoadingForgotPassword(true);
     axios
       .post(`/api/forgotpassword`, {
-        email,
+        email: email,
       })
       .then((response) => {
         setAlertMessage(
@@ -53,11 +59,13 @@ const Login = () => {
         );
         setAlertType("success");
         setForgotPassMdl(false);
+        setLoadingForgotPassword(false);
       })
       .catch((error) => {
         setAlertMessage(`No one with the email ${email} was founded.`);
         setAlertType("error");
         setForgotPassMdl(false);
+        setLoadingForgotPassword(false);
       });
   };
 
@@ -81,40 +89,31 @@ const Login = () => {
   };
 
   const renderButtons = () => {
-    if (loading === false) {
-      return (
-        <div>
-          <div className="form__group u-flex-text-center">
-            <Button
-              type="submit"
-              rounded={true}
-              outlined={true}
-              size="big"
-              color="blue"
-            >
-              Sign In
-            </Button>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              setForgotPassMdl(true);
-            }}
-            className="button-text"
+    return (
+      <div>
+        <div className="form__group u-flex-text-center">
+          <Button
+            type="submit"
+            rounded={true}
+            outlined={true}
+            size="big"
+            color="blue"
+            loading={loading}
           >
-            Forgot your password?
-          </button>
+            Sign In
+          </Button>
         </div>
-      );
-    } else {
-      return (
-        <div className="margin-top-3">
-          <div className="center-content">
-            <Loading />
-          </div>
-        </div>
-      );
-    }
+        <button
+          type="button"
+          onClick={() => {
+            setForgotPassMdl(true);
+          }}
+          className="button-text"
+        >
+          Forgot your password?
+        </button>
+      </div>
+    );
   };
 
   document.querySelector("#js--login-btn")?.classList.add("display-none");
@@ -137,22 +136,26 @@ const Login = () => {
             onForgotPasswordSubmit();
           }}
         >
-          <div className="form__group" id="forgotpassword-email">
-            <input
+          <div className="form-group">
+            <Input
               type="email"
-              placeholder="Email"
-              className="form__input"
-              onChange={(event) => {
-                setEmail(event.target.value);
+              label="Email"
+              onChange={(value) => {
+                setEmail(value);
               }}
               value={email}
               required
             />
           </div>
-          <div className="right-content">
-            <button type="submit" className="btn btn-round btn-blue">
+          <div className="u-flex-text-right">
+            <Button
+              type="submit"
+              rounded={true}
+              color="blue"
+              loading={loadingForgotPassword}
+            >
               Send
-            </button>
+            </Button>
           </div>
         </form>
       </Modal>
@@ -190,26 +193,24 @@ const Login = () => {
               onFormSubmit();
             }}
           >
-            <div className="form__group">
-              <input
+            <div className="form-group">
+              <Input
                 type="text"
-                className="form__input"
-                onChange={(event) => {
-                  setEmail(event.target.value);
+                onChange={(value) => {
+                  setEmail(value);
                 }}
-                placeholder="Email Address"
+                label="Email Address"
                 value={email}
                 required
               />
             </div>
-            <div className="form__group">
-              <input
+            <div className="form-group">
+              <Input
                 type="password"
-                className="form__input"
-                onChange={(event) => {
-                  setPassword(event.target.value);
+                onChange={(value) => {
+                  setPassword(value);
                 }}
-                placeholder="Your Password"
+                label="Your Password"
                 value={password}
               />
             </div>

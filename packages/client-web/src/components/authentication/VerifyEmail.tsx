@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import util from "../../lib/forms";
 import {
   Alert,
   Modal,
@@ -9,7 +8,6 @@ import {
   Button,
   TAlertType,
 } from "@pagser/reusable";
-import { validate } from "@pagser/common";
 
 interface IProps {
   name: string;
@@ -26,12 +24,6 @@ const VerifyEmail = (props: IProps) => {
   const fourthDigitRef = useRef<HTMLInputElement>(null);
   const fifthDigitRef = useRef<HTMLInputElement>(null);
 
-  // this.firstDigit = React.createRef();
-  // this.secondDigit = React.createRef();
-  // this.thirdDigit = React.createRef();
-  // this.fourthDigit = React.createRef();
-  // this.fifthDigit = React.createRef();
-
   const [firstDigit, setFirstDigit] = useState("");
   const [secondDigit, setSecondDigit] = useState("");
   const [thirdDigit, setThirdDigit] = useState("");
@@ -40,6 +32,7 @@ const VerifyEmail = (props: IProps) => {
 
   const [changedEmail, setChangedEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingChangeEmail, setLoadingChangeEmail] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [alertType, setAlertType] = useState<TAlertType>("success");
   const [changeEmailMdl, setChangeEmailMdl] = useState(false);
@@ -47,27 +40,6 @@ const VerifyEmail = (props: IProps) => {
   useEffect(() => {
     checkDigits();
   }, [firstDigit, secondDigit, thirdDigit, fourthDigit, fifthDigit]);
-
-  // this.state = {
-  //   name: "",
-  //   username: "",
-  //   email: "",
-  //   password: "",
-  //   confirmPassword: "",
-  //   usernameIsOK: null,
-  //   status: "showform",
-  //   alertMessage: null,
-  //   alertType: "success",
-  //   digits: {
-  //     first: "",
-  //     second: "",
-  //     third: "",
-  //     fourth: "",
-  //     fifth: "",
-  //   },
-  //   loading: false,
-  //   changeEmailMdl: false,
-  // };
 
   // Reset the digits inputs
   const resetDigits = () => {
@@ -142,6 +114,7 @@ const VerifyEmail = (props: IProps) => {
   };
 
   const onChangeEmailSubmit = () => {
+    setLoadingChangeEmail(true);
     axios
       .post(`/api/sendcode`, {
         name: props.name,
@@ -154,20 +127,26 @@ const VerifyEmail = (props: IProps) => {
         setAlertMessage("New code has been sent to your email.");
         setAlertType("success");
         setChangeEmailMdl(false);
+        setChangedEmail("");
         resetDigits();
+        setLoadingChangeEmail(false);
       })
       .catch((error) => {
         if (error.response.data.error === "email is in use") {
           setAlertMessage(
-            "This email is already in use, please login with this email or choose another one."
+            `${changedEmail} is already in use, please login with this email or choose another one.`
           );
           setAlertType("error");
           setChangeEmailMdl(false);
           resetDigits();
+          setLoadingChangeEmail(false);
+          setChangedEmail("");
         } else {
           setAlertMessage("Something went wrong, please try again.");
           setAlertType("error");
           resetDigits();
+          setLoadingChangeEmail(false);
+          setChangedEmail("");
         }
       });
   };
@@ -344,7 +323,12 @@ const VerifyEmail = (props: IProps) => {
             />
           </div>
           <div className="u-flex-text-right">
-            <Button type="submit" rounded={true} color="blue">
+            <Button
+              type="submit"
+              rounded={true}
+              color="blue"
+              loading={loadingChangeEmail}
+            >
               Change
             </Button>
           </div>

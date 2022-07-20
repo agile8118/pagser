@@ -28,7 +28,7 @@ const Register = () => {
   const [confirmPasswordSuccess, setConfirmPasswordSuccess] = useState(false);
 
   const [usernameIsOK, setUsernameIsOK] = useState<boolean | null>(null);
-  const [status, setStatus] = useState("verify-email");
+  const [status, setStatus] = useState("show-form");
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [alertType, setAlertType] = useState<TAlertType>("success");
   const [loading, setLoading] = useState(false);
