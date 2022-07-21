@@ -53,7 +53,7 @@ class Request {
 
       if (options && options.auth) {
         config.headers = {
-          authorization: "Bearer " + localStorage.getItem("token"),
+          authorization: localStorage.getItem("token"),
         };
       }
 
@@ -64,7 +64,16 @@ class Request {
         })
         .catch((e) => {
           this.handleError(e, options?.alert);
-          reject(e);
+
+          const errObj = {
+            status: 0,
+            message: "",
+          };
+
+          errObj.status = e.response.status;
+          errObj.message = e.response.data;
+
+          reject(errObj);
         });
     });
   }
@@ -75,7 +84,7 @@ class Request {
 
       if (options?.auth) {
         config.headers = {
-          authorization: "Bearer " + localStorage.getItem("token"),
+          authorization: localStorage.getItem("token"),
         };
       }
 
@@ -97,7 +106,7 @@ class Request {
 
       if (options && options.auth) {
         config.headers = {
-          authorization: "Bearer " + localStorage.getItem("token"),
+          authorization: localStorage.getItem("token"),
         };
       }
 

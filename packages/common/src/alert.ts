@@ -8,7 +8,7 @@ const alert = (message: string, type = "default") => {
     const ELAlertButton = document.createElement("button");
     const ELAlertButtonSpan = document.createElement("span");
 
-    ElAlert.setAttribute("class", "alert alert--close");
+    ElAlert.setAttribute("class", "alert-snackbar alert-snackbar--close");
     ElAlert.setAttribute("id", "js--alert");
     ELAlertButton.setAttribute("type", "button");
     ELAlertButtonSpan.innerHTML = "&#10005";
@@ -23,35 +23,35 @@ const alert = (message: string, type = "default") => {
   const alertText = document.querySelector("#js--alert p");
   const alertButton = document.querySelector("#js--alert button");
 
-  alert?.classList.remove("alert--error");
-  alert?.classList.remove("alert--success");
-  alert?.classList.remove("alert--open");
-  alert?.classList.remove("alert--close");
+  alert?.classList.remove("alert-snackbar--error");
+  alert?.classList.remove("alert-snackbar--success");
+  alert?.classList.remove("alert-snackbar--open");
+  alert?.classList.remove("alert-snackbar--close");
 
-  alert?.classList.add("alert--open");
+  alert?.classList.add("alert-snackbar--open");
 
   if (type === "success") {
-    alert?.classList.add("alert--success");
+    alert?.classList.add("alert-snackbar--success");
   }
 
   if (type === "error") {
-    alert?.classList.add("alert--error");
+    alert?.classList.add("alert-snackbar--error");
   }
 
   if (alertText) alertText.innerHTML = message;
 
   setTimeout(() => {
-    alert?.classList.add("alert--close");
-    alert?.classList.remove("alert--error");
-    alert?.classList.remove("alert--success");
-    alert?.classList.remove("alert--open");
+    alert?.classList.add("alert-snackbar--close");
+    alert?.classList.remove("alert-snackbar--error");
+    alert?.classList.remove("alert-snackbar--success");
+    alert?.classList.remove("alert-snackbar--open");
   }, 5000);
 
   alertButton?.addEventListener("click", () => {
-    alert?.classList.add("alert--close");
-    alert?.classList.remove("alert--error");
-    alert?.classList.remove("alert--success");
-    alert?.classList.remove("alert--open");
+    alert?.classList.add("alert-snackbar--close");
+    alert?.classList.remove("alert-snackbar--error");
+    alert?.classList.remove("alert-snackbar--success");
+    alert?.classList.remove("alert-snackbar--open");
   });
 };
 

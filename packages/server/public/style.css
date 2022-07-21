@@ -38,6 +38,11 @@ img {
   max-width: 100%;
   height: auto; }
 
+.hr {
+  border: none;
+  background: #ccc;
+  height: 1px; }
+
 body {
   font-display: fallback;
   font-family: "Lato", "Helvetica", "Arial", sans-serif;
@@ -1371,7 +1376,9 @@ pre {
   font-size: inherit;
   font-weight: 400;
   cursor: pointer; }
-  .button-text:hover {
+  .button-text--big {
+    font-size: 1.9rem; }
+  .button-text:hover, .button-text:focus {
     text-decoration: underline !important; }
   .button-text:disabled {
     cursor: not-allowed;
@@ -1659,7 +1666,8 @@ pre {
   position: relative;
   width: 100%;
   font-size: 1.6rem;
-  margin-top: 0; }
+  margin-top: 0;
+  display: flex; }
   .form-text--textarea .form-text__label {
     top: 2.3rem; }
   .form-text--textarea .form-text__input {
@@ -1712,7 +1720,8 @@ pre {
     border-radius: 0.5rem;
     font-size: 100%;
     color: #555;
-    width: 100%; }
+    width: 100%;
+    font-family: inherit; }
     .form-text__input:focus {
       border-color: rgba(41, 128, 185, 0.57);
       outline: 0 none; }
@@ -1728,7 +1737,7 @@ pre {
     text-align: right; }
 
 .form-group {
-  margin: 2rem 0; }
+  margin: 2.5rem 0; }
 
 .input-error {
   font-size: 1.4rem;
@@ -1900,6 +1909,48 @@ textarea {
     @media only screen and (max-width: 360px) {
       .input-digits input:not(:last-child) {
         margin-right: 1rem; } }
+
+.alert-snackbar {
+  position: fixed;
+  top: 2rem;
+  z-index: 3001;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.6rem;
+  font-weight: 500;
+  padding: 1.5rem 2.5rem 1.5rem 1.8rem;
+  border-radius: 0.8rem;
+  box-shadow: 0 0.5rem 0.8rem rgba(0, 0, 0, 0.2);
+  align-items: center;
+  justify-content: space-between;
+  background: #001c50;
+  color: #fff; }
+  @media only screen and (max-width: 500px) {
+    .alert-snackbar {
+      width: 90%; } }
+  .alert-snackbar--error {
+    background-color: #db003c;
+    color: #fff; }
+  .alert-snackbar--success {
+    background-color: #178017;
+    color: #fff; }
+  .alert-snackbar p {
+    margin: 0; }
+  .alert-snackbar button {
+    background: none;
+    border: none;
+    color: inherit;
+    font-weight: bold;
+    margin-right: 10px;
+    font-size: 120%; }
+    .alert-snackbar button:hover {
+      color: #ecf0f3; }
+  .alert-snackbar--open {
+    display: flex;
+    animation: stack-message-open 0.2s; }
+  .alert-snackbar--close {
+    display: none;
+    animation: stack-message-close 0.4s; }
 
 .alert {
   border-radius: 5px;

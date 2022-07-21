@@ -328,9 +328,16 @@
   font-weight: 400;
   cursor: pointer;
 
-  &:hover {
+  &--big {
+    font-size: 1.9rem;
+  }
+
+  &:hover,
+  &:focus {
       text-decoration: underline !important;
   }
+
+
 
   &:disabled {
       cursor: not-allowed;

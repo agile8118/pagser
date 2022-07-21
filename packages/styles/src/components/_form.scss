@@ -4,6 +4,7 @@
   width: 100%;
   font-size: 1.6rem;
   margin-top: 0;
+  display: flex;
 
   &--textarea {
       .form-text__label {
@@ -100,6 +101,7 @@
       font-size: 100%;
       color: #555;
       width: 100%;
+      font-family: inherit;
 
       &:focus {
           border-color: rgba(41, 128, 185, 0.57);
@@ -126,7 +128,7 @@
 }
 
 .form-group {
-  margin: 2rem 0;
+  margin: 2.5rem 0;
 }
 
 .input-error {
