@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, ReactElement } from "react";
+import React, { useState, useEffect, ReactElement, useReducer } from "react";
 import TinyMCE from "react-tinymce";
 import { useNavigate } from "react-router-dom";
 import { validate, util, request, loadingModal, alert } from "@pagser/common";
@@ -25,10 +25,6 @@ const PageContents = () => {
 
   const navigate = useNavigate();
 
-  const titleRef = useRef<HTMLInputElement>(null);
-  const targetsRef = useRef<HTMLInputElement>(null);
-  const briefDesRef = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
     (async () => {
       const pageId = util.getParameterByName("id", window.location.href);
@@ -51,20 +47,13 @@ const PageContents = () => {
         }
       }
     })();
-
-    window.onbeforeunload = function (e) {
-      const dialogText = "Changes you made may not be saved.";
-      e.returnValue = dialogText;
-      return dialogText;
-    };
   }, []);
 
   useEffect(() => {
     // Send a request to server automatically to save the changes, we won't send a request
     // if the changes are already saved
-    // if (saved === false) {
     const interval = setInterval(() => {
-      updatePage();
+      if (!saved) updatePage();
     }, 5000);
 
     return () => clearInterval(interval);
@@ -78,15 +67,17 @@ const PageContents = () => {
     checkTargetsValidation();
   }, [targets]);
 
-  // componentWillUpdate() {
-  //   window.addEventListener("beforeunload", (e) => {
-  //     e.preventDefault();
+  const handlerBeforeunload = (e) => {
+    e.preventDefault();
+    e.returnValue = "Unsaved changes, are you sure you want to close?";
+    return;
+  };
 
-  //     if (this.state.saved === false)
-  //       return (e.returnValue =
-  //         "Unsaved changes, are you sure you want to close?");
-  //   });
-  // }
+  useEffect(() => {
+    if (saved === false) {
+      // window.addEventListener("beforeunload", handlerBeforeunload, true);
+    }
+  }, [saved]);
 
   // This will send the current page data to server for saving.
   // This will run when user wants to change the current stage
@@ -114,6 +105,9 @@ const PageContents = () => {
       );
 
       setSaved(true);
+
+      // @Todo: doesn't work!
+      window.removeEventListener("beforeunload", handlerBeforeunload, true);
       if (successMessage) alert(successMessage, "success");
 
       if (to) {
@@ -177,10 +171,12 @@ const PageContents = () => {
 
   // Check if the title provided by user is valid or not.
   // This will run by onblur and onchange event on title input
-  const checkTitleValidation = () => {
+  const checkTitleValidation = (text?: string) => {
     const minLen = type === "public" ? 15 : 1;
 
-    if (title.length < minLen) {
+    const val = text ? text : title;
+
+    if (val.length < minLen) {
       setTitleError(
         type === "public"
           ? `Title should be more than ${minLen} characters.`
@@ -190,7 +186,7 @@ const PageContents = () => {
       return false;
     }
 
-    if (title.length > 50) {
+    if (val.length > 50) {
       setTitleError("Title should be less than 50 characters.");
       return false;
     }
@@ -323,9 +319,9 @@ const PageContents = () => {
 
   const renderContents = () => {
     const componentThis = this;
-    let requiredLabel: ReactElement | undefined;
+    let requiredLabel: ReactElement | string | undefined;
     if (type === "private") {
-      requiredLabel = <span className="form__label--required-label">*</span>;
+      requiredLabel = " *";
     }
 
     let bodyClassName = "form__group";
@@ -353,17 +349,19 @@ const PageContents = () => {
             {/* Title input */}
             <div className="form-group">
               <Input
-                label="Title"
+                label={type === "private" ? "Title *" : "Title"}
                 id="title"
                 value={title}
                 onChange={(value) => {
-                  if (value) checkTitleValidation();
+                  if (value) checkTitleValidation(value);
                   setTitle(value);
                   setSaved(false);
                 }}
+                // placeholder="Choose a title for your page"
+                help="this is some text to help you understand the input better."
                 error={titleError}
-                onBlur={() => {
-                  checkTitleValidation();
+                onBlur={(value) => {
+                  checkTitleValidation(value);
                 }}
               />
             </div>
@@ -511,12 +509,12 @@ const PageContents = () => {
       <div className="page-new__note-box">
         <h3>A note about saving:</h3>
         <p>
-          We <strong>automatically save</strong> what you write and all other
-          changes you do, your page is saved as a draft until you decide to
-          publish your page. You can publish your page in the last step.
+          We <strong>automatically save</strong> what you write and all the
+          other changes you do, your page is saved as a draft until you decide
+          to publish it, which you can do in the last step.
         </p>
         <p>
-          You can view all your draft pages{" "}
+          You can view all of your draft pages{" "}
           <a href="/u/pages/draft" target="_blank" className="button-text">
             here
           </a>

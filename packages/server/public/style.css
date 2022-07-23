@@ -1667,7 +1667,8 @@ pre {
   width: 100%;
   font-size: 1.6rem;
   margin-top: 0;
-  display: flex; }
+  display: flex;
+  flex-direction: column; }
   .form-text--textarea .form-text__label {
     top: 2.3rem; }
   .form-text--textarea .form-text__input {
@@ -1714,6 +1715,33 @@ pre {
       color: #555;
       padding: 0 0.7rem;
       font-size: 85%; }
+  .form-text__input-container {
+    display: flex;
+    position: relative; }
+  .form-text .tooltip {
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+    right: 1rem; }
+    .form-text .tooltip + .form-text__input {
+      padding-right: 3.5rem; }
+  .form-text__help-icon {
+    color: #5D5D5D;
+    font-size: 1.5rem;
+    display: flex;
+    border: 1px solid #5D5D5D;
+    border-radius: 500px;
+    font-weight: bold;
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+    cursor: help;
+    user-select: none;
+    transition: all 0.2s; }
+    .form-text__help-icon:hover, .form-text__help-icon:focus {
+      color: #fff;
+      background-color: #5D5D5D; }
   .form-text__input {
     border: 1px solid #ccc;
     padding: 1.2rem 1.2rem;
@@ -2774,28 +2802,25 @@ input:checked + .slider:before {
     margin-top: 0.5rem;
     font-style: italic; }
 
-.tooltip {
-  position: relative;
-  display: inline-block; }
-  .tooltip__text {
-    visibility: hidden;
-    opacity: 0;
-    background-color: #333;
-    font-size: 1.4rem;
-    color: #fff;
-    text-align: center;
-    border-radius: 0.6rem;
-    padding: 0.5rem 0.7rem;
+.tooltip__text {
+  visibility: hidden;
+  opacity: 0;
+  background-color: #5D5D5D;
+  font-size: 1.4rem;
+  color: #fff;
+  text-align: center;
+  border-radius: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  position: absolute;
+  z-index: 1;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  width: 22rem;
+  transition: opacity 0.2s; }
+  .tooltip__text::after {
+    content: "";
     position: absolute;
-    z-index: 1;
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
-    width: 22rem;
-    transition: opacity 0.2s; }
-    .tooltip__text::after {
-      content: "";
-      position: absolute;
-      border-width: 0.5rem;
-      border-style: solid; }
+    border-width: 0.5rem;
+    border-style: solid; }
 
 .tooltip-top .tooltip__text {
   bottom: 125%;
@@ -2854,7 +2879,7 @@ input:checked + .slider:before {
 .tooltip--info {
   margin-left: 0.5rem; }
   .tooltip--info .fa {
-    color: #333;
+    color: #5D5D5D;
     font-size: 1.8rem;
     cursor: help !important; }
 

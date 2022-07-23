@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { util } from "@pagser/common";
 
 interface Props {
   value?: string;
@@ -15,6 +16,8 @@ interface Props {
   type?: string;
   success?: boolean;
   disabled?: boolean;
+  help?: string;
+  placeholder?: string;
 }
 
 const Input = (props: Props) => {
@@ -64,47 +67,74 @@ const Input = (props: Props) => {
   return (
     <>
       <div className={className}>
-        <input
-          ref={input}
-          className="form-text__input"
-          id={props.id}
-          disabled={props.disabled}
-          value={
-            props.type === "number" && value
-              ? shouldDivideNumberByThree
-                ? Number(value).toLocaleString()
+        {!!props.placeholder && (
+          <label
+            className="form__label"
+            onClick={() => {
+              input.current?.focus();
+            }}
+          >
+            {props.label}
+          </label>
+        )}
+        <div className="form-text__input-container">
+          {props.help && (
+            <div className="tooltip tooltip-top">
+              <a href="#" className="form-text__help-icon">
+                ?
+              </a>
+
+              <div className="tooltip__text">{props.help}</div>
+            </div>
+          )}
+
+          <input
+            ref={input}
+            className="form-text__input"
+            id={props.id}
+            disabled={props.disabled}
+            value={
+              props.type === "number" && value
+                ? shouldDivideNumberByThree
+                  ? Number(value).toLocaleString()
+                  : value
                 : value
-              : value
-          }
-          required={props.required}
-          onChange={(event: any) => {
-            let value = event.target.value;
+            }
+            required={props.required}
+            placeholder={props.placeholder}
+            onChange={(event: any) => {
+              let value = event.target.value;
 
-            if (props.type === "number") {
-              value = value.replace(/,/g, "");
+              if (props.type === "number") {
+                value = value.replace(/,/g, "");
 
-              if (!!Number(value) || Number(value) === 0) {
+                if (!!Number(value) || Number(value) === 0) {
+                  setValue(value);
+                }
+              } else {
                 setValue(value);
               }
-            } else {
+            }}
+            onBlur={(event: any) => {
+              let value = event.target.value;
               setValue(value);
-            }
-          }}
-          onBlur={(event: any) => {
-            let value = event.target.value;
-            setValue(value);
-            if (props.onBlur) props.onBlur(value);
-          }}
-          type={props.type === "password" ? "password" : "text"}
-        />
-        <label
-          className={`form-text__label ${value ? "form-text__label--top" : ""}`}
-          onClick={() => {
-            input.current?.focus();
-          }}
-        >
-          {props.label}
-        </label>
+              if (props.onBlur) props.onBlur(value);
+            }}
+            type={props.type === "password" ? "password" : "text"}
+          />
+        </div>
+        {!props.placeholder && (
+          <label
+            className={`form-text__label ${
+              value ? "form-text__label--top" : ""
+            }`}
+            onClick={() => {
+              input.current?.focus();
+            }}
+          >
+            {props.label}
+          </label>
+        )}
       </div>
 
       {props.error && !props.disabled && (

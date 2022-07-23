@@ -1,6 +1,7 @@
 interface IUtil {
   getParameterByName: (name: string, url?: string) => string | null;
   convertToUrl: (string: string) => string;
+  randomText: (length: number) => string;
 }
 
 const util: any = {};
@@ -23,6 +24,18 @@ util.convertToUrl = (string: string) => {
       .replace(/[^a-z0-9+]+/gi, "-")
       .substring(0, 50)
   );
+};
+
+util.randomText = (length: number) => {
+  let result = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const charactersLength = characters.length;
+
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
 };
 
 export default util as IUtil;
