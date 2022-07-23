@@ -357,8 +357,7 @@ const PageContents = () => {
                   setTitle(value);
                   setSaved(false);
                 }}
-                placeholder="Choose a title for your page"
-                // lined={true}
+                placeholder="Choose a title for your page."
                 maxLength={50}
                 help="this is some text to help you understand the input better."
                 error={titleError}
@@ -380,6 +379,9 @@ const PageContents = () => {
                   setBriefDes(value);
                   setSaved(false);
                 }}
+                placeholder="Describe briefly what your page is all about."
+                // help="this is some text to help you understand the input better."
+                // maxLength={300}
                 error={briefDesError}
                 onBlur={() => {
                   checkBriefDesValidation();
@@ -399,6 +401,7 @@ const PageContents = () => {
                   setTargets(value);
                   setSaved(false);
                 }}
+                // maxLength={300}
                 error={targetsError}
                 onBlur={() => {
                   checkTargetsValidation();

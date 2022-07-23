@@ -11,6 +11,7 @@ interface Props {
   onChange?: (s: string) => void;
   onBlur?: (s: string) => void;
   label?: string;
+  placeholder?: string;
 }
 
 const Textarea = (props: Props) => {
@@ -49,11 +50,23 @@ const Textarea = (props: Props) => {
   return (
     <>
       <div className={className}>
+        {props.placeholder && (
+          <label
+            className="form__label"
+            onClick={() => {
+              input.current?.focus();
+            }}
+          >
+            {props.label}
+          </label>
+        )}
+
         <textarea
           rows={props.rows}
           ref={input}
           id={props.id}
           className="form-text__input"
+          placeholder={props.placeholder}
           value={value}
           required={props.required}
           onChange={(event: any) => {
@@ -67,14 +80,18 @@ const Textarea = (props: Props) => {
           }}
         ></textarea>
 
-        <label
-          className={`form-text__label ${value ? "form-text__label--top" : ""}`}
-          onClick={() => {
-            input.current?.focus();
-          }}
-        >
-          {props.label}
-        </label>
+        {!props.placeholder && (
+          <label
+            className={`form-text__label ${
+              value ? "form-text__label--top" : ""
+            }`}
+            onClick={() => {
+              input.current?.focus();
+            }}
+          >
+            {props.label}
+          </label>
+        )}
       </div>
 
       {props.error && (
