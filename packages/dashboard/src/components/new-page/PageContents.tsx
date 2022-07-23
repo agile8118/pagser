@@ -318,7 +318,6 @@ const PageContents = () => {
   };
 
   const renderContents = () => {
-    const componentThis = this;
     let requiredLabel: ReactElement | string | undefined;
     if (type === "private") {
       requiredLabel = " *";
@@ -371,7 +370,7 @@ const PageContents = () => {
             <div className="form-group">
               <Textarea
                 label="Brief Description"
-                id="briefDescription"
+                id="briefDes"
                 value={briefDes}
                 rows={3}
                 onChange={(value) => {
@@ -401,7 +400,9 @@ const PageContents = () => {
                   setTargets(value);
                   setSaved(false);
                 }}
-                // maxLength={300}
+                placeholder="Describe briefly who this page is for."
+                help="this is some text to help you understand the input better."
+                maxLength={300}
                 error={targetsError}
                 onBlur={() => {
                   checkTargetsValidation();
@@ -410,7 +411,7 @@ const PageContents = () => {
             </div>
 
             {/* Page Body input */}
-            <hr className="hr" />
+            <hr className="hr u-margin-top-5" />
 
             <div className={bodyClassName} id="body">
               <label htmlFor="bodyInput" className="form__label">

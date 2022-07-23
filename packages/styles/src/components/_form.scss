@@ -172,14 +172,16 @@
     color: #fff;
     margin-top: 0.6rem;
     display: flex;
+    position: absolute;
+    right: 0;
+    top: 0;
     font-size: 1.2rem;
     margin-left: auto;
   }
 
   &__footer {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    position: relative;
   }
 }
 

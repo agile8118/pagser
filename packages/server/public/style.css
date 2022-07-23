@@ -329,6 +329,9 @@ pre {
 .margin-top-4 {
   margin-top: 4rem !important; }
 
+.u-margin-top-5 {
+  margin-top: 5rem !important; }
+
 .margin-bottom-0 {
   margin-bottom: 0rem !important; }
 
@@ -1777,12 +1780,14 @@ pre {
     color: #fff;
     margin-top: 0.6rem;
     display: flex;
+    position: absolute;
+    right: 0;
+    top: 0;
     font-size: 1.2rem;
     margin-left: auto; }
   .form-text__footer {
     display: flex;
-    align-items: center;
-    justify-content: space-between; }
+    position: relative; }
 
 .form-text-lined .form-text__input {
   border: none;
