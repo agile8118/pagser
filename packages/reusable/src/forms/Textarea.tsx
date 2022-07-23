@@ -12,6 +12,7 @@ interface Props {
   onBlur?: (s: string) => void;
   label?: string;
   placeholder?: string;
+  maxLength?: number;
 }
 
 const Textarea = (props: Props) => {
@@ -67,6 +68,7 @@ const Textarea = (props: Props) => {
           id={props.id}
           className="form-text__input"
           placeholder={props.placeholder}
+          maxLength={props.maxLength}
           value={value}
           required={props.required}
           onChange={(event: any) => {
@@ -94,12 +96,20 @@ const Textarea = (props: Props) => {
         )}
       </div>
 
-      {props.error && (
-        <span className="input-error">
-          <i className="fa fa-exclamation-circle"></i>
-          {props.error}
-        </span>
-      )}
+      <div className="form-text__footer">
+        {props.error && (
+          <span className="input-error">
+            <i className="fa fa-exclamation-circle"></i>
+            {props.error}
+          </span>
+        )}
+
+        {props.maxLength && (
+          <span className="form-text__length-display">
+            {props.maxLength - (value?.length || 0)}
+          </span>
+        )}
+      </div>
     </>
   );
 };
