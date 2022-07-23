@@ -357,7 +357,8 @@ const PageContents = () => {
                   setTitle(value);
                   setSaved(false);
                 }}
-                // placeholder="Choose a title for your page"
+                placeholder="Choose a title for your page"
+                maxLength={50}
                 help="this is some text to help you understand the input better."
                 error={titleError}
                 onBlur={(value) => {

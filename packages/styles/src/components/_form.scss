@@ -102,7 +102,6 @@
 
   & .tooltip {
     position: absolute;
-    
     top: 50%;
     transform: translate(0, -50%);
     right: 1rem;
@@ -132,8 +131,6 @@
       color: #fff;
       background-color: #5D5D5D;
     }
-
-    
   }
 
   &__input {
@@ -157,9 +154,6 @@
               font-size: 85%;
           }
       }
-
-    
-
   }
 
   &__number-indicator {
@@ -167,6 +161,23 @@
       margin-top: 5px;
       text-align: right;
   }
+
+  &__length-display {
+    background: #5D5D5D;
+    border-radius: 500px;
+    padding: 0.3rem 0.6rem;
+    line-height: 1;
+    color: #fff;
+    margin-top: 0.6rem;
+    display: flex;
+    font-size: 1.2rem;
+    margin-left: auto;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;  }
 }
 
 .form-group {

@@ -18,6 +18,7 @@ interface Props {
   disabled?: boolean;
   help?: string;
   placeholder?: string;
+  maxLength?: number;
 }
 
 const Input = (props: Props) => {
@@ -101,6 +102,7 @@ const Input = (props: Props) => {
                 : value
             }
             required={props.required}
+            maxLength={props.maxLength}
             placeholder={props.placeholder}
             onChange={(event: any) => {
               let value = event.target.value;
@@ -137,12 +139,20 @@ const Input = (props: Props) => {
         )}
       </div>
 
-      {props.error && !props.disabled && (
-        <span className="input-error">
-          <i className="fa fa-exclamation-circle"></i>
-          {props.error}
-        </span>
-      )}
+      <div className="form-text__footer">
+        {props.error && !props.disabled && (
+          <span className="input-error">
+            <i className="fa fa-exclamation-circle"></i>
+            {props.error}
+          </span>
+        )}
+
+        {props.maxLength && (
+          <span className="form-text__length-display">
+            {props.maxLength - (value?.length || 0)}
+          </span>
+        )}
+      </div>
     </>
   );
 };

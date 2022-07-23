@@ -1763,6 +1763,20 @@ pre {
     font-size: 90%;
     margin-top: 5px;
     text-align: right; }
+  .form-text__length-display {
+    background: #5D5D5D;
+    border-radius: 500px;
+    padding: 0.3rem 0.6rem;
+    line-height: 1;
+    color: #fff;
+    margin-top: 0.6rem;
+    display: flex;
+    font-size: 1.2rem;
+    margin-left: auto; }
+  .form-text__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; }
 
 .form-group {
   margin: 2.5rem 0; }
