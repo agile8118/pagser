@@ -19,6 +19,7 @@ interface Props {
   help?: string;
   placeholder?: string;
   maxLength?: number;
+  lined?: boolean;
 }
 
 const Input = (props: Props) => {
@@ -65,10 +66,14 @@ const Input = (props: Props) => {
     className += " form-text--error";
   }
 
+  if (props.lined) {
+    className += " form-text-lined";
+  }
+
   return (
     <>
       <div className={className}>
-        {!!props.placeholder && (
+        {props.placeholder && !props.lined && (
           <label
             className="form__label"
             onClick={() => {

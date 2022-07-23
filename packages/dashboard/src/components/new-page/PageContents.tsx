@@ -358,6 +358,7 @@ const PageContents = () => {
                   setSaved(false);
                 }}
                 placeholder="Choose a title for your page"
+                // lined={true}
                 maxLength={50}
                 help="this is some text to help you understand the input better."
                 error={titleError}
