@@ -380,7 +380,7 @@ const PageContents = () => {
                   setSaved(false);
                 }}
                 placeholder="Describe briefly what your page is all about."
-                // help="this is some text to help you understand the input better."
+                help="this is some text to help you understand the input better."
                 maxLength={300}
                 error={briefDesError}
                 onBlur={() => {

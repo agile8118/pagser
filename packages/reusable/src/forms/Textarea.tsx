@@ -13,6 +13,7 @@ interface Props {
   label?: string;
   placeholder?: string;
   maxLength?: number;
+  help?: string;
 }
 
 const Textarea = (props: Props) => {
@@ -62,25 +63,37 @@ const Textarea = (props: Props) => {
           </label>
         )}
 
-        <textarea
-          rows={props.rows}
-          ref={input}
-          id={props.id}
-          className="form-text__input"
-          placeholder={props.placeholder}
-          maxLength={props.maxLength}
-          value={value}
-          required={props.required}
-          onChange={(event: any) => {
-            let value = event.target.value;
-            setValue(value);
-          }}
-          onBlur={(event: any) => {
-            if (props.onBlur) {
-              props.onBlur(event.target.value);
-            }
-          }}
-        ></textarea>
+        <div className="form-text__input-container">
+          {props.help && (
+            <div className="tooltip tooltip-top a-19">
+              <a href="#" className="form-text__help-icon">
+                ?
+              </a>
+
+              <div className="tooltip__text">{props.help}</div>
+            </div>
+          )}
+
+          <textarea
+            rows={props.rows}
+            ref={input}
+            id={props.id}
+            className="form-text__input"
+            placeholder={props.placeholder}
+            maxLength={props.maxLength}
+            value={value}
+            required={props.required}
+            onChange={(event: any) => {
+              let value = event.target.value;
+              setValue(value);
+            }}
+            onBlur={(event: any) => {
+              if (props.onBlur) {
+                props.onBlur(event.target.value);
+              }
+            }}
+          ></textarea>
+        </div>
 
         {!props.placeholder && (
           <label

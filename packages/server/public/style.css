@@ -242,6 +242,9 @@ pre {
   margin-top: 2rem;
   margin-bottom: 1rem; }
 
+.form-text .tooltip.a-19 {
+  top: 30%; }
+
 .u-text-center {
   text-align: center !important;
   width: 100%; }
