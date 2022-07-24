@@ -23,8 +23,7 @@
     "react-router-dom": "^6.3.0",
     "react-tinymce": "^0.7.0",
     "redux": "^4.2.0",
-    "redux-thunk": "^2.4.1",
-    "tags-input": "^1.1.1"
+    "redux-thunk": "^2.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.18.9",

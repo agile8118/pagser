@@ -7678,11 +7678,6 @@ supports-preserve-symlinks-flag@^1.0.0:
   resolved "https://registry.yarnpkg.com/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
 
-tags-input@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/tags-input/-/tags-input-1.1.1.tgz#d6bd7e912f16a9bd41c03c8a3059e4245528125a"
-  integrity sha512-G/COx3Jpys2atJyTrHAebOLxk8ZeQ5o0RUuiiQDhr41ejHYOC8jzMy1pmON5YRW9scndQovbxFsS99QR4WeuVg==
-
 tapable@^2.1.1, tapable@^2.2.0:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/tapable/-/tapable-2.2.1.tgz#1967a73ef4060a82f12ab96af86d52fdb76eeca0"

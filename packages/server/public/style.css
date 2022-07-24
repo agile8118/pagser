@@ -1738,23 +1738,6 @@ pre {
     right: 1rem; }
     .form-text .tooltip + .form-text__input {
       padding-right: 3.5rem; }
-  .form-text__help-icon {
-    color: #5d5d5d;
-    font-size: 1.5rem;
-    display: flex;
-    border: 1px solid #5d5d5d;
-    border-radius: 500px;
-    font-weight: bold;
-    width: 2rem;
-    height: 2rem;
-    align-items: center;
-    justify-content: center;
-    cursor: help;
-    user-select: none;
-    transition: all 0.2s; }
-    .form-text__help-icon:hover, .form-text__help-icon:focus {
-      color: #fff;
-      background-color: #5d5d5d; }
   .form-text__input {
     border: 1px solid #ccc;
     padding: 1.2rem 1.2rem;

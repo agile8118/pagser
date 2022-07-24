@@ -34,12 +34,4 @@ function NewPage() {
   );
 }
 
-// <Route path="/new-page/page-contents" element={<PageContents />} />
-// <Route path="/new-page/page-thumbnail" element={<PageThumbnail />} />
-//{" "}
-{
-  /* <Route path="/new-page/attach-files" element={<PageNewAttachFiles />} /> */
-}
-// <Route path="/new-page/final-step" element={<FinalStep />} />
-// <Route path="/new-page/message" element={<Message />} />
 export default NewPage;

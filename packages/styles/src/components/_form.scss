@@ -113,28 +113,6 @@
     }
   }
 
-  &__help-icon {
-    color: #5d5d5d;
-    font-size: 1.5rem;
-    display: flex;
-    border: 1px solid #5d5d5d;
-    border-radius: 500px;
-    font-weight: bold;
-    width: 2rem;
-    height: 2rem;
-    align-items: center;
-    justify-content: center;
-    cursor: help;
-    user-select: none;
-    transition: all 0.2s;
-
-    &:hover,
-    &:focus {
-      color: #fff;
-      background-color: #5d5d5d;
-    }
-  }
-
   &__input {
     border: 1px solid #ccc;
     padding: 1.2rem 1.2rem;
