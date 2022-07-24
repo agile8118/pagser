@@ -74,28 +74,6 @@
   }
 }
 
-.switches {
-  margin-top: 4rem;
-  margin-bottom: 2.5rem;
-  color: $color-text;
-  font-size: $default-font-size;
-
-  &__entity {
-    border-bottom: 1px solid #f7f7f7;
-    padding: 2rem 0;
-
-    &:first-child {
-      border-top: 1px solid #f7f7f7;
-    }
-
-    .btn-i {
-      float: right;
-      position: relative;
-      font-size: 2.4rem;
-      top: 4px;
-    }
-  }
-}
 
 #js--tags-url-error-message,
 #js--url-error-message,
@@ -119,5 +97,31 @@
 .new-page-attach-files {
   &__files {
     margin-top: 1rem;
+  }
+}
+
+.new-page-final-step {
+  &__switches {
+    margin-top: 4rem;
+    margin-bottom: 2.5rem;
+    color: $color-text;
+    font-size: $default-font-size;
+  }
+
+  &__switch {
+    border-bottom: 1px solid #f7f7f7;
+    padding: 2rem 0;
+    display: flex;
+    align-items: center;
+
+    &:first-child {
+      border-top: 1px solid #f7f7f7;
+    }
+
+    .btn-i {
+      margin-left: auto;
+      position: relative;
+      font-size: 3rem;
+    }
   }
 }

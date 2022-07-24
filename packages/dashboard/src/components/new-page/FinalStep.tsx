@@ -1,108 +1,94 @@
-// import React, { Component } from "react";
-// import axios from "axios";
-// import { util } from "@pagser/common";
-// import { Loading } from "@pagser/reusable";
-// import ProgressBar from "./ProgressBar";
+import React, { useState, useEffect } from "react";
+import { util, request } from "@pagser/common";
+import { useNavigate } from "react-router-dom";
+import { Loading } from "@pagser/reusable";
+import ProgressBar from "./ProgressBar";
 
 // import FinalStepPublic from "./FinalStepPublic";
-// import FinalStepPrivate from "./FinalStepPrivate";
+import FinalStepPrivate from "./FinalStepPrivate";
 
-// class FinalStep extends Component {
-//   state = {
-//     type: null,
-//     comments: null,
-//     rating: null,
-//     anonymously: null,
-//     links: null,
-//     tags: "",
-//     username: "",
-//     url: null,
-//     usedUrls: [],
-//   };
+const FinalStep = () => {
+  const [type, setType] = useState<string | null>(null);
+  const [comments, setComments] = useState<boolean | null>(null);
+  const [rating, setRating] = useState<boolean | null>(null);
+  const [anonymously, setAnonymously] = useState<boolean | null>(null);
+  const [links, setLinks] = useState<boolean | null>(null);
+  const [tags, setTags] = useState("");
+  const [username, setUsername] = useState<string | null>(null);
+  const [url, setUrl] = useState<string | null>(null);
+  const [usedUrls, setUsedUrls] = useState<string[]>([]);
 
-//   async componentDidMount() {
-//     try {
-//       const { data } = await axios.get(
-//         `/api/new-page/final-step/${util.getParameterByName(
-//           "id",
-//           window.location.href
-//         )}`,
-//         {
-//           headers: {
-//             authorization: localStorage.getItem("token"),
-//           },
-//         }
-//       );
+  const navigate = useNavigate();
 
-//       this.setState({
-//         type: data.page.type,
-//         comments: data.page.configurations.comments,
-//         rating: data.page.configurations.rating,
-//         anonymously: data.page.configurations.anonymously,
-//         links: data.page.configurations.links,
-//         tags: data.page.tags ? data.page.tags[0] : "",
-//         username: data.page.author.username,
-//         url: data.page.url || null,
-//         usedUrls: data.urls,
-//         loaded: true,
-//       });
-//     } catch (error) {
-//       if (error.response.status === 401) {
-//         window.location.href = "/login?redirected=new-page";
-//       } else {
-//         this.props.history.push(`/new-page/initial-step`);
-//       }
-//     }
-//   }
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = (await request.get(
+          `/new-page/final-step/${util.getParameterByName(
+            "id",
+            window.location.href
+          )}`,
+          {
+            auth: true,
+          }
+        )) as any;
 
-//   render() {
-//     let content;
-//     if (!this.state.type) {
-//       content = (
-//         <div className="center-content">
-//           <Loading />
-//         </div>
-//       );
-//     } else if (this.state.type === "public") {
-//       content = (
-//         <FinalStepPublic
-//           history={this.props.history}
-//           comments={this.state.comments}
-//           rating={this.state.rating}
-//           links={this.state.links}
-//           anonymously={this.state.anonymously}
-//           tags={this.state.tags}
-//         />
-//       );
-//     } else if (this.state.type === "private") {
-//       content = (
-//         <FinalStepPrivate
-//           history={this.props.history}
-//           username={this.state.username}
-//           comments={this.state.comments}
-//           rating={this.state.rating}
-//           anonymously={this.state.anonymously}
-//           url={this.state.url}
-//           usedUrls={this.state.usedUrls}
-//         />
-//       );
-//     }
+        setType(response.page.type);
+        setComments(response.page.configurations.comments);
+        setRating(response.page.configurations.rating);
+        setAnonymously(response.page.configurations.anonymously);
+        setLinks(response.page.configurations.links);
+        setTags(response.page.tags ? response.page.tags[0] : "");
+        setUsername(response.page.author.username);
+        setUrl(response.page.url || null);
+        setUsedUrls(response.urls);
+      } catch (error: any) {
+        if (error.status === 401) {
+          window.location.href = "/login?redirected=new-page";
+        } else {
+          navigate(`/new-page/initial-step`);
+        }
+      }
+    })();
+  }, []);
 
-//     return (
-//       <div id="new-page-container">
-//         <ProgressBar width={100} />
-//         <div className="page-new">{content}</div>
-//       </div>
-//     );
-//   }
-// }
+  let content;
+  if (!type) {
+    content = (
+      <div className="center-content">
+        <Loading />
+      </div>
+    );
+  } else if (type === "public") {
+    // content = (
+    //   <FinalStepPublic
+    //     history={this.props.history}
+    //     comments={comments}
+    //     rating={rating}
+    //     links={links}
+    //     anonymously={anonymously}
+    //     tags={tags}
+    //   />
+    // );
+  } else if (type === "private") {
+    content = (
+      <FinalStepPrivate
+        username={username || ""}
+        comments={comments || false}
+        rating={rating || false}
+        anonymously={anonymously || false}
+        url={url || ""}
+        usedUrls={usedUrls}
+      />
+    );
+  }
 
-// export default FinalStep;
-
-import React from "react";
-
-const Test = () => {
-  return <div></div>;
+  return (
+    <div id="new-page-container">
+      <ProgressBar width={100} />
+      <div className="page-new">{content}</div>
+    </div>
+  );
 };
 
-export default Test;
+export default FinalStep;

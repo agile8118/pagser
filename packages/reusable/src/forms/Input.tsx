@@ -86,7 +86,7 @@ const Input = (props: Props) => {
         <div className="form-text__input-container">
           {props.help && (
             <div className="tooltip tooltip-top">
-              <a href="#" className="form-text__help-icon">
+              <a href="#" className="tooltip__icon">
                 ?
               </a>
 

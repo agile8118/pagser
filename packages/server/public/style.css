@@ -2857,28 +2857,47 @@ input:checked + .slider:before {
     margin-top: 0.5rem;
     font-style: italic; }
 
-.tooltip__text {
-  visibility: hidden;
-  opacity: 0;
-  background-color: #5D5D5D;
-  font-size: 1.4rem;
-  color: #fff;
-  text-align: center;
-  border-radius: 0.6rem;
-  padding: 0.5rem 0.7rem;
-  position: absolute;
-  z-index: 1;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
-  width: 22rem;
-  transition: opacity 0.2s; }
-  .tooltip__text::after {
-    content: "";
+.tooltip {
+  position: relative; }
+  .tooltip__icon {
+    color: #5d5d5d;
+    font-size: 1.5rem;
+    display: flex;
+    border: 1px solid #5d5d5d;
+    border-radius: 500px;
+    font-weight: bold;
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+    cursor: help;
+    user-select: none;
+    transition: all 0.2s; }
+    .tooltip__icon:hover, .tooltip__icon:focus {
+      color: #fff;
+      background-color: #5d5d5d; }
+  .tooltip__text {
+    visibility: hidden;
+    opacity: 0;
+    background-color: #5D5D5D;
+    font-size: 1.4rem;
+    color: #fff;
+    text-align: center;
+    border-radius: 0.6rem;
+    padding: 0.5rem 0.7rem;
     position: absolute;
-    border-width: 0.5rem;
-    border-style: solid; }
+    z-index: 1;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+    width: 22rem;
+    transition: opacity 0.2s; }
+    .tooltip__text::after {
+      content: "";
+      position: absolute;
+      border-width: 0.5rem;
+      border-style: solid; }
 
 .tooltip-top .tooltip__text {
-  bottom: 125%;
+  bottom: 130%;
   left: 50%;
   margin-left: -11rem; }
   .tooltip-top .tooltip__text::after {
@@ -3031,22 +3050,6 @@ input:checked + .slider:before {
     font-size: 1.7rem;
     font-weight: 400; }
 
-.switches {
-  margin-top: 4rem;
-  margin-bottom: 2.5rem;
-  color: #555;
-  font-size: 1.6rem; }
-  .switches__entity {
-    border-bottom: 1px solid #f7f7f7;
-    padding: 2rem 0; }
-    .switches__entity:first-child {
-      border-top: 1px solid #f7f7f7; }
-    .switches__entity .btn-i {
-      float: right;
-      position: relative;
-      font-size: 2.4rem;
-      top: 4px; }
-
 #js--tags-url-error-message,
 #js--url-error-message,
 #js--tags-error-message {
@@ -3062,6 +3065,24 @@ input:checked + .slider:before {
 
 .new-page-attach-files__files {
   margin-top: 1rem; }
+
+.new-page-final-step__switches {
+  margin-top: 4rem;
+  margin-bottom: 2.5rem;
+  color: #555;
+  font-size: 1.6rem; }
+
+.new-page-final-step__switch {
+  border-bottom: 1px solid #f7f7f7;
+  padding: 2rem 0;
+  display: flex;
+  align-items: center; }
+  .new-page-final-step__switch:first-child {
+    border-top: 1px solid #f7f7f7; }
+  .new-page-final-step__switch .btn-i {
+    margin-left: auto;
+    position: relative;
+    font-size: 3rem; }
 
 .page {
   color: #555;

@@ -1,327 +1,294 @@
-// import React, { Component } from "react";
-// import axios from "axios";
-// import { getParameterByName, loadingModal, convertToUrl } from "../../lib/util";
-// import ProgressBar from "../partials/ProgressBar";
-// import Loading from "../partials/Loading";
+import React, { useState, useEffect } from "react";
+import { Loading, Button, ConfirmModal, Input } from "@pagser/reusable";
+import { util, request, loadingModal, alert } from "@pagser/common";
+import { useNavigate } from "react-router-dom";
 
-// class FinalStepPrivate extends Component {
-//   state = {
-//     type: "private",
-//     username: this.props.username,
-//     comments: this.props.comments,
-//     rating: this.props.rating,
-//     anonymously: this.props.anonymously,
-//     url: this.props.url,
-//     usedUrls: this.props.usedUrls,
-//     errors: {
-//       url: null,
-//     },
-//   };
+interface IProps {
+  username: string;
+  comments: boolean;
+  rating: boolean;
+  anonymously: boolean;
+  url: string;
+  usedUrls: string[];
+}
 
-//   url = React.createRef();
+const FinalStepPrivate = (props: IProps) => {
+  const [username, setUsername] = useState(props.username);
+  const [comments, setComments] = useState(props.comments);
+  const [rating, setRating] = useState(props.rating);
+  const [anonymously, setAnonymously] = useState(props.anonymously);
+  const [usedUrls, setUsedUrls] = useState(props.usedUrls);
+  const [url, setUrl] = useState(props.url);
+  const [urlError, setUrlError] = useState("");
+  const [publishBtnLoading, setPublishBtnLoading] = useState(false);
 
-//   // Toggle each switch button
-//   onSwitchClicked = (role) => {
-//     switch (role) {
-//       case "comments":
-//         this.setState({ comments: !this.state.comments }, () => {
-//           this.updatePage(() => {
-//             loadingModal();
-//           });
-//         });
-//         break;
-//       case "rating":
-//         this.setState({ rating: !this.state.rating }, () => {
-//           this.updatePage(() => {
-//             loadingModal();
-//           });
-//         });
-//         break;
-//       case "anonymously":
-//         this.setState({ anonymously: !this.state.anonymously }, () => {
-//           this.updatePage(() => {
-//             loadingModal();
-//           });
-//         });
-//         break;
-//     }
-//   };
+  const navigate = useNavigate();
 
-//   // Check to see if a chosen URL is valid
-//   checkUrlValidation = () => {
-//     if (
-//       this.state.url &&
-//       this.state.url.length > 0 &&
-//       this.state.usedUrls.indexOf(this.state.url) === -1
-//     ) {
-//       this.setState({
-//         errors: {
-//           ...this.state.errors,
-//           url: null,
-//         },
-//       });
-//       return true;
-//     } else if (this.state.usedUrls.indexOf(this.state.url) !== -1) {
-//       this.setState({
-//         errors: {
-//           ...this.state.errors,
-//           url: `You have already used "${this.state.url}" url, choose something else.`,
-//         },
-//       });
-//       return false;
-//     } else {
-//       this.setState({
-//         errors: {
-//           ...this.state.errors,
-//           url: "Please choose a URL for your page.",
-//         },
-//       });
-//       return false;
-//     }
-//   };
+  useEffect(() => {
+    loadingModal("Loading...");
+    updatePage(() => {
+      loadingModal();
+    });
+  }, [rating, comments, anonymously]);
 
-//   // Sends a request to server to update the draft page
-//   async updatePage(callback) {
-//     if (callback) loadingModal("Loading...");
+  useEffect(() => {
+    // check for URL validation on change
+    if (url) checkUrlValidation();
+  }, [url]);
 
-//     const page = {
-//       id: getParameterByName("id", window.location.href),
-//       type: this.state.type,
-//       configurations: {
-//         comments: this.state.comments,
-//         rating: this.state.rating,
-//         anonymously: this.state.anonymously,
-//       },
-//       url: this.state.url,
-//       password: this.state.pass,
-//     };
+  // Toggle each switch button
+  const onSwitchClicked = (role: "comments" | "rating" | "anonymously") => {
+    switch (role) {
+      case "comments":
+        setComments(!comments);
+        break;
+      case "rating":
+        setRating(!rating);
+        break;
+      case "anonymously":
+        setAnonymously(!anonymously);
+        break;
+    }
+  };
 
-//     try {
-//       await axios.patch(
-//         `/api/new-page/final-step/${getParameterByName(
-//           "id",
-//           window.location.href
-//         )}`,
-//         {
-//           page,
-//         },
-//         {
-//           headers: {
-//             authorization: localStorage.getItem("token"),
-//           },
-//         }
-//       );
+  // Check to see if a chosen URL is valid
+  const checkUrlValidation = () => {
+    if (url && url.length > 0 && usedUrls.indexOf(url) === -1) {
+      setUrlError("");
+      return true;
+    } else if (usedUrls.indexOf(url) !== -1) {
+      setUrlError(`You have already used "${url}" url, choose something else.`);
+      return false;
+    } else {
+      setUrlError("Please choose a URL for your page.");
+      return false;
+    }
+  };
 
-//       if (callback) callback();
-//     } catch (e) {
-//       if (callback) loadingModal();
-//       this.props.history.push(`/new-page/initial-step`);
-//     }
-//   }
+  // Sends a request to the server to update the draft page
+  const updatePage = async (callback?: () => void) => {
+    // if (callback) loadingModal("Loading...");
 
-//   onSubmitButtonClicked = () => {
-//     if (!this.checkUrlValidation()) return this.url.current.focus();
+    const page = {
+      id: util.getParameterByName("id", window.location.href),
+      type: "private",
+      configurations: {
+        comments: comments,
+        rating: rating,
+        anonymously: anonymously,
+      },
+      url: url,
+    };
 
-//     this.updatePage(async () => {
-//       try {
-//         const pageId = getParameterByName("id", window.location.href);
+    try {
+      await request.patch(
+        `/new-page/final-step/${util.getParameterByName(
+          "id",
+          window.location.href
+        )}`,
+        {
+          page,
+        },
+        {
+          auth: true,
+        }
+      );
 
-//         const { data } = await axios.post(`/api/new-page/${pageId}`, null, {
-//           headers: {
-//             authorization: localStorage.getItem("token"),
-//           },
-//         });
+      if (callback) callback();
+    } catch (e) {
+      if (callback) loadingModal();
+      navigate(`/new-page/initial-step`);
+    }
+  };
 
-//         loadingModal();
-//         this.props.history.push(
-//           `/new-page/message?type=private&status=success&url=${data.url}&username=${data.username}`
-//         );
-//       } catch (error) {
-//         loadingModal();
-//         if (error.response.data.error === "error with contents") {
-//           this.props.history.push(
-//             `/new-page/message?type=private&status=error-contents&id=${pageId}`
-//           );
-//         } else {
-//           this.props.history.push(
-//             `/new-page/message?type=private&status=error`
-//           );
-//         }
-//       }
-//     });
-//   };
+  const onSubmitButtonClicked = () => {
+    setPublishBtnLoading(true);
 
-//   onBackButtonClicked() {
-//     this.updatePage(() => {
-//       loadingModal();
-//       this.props.history.push(
-//         `/new-page/attach-files?id=${getParameterByName(
-//           "id",
-//           window.location.href
-//         )}`
-//       );
-//     });
-//   }
+    if (!checkUrlValidation())
+      return (document.querySelector("#url") as HTMLInputElement).focus();
 
-//   render() {
-//     return (
-//       <React.Fragment>
-//         <button
-//           className="btn-text btn-text-big a-11"
-//           onClick={this.onBackButtonClicked.bind(this)}
-//         >
-//           <i className="fa fa-arrow-left" aria-hidden="true" /> Back
-//         </button>
+    updatePage(async () => {
+      const pageId = util.getParameterByName("id", window.location.href);
+      try {
+        const response = (await request.post(`/new-page/${pageId}`, null, {
+          auth: true,
+        })) as any;
 
-//         <div className="center-content">
-//           <h3 className="heading-tertiary">
-//             Do some configurations and choose a url
-//           </h3>
-//         </div>
+        navigate(
+          `/new-page/message?type=private&status=success&url=${response.url}&username=${response.username}`
+        );
+      } catch (error: any) {
+        if (error.message.error === "error with contents") {
+          navigate(
+            `/new-page/message?type=private&status=error-contents&id=${pageId}`
+          );
+        } else {
+          navigate(`/new-page/message?type=private&status=error`);
+        }
+      }
 
-//         <div className="page-new__final-step">
-//           <div className="switches">
-//             <div className="form__group" className="switches__entity">
-//               <label>Disable Comments</label>
-//               <div className="tooltip tooltip-top tooltip--info">
-//                 <a href="#!">
-//                   <i className="fa fa-question-circle" aria-hidden="true" />
-//                 </a>
-//                 <span className="tooltip__text">
-//                   lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor
-//                   sit amet, consectetur adiplorem ipsum dolor sit amet,
-//                   consectetur adip
-//                 </span>
-//               </div>
-//               <button
-//                 className="btn-i btn-i-blue"
-//                 onClick={() => this.onSwitchClicked("comments")}
-//               >
-//                 <i
-//                   className={
-//                     !this.state.comments
-//                       ? "fa fa-2x fa-toggle-on"
-//                       : "fa fa-2x fa-toggle-off"
-//                   }
-//                   aria-hidden="true"
-//                 />
-//               </button>
-//               <input type="hidden" value="false" />
-//             </div>
+      setPublishBtnLoading(false);
+      loadingModal();
+    });
+  };
 
-//             <div className="form__group" className="switches__entity">
-//               <label>Disable Rating</label>
-//               <div className="tooltip tooltip-top tooltip--info">
-//                 <a href="#!">
-//                   <i className="fa fa-question-circle" aria-hidden="true" />
-//                 </a>
-//                 <span className="tooltip__text">
-//                   lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor
-//                   sit amet, consectetur adiplorem ipsum dolor sit amet,
-//                   consectetur adip
-//                 </span>
-//               </div>
-//               <button
-//                 className="btn-i btn-i-blue"
-//                 onClick={() => this.onSwitchClicked("rating")}
-//               >
-//                 <i
-//                   className={
-//                     !this.state.rating
-//                       ? "fa fa-2x fa-toggle-on"
-//                       : "fa fa-2x fa-toggle-off"
-//                   }
-//                   aria-hidden="true"
-//                 />
-//               </button>
-//               <input type="hidden" value="false" />
-//             </div>
+  const onBackButtonClicked = () => {
+    updatePage(() => {
+      loadingModal();
+      navigate(
+        `/new-page/attach-files?id=${util.getParameterByName(
+          "id",
+          window.location.href
+        )}`
+      );
+    });
+  };
 
-//             <div className="form__group" className="switches__entity">
-//               <label>Create This Page Anonymously</label>
-//               <div className="tooltip tooltip-top tooltip--info">
-//                 <a href="#!">
-//                   <i className="fa fa-question-circle" aria-hidden="true" />
-//                 </a>
-//                 <span className="tooltip__text">
-//                   lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor
-//                   sit amet, consectetur adiplorem ipsum dolor sit amet,
-//                   consectetur adip
-//                 </span>
-//               </div>
-//               <button
-//                 className="btn-i btn-i-blue"
-//                 onClick={() => this.onSwitchClicked("anonymously")}
-//               >
-//                 <i
-//                   className={
-//                     this.state.anonymously
-//                       ? "fa fa-2x fa-toggle-on"
-//                       : "fa fa-2x fa-toggle-off"
-//                   }
-//                   aria-hidden="true"
-//                 />
-//               </button>
-//               <input type="hidden" value="false" />
-//             </div>
-//           </div>
+  return (
+    <React.Fragment>
+      {/* Back button */}
+      <button
+        className="button-text button-text--big a-11"
+        onClick={() => {
+          onBackButtonClicked();
+        }}
+      >
+        <i className="fa fa-arrow-left" aria-hidden="true" /> Back
+      </button>
 
-//           <div className="form__group url">
-//             <label htmlFor="url" className="form__label">
-//               URL
-//             </label>
-//             <input
-//               type="text"
-//               ref={this.url}
-//               value={this.state.url || ""}
-//               className="form__input"
-//               placeholder="Choose a URL for your page"
-//               onBlur={() => {
-//                 this.updatePage();
-//                 this.checkUrlValidation();
-//               }}
-//               onChange={(e) => {
-//                 this.setState({ url: convertToUrl(e.target.value) }, () => {
-//                   // check for URL validation on change
-//                   this.checkUrlValidation();
-//                 });
-//               }}
-//             />
-//             <span
-//               className={`a-10 ${!this.state.errors.url && "display-none"}`}
-//             >
-//               {this.state.errors.url}
-//             </span>
-//             <p className="url__display">
-//               pagser.com/{this.state.username}/{this.state.url}
-//             </p>
-//             <div className="url__note">
-//               <strong>Important note about URL:</strong>
-//               <p>
-//                 This URL will be for your page, please copy this because the
-//                 only way other persons can view this page is to have this URL.{" "}
-//                 <br /> You should share this URl in order for others to view it.
-//               </p>
-//             </div>
-//           </div>
-//         </div>
+      <div className="center-content">
+        <h3 className="heading-tertiary">Configurations and Choose a Url</h3>
+      </div>
 
-//         <div className="center-content">
-//           <button className="btn btn-blue" onClick={this.onSubmitButtonClicked}>
-//             Publish
-//           </button>
-//         </div>
-//       </React.Fragment>
-//     );
-//   }
-// }
+      <div className="page-new__final-step">
+        <div className="new-page-final-step__switches">
+          <div className="new-page-final-step__switch">
+            <label>Disable Comments</label>
+            <div className="tooltip tooltip-top tooltip--info">
+              <a href="#" className="tooltip__icon">
+                ?
+              </a>
+              <span className="tooltip__text">
+                lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor
+                sit amet, consectetur adiplorem ipsum dolor sit amet,
+                consectetur adip
+              </span>
+            </div>
+            <button
+              className="btn-i btn-i-blue"
+              onClick={() => onSwitchClicked("comments")}
+            >
+              <i
+                className={
+                  !comments ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"
+                }
+                aria-hidden="true"
+              />
+            </button>
+            <input type="hidden" value="false" />
+          </div>
 
-// export default FinalStepPrivate;
+          <div className="new-page-final-step__switch">
+            <label>Disable Rating</label>
+            <div className="tooltip tooltip-top tooltip--info">
+              <a href="#" className="tooltip__icon">
+                ?
+              </a>
+              <span className="tooltip__text">
+                lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor
+                sit amet, consectetur adiplorem ipsum dolor sit amet,
+                consectetur adip
+              </span>
+            </div>
+            <button
+              className="btn-i btn-i-blue"
+              onClick={() => onSwitchClicked("rating")}
+            >
+              <i
+                className={
+                  !rating ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"
+                }
+                aria-hidden="true"
+              />
+            </button>
+            <input type="hidden" value="false" />
+          </div>
 
-import React from "react";
+          <div className="new-page-final-step__switch">
+            <label>Create This Page Anonymously</label>
+            <div className="tooltip tooltip-top tooltip--info">
+              <a href="#" className="tooltip__icon">
+                ?
+              </a>
+              <span className="tooltip__text">
+                lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor
+                sit amet, consectetur adiplorem ipsum dolor sit amet,
+                consectetur adip
+              </span>
+            </div>
+            <button
+              className="btn-i btn-i-blue"
+              onClick={() => onSwitchClicked("anonymously")}
+            >
+              <i
+                className={
+                  anonymously
+                    ? "fa fa-2x fa-toggle-on"
+                    : "fa fa-2x fa-toggle-off"
+                }
+                aria-hidden="true"
+              />
+            </button>
+            <input type="hidden" value="false" />
+          </div>
+        </div>
 
-const Test = () => {
-  return <div></div>;
+        <div className="form-group">
+          <Input
+            id="url"
+            label="URL"
+            placeholder="Choose a URL for your page."
+            type="text"
+            error={urlError}
+            value={url}
+            onBlur={() => {
+              updatePage();
+              checkUrlValidation();
+            }}
+            onChange={(value) => {
+              setUrl(util.convertToUrl(value));
+            }}
+          />
+
+          <p className="url__display">
+            pagser.com/{username}/{url}
+          </p>
+          <div className="url__note">
+            <strong>Important note about URL:</strong>
+            <p>
+              This URL will be for your page, please copy this because the only
+              way other persons can view this page is to have this URL. <br />{" "}
+              You should share this URL in order for others to view it.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Publish button */}
+      <div className="u-flex-text-center">
+        <Button
+          onClick={() => {
+            onSubmitButtonClicked();
+          }}
+          loading={publishBtnLoading}
+          color="green"
+        >
+          Publish
+          <i className="fa fa-globe button__icon-right"></i>
+        </Button>
+      </div>
+    </React.Fragment>
+  );
 };
 
-export default Test;
+export default FinalStepPrivate;

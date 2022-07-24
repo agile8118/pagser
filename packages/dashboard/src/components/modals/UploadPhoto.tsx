@@ -63,6 +63,7 @@ const UploadPhoto = (props: IProps) => {
     try {
       const response = (await request.put(props.url, formData, {
         auth: true,
+        contentType: "multipart/form-data",
       })) as any;
       // @ts-ignore
       document.querySelector("#reset-btn").click();

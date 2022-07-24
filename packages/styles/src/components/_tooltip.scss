@@ -1,6 +1,28 @@
 .tooltip {
-  // position: relative;
+  position: relative;
   // display: inline-block;
+
+  &__icon {
+    color: #5d5d5d;
+    font-size: 1.5rem;
+    display: flex;
+    border: 1px solid #5d5d5d;
+    border-radius: 500px;
+    font-weight: bold;
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+    cursor: help;
+    user-select: none;
+    transition: all 0.2s;
+
+    &:hover,
+    &:focus {
+      color: #fff;
+      background-color: #5d5d5d;
+    }
+  }
 
   &__text {
     visibility: hidden;
@@ -28,7 +50,7 @@
 
 .tooltip-top {
   .tooltip__text {
-    bottom: 125%;
+    bottom: 130%;
     left: 50%;
     margin-left: -11rem;
 
