@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { validate, util, request, loadingModal, alert } from "@pagser/common";
-import {
-  Loading,
-  Button,
-  Input,
-  Textarea,
-  ConfirmModal,
-} from "@pagser/reusable";
+import { util, request, loadingModal, alert } from "@pagser/common";
+import { Loading, Button, ConfirmModal } from "@pagser/reusable";
 import ProgressBar from "./ProgressBar";
 import UploadPhoto from "../modals/UploadPhoto";
 

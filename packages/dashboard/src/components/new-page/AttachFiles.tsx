@@ -1,222 +1,214 @@
-// import React, { Component } from "react";
-// import { getParameterByName, showSnackBar, loadingModal } from "../../lib/util";
-// import { connect } from "react-redux";
-// import axios from "axios";
-// import ProgressBar from "../partials/ProgressBar";
-// import { ConfirmModal } from "../partials/Modals";
-// import Loading from "../partials/Loading";
-// import UploadAttachFile from "../modals/UploadAttachFile";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Loading, Button, ConfirmModal } from "@pagser/reusable";
+import { util, request, loadingModal, alert } from "@pagser/common";
+import ProgressBar from "./ProgressBar";
+import UploadAttachFile from "../modals/UploadAttachFile";
 
-// import {
-//   openUploadAttachFile,
-//   openConfDeleteAttachFile,
-//   closeModal,
-// } from "actions";
+interface IFile {
+  name: string;
+  _id: string;
+}
 
-// class AttachFiles extends Component {
-//   state = { files: [], loaded: false, error: "" };
+const AttachFiles = () => {
+  const [files, setFiles] = useState<IFile[]>([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-//   componentDidMount() {
-//     this.fetchFiles();
-//   }
+  const [confirmationMdl, setConfirmationMdl] = useState(false);
+  const [confirmationMdlDataId, setConfirmationMdlDataId] = useState("");
+  const [uploadAttachFileMdl, setUploadAttachFileMdl] = useState(false);
 
-//   fetchFiles = async (msg) => {
-//     try {
-//       const { data } = await axios.get(
-//         `/api/pages/${getParameterByName(
-//           "id",
-//           window.location.href
-//         )}/attach-files?type=draft`,
-//         {
-//           headers: {
-//             authorization: localStorage.getItem("token"),
-//           },
-//         }
-//       );
+  const navigate = useNavigate();
 
-//       this.setState({ files: data.attachFiles, loaded: true });
+  useEffect(() => {
+    fetchFiles();
+  }, []);
 
-//       if (msg) showSnackBar(msg, "success");
-//     } catch (error) {
-//       if (error.response.status === 401) {
-//         window.location.href = "/login?redirected=new-page";
-//       } else {
-//         this.props.history.push(`/new-page/initial-step`);
-//       }
-//     }
-//   };
+  const fetchFiles = async (msg?: string) => {
+    try {
+      setLoading(true);
+      const response = (await request.get(
+        `/pages/${util.getParameterByName(
+          "id",
+          window.location.href
+        )}/attach-files?type=draft`,
+        {
+          auth: true,
+        }
+      )) as any;
 
-//   renderFiles = () => {
-//     return this.state.files.map((file) => {
-//       return (
-//         <a
-//           className="file-link"
-//           key={file.name}
-//           href={`/api/pages/${getParameterByName(
-//             "id",
-//             window.location.href
-//           )}/attach-files/${file.name}`}
-//         >
-//           <i className="fa fa-download" />
-//           {" " + file.name}
-//           <button
-//             className="btn-i"
-//             onClick={(e) => {
-//               // This will prevent the file from starting to get downloaded
-//               e.preventDefault();
-//               this.props.openConfDeleteAttachFile(file._id, file.name);
-//             }}
-//           >
-//             <i className="fa fa-times" aria-hidden="true" />
-//           </button>
-//         </a>
-//       );
-//     });
-//   };
+      setFiles(response.attachFiles);
+      setLoading(false);
+      if (msg) alert(msg, "success");
+    } catch (error: any) {
+      if (error.status === 401) {
+        window.location.href = "/login?redirected=new-page";
+      } else {
+        navigate(`/new-page/initial-step`);
+      }
+    }
+  };
 
-//   onBackButtonClicked = () => {
-//     this.props.history.push(
-//       `/new-page/page-thumbnail?id=${getParameterByName(
-//         "id",
-//         window.location.href
-//       )}`
-//     );
-//   };
+  const renderFiles = () => {
+    return files.map((file) => {
+      return (
+        <a
+          className="file-link"
+          key={file.name}
+          href={`/api/pages/${util.getParameterByName(
+            "id",
+            window.location.href
+          )}/attach-files/${file.name}`}
+        >
+          <i className="fa fa-download" />
+          {" " + file.name}
+          <button
+            className="btn-i"
+            onClick={(e) => {
+              // This will prevent the file from starting to get downloaded
+              e.preventDefault();
+              setConfirmationMdl(true);
+              setConfirmationMdlDataId(file._id);
+            }}
+          >
+            <i className="fa fa-times" aria-hidden="true" />
+          </button>
+        </a>
+      );
+    });
+  };
 
-//   onNextButtonClicked = () => {
-//     this.props.history.push(
-//       `/new-page/final-step?id=${getParameterByName(
-//         "id",
-//         window.location.href
-//       )}`
-//     );
-//   };
+  const onBackButtonClicked = () => {
+    navigate(
+      `/new-page/page-thumbnail?id=${util.getParameterByName(
+        "id",
+        window.location.href
+      )}`
+    );
+  };
 
-//   renderContents() {
-//     if (!this.state.loaded)
-//       return (
-//         <div className="center-content">
-//           <Loading />
-//         </div>
-//       );
+  const onNextButtonClicked = () => {
+    navigate(
+      `/new-page/final-step?id=${util.getParameterByName(
+        "id",
+        window.location.href
+      )}`
+    );
+  };
 
-//     return (
-//       <React.Fragment>
-//         {/* Back button */}
-//         <button
-//           className="btn-text btn-text-big a-11"
-//           onClick={this.onBackButtonClicked}
-//         >
-//           <i className="fa fa-arrow-left" aria-hidden="true" /> Back
-//         </button>
+  const renderContents = () => {
+    if (loading)
+      return (
+        <div className="center-content">
+          <Loading />
+        </div>
+      );
 
-//         {/* Stage title */}
-//         <div className="center-content">
-//           <h3 className="heading-tertiary">Add attach files</h3>
-//         </div>
+    return (
+      <React.Fragment>
+        {/* Back button */}
+        <button
+          className="button-text button-text--big a-11"
+          onClick={() => {
+            onBackButtonClicked();
+          }}
+        >
+          <i className="fa fa-arrow-left" aria-hidden="true" /> Back
+        </button>
 
-//         <p className="a-18">
-//           Add attach files for your page in pretty much any format if you want:
-//         </p>
+        {/* Stage title */}
+        <div className="center-content">
+          <h3 className="heading-tertiary">Add Attach Files</h3>
+        </div>
 
-//         <button
-//           className="btn btn-blue btn-sm btn-round margin-bottom-2"
-//           onClick={() => this.props.openUploadAttachFile()}
-//         >
-//           <i className="fa fa-upload" /> Add an Attach File
-//         </button>
+        <p className="a-18">
+          Add attach files for your page in pretty much any format that you
+          want:
+        </p>
 
-//         <br />
+        <Button
+          color="blue"
+          size="small"
+          rounded={true}
+          onClick={() => {
+            setUploadAttachFileMdl(true);
+          }}
+        >
+          <i className="fa fa-upload button__icon-left" /> Add an Attach File
+        </Button>
 
-//         <ConfirmModal
-//           header="Remove the attach file"
-//           open={this.props.confMdl.open}
-//           message="Are you sure that you want to remove this attach file?"
-//           onConfirm={async () => {
-//             this.props.closeModal();
+        <ConfirmModal
+          header="Remove the attach file"
+          open={confirmationMdl}
+          message="Are you sure that you want to remove this attach file?"
+          onConfirm={async () => {
+            setConfirmationMdl(false);
+            loadingModal("Deleting the attach file...");
 
-//             loadingModal("Deleting the attach file...");
-//             await axios.delete(
-//               `/api/pages/${getParameterByName(
-//                 "id",
-//                 window.location.href
-//               )}/attach-files/${this.props.confMdl.id}?type=draft`,
-//               {
-//                 headers: {
-//                   authorization: localStorage.getItem("token"),
-//                 },
-//               }
-//             );
-//             loadingModal();
-//             this.fetchFiles("File deleted successfully.");
-//           }}
-//           onCancel={() => this.props.closeModal()}
-//         />
+            await request.delete(
+              `/pages/${util.getParameterByName(
+                "id",
+                window.location.href
+              )}/attach-files/${confirmationMdlDataId}?type=draft`,
+              {
+                auth: true,
+              }
+            );
+            loadingModal();
+            fetchFiles("File deleted successfully.");
+          }}
+          onCancel={() => setConfirmationMdl(false)}
+        />
 
-//         <UploadAttachFile
-//           header="Add an attach file"
-//           text="You can upload maximum of 5 files 10MB each for every page."
-//           size={10000000}
-//           url={`/api/pages/${getParameterByName(
-//             "id",
-//             window.location.href
-//           )}/attach-files?type=draft`}
-//           success={() => {
-//             this.fetchFiles("File uploaded successfully.");
-//           }}
-//         />
+        <UploadAttachFile
+          open={uploadAttachFileMdl}
+          header="Add an Attach File"
+          text="You can upload maximum of 5 files 10MB each for every page."
+          size={10000000}
+          url={`/pages/${util.getParameterByName(
+            "id",
+            window.location.href
+          )}/attach-files?type=draft`}
+          success={() => {
+            fetchFiles("File uploaded successfully.");
+          }}
+          onClose={() => {
+            setUploadAttachFileMdl(false);
+          }}
+        />
 
-//         {this.renderFiles()}
+        <div className="new-page-attach-files__files">{renderFiles()}</div>
 
-//         <p className="a-18 italic">
-//           {this.state.files.length
-//             ? "You can always add/remove attach files after you published your page."
-//             : "You can always add/remove attach files after you published your page, you can also skip this for now and do it after you published your page."}
-//         </p>
+        <p className="a-18 italic">
+          {files.length
+            ? "You can always add/remove attach files after you published your page."
+            : "You can always add/remove attach files after you published your page, you can also skip this for now and do it after you published your page."}
+        </p>
 
-//         {/* Next button */}
-//         <div className="center-content margin-top-2">
-//           <button
-//             className={
-//               this.state.files.length ? "btn btn-blue" : "btn btn-default"
-//             }
-//             onClick={() => {
-//               this.onNextButtonClicked();
-//             }}
-//           >
-//             {this.state.files.length ? "Next" : "Skip"}
-//           </button>
-//         </div>
-//       </React.Fragment>
-//     );
-//   }
+        {/* Next button */}
+        <div className="u-flex-text-center">
+          <Button
+            onClick={() => {
+              onNextButtonClicked();
+            }}
+            color={files.length ? "blue" : "default"}
+          >
+            {files.length ? "Next" : "Skip"}
 
-//   render() {
-//     return (
-//       <React.Fragment>
-//         <ProgressBar width={80} />
-//         <div className="page-new">{this.renderContents()}</div>
-//       </React.Fragment>
-//     );
-//   }
-// }
+            <i className="fa fa-arrow-circle-right button__icon-right"></i>
+          </Button>
+        </div>
+      </React.Fragment>
+    );
+  };
 
-// const mapStateToProps = (state) => {
-//   return {
-//     confMdl: state.modals.confDeleteAttachFile || {},
-//   };
-// };
-
-// export default connect(mapStateToProps, {
-//   openUploadAttachFile,
-//   openConfDeleteAttachFile,
-//   closeModal,
-// })(AttachFiles);
-
-import React from "react";
-
-const Test = () => {
-  return <div></div>;
+  return (
+    <React.Fragment>
+      <ProgressBar width={80} />
+      <div className="page-new">{renderContents()}</div>
+    </React.Fragment>
+  );
 };
 
-export default Test;
+export default AttachFiles;

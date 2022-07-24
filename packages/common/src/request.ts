@@ -5,6 +5,7 @@ import { domain } from "./keys";
 
 interface optionsLayout {
   auth?: boolean;
+  contentType?: string;
   alert?: boolean;
 }
 
@@ -35,6 +36,10 @@ class Request {
         };
       }
 
+      if (options?.contentType) {
+        config.headers["Content-Type"] = options.contentType;
+      }
+
       axios
         .post(`${domain}${url}`, params, config)
         .then((response) => {
@@ -42,7 +47,16 @@ class Request {
         })
         .catch((e) => {
           this.handleError(e, options?.alert);
-          reject(e);
+
+          const errObj = {
+            status: 0,
+            message: "",
+          };
+
+          errObj.status = e.response.status;
+          errObj.message = e.response.data;
+
+          reject(errObj);
         });
     });
   }
@@ -88,6 +102,10 @@ class Request {
         };
       }
 
+      if (options?.contentType) {
+        config.headers["Content-Type"] = options.contentType;
+      }
+
       axios
         .put(`${domain}${url}`, params, config)
         .then((response) => {
@@ -95,7 +113,16 @@ class Request {
         })
         .catch((e) => {
           this.handleError(e, options?.alert);
-          reject(e);
+
+          const errObj = {
+            status: 0,
+            message: "",
+          };
+
+          errObj.status = e.response.status;
+          errObj.message = e.response.data;
+
+          reject(errObj);
         });
     });
   }
@@ -110,6 +137,10 @@ class Request {
         };
       }
 
+      if (options?.contentType) {
+        config.headers["Content-Type"] = options.contentType;
+      }
+
       axios
         .patch(`${domain}${url}`, params, config)
         .then((response) => {
@@ -117,7 +148,16 @@ class Request {
         })
         .catch((e) => {
           this.handleError(e, options?.alert);
-          reject(e);
+
+          const errObj = {
+            status: 0,
+            message: "",
+          };
+
+          errObj.status = e.response.status;
+          errObj.message = e.response.data;
+
+          reject(errObj);
         });
     });
   }
@@ -139,7 +179,16 @@ class Request {
         })
         .catch((e) => {
           this.handleError(e, options?.alert);
-          reject(e);
+
+          const errObj = {
+            status: 0,
+            message: "",
+          };
+
+          errObj.status = e.response.status;
+          errObj.message = e.response.data;
+
+          reject(errObj);
         });
     });
   }

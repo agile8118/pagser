@@ -3060,6 +3060,9 @@ input:checked + .slider:before {
   .new-page-thumbnail__action-buttons .button:not(:last-child) {
     margin-right: 0.8rem; }
 
+.new-page-attach-files__files {
+  margin-top: 1rem; }
+
 .page {
   color: #555;
   padding: 2rem 16rem 0 0rem;
