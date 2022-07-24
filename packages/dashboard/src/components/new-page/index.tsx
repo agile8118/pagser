@@ -11,7 +11,7 @@ import PageContents from "./PageContents";
 import PageThumbnail from "./PageThumbnail";
 import AttachFiles from "./AttachFiles";
 import FinalStep from "./FinalStep";
-// import Message from "./components/new-page/Message";
+import Message from "./Message";
 
 function NewPage() {
   return (
@@ -23,6 +23,7 @@ function NewPage() {
         <Route path="/new-page/attach-files" element={<AttachFiles />} />
         <Route path="/new-page/attach-files" element={<AttachFiles />} />
         <Route path="/new-page/final-step" element={<FinalStep />} />
+        <Route path="/new-page/message" element={<Message />} />
 
         <Route
           path="/new-page"
