@@ -2,7 +2,7 @@
   max-width: 100%;
 }
 
-.image__upload--options a:not(:last-child) {
+.image__upload--options .button:not(:last-child) {
   margin-right: 0.8rem;
 }
 
@@ -10,6 +10,8 @@
   width: 100%;
   text-align: right;
   margin: 1rem 0;
+  display: flex;
+  justify-content: right;
 }
 
 .file__upload--label {

@@ -1,234 +1,236 @@
-// import React, { Component } from "react";
-// import { connect } from "react-redux";
-// import axios from "axios";
-// import { getParameterByName, loadingModal, showSnackBar } from "../../lib/util";
-// import ProgressBar from "../partials/ProgressBar";
-// import UploadPhoto from "../modals/UploadPhoto";
-// import { ConfirmModal } from "../partials/Modals";
-// import Loading from "../partials/Loading";
+import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { validate, util, request, loadingModal, alert } from "@pagser/common";
+import {
+  Loading,
+  Button,
+  Input,
+  Textarea,
+  ConfirmModal,
+} from "@pagser/reusable";
+import ProgressBar from "./ProgressBar";
+import UploadPhoto from "../modals/UploadPhoto";
 
-// import { openUploadPhoto, openConfModal, closeModal } from "actions";
+const PageThumbnail = () => {
+  const [photo, setPhoto] = useState("");
+  const [loading, setLoading] = useState(false);
 
-// class PageThumbnail extends Component {
-//   state = { photo: "", loaded: false, error: "" };
+  const [uploadPhotoMdl, setUploadPhotoMdl] = useState(false);
+  const [confirmationMdl, setConfirmationMdl] = useState(false);
 
-//   async componentDidMount() {
-//     try {
-//       const { data } = await axios.get(
-//         `/api/new-page/page-thumbnail/${getParameterByName(
-//           "id",
-//           window.location.href
-//         )}`,
-//         {
-//           headers: {
-//             authorization: localStorage.getItem("token"),
-//           },
-//         }
-//       );
+  const navigate = useNavigate();
 
-//       this.setState({
-//         photo: data.page.photo.secure_url,
-//         loaded: true,
-//       });
-//     } catch (error) {
-//       if (error.response.status === 401) {
-//         window.location.href = "/login?redirected=new-page";
-//       } else {
-//         this.props.history.push(`/new-page/initial-step`);
-//       }
-//     }
-//   }
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const response = (await request.get(
+          `/new-page/page-thumbnail/${util.getParameterByName(
+            "id",
+            window.location.href
+          )}`,
+          { auth: true }
+        )) as any;
 
-//   // Delete the photo user's uploaded
-//   async deletePagePhoto() {
-//     loadingModal("Removing the photo...");
+        setPhoto(response?.page?.photo?.secure_url);
+        setLoading(false);
+      } catch (e: any) {
+        if (e.status === 401) {
+          window.location.href = "/login?redirected=new-page";
+        } else {
+          navigate(`/new-page/initial-step`);
+        }
+      }
+    })();
+  }, []);
 
-//     try {
-//       await axios.delete(
-//         `/api/pages/${getParameterByName(
-//           "id",
-//           window.location.href
-//         )}/photo?type=draft`,
-//         {
-//           headers: {
-//             authorization: localStorage.getItem("token"),
-//           },
-//         }
-//       );
-//       this.setState({ photo: "" });
-//       loadingModal();
-//       showSnackBar("Photo successfully removed..", "success");
-//     } catch (e) {
-//       loadingModal();
-//       showSnackBar("There was problem with removing the photo.", "error");
-//     }
-//   }
+  // Delete the photo user's uploaded
+  const deletePagePhoto = async () => {
+    loadingModal("Removing the photo...");
 
-//   onBackButtonClicked = () => {
-//     this.props.history.push(
-//       `/new-page/page-contents?id=${getParameterByName(
-//         "id",
-//         window.location.href
-//       )}`
-//     );
-//   };
+    try {
+      await request.delete(
+        `/pages/${util.getParameterByName(
+          "id",
+          window.location.href
+        )}/photo?type=draft`,
+        { auth: true }
+      );
 
-//   onNextButtonClicked = () => {
-//     this.props.history.push(
-//       `/new-page/attach-files?id=${getParameterByName(
-//         "id",
-//         window.location.href
-//       )}`
-//     );
-//   };
+      setPhoto("");
+      loadingModal();
+      alert("Photo was successfully removed.", "success");
+    } catch (e) {
+      loadingModal();
+      alert("There was problem with removing the photo.", "error");
+    }
+  };
 
-//   renderContents() {
-//     if (!this.state.loaded)
-//       return (
-//         <div className="center-content">
-//           <Loading />
-//         </div>
-//       );
+  const onBackButtonClicked = () => {
+    navigate(
+      `/new-page/page-contents?id=${util.getParameterByName(
+        "id",
+        window.location.href
+      )}`
+    );
+  };
 
-//     return (
-//       <React.Fragment>
-//         {/* Back button */}
-//         <button
-//           className="btn-text btn-text-big a-11"
-//           onClick={this.onBackButtonClicked}
-//         >
-//           <i className="fa fa-arrow-left" aria-hidden="true" /> Back
-//         </button>
+  const onNextButtonClicked = () => {
+    navigate(
+      `/new-page/attach-files?id=${util.getParameterByName(
+        "id",
+        window.location.href
+      )}`
+    );
+  };
 
-//         {/* Stage title */}
-//         <div className="center-content">
-//           <h3 className="heading-tertiary">Choose a page thumbnail</h3>
-//         </div>
+  const renderContents = () => {
+    if (loading)
+      return (
+        <div className="center-content">
+          <Loading />
+        </div>
+      );
 
-//         <p className="a-18">
-//           {this.state.photo
-//             ? "This photo you've uploaded will be used for your page thumbnail:"
-//             : "Upload a beautiful photo to be set as a thumbnail of your page:"}
-//         </p>
+    return (
+      <React.Fragment>
+        {/* Back button */}
+        <button
+          className="button-text button-text--big a-11"
+          onClick={() => {
+            onBackButtonClicked();
+          }}
+        >
+          <i className="fa fa-arrow-left" aria-hidden="true" /> Back
+        </button>
 
-//         {this.state.photo && (
-//           <img className="margin-bottom-1" src={this.state.photo} />
-//         )}
+        {/* Stage title */}
+        <div className="center-content">
+          <h3 className="heading-tertiary">Choose a Page Thumbnail</h3>
+        </div>
 
-//         <button
-//           className="btn btn-blue btn-sm btn-round margin-bottom-2 margin-right-1"
-//           onClick={() => this.props.openUploadPhoto()}
-//         >
-//           {/* <i className="fa fa-upload" />{" "} */}
-//           {this.state.photo ? "Change Page Photo" : "Upload a Page Photo"}
-//         </button>
+        <p className="a-18">
+          {photo
+            ? "This photo will be used for your page thumbnail:"
+            : "Upload a beautiful photo to set as a thumbnail of your page:"}
+        </p>
 
-//         {this.state.photo && (
-//           <button
-//             className="btn btn-red btn-sm btn-round margin-bottom-2"
-//             onClick={() => this.props.openConfModal()}
-//           >
-//             Remove Page Photo
-//           </button>
-//         )}
+        {photo && <img src={photo} />}
 
-//         <p className="a-18 italic">
-//           {this.state.photo
-//             ? "You can always change or remove your page photo after you published your page."
-//             : "You can always upload a new photo after you published your page, you can also skip uploading a photo for now and do it after you published your page."}
-//         </p>
+        <div className="new-page-thumbnail__action-buttons">
+          {photo && (
+            <Button
+              size="small"
+              rounded={true}
+              color="red"
+              onClick={() => {
+                setConfirmationMdl(true);
+              }}
+            >
+              <i className="fa fa-trash button__icon-left" />
+              Remove Page Photo
+            </Button>
+          )}
 
-//         {/* Upload photo modal */}
-//         <UploadPhoto
-//           header="Upload Page Photo"
-//           text="Upload a stunning photo to be set as a featured image of your page:"
-//           cropMsg="Choose an area to be shown as for the page thumbnail, this won't
-//                 crop your image, this is just the area that will be shown as the
-//                 thumbnail."
-//           inputLabelName="Choose a photo"
-//           url={`/api/pages/${getParameterByName(
-//             "id",
-//             window.location.href
-//           )}/photo?type=draft`}
-//           minWidth={1200}
-//           minHeight={675}
-//           size={8000000}
-//           aspectRatio={48 / 27}
-//           success={(imageUrl) => {
-//             this.setState({ photo: imageUrl });
-//           }}
-//         />
+          <Button
+            color="blue"
+            rounded={true}
+            size="small"
+            onClick={() => {
+              setUploadPhotoMdl(true);
+            }}
+          >
+            <i className="fa fa-upload button__icon-left" />
+            {photo ? "Change Page Photo" : "Upload a Page Photo"}
+          </Button>
+        </div>
 
-//         {/* Confirm modal for photo page removal */}
-//         {this.state.photo && (
-//           <ConfirmModal
-//             header="Remove your page photo"
-//             message="Are you sure that you want to delete your page photo?
-//                   This cannot be undo."
-//             open={this.props.confMdl}
-//             onConfirm={() => {
-//               this.deletePagePhoto();
-//               this.props.closeModal();
-//             }}
-//             onCancel={() => this.props.closeModal()}
-//           />
-//         )}
+        <p className="a-18 italic">
+          {photo
+            ? "You can always change or remove your page photo after you published your page."
+            : "You can always upload a new photo after you published your page, you can also skip uploading a photo for now and do it after publishing the page."}
+        </p>
 
-//         {/* Next button */}
-//         <div className="center-content margin-top-2">
-//           <button
-//             className={this.state.photo ? "btn btn-blue" : "btn btn-default"}
-//             onClick={() => {
-//               this.onNextButtonClicked();
-//             }}
-//           >
-//             {this.state.photo ? "Next" : "Skip"}
-//           </button>
-//         </div>
-//       </React.Fragment>
-//     );
-//   }
+        {/* Upload photo modal */}
+        <UploadPhoto
+          open={uploadPhotoMdl}
+          onClose={() => {
+            setUploadPhotoMdl(false);
+          }}
+          header="Upload Page Photo"
+          text="Upload a stunning photo to set as the featured image of your page:"
+          cropMsg="Choose an area to be shown as for the page thumbnail, this won't
+                crop your image, this is just the area that will be shown as the
+                thumbnail."
+          inputLabelName="Choose a photo"
+          url={`/pages/${util.getParameterByName(
+            "id",
+            window.location.href
+          )}/photo?type=draft`}
+          minWidth={1200}
+          minHeight={675}
+          size={8000000}
+          aspectRatio={48 / 27}
+          success={(imageUrl) => {
+            setPhoto(imageUrl);
+          }}
+        />
 
-//   render() {
-//     return (
-//       <React.Fragment>
-//         <ProgressBar width={60} />
-//         <div className="page-new">{this.renderContents()}</div>
+        {/* Confirm modal for photo page removal */}
+        {photo && (
+          <ConfirmModal
+            header="Remove your page photo"
+            message="Are you sure that you want to delete your page photo?
+                  This cannot be undo."
+            open={confirmationMdl}
+            onConfirm={() => {
+              deletePagePhoto();
+              setConfirmationMdl(false);
+            }}
+            onCancel={() => {
+              setConfirmationMdl(false);
+            }}
+          />
+        )}
 
-//         <div className="page-new__note-box">
-//           <h3>Why it's important to choose a thumbnail for your page?</h3>
-//           <p>
-//             A good page thumbnail will really help to increase your page views
-//             and let other users to distinguish your page more and make it more
-//             recognizable if they add it to their collections or other places.
-//           </p>
-//           <p>
-//             <strong>
-//               We highly recommend that you choose a photo for your page
-//               thumbnail.
-//             </strong>
-//           </p>
-//         </div>
-//       </React.Fragment>
-//     );
-//   }
-// }
+        {/* Next button */}
+        <div className="u-flex-text-center">
+          <Button
+            onClick={() => {
+              onNextButtonClicked();
+            }}
+            color={photo ? "blue" : "default"}
+          >
+            {photo ? "Next" : "Skip"}
 
-// const mapStateToProps = (state) => {
-//   return {
-//     confMdl: state.modals.confirmation.open,
-//   };
-// };
+            <i className="fa fa-arrow-circle-right button__icon-right"></i>
+          </Button>
+        </div>
+      </React.Fragment>
+    );
+  };
 
-// export default connect(mapStateToProps, {
-//   openUploadPhoto,
-//   openConfModal,
-//   closeModal,
-// })(PageThumbnail);
-import React from "react";
+  return (
+    <React.Fragment>
+      <ProgressBar width={60} />
+      <div className="page-new">{renderContents()}</div>
 
-const Test = () => {
-  return <div></div>;
+      <div className="page-new__note-box">
+        <h3>Why it's important to choose a thumbnail for your page?</h3>
+        <p>
+          A good page thumbnail will help to increase your page views and let
+          other users distinguish your page more and make it more recognizable
+          if they add it to their collections or other places.
+        </p>
+        <p>
+          <strong>
+            We highly suggest you choose a photo for your page thumbnail.
+          </strong>
+        </p>
+      </div>
+    </React.Fragment>
+  );
 };
 
-export default Test;
+export default PageThumbnail;

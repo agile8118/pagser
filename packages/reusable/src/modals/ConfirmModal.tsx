@@ -1,3 +1,5 @@
+import Button from "../forms/Button";
+
 interface componentProps {
   header: string;
   message?: string;
@@ -37,10 +39,10 @@ const ConfirmModal = ({
               onConfirm();
             }}
           >
-            <div className="right-content">
-              <button type="submit" className="btn btn-round btn-red">
+            <div className="u-flex-text-right">
+              <Button type="submit" color="red" rounded={true}>
                 {btnName ? btnName : "Remove"}
-              </button>
+              </Button>
             </div>
           </form>
         </div>

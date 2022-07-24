@@ -7,6 +7,7 @@ interface componentProps {
   block?: boolean;
   color?: "default" | "green" | "gray" | "blue" | "red";
   children?: any;
+  id?: string;
   style?: any;
   outlined?: boolean;
   rounded?: boolean;
@@ -93,6 +94,7 @@ const Button = (props: componentProps) => {
 
   return (
     <button
+      id={props.id}
       style={props.style}
       onClick={props.onClick}
       className={className}

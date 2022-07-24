@@ -243,7 +243,7 @@ pre {
   margin-bottom: 1rem; }
 
 .form-text .tooltip.a-19 {
-  top: 30%; }
+  top: 26%; }
 
 .u-text-center {
   text-align: center !important;
@@ -1190,6 +1190,10 @@ pre {
     border-radius: 500px !important; }
   .button-block {
     width: 100%; }
+  .button__icon-left {
+    margin-right: 0.5rem; }
+  .button__icon-right {
+    margin-left: 0.5rem; }
 
 .button-default {
   background: #e1e0e0;
@@ -2073,13 +2077,15 @@ textarea {
 #img-preview {
   max-width: 100%; }
 
-.image__upload--options a:not(:last-child) {
+.image__upload--options .button:not(:last-child) {
   margin-right: 0.8rem; }
 
 .image__upload--options {
   width: 100%;
   text-align: right;
-  margin: 1rem 0; }
+  margin: 1rem 0;
+  display: flex;
+  justify-content: right; }
 
 .file__upload--label {
   border: 1px solid #dbe2e8;
@@ -3046,6 +3052,13 @@ input:checked + .slider:before {
 #js--tags-error-message {
   font-size: 1.4rem;
   color: #e74c3c; }
+
+.new-page-thumbnail__action-buttons {
+  display: flex;
+  justify-content: left;
+  margin-top: 1rem; }
+  .new-page-thumbnail__action-buttons .button:not(:last-child) {
+    margin-right: 0.8rem; }
 
 .page {
   color: #555;

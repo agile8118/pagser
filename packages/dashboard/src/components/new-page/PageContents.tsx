@@ -22,6 +22,7 @@ const PageContents = () => {
   const [bodyError, setBodyError] = useState("");
 
   const [saved, setSaved] = useState<boolean | null>(null);
+  const [nextButtonLoading, setNextButtonLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -83,7 +84,11 @@ const PageContents = () => {
   // This will run when user wants to change the current stage
   // either by going to the next or previous stage
   const updatePage = async (to?: string, successMessage?: string) => {
-    if (to) loadingModal("Loading...");
+    if (to && !to?.includes("page-thumbnail")) loadingModal("Loading...");
+
+    if (to && to.includes("page-thumbnail")) {
+      setNextButtonLoading(true);
+    }
 
     try {
       await request.patch(
@@ -112,11 +117,13 @@ const PageContents = () => {
 
       if (to) {
         loadingModal();
+        setNextButtonLoading(false);
         navigate(to);
       }
     } catch (e) {
       if (to) {
         loadingModal();
+        setNextButtonLoading(false);
         navigate(`/new-page/initial-step`);
       }
     }
@@ -490,11 +497,12 @@ const PageContents = () => {
                 onClick={() => {
                   onNextButtonClicked();
                 }}
+                loading={nextButtonLoading}
                 color="blue"
                 disabled={!type}
-                // loading={nextButtonLoading}
               >
                 Next
+                <i className="fa fa-arrow-circle-right button__icon-right"></i>
               </Button>
             </div>
           </div>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { util, request } from "@pagser/common";
 import { Loading, Button } from "@pagser/reusable";
@@ -117,6 +116,7 @@ const InitialStep = () => {
               loading={nextButtonLoading}
             >
               Next
+              <i className="fa fa-arrow-circle-right button__icon-right"></i>
             </Button>
           </div>
         </div>

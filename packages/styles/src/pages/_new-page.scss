@@ -103,3 +103,15 @@
   font-size: 1.4rem;
   color: $color-red;
 }
+
+.new-page-thumbnail {
+  &__action-buttons {
+    display: flex;
+    justify-content: left;
+    margin-top: 1rem;
+
+    & .button:not(:last-child) {
+      margin-right: 0.8rem;
+    }
+  }
+}

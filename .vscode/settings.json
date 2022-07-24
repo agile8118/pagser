@@ -2,6 +2,9 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "eslint.packageManager": "yarn",
   "prettier.packageManager": "yarn",
-  "npm.packageManager": "yarn"
+  "npm.packageManager": "yarn",
+  "cSpell.words": [
+    "Crooper"
+  ]
 
 }

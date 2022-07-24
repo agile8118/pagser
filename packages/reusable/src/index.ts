@@ -5,6 +5,7 @@ import ConfirmModal from "./modals/ConfirmModal";
 import Input from "./forms/Input";
 import Button from "./forms/Button";
 import Textarea from "./forms/Textarea";
+import InputFile from "./forms/InputFile";
 
 export {
   Loading,
@@ -15,4 +16,5 @@ export {
   Input,
   Button,
   Textarea,
+  InputFile,
 };

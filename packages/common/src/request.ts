@@ -78,6 +78,28 @@ class Request {
     });
   }
 
+  put(url: string, params: any, options?: optionsLayout) {
+    return new Promise<{ data: {} }>((resolve, reject) => {
+      const config: any = {};
+
+      if (options?.auth) {
+        config.headers = {
+          authorization: localStorage.getItem("token"),
+        };
+      }
+
+      axios
+        .put(`${domain}${url}`, params, config)
+        .then((response) => {
+          resolve(response.data);
+        })
+        .catch((e) => {
+          this.handleError(e, options?.alert);
+          reject(e);
+        });
+    });
+  }
+
   patch(url: string, params: any, options?: optionsLayout) {
     return new Promise<{ data: {} }>((resolve, reject) => {
       const config: any = {};
