@@ -8,5 +8,6 @@
     "outDir": "./dist",
     "declaration": true,
     "strict": true,
+    "allowJs": true
   }
 }

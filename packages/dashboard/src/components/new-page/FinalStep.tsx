@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Loading } from "@pagser/reusable";
 import ProgressBar from "./ProgressBar";
 
-// import FinalStepPublic from "./FinalStepPublic";
+import FinalStepPublic from "./FinalStepPublic";
 import FinalStepPrivate from "./FinalStepPrivate";
 
 const FinalStep = () => {
@@ -38,7 +38,7 @@ const FinalStep = () => {
         setRating(response.page.configurations.rating);
         setAnonymously(response.page.configurations.anonymously);
         setLinks(response.page.configurations.links);
-        setTags(response.page.tags ? response.page.tags[0] : "");
+        setTags(response.page.tags[0] ? response.page.tags[0] : "");
         setUsername(response.page.author.username);
         setUrl(response.page.url || null);
         setUsedUrls(response.urls);
@@ -60,16 +60,15 @@ const FinalStep = () => {
       </div>
     );
   } else if (type === "public") {
-    // content = (
-    //   <FinalStepPublic
-    //     history={this.props.history}
-    //     comments={comments}
-    //     rating={rating}
-    //     links={links}
-    //     anonymously={anonymously}
-    //     tags={tags}
-    //   />
-    // );
+    content = (
+      <FinalStepPublic
+        comments={comments || false}
+        rating={rating || false}
+        links={links || false}
+        anonymously={anonymously || false}
+        tags={tags}
+      />
+    );
   } else if (type === "private") {
     content = (
       <FinalStepPrivate

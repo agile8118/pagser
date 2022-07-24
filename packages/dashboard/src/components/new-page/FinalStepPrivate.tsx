@@ -13,11 +13,9 @@ interface IProps {
 }
 
 const FinalStepPrivate = (props: IProps) => {
-  const [username, setUsername] = useState(props.username);
   const [comments, setComments] = useState(props.comments);
   const [rating, setRating] = useState(props.rating);
   const [anonymously, setAnonymously] = useState(props.anonymously);
-  const [usedUrls, setUsedUrls] = useState(props.usedUrls);
   const [url, setUrl] = useState(props.url);
   const [urlError, setUrlError] = useState("");
   const [publishBtnLoading, setPublishBtnLoading] = useState(false);
@@ -53,10 +51,10 @@ const FinalStepPrivate = (props: IProps) => {
 
   // Check to see if a chosen URL is valid
   const checkUrlValidation = () => {
-    if (url && url.length > 0 && usedUrls.indexOf(url) === -1) {
+    if (url && url.length > 0 && props.usedUrls.indexOf(url) === -1) {
       setUrlError("");
       return true;
-    } else if (usedUrls.indexOf(url) !== -1) {
+    } else if (props.usedUrls.indexOf(url) !== -1) {
       setUrlError(`You have already used "${url}" url, choose something else.`);
       return false;
     } else {
@@ -67,8 +65,6 @@ const FinalStepPrivate = (props: IProps) => {
 
   // Sends a request to the server to update the draft page
   const updatePage = async (callback?: () => void) => {
-    // if (callback) loadingModal("Loading...");
-
     const page = {
       id: util.getParameterByName("id", window.location.href),
       type: "private",
@@ -102,11 +98,10 @@ const FinalStepPrivate = (props: IProps) => {
   };
 
   const onSubmitButtonClicked = () => {
-    setPublishBtnLoading(true);
-
     if (!checkUrlValidation())
       return (document.querySelector("#url") as HTMLInputElement).focus();
 
+    setPublishBtnLoading(true);
     updatePage(async () => {
       const pageId = util.getParameterByName("id", window.location.href);
       try {
@@ -157,7 +152,7 @@ const FinalStepPrivate = (props: IProps) => {
       </button>
 
       <div className="center-content">
-        <h3 className="heading-tertiary">Configurations and Choose a Url</h3>
+        <h3 className="heading-tertiary">Configurations and URL</h3>
       </div>
 
       <div className="page-new__final-step">
@@ -261,7 +256,7 @@ const FinalStepPrivate = (props: IProps) => {
           />
 
           <p className="url__display">
-            pagser.com/{username}/{url}
+            pagser.com/{props.username}/{url}
           </p>
           <div className="url__note">
             <strong>Important note about URL:</strong>
