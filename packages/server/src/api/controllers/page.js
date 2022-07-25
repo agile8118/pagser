@@ -412,7 +412,10 @@ exports.create = async (req, res) => {
         url: util.convertToUrl(draftPage.contents.title),
         author: draftPage.author,
         configurations: draftPage.configurations,
-        tags: draftPage.tags,
+        tags:
+          typeof draftPage.tags === "string"
+            ? draftPage.tags
+            : draftPage.tags[0],
         photo: draftPage.photo,
         cropedPhoto: draftPage.cropedPhoto,
         attachFiles: draftPage.attachFiles,
@@ -428,7 +431,7 @@ exports.create = async (req, res) => {
 
       await page.save();
       newPageId = page.id;
-      resObj = page.url;
+      resObj = { url: page.url };
     }
 
     if (draftPage.type === "private") {
@@ -454,7 +457,6 @@ exports.create = async (req, res) => {
     }
 
     // Copy attach files the from draft page to the published page
-    console.log(draftPage.attachFiles);
     draftPage.attachFiles.map((file) => {
       console.log(file);
 

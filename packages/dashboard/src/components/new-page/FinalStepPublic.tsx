@@ -137,11 +137,13 @@ const FinalStepPublic = (props: IProps) => {
     updatePage(async () => {
       const pageId = util.getParameterByName("id", window.location.href);
       try {
-        const { data } = await request.post(`/new-page/${pageId}`, null, {
+        const response = (await request.post(`/new-page/${pageId}`, null, {
           auth: true,
-        });
+        })) as any;
 
-        navigate(`/new-page/message?type=public&status=success&url=${data}`);
+        navigate(
+          `/new-page/message?type=public&status=success&url=${response.url}`
+        );
       } catch (error: any) {
         if (error.message.error === "error with contents") {
           navigate(
