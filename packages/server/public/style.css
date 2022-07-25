@@ -938,7 +938,8 @@ pre {
     display: flex;
     align-items: center;
     padding: 1.3rem 2.5rem;
-    color: inherit; }
+    color: inherit;
+    transition: all 0.1s; }
     .sidenav__link i {
       font-size: 2.4rem;
       margin-right: 2.5rem;

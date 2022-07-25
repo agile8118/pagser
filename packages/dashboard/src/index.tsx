@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 
 import NewPage from "./components/new-page";
+import Main from "./components/main";
 // import { store } from "./store/store";
 
 // {/* <Provider store={store}> */}
@@ -13,11 +14,19 @@ import NewPage from "./components/new-page";
 }
 const container = document.querySelector(".react-container") as HTMLElement;
 const containerName = container ? container.getAttribute("name") : null;
-let root;
+let root = ReactDOM.createRoot(container);
+
+if (containerName === "main") {
+  // root = ReactDOM.createRoot(container);
+  root.render(
+    <React.StrictMode>
+      <Main />
+    </React.StrictMode>
+  );
+}
 
 if (containerName === "new-page") {
-  root = ReactDOM.createRoot(container);
-
+  // root = ReactDOM.createRoot(container);
   root.render(
     <React.StrictMode>
       <NewPage />
