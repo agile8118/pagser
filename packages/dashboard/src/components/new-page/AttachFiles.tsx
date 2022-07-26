@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loading, Button, ConfirmModal } from "@pagser/reusable";
+import {
+  Loading,
+  Button,
+  ConfirmModal,
+  UploadAttachFile,
+} from "@pagser/reusable";
 import { util, request, loadingModal, alert } from "@pagser/common";
 import ProgressBar from "./ProgressBar";
-import UploadAttachFile from "../modals/UploadAttachFile";
 
 interface IFile {
   name: string;

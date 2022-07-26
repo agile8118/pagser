@@ -139,3 +139,14 @@
 .form-text .tooltip.a-19 {
   top: 26%;
 }
+
+// add to collection modal actions
+.a-19 {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+
+  & .button:first-child {
+    margin-right: 0.5rem;
+  }
+}

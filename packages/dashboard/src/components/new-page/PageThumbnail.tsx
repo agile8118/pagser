@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { util, request, loadingModal, alert } from "@pagser/common";
-import { Loading, Button, ConfirmModal } from "@pagser/reusable";
+import { Loading, Button, ConfirmModal, UploadPhoto } from "@pagser/reusable";
 import ProgressBar from "./ProgressBar";
-import UploadPhoto from "../modals/UploadPhoto";
 
 const PageThumbnail = () => {
   const [photo, setPhoto] = useState("");

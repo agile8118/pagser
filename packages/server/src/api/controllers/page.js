@@ -135,6 +135,7 @@ exports.fetchPublicPageData = async (req, res) => {
         // Add the page to the user's reading history list
         await History.create({ user: userId, page: page.id });
       }
+      viewer.id = userId;
     } else viewer = { status: "spectator" };
 
     res.send({ page: pageData, viewer });

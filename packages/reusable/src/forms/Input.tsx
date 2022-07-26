@@ -7,6 +7,8 @@ interface Props {
   rounded?: boolean;
   id?: string;
   required?: boolean;
+  autoFocus?: boolean;
+  autoComplete?: string;
   error?: string;
   shouldDivideNumberByThree?: boolean;
   onChange?: (s: string) => void;
@@ -107,6 +109,8 @@ const Input = (props: Props) => {
                 : value
             }
             required={props.required}
+            autoFocus={props.autoFocus}
+            autoComplete={props.autoComplete || ""}
             maxLength={props.maxLength}
             placeholder={props.placeholder}
             onChange={(event: any) => {

@@ -7,6 +7,10 @@ import Button from "./forms/Button";
 import Textarea from "./forms/Textarea";
 import InputFile from "./forms/InputFile";
 
+import AddToCollection from "./modals/AddToCollection";
+import UploadAttachFile from "./modals/UploadAttachFile";
+import UploadPhoto from "./modals/UploadPhoto";
+
 export {
   Loading,
   Alert,
@@ -17,4 +21,7 @@ export {
   Button,
   Textarea,
   InputFile,
+  AddToCollection,
+  UploadAttachFile,
+  UploadPhoto,
 };

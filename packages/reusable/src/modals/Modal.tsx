@@ -1,3 +1,5 @@
+import { createPortal } from "react-dom";
+
 interface componentProps {
   children: React.ReactNode;
   header: string;
@@ -9,7 +11,7 @@ interface componentProps {
 const Modal = ({ children, header, open, type, onClose }: componentProps) => {
   let className = open ? "mdl" : "mdl display-none";
   if (type === "small") className += " mdl-sm";
-  return (
+  return createPortal(
     <div className={className}>
       <div className="mdl__content">
         <div className="mdl__header">
@@ -21,7 +23,8 @@ const Modal = ({ children, header, open, type, onClose }: componentProps) => {
 
         <div className="mdl__body">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.querySelector("#modal-root") as HTMLElement
   );
 };
 

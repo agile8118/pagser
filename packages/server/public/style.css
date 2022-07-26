@@ -245,6 +245,13 @@ pre {
 .form-text .tooltip.a-19 {
   top: 26%; }
 
+.a-19 {
+  display: flex;
+  justify-content: right;
+  align-items: center; }
+  .a-19 .button:first-child {
+    margin-right: 0.5rem; }
+
 .u-text-center {
   text-align: center !important;
   width: 100%; }
@@ -1151,7 +1158,7 @@ pre {
     font-size: 2.2rem; }
 
 .mdl-sm .mdl__content {
-  max-width: 18%; }
+  max-width: 25%; }
 
 .mdl-sm .mdl__body {
   padding-top: 0.3rem; }

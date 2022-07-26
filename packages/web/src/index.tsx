@@ -4,6 +4,10 @@ import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 
 import Authentication from "./components/authentication";
+
+import Actions from "./components/show-page/Actions";
+import { store as showPageStore } from "./components/show-page/store";
+
 // import { store } from "./store/store";
 
 // {/* <Provider store={store}> */}
@@ -23,4 +27,51 @@ if (containerName === "authentication") {
       <Authentication />
     </React.StrictMode>
   );
+}
+
+if (containerName === "show-public") {
+  root = ReactDOM.createRoot(document.querySelector("#actions") as HTMLElement);
+
+  root.render(
+    <Provider store={showPageStore}>
+      <Actions type="public" />
+    </Provider>
+  );
+
+  // if (document.querySelector("#author")) {
+  //   ReactDOM.render(
+  //     <Provider store={showPageStore}>
+  //       <Author />
+  //     </Provider>,
+  //     document.querySelector("#author")
+  //   );
+  // }
+  // if (document.querySelector("#rating")) {
+  //   ReactDOM.render(
+  //     <Provider store={showPageStore}>
+  //       <Rating />
+  //     </Provider>,
+  //     document.querySelector("#rating")
+  //   );
+  // }
+  // if (document.querySelector("#comments")) {
+  //   ReactDOM.render(
+  //     <Provider store={showPageStore}>
+  //       <Comments />
+  //     </Provider>,
+  //     document.querySelector("#comments")
+  //   );
+  // }
+  // ReactDOM.render(
+  //   <Provider store={showPageStore}>
+  //     <Photo />
+  //   </Provider>,
+  //   document.querySelector("#photo")
+  // );
+  // ReactDOM.render(
+  //   <Provider store={showPageStore}>
+  //     <AttachFiles />
+  //   </Provider>,
+  //   document.querySelector("#attachFiles")
+  // );
 }
