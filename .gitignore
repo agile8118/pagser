@@ -11,3 +11,6 @@ logs/
 build/
 /dist
 dist/
+bundle.js
+bundle.js.map
+dashboard.bundle.js
