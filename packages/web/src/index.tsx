@@ -7,6 +7,8 @@ import Authentication from "./components/authentication";
 
 import Actions from "./components/show-page/Actions";
 import Photo from "./components/show-page/Photo";
+import AttachFiles from "./components/show-page/AttachFiles";
+
 import { store as showPageStore } from "./components/show-page/store";
 
 // import { store } from "./store/store";
@@ -46,6 +48,15 @@ if (containerName === "show-public") {
   photoRoot.render(
     <Provider store={showPageStore}>
       <Photo />
+    </Provider>
+  );
+
+  const attachFilesRoot = ReactDOM.createRoot(
+    document.querySelector("#attach-files") as HTMLElement
+  );
+  attachFilesRoot.render(
+    <Provider store={showPageStore}>
+      <AttachFiles />
     </Provider>
   );
 

@@ -40,6 +40,7 @@ interface IRatings {
 
 interface IAttachFile {
   name: string;
+  _id: string;
 }
 
 interface PageState {
@@ -217,9 +218,28 @@ export const deletePhoto = (): AppThunk => async (dispatch, getState) => {
   }
 };
 
+// Fetches the attach files of a page
+export const fetchAttachFiles =
+  (message: string): AppThunk =>
+  async (dispatch, getState) => {
+    const { id } = getState().page;
+    try {
+      const response = (await request.get(`/pages/${id}/attach-files`, {
+        auth: true,
+      })) as any;
+
+      loadingModal();
+      alert(message, "success");
+      dispatch(setAttachFiles(response.attachFiles));
+    } catch (error) {
+      loadingModal();
+    }
+  };
+
 export const selectId = (state: RootState) => state.page.id;
 export const selectContents = (state: RootState) => state.page.contents;
 export const selectLoading = (state: RootState) => state.page.loading;
 export const selectPhotoUrl = (state: RootState) => state.page.photoUrl;
+export const selectAttachFiles = (state: RootState) => state.page.attachFiles;
 
 export default pageSlice.reducer;
