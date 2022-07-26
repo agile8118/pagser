@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { ReactElement, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loadingModal } from "@pagser/common";
-import { ConfirmModal } from "@pagser/reusable";
+import { loadingModal, alert } from "@pagser/common";
+import { ConfirmModal, Button } from "@pagser/reusable";
 import { subscribe, selectLoading, selectId, selectAuthor } from "./pageSlice";
 import { selectStatus, selectSubscribed } from "./userSlice";
 
@@ -16,6 +16,9 @@ const Author = () => {
   const dispatch = useDispatch<any>();
 
   const onSubscribeClicked = () => {
+    if (status !== "authenticated")
+      return alert("Please login to be able to subscribe to authors.");
+
     if (subscribed) {
       setConfirmationModalOpen(true);
     } else {
@@ -32,20 +35,8 @@ const Author = () => {
     ? "page__author__bio"
     : "page__author__bio italic";
 
-  // subscribe button
-  let subBtn = subscribed ? (
-    <button className="btn btn-default btn-round" onClick={onSubscribeClicked}>
-      Subscribed
-    </button>
-  ) : (
-    <button className="btn btn-blue btn-round" onClick={onSubscribeClicked}>
-      Subscribe
-    </button>
-  );
-  if (status === "owner") subBtn = <React.Fragment />;
-
   return (
-    <React.Fragment>
+    <>
       <ConfirmModal
         header={`Unsubscribe from ${author.username}?`}
         message="Are you sure that you want to unsubscribe from this author?"
@@ -82,11 +73,22 @@ const Author = () => {
             </a>
             <div>{author.subscribersCount} Subscribers</div>
           </div>
-          <div className="page__author__sub">{subBtn}</div>
+          {/* Subscribe button */}
+          <div className="page__author__sub">
+            {status !== "owner" && (
+              <Button
+                color={subscribed ? "default" : "blue"}
+                rounded={true}
+                onClick={onSubscribeClicked}
+              >
+                {subscribed ? "Subscribed" : "Subscribe"}
+              </Button>
+            )}
+          </div>
         </div>
         <p className={bioClassName}>{userBio}</p>
       </div>
-    </React.Fragment>
+    </>
   );
 };
 

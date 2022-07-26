@@ -14,12 +14,11 @@ import { store as showPageStore } from "./components/show-page/store";
 
 const container = document.querySelector(".react-container") as HTMLElement;
 const containerName = container ? container.getAttribute("name") : null;
-let root;
 
 if (containerName === "authentication") {
-  root = ReactDOM.createRoot(container);
+  const authenticationRoot = ReactDOM.createRoot(container);
 
-  root.render(
+  authenticationRoot.render(
     <React.StrictMode>
       <Authentication />
     </React.StrictMode>
@@ -68,7 +67,7 @@ if (containerName === "show-public") {
 
   if (document.querySelector("#rating")) {
     const ratingRoot = ReactDOM.createRoot(
-      document.querySelector("#author") as HTMLElement
+      document.querySelector("#rating") as HTMLElement
     );
 
     ratingRoot.render(
