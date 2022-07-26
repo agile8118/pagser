@@ -3,7 +3,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Alert, Button, Input, TAlertType } from "@pagser/reusable";
 import { validate } from "@pagser/common";
-import util from "../../lib/forms";
 import VerifyEmail from "./VerifyEmail";
 
 const Register = () => {

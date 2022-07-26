@@ -83,7 +83,7 @@ const AttachFiles = () => {
               setUploadAttachFilesModalOpen(true);
             }}
           >
-            <i className="fa fa-upload button__icon-left" /> Add an attach file
+            <i className="fa fa-upload button__icon-left" /> Add an Attach File
           </Button>
 
           <UploadAttachFile

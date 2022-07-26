@@ -137,6 +137,7 @@ export const {
   setAttachFiles,
 } = pageSlice.actions;
 
+// Fetch the data needed for a public page
 export const fetchPublicPage = (): AppThunk => async (dispatch) => {
   const response = (await request.get(
     `/public-pages/${window.location.pathname.split("/")[2]}`,
@@ -173,6 +174,46 @@ export const fetchPublicPage = (): AppThunk => async (dispatch) => {
   dispatch(setUserReadLater(response.viewer.readLater));
 };
 
+// Fetch the data needed for a private page
+// export const fetchPrivatePage = (): AppThunk => async (dispatch) => {
+//   const response = (await request.get(
+//     `/${window.location.pathname.split("/")[1]}/${
+//       window.location.pathname.split("/")[2]
+//     }`,
+//     {
+//       auth: true,
+//     }
+//   )) as any;
+
+//   dispatch(setLoading(false));
+//   dispatch(setId(response.page.id));
+//   dispatch(setContents(response.page.contents));
+//   dispatch(setPhotoUrl(response.page.photo.secure_url));
+//   dispatch(
+//     setAuthor({
+//       id: response.page.author._id,
+//       photoUrl: response.page.author.photo.secure_url,
+//       biography: response.page.author.biography,
+//       username: response.page.author.username,
+//       name: response.page.author.name,
+//       subscribersCount: response.page.author.subscribersNum,
+//     })
+//   );
+//   dispatch(setDate(response.page.date));
+//   dispatch(
+//     setRatings({
+//       likes: response.page.likes,
+//       dislikes: response.page.dislikes,
+//     })
+//   );
+//   dispatch(setAttachFiles(response.page.attachFiles));
+//   dispatch(setUserId(response.viewer.id));
+//   dispatch(setUserStatus(response.viewer.status));
+//   dispatch(setUserSubscribed(response.viewer.subscribed));
+//   dispatch(setUserReadLater(response.viewer.readLater));
+// };
+
+// Add a page to the read later list of a user or remove it from there
 export const toggleReadLater =
   (id: string): AppThunk =>
   async (dispatch) => {
@@ -258,5 +299,6 @@ export const selectLoading = (state: RootState) => state.page.loading;
 export const selectPhotoUrl = (state: RootState) => state.page.photoUrl;
 export const selectAttachFiles = (state: RootState) => state.page.attachFiles;
 export const selectAuthor = (state: RootState) => state.page.author;
+export const selectRatings = (state: RootState) => state.page.ratings;
 
 export default pageSlice.reducer;

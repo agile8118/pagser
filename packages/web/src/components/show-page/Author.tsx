@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { request, loadingModal, isBottom } from "@pagser/common";
+import { loadingModal } from "@pagser/common";
 import { ConfirmModal } from "@pagser/reusable";
 import { subscribe, selectLoading, selectId, selectAuthor } from "./pageSlice";
 import { selectStatus, selectSubscribed } from "./userSlice";

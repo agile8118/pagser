@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 
 import Authentication from "./components/authentication";
@@ -9,6 +8,7 @@ import Actions from "./components/show-page/Actions";
 import Photo from "./components/show-page/Photo";
 import AttachFiles from "./components/show-page/AttachFiles";
 import Author from "./components/show-page/Author";
+import Ratings from "./components/show-page/Ratings";
 
 import { store as showPageStore } from "./components/show-page/store";
 
@@ -72,14 +72,19 @@ if (containerName === "show-public") {
       </Provider>
     );
   }
-  // if (document.querySelector("#rating")) {
-  //   ReactDOM.render(
-  //     <Provider store={showPageStore}>
-  //       <Rating />
-  //     </Provider>,
-  //     document.querySelector("#rating")
-  //   );
-  // }
+
+  if (document.querySelector("#rating")) {
+    const ratingRoot = ReactDOM.createRoot(
+      document.querySelector("#author") as HTMLElement
+    );
+
+    ratingRoot.render(
+      <Provider store={showPageStore}>
+        <Ratings />
+      </Provider>
+    );
+  }
+
   // if (document.querySelector("#comments")) {
   //   ReactDOM.render(
   //     <Provider store={showPageStore}>
@@ -88,16 +93,4 @@ if (containerName === "show-public") {
   //     document.querySelector("#comments")
   //   );
   // }
-  // ReactDOM.render(
-  //   <Provider store={showPageStore}>
-  //     <Photo />
-  //   </Provider>,
-  //   document.querySelector("#photo")
-  // );
-  // ReactDOM.render(
-  //   <Provider store={showPageStore}>
-  //     <AttachFiles />
-  //   </Provider>,
-  //   document.querySelector("#attachFiles")
-  // );
 }
