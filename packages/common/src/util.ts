@@ -2,6 +2,7 @@ interface IUtil {
   getParameterByName: (name: string, url?: string) => string | null;
   convertToUrl: (string: string) => string;
   randomText: (length: number) => string;
+  isBottom: (el: HTMLElement) => boolean;
 }
 
 const util: any = {};
@@ -36,6 +37,10 @@ util.randomText = (length: number) => {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
+};
+
+util.isBottom = (el: HTMLElement) => {
+  return el.getBoundingClientRect().bottom <= window.innerHeight;
 };
 
 export default util as IUtil;

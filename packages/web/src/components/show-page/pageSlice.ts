@@ -106,6 +106,9 @@ export const pageSlice = createSlice({
     setAuthor: (state, action: PayloadAction<IAuthor>) => {
       state.author = action.payload;
     },
+    setSubscribersCount: (state, action: PayloadAction<number>) => {
+      state.author.subscribersCount = action.payload;
+    },
     setConfigurations: (state, action: PayloadAction<IConfigurations>) => {
       state.configurations = action.payload;
     },
@@ -127,6 +130,7 @@ export const {
   setContents,
   setPhotoUrl,
   setAuthor,
+  setSubscribersCount,
   setConfigurations,
   setDate,
   setRatings,
@@ -236,10 +240,23 @@ export const fetchAttachFiles =
     }
   };
 
+// Send a request to server to either subscribe to or unsubscribe from the author
+export const subscribe = (): AppThunk => async (dispatch, getState) => {
+  const authorId = getState().page.author.id;
+  const response = (await request.post(`/api/subscription/${authorId}`, null, {
+    auth: true,
+  })) as any;
+
+  response.subNum;
+
+  dispatch(setSubscribersCount(response.subNum));
+};
+
 export const selectId = (state: RootState) => state.page.id;
 export const selectContents = (state: RootState) => state.page.contents;
 export const selectLoading = (state: RootState) => state.page.loading;
 export const selectPhotoUrl = (state: RootState) => state.page.photoUrl;
 export const selectAttachFiles = (state: RootState) => state.page.attachFiles;
+export const selectAuthor = (state: RootState) => state.page.author;
 
 export default pageSlice.reducer;

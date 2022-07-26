@@ -8,6 +8,7 @@ import Authentication from "./components/authentication";
 import Actions from "./components/show-page/Actions";
 import Photo from "./components/show-page/Photo";
 import AttachFiles from "./components/show-page/AttachFiles";
+import Author from "./components/show-page/Author";
 
 import { store as showPageStore } from "./components/show-page/store";
 
@@ -60,14 +61,17 @@ if (containerName === "show-public") {
     </Provider>
   );
 
-  // if (document.querySelector("#author")) {
-  //   ReactDOM.render(
-  //     <Provider store={showPageStore}>
-  //       <Author />
-  //     </Provider>,
-  //     document.querySelector("#author")
-  //   );
-  // }
+  if (document.querySelector("#author")) {
+    const authorRoot = ReactDOM.createRoot(
+      document.querySelector("#author") as HTMLElement
+    );
+
+    authorRoot.render(
+      <Provider store={showPageStore}>
+        <Author />
+      </Provider>
+    );
+  }
   // if (document.querySelector("#rating")) {
   //   ReactDOM.render(
   //     <Provider store={showPageStore}>
