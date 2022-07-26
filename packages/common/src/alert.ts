@@ -1,5 +1,5 @@
 const alert = (message: string, type = "default") => {
-  const alert = document.querySelector("#js--alert");
+  let alert = document.querySelector("#js--alert");
 
   if (!alert) {
     // create the stack message elements
@@ -18,6 +18,8 @@ const alert = (message: string, type = "default") => {
     ElAlert.appendChild(ELAlertButton);
 
     document.querySelector("body")?.appendChild(ElAlert);
+
+    alert = document.querySelector("#js--alert");
   }
 
   const alertText = document.querySelector("#js--alert p");
@@ -40,7 +42,7 @@ const alert = (message: string, type = "default") => {
 
   if (alertText) alertText.innerHTML = message;
 
-  setTimeout(() => {
+  const timeout = setTimeout(() => {
     alert?.classList.add("alert-snackbar--close");
     alert?.classList.remove("alert-snackbar--error");
     alert?.classList.remove("alert-snackbar--success");
@@ -48,6 +50,7 @@ const alert = (message: string, type = "default") => {
   }, 5000);
 
   alertButton?.addEventListener("click", () => {
+    clearTimeout(timeout);
     alert?.classList.add("alert-snackbar--close");
     alert?.classList.remove("alert-snackbar--error");
     alert?.classList.remove("alert-snackbar--success");

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Modal, Input, Button, AddToCollection } from "@pagser/reusable";
-import { request } from "@pagser/common";
+import { request, alert } from "@pagser/common";
 
 import {
   selectContents,
@@ -170,7 +170,13 @@ const Actions = (props: IProps) => {
         <button
           className="btn-i btn-i-blue btn-i-big"
           onClick={() => {
-            setAddToCollectionModal(true);
+            if (status === "spectator") {
+              console.log("DSd");
+
+              alert("Please login to be able to add pages to collections.");
+            } else {
+              setAddToCollectionModal(true);
+            }
           }}
         >
           <i className="fa fa-th-large" aria-hidden="true" />

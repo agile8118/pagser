@@ -12,13 +12,6 @@ import Ratings from "./components/show-page/Ratings";
 
 import { store as showPageStore } from "./components/show-page/store";
 
-// import { store } from "./store/store";
-
-// {/* <Provider store={store}> */}
-// {/* </Provider> */}
-{
-  /* <BrowserRouter basename="/"> */
-}
 const container = document.querySelector(".react-container") as HTMLElement;
 const containerName = container ? container.getAttribute("name") : null;
 let root;
