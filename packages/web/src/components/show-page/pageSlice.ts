@@ -26,7 +26,7 @@ interface IAuthor {
   subscribersCount: number;
 }
 
-interface IConfigurations {
+export interface IConfigurations {
   anonymously?: boolean;
   rating?: boolean;
   comments?: boolean;
@@ -168,6 +168,7 @@ export const fetchPublicPage = (): AppThunk => async (dispatch) => {
     })
   );
   dispatch(setAttachFiles(response.page.attachFiles));
+  // From the userSlice
   dispatch(setUserId(response.viewer.id));
   dispatch(setUserStatus(response.viewer.status));
   dispatch(setUserSubscribed(response.viewer.subscribed));
@@ -175,43 +176,51 @@ export const fetchPublicPage = (): AppThunk => async (dispatch) => {
 };
 
 // Fetch the data needed for a private page
-// export const fetchPrivatePage = (): AppThunk => async (dispatch) => {
-//   const response = (await request.get(
-//     `/${window.location.pathname.split("/")[1]}/${
-//       window.location.pathname.split("/")[2]
-//     }`,
-//     {
-//       auth: true,
-//     }
-//   )) as any;
+export const fetchPrivatePage = (): AppThunk => async (dispatch) => {
+  try {
+    const response = (await request.get(
+      `/${window.location.pathname.split("/")[1]}/${
+        window.location.pathname.split("/")[2]
+      }`,
+      {
+        auth: true,
+      }
+    )) as any;
 
-//   dispatch(setLoading(false));
-//   dispatch(setId(response.page.id));
-//   dispatch(setContents(response.page.contents));
-//   dispatch(setPhotoUrl(response.page.photo.secure_url));
-//   dispatch(
-//     setAuthor({
-//       id: response.page.author._id,
-//       photoUrl: response.page.author.photo.secure_url,
-//       biography: response.page.author.biography,
-//       username: response.page.author.username,
-//       name: response.page.author.name,
-//       subscribersCount: response.page.author.subscribersNum,
-//     })
-//   );
-//   dispatch(setDate(response.page.date));
-//   dispatch(
-//     setRatings({
-//       likes: response.page.likes,
-//       dislikes: response.page.dislikes,
-//     })
-//   );
-//   dispatch(setAttachFiles(response.page.attachFiles));
-//   dispatch(setUserId(response.viewer.id));
-//   dispatch(setUserStatus(response.viewer.status));
-//   dispatch(setUserSubscribed(response.viewer.subscribed));
-//   dispatch(setUserReadLater(response.viewer.readLater));
-// };
+    dispatch(setLoading(false));
+    dispatch(setId(response.page.id));
+    dispatch(setContents(response.page.contents));
+    dispatch(setConfigurations(response.page.configurations));
+    dispatch(setPhotoUrl(response.page.photo.secure_url));
+    dispatch(
+      setAuthor({
+        id: response.page.author._id,
+        photoUrl: response.page.author.photo.secure_url,
+        biography: response.page.author.biography,
+        username: response.page.author.username,
+        name: response.page.author.name,
+        subscribersCount: response.page.author.subscribersNum,
+      })
+    );
+    dispatch(setDate(response.page.date));
+    dispatch(
+      setRatings({
+        likes: response.page.likes,
+        dislikes: response.page.dislikes,
+      })
+    );
+    dispatch(setAttachFiles(response.page.attachFiles));
+    // From the userSlice
+    dispatch(setUserId(response.viewer.id));
+    dispatch(setUserStatus(response.viewer.status));
+    dispatch(setUserSubscribed(response.viewer.subscribed));
+    dispatch(setUserReadLater(response.viewer.readLater));
+  } catch (e: any) {
+    if (e.status === 404) {
+      dispatch(setId("0")); // zero indicates not found
+    }
+  }
+};
 
 // Add a page to the read later list of a user or remove it from there
 export const toggleReadLater =
@@ -295,7 +304,10 @@ export const subscribe = (): AppThunk => async (dispatch, getState) => {
 
 export const selectId = (state: RootState) => state.page.id;
 export const selectContents = (state: RootState) => state.page.contents;
+export const selectConfigurations = (state: RootState) =>
+  state.page.configurations;
 export const selectLoading = (state: RootState) => state.page.loading;
+export const selectDate = (state: RootState) => state.page.date;
 export const selectPhotoUrl = (state: RootState) => state.page.photoUrl;
 export const selectAttachFiles = (state: RootState) => state.page.attachFiles;
 export const selectAuthor = (state: RootState) => state.page.author;

@@ -9,6 +9,7 @@ import Photo from "./components/show-page/Photo";
 import AttachFiles from "./components/show-page/AttachFiles";
 import Author from "./components/show-page/Author";
 import Ratings from "./components/show-page/Ratings";
+import ShowPrivate from "./components/show-page/Private";
 
 import { store as showPageStore } from "./components/show-page/store";
 
@@ -17,7 +18,6 @@ const containerName = container ? container.getAttribute("name") : null;
 
 if (containerName === "authentication") {
   const authenticationRoot = ReactDOM.createRoot(container);
-
   authenticationRoot.render(
     <React.StrictMode>
       <Authentication />
@@ -85,4 +85,13 @@ if (containerName === "show-public") {
   //     document.querySelector("#comments")
   //   );
   // }
+}
+
+if (containerName === "show-private") {
+  const showPrivateRoot = ReactDOM.createRoot(container);
+  showPrivateRoot.render(
+    <Provider store={showPageStore}>
+      <ShowPrivate />
+    </Provider>
+  );
 }
