@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { connect } from "react-redux";
 import { Modal, Input, Button, AddToCollection } from "@pagser/reusable";
 import { request } from "@pagser/common";
 

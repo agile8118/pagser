@@ -197,8 +197,29 @@ export const toggleReadLater =
     }
   };
 
+// Send a request to server to delete the page photo
+export const deletePhoto = (): AppThunk => async (dispatch, getState) => {
+  const { id } = getState().page;
+  try {
+    loadingModal("Removing the photo...");
+
+    (await request.delete(`/pages/${id}/photo`, {
+      auth: true,
+    })) as any;
+
+    loadingModal();
+    alert("Photo successfully removed from your page.", "success");
+
+    dispatch(setPhotoUrl(""));
+  } catch (e: any) {
+    loadingModal();
+    alert("Sorry, there was problem with removing the photo.", "error");
+  }
+};
+
 export const selectId = (state: RootState) => state.page.id;
 export const selectContents = (state: RootState) => state.page.contents;
 export const selectLoading = (state: RootState) => state.page.loading;
+export const selectPhotoUrl = (state: RootState) => state.page.photoUrl;
 
 export default pageSlice.reducer;

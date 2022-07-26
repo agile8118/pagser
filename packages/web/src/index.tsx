@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import Authentication from "./components/authentication";
 
 import Actions from "./components/show-page/Actions";
+import Photo from "./components/show-page/Photo";
 import { store as showPageStore } from "./components/show-page/store";
 
 // import { store } from "./store/store";
@@ -30,11 +31,21 @@ if (containerName === "authentication") {
 }
 
 if (containerName === "show-public") {
-  root = ReactDOM.createRoot(document.querySelector("#actions") as HTMLElement);
-
-  root.render(
+  const actionsRoot = ReactDOM.createRoot(
+    document.querySelector("#actions") as HTMLElement
+  );
+  actionsRoot.render(
     <Provider store={showPageStore}>
       <Actions type="public" />
+    </Provider>
+  );
+
+  const photoRoot = ReactDOM.createRoot(
+    document.querySelector("#photo") as HTMLElement
+  );
+  photoRoot.render(
+    <Provider store={showPageStore}>
+      <Photo />
     </Provider>
   );
 
