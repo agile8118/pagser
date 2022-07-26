@@ -24,6 +24,14 @@
     margin: 2rem 0 1rem 0;
   }
 
+  &__photo-actions {
+    display: flex;
+    margin-bottom: 2rem;
+    & .button:first-child {
+      margin-right: 0.8rem;
+    }
+  }
+
   &__header {
     &__actions {
       text-align: right;

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ConfirmModal, UploadPhoto } from "@pagser/reusable";
-
+import { ConfirmModal, UploadPhoto, Button } from "@pagser/reusable";
 import {
   deletePhoto,
   setPhotoUrl,
@@ -56,29 +55,43 @@ const Photo = () => {
             onCancel={() => setConfirmModalOpen(false)}
           />
           {/* Photo action buttons for owner */}
-          {photoUrl ? (
-            <React.Fragment>
-              <button
-                className="btn btn-blue btn-sm btn-round margin-bottom-2 margin-right-1"
+          <div className="page__photo-actions">
+            {photoUrl ? (
+              <React.Fragment>
+                <Button
+                  color="blue"
+                  size="small"
+                  rounded={true}
+                  // className="btn btn-blue btn-sm btn-round margin-bottom-2 margin-right-1"
+                  onClick={() => setUploadPhotoModalOpen(true)}
+                >
+                  <i className="fa fa-upload button__icon-left" />
+                  Change Page Photo
+                </Button>
+                <Button
+                  color="red"
+                  size="small"
+                  rounded={true}
+                  // className="btn btn-sm btn-round btn-red margin-bottom-2"
+                  onClick={() => setConfirmModalOpen(true)}
+                >
+                  <i className="fa fa-trash button__icon-left" />
+                  Remove Page Photo
+                </Button>
+              </React.Fragment>
+            ) : (
+              <Button
+                color="blue"
+                size="small"
+                rounded={true}
+                // className="btn btn-blue btn-sm btn-round margin-bottom-2"
                 onClick={() => setUploadPhotoModalOpen(true)}
               >
-                Change Page Photo
-              </button>
-              <button
-                className="btn btn-sm btn-round btn-red margin-bottom-2"
-                onClick={() => setConfirmModalOpen(true)}
-              >
-                Remove Page Photo
-              </button>
-            </React.Fragment>
-          ) : (
-            <button
-              className="btn btn-blue btn-sm btn-round margin-bottom-2"
-              onClick={() => setUploadPhotoModalOpen(true)}
-            >
-              Upload Page Photo
-            </button>
-          )}
+                <i className="fa fa-upload button__icon-left" />
+                Upload a Page Photo
+              </Button>
+            )}
+          </div>
           {/* Upload photo modal */}
           <UploadPhoto
             open={uploadPhotoModalOpen}
@@ -88,7 +101,7 @@ const Photo = () => {
                 crop your image, this is just the area that will be shown as the
                 thumbnail."
             inputLabelName="Choose a photo"
-            url={`/api/pages/${pageId}/photo`}
+            url={`/pages/${pageId}/photo`}
             minWidth={1200}
             minHeight={675}
             size={8000000}

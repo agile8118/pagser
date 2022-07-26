@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { request, loadingModal } from "@pagser/common";
-import { ConfirmModal, UploadAttachFile } from "@pagser/reusable";
+import { ConfirmModal, UploadAttachFile, Button } from "@pagser/reusable";
 import {
   fetchAttachFiles,
   selectLoading,
@@ -67,6 +67,7 @@ const AttachFiles = () => {
       );
     });
   };
+  ``;
 
   // Render the add an attach file button
   const renderButton = () => {
@@ -74,23 +75,25 @@ const AttachFiles = () => {
       // If user is the owner of the page
       return (
         <React.Fragment>
-          <button
-            className="btn btn-round btn-blue btn-sm"
+          <Button
+            color="blue"
+            size="small"
+            rounded={true}
             onClick={() => {
               setUploadAttachFilesModalOpen(true);
             }}
           >
-            <i className="fa fa-upload" /> Add an attach file
-          </button>
+            <i className="fa fa-upload button__icon-left" /> Add an attach file
+          </Button>
 
           <UploadAttachFile
             open={uploadAttachFilesModalOpen}
-            header="Add an attach file"
+            header="Add an Attach File"
             text="You can upload maximum of 5 files 10MB each for every page."
             size={10000000}
-            url={`/api/pages/${pageId}/attach-files`}
+            url={`/pages/${pageId}/attach-files`}
             success={() => {
-              fetchAttachFiles("File uploaded successfully.");
+              dispatch(fetchAttachFiles("File uploaded successfully."));
             }}
             onClose={() => {
               setUploadAttachFilesModalOpen(false);
@@ -114,12 +117,12 @@ const AttachFiles = () => {
 
           loadingModal("Deleting the attach file...");
           await request.delete(
-            `/api/pages/${pageId}/attach-files/${confirmModalFileId}`,
+            `/pages/${pageId}/attach-files/${confirmModalFileId}`,
             {
               auth: true,
             }
           );
-          fetchAttachFiles("File deleted successfully.");
+          dispatch(fetchAttachFiles("File deleted successfully."));
         }}
         onCancel={() => setConfirmModalOpen(false)}
       >

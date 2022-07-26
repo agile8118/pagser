@@ -3149,6 +3149,11 @@ input:checked + .slider:before {
     margin: 3rem 0; }
   .page__photo {
     margin: 2rem 0 1rem 0; }
+  .page__photo-actions {
+    display: flex;
+    margin-bottom: 2rem; }
+    .page__photo-actions .button:first-child {
+      margin-right: 0.8rem; }
   .page__header__actions {
     text-align: right;
     margin: 1rem 0; }
