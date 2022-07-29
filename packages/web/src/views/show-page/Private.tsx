@@ -1,12 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { request, loadingModal } from "@pagser/common";
-import {
-  ConfirmModal,
-  UploadAttachFile,
-  Button,
-  Loading,
-} from "@pagser/reusable";
+import { Loading } from "@pagser/reusable";
 import {
   fetchPrivatePage,
   selectLoading,

@@ -6,6 +6,7 @@ import Input from "./forms/Input";
 import Button from "./forms/Button";
 import Textarea from "./forms/Textarea";
 import InputFile from "./forms/InputFile";
+import Dropdown from "./forms/Dropdown";
 
 import AddToCollection from "./modals/AddToCollection";
 import UploadAttachFile from "./modals/UploadAttachFile";
@@ -21,6 +22,7 @@ export {
   Button,
   Textarea,
   InputFile,
+  Dropdown,
   AddToCollection,
   UploadAttachFile,
   UploadPhoto,

@@ -2,16 +2,17 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 
-import Authentication from "./components/authentication";
+import Authentication from "./views/authentication";
 
-import Actions from "./components/show-page/Actions";
-import Photo from "./components/show-page/Photo";
-import AttachFiles from "./components/show-page/AttachFiles";
-import Author from "./components/show-page/Author";
-import Ratings from "./components/show-page/Ratings";
-import ShowPrivate from "./components/show-page/Private";
+import Actions from "./views/show-page/Actions";
+import Photo from "./views/show-page/Photo";
+import AttachFiles from "./views/show-page/AttachFiles";
+import Author from "./views/show-page/Author";
+import Ratings from "./views/show-page/Ratings";
+import Comments from "./views/show-page/Comments";
+import ShowPrivate from "./views/show-page/Private";
 
-import { store as showPageStore } from "./components/show-page/store";
+import { store as showPageStore } from "./views/show-page/store";
 
 const container = document.querySelector(".react-container") as HTMLElement;
 const containerName = container ? container.getAttribute("name") : null;
@@ -77,14 +78,17 @@ if (containerName === "show-public") {
     );
   }
 
-  // if (document.querySelector("#comments")) {
-  //   ReactDOM.render(
-  //     <Provider store={showPageStore}>
-  //       <Comments />
-  //     </Provider>,
-  //     document.querySelector("#comments")
-  //   );
-  // }
+  if (document.querySelector("#comments")) {
+    const commentsRoot = ReactDOM.createRoot(
+      document.querySelector("#comments") as HTMLElement
+    );
+
+    commentsRoot.render(
+      <Provider store={showPageStore}>
+        <Comments />
+      </Provider>
+    );
+  }
 }
 
 if (containerName === "show-private") {

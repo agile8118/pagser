@@ -1,9 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk, RootState } from "./store";
 
+type TStatus = "spectator" | "owner" | "authenticated" | "";
+
 interface UserState {
   id: string;
-  status: string;
+  status: TStatus;
   readLater: boolean;
   subscribed: boolean;
 }
@@ -22,7 +24,7 @@ export const userSlice = createSlice({
     setId: (state, action: PayloadAction<string>) => {
       state.id = action.payload;
     },
-    setStatus: (state, action: PayloadAction<string>) => {
+    setStatus: (state, action: PayloadAction<TStatus>) => {
       state.status = action.payload;
     },
     setReadLater: (state, action: PayloadAction<boolean>) => {
