@@ -5,7 +5,7 @@ const User = require("../../models/user");
 const util = require("../../lib/util");
 const keys = require("../../config/keys");
 
-// Add a comment for a page
+// Add a comment for a page or a reply to a comment
 exports.addComment = async (req, res) => {
   try {
     const pageId = req.params.pageId;
@@ -45,6 +45,7 @@ exports.addComment = async (req, res) => {
       },
       viewer: "owner",
       text: comment.text,
+      likes: 0,
       inReplyTo: comment.inReplyTo,
       inReplyToUser: comment.inReplyToCommentReply
         ? repliedToC.author.name

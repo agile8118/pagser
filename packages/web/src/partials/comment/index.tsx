@@ -183,7 +183,7 @@ const Comment = (props: IProps) => {
       />
       {props.status == "add-reply" && (
         <AddReplyForm
-          ref={addReplyInput}
+          // ref={addReplyInput}
           onSubmit={(text) => {
             dispatch(addComment(text, props.id));
           }}

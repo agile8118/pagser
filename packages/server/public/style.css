@@ -1701,7 +1701,9 @@ pre {
   .form-text--big .form-text__label {
     left: 1.5rem; }
   .form-text--small {
-    font-size: 1.3rem; }
+    font-size: 1.4rem; }
+    .form-text--small .form-text__inner-input-label {
+      top: 0.9rem; }
     .form-text--small .form-text__input {
       padding: 0.8rem 1rem;
       border-radius: 0.3rem; }
@@ -1763,6 +1765,15 @@ pre {
         color: #555;
         padding: 0 0.7rem;
         font-size: 85%; }
+  .form-text__inner-input-label {
+    position: absolute;
+    top: 1.2rem;
+    left: 3px;
+    background: #000;
+    border-radius: 4px;
+    padding: 0.1rem 0.8rem;
+    font-size: inherit;
+    color: #fff; }
   .form-text__number-indicator {
     font-size: 90%;
     margin-top: 5px;

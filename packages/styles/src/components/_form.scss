@@ -38,7 +38,11 @@
   }
 
   &--small {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
+
+    .form-text__inner-input-label {
+      top: 0.9rem;
+    }
 
     .form-text__input {
       padding: 0.8rem 1rem;
@@ -134,6 +138,17 @@
         font-size: 85%;
       }
     }
+  }
+
+  &__inner-input-label {
+    position: absolute;
+    top: 1.2rem;
+    left: 3px;
+    background: #000;
+    border-radius: 4px;
+    padding: 0.1rem 0.8rem;
+    font-size: inherit;
+    color: #fff;
   }
 
   &__number-indicator {

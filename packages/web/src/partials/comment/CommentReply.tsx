@@ -122,7 +122,7 @@ const CommentReply = (props: IProps) => {
       </div>
       {props.status === "add-reply" && (
         <AddReplyForm
-          ref={addReplyInput}
+          // ref={addReplyInput}
           toName={props.toName}
           onSubmit={(text) => {
             dispatch(addComment(text, props.parentCommentId, props.id));

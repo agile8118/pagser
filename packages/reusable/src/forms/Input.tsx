@@ -22,6 +22,7 @@ interface Props {
   placeholder?: string;
   maxLength?: number;
   lined?: boolean;
+  innerInputLabel?: string;
 }
 
 const Input = (props: Props) => {
@@ -94,6 +95,22 @@ const Input = (props: Props) => {
 
               <div className="tooltip__text">{props.help}</div>
             </div>
+          )}
+
+          {props.innerInputLabel && (
+            <span
+              className="form-text__inner-input-label"
+              ref={(elem) => {
+                // Add a left padding to the input because of the name label
+                if (elem)
+                  // @ts-ignore
+                  elem.nextSibling.style.paddingLeft = `${
+                    elem.clientWidth + 10
+                  }px`;
+              }}
+            >
+              {props.innerInputLabel}
+            </span>
           )}
 
           <input

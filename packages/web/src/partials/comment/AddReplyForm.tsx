@@ -1,4 +1,5 @@
-import React, { Ref } from "react";
+import React, { useState } from "react";
+import { Input } from "@pagser/reusable";
 
 interface IProps {
   onSubmit: (value: string) => void;
@@ -7,18 +8,20 @@ interface IProps {
 }
 
 // @TODO: fix the any type
-const addReplyForm = React.forwardRef((props: IProps, ref: any) => {
+const addReplyForm = (props: IProps) => {
+  const [text, setText] = useState("");
+
   return (
     <form
       className="form"
       onSubmit={(e) => {
         e.preventDefault();
-        props.onSubmit(ref?.current?.value as string);
-        ref.current.value = "";
+        props.onSubmit(text);
+        setText("");
       }}
     >
       <div className="form__group">
-        {props.toName && (
+        {/* {props.toName && (
           <span
             className="form__input__text-label"
             ref={(elem) => {
@@ -32,13 +35,18 @@ const addReplyForm = React.forwardRef((props: IProps, ref: any) => {
           >
             {props.toName}
           </span>
-        )}
-        <input
-          className="form__input form__input--lined"
-          autoFocus
+        )} */}
+        <Input
+          size="small"
+          value={text}
+          lined={true}
+          autoFocus={true}
           required
+          innerInputLabel={props.toName}
           placeholder="Add your reply..."
-          ref={ref}
+          onChange={(value) => {
+            setText(value);
+          }}
         />
       </div>
       <div className="right-content margin-bottom-2">
@@ -55,6 +63,6 @@ const addReplyForm = React.forwardRef((props: IProps, ref: any) => {
       </div>
     </form>
   );
-});
+};
 
 export default addReplyForm;
