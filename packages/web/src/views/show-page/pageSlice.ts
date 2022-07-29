@@ -8,6 +8,7 @@ import {
   setStatus as setUserStatus,
   setSubscribed as setUserSubscribed,
   setReadLater as setUserReadLater,
+  setSubscribed,
 } from "./userSlice";
 
 interface IContents {
@@ -293,13 +294,20 @@ export const fetchAttachFiles =
 // Send a request to server to either subscribe to or unsubscribe from the author
 export const subscribe = (): AppThunk => async (dispatch, getState) => {
   const authorId = getState().page.author.id;
-  const response = (await request.post(`/api/subscription/${authorId}`, null, {
+  const response = (await request.post(`/subscription/${authorId}`, null, {
     auth: true,
   })) as any;
 
   response.subNum;
 
   dispatch(setSubscribersCount(response.subNum));
+  dispatch(setSubscribed(response.subscribed));
+
+  if (response.subscribed) {
+    alert("Successfully subscribed to the author.", "success");
+  } else {
+    alert("Successfully unsubscribed from the author.", "success");
+  }
 };
 
 export const selectId = (state: RootState) => state.page.id;
