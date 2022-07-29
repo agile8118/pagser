@@ -15,7 +15,7 @@ import Author from "./Author";
 import Ratings from "./Ratings";
 import Photo from "./Photo";
 import AttachFiles from "./AttachFiles";
-// import Comments from "./Comments";
+import Comments from "./Comments";
 
 const Private = () => {
   const loading = useSelector(selectLoading);
@@ -34,17 +34,17 @@ const Private = () => {
     return <p dangerouslySetInnerHTML={{ __html: contents.body as string }} />;
   };
 
-  // const renderComment = () => {
-  //   if (configurations.comments) {
-  //     return <Comments />;
-  //   } else {
-  //     return (
-  //       <p className="normal-paragraph disabled-message-comments center-content">
-  //         Comments are disabled for this page.
-  //       </p>
-  //     );
-  //   }
-  // }
+  const renderComment = () => {
+    if (configurations.comments) {
+      return <Comments />;
+    } else {
+      return (
+        <p className="normal-paragraph disabled-message-comments center-content">
+          Comments are disabled for this page.
+        </p>
+      );
+    }
+  };
 
   const renderRatings = () => {
     if (configurations.rating) {
@@ -149,7 +149,7 @@ const Private = () => {
         </div>
       </div>
 
-      {/* {renderComment()} */}
+      {renderComment()}
       <br />
       <br />
       <br />
