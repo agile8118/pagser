@@ -4,7 +4,7 @@ interface IProps {
   id: string;
   status: "normal" | "editing";
   type: "public" | "private" | "draft";
-  selected: boolean;
+  selected?: boolean;
   noPhoto?: boolean;
   briefDes: string;
   title: string;
@@ -13,7 +13,7 @@ interface IProps {
   url: string;
   image: string;
   authorUsername: string;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 const PageThumbnail = (props: IProps) => {

@@ -13,6 +13,7 @@ import Subscriptions from "./subscriptions/Subscriptions";
 import HistoryPages from "./history/Pages";
 import HistoryComments from "./history/Comments";
 import ReadLater from "./read-later/ReadLater";
+import LikedPages from "./liked-pages/LikedPages";
 
 function Main() {
   return (
@@ -25,6 +26,7 @@ function Main() {
           <Route path="/feed/history/pages" element={<HistoryPages />} />
           <Route path="/feed/history/comments" element={<HistoryComments />} />
           <Route path="/feed/read-later" element={<ReadLater />} />
+          <Route path="/feed/liked-pages" element={<LikedPages />} />
 
           <Route path="/u/dashboard" element={<Dashboard />} />
           <Route path="/u/analytics" element={<Analytics />} />

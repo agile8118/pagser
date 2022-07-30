@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
 import PageThumbnail from "../../../partials/PageThumbnail";
 import { Dropdown, ConfirmModal, Loading } from "@pagser/reusable";
 import Header from "./Header";

@@ -16,7 +16,7 @@ interface IPage {
 export type TSortBy = "date-added-asc";
 export type TStatus = "normal" | "editing";
 export type TFilterBy = "all" | "private" | "public";
-export type TKind = "PB-pages" | "history" | "read-later";
+export type TKind = "PB-pages" | "history" | "read-later" | "liked-pages";
 
 interface PagesState {
   loading: boolean;
