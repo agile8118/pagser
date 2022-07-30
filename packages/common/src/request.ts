@@ -5,6 +5,7 @@ import { domain } from "./keys";
 
 interface optionsLayout {
   auth?: boolean;
+  data?: any;
   contentType?: string;
   alert?: boolean;
 }
@@ -170,6 +171,10 @@ class Request {
         config.headers = {
           authorization: localStorage.getItem("token"),
         };
+      }
+
+      if (options && options.data) {
+        config.data = options.data;
       }
 
       axios

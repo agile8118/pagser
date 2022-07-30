@@ -1,9 +1,11 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
 import sideNavReducer from "./side-nav/sideNavSlice";
+import pagesReducer from "./pagesSlice";
 
 export const store = configureStore({
   reducer: {
     sideNav: sideNavReducer,
+    pages: pagesReducer,
   },
 });
 

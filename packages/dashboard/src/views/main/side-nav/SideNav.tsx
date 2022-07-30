@@ -1,14 +1,68 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { selectSection, setSection } from "./sideNavSlice";
+import { selectSection, setSection, TSection } from "./sideNavSlice";
 
 const SideNav = () => {
   (document.querySelector("body") as HTMLBodyElement).style.marginLeft =
     "24rem";
   const dispatch = useDispatch();
   const section = useSelector(selectSection);
+
+  const getSectionFromUrl = () => {
+    const sections = [
+      "home",
+      "subscriptions",
+      "history/pages",
+      "history/comments",
+      "read-later",
+      "liked-pages",
+      "collections",
+      "dashboard",
+      "analytics",
+      "monetization",
+      "pages/published",
+      "pages/draft",
+      "comments",
+    ];
+
+    if (window.location.pathname.split("/")[1] === "home") {
+      return "home";
+    }
+
+    // Collection show page
+    if (window.location.pathname.split("/")[1] === "collection") {
+      return null;
+    }
+
+    if (window.location.pathname.split("/")[2] === "history") {
+      const index = sections.indexOf(
+        `${window.location.pathname.split("/")[2]}/${
+          window.location.pathname.split("/")[3]
+        }`
+      );
+      return sections[index] || "history/pages";
+    }
+
+    if (window.location.pathname.split("/")[2] === "pages") {
+      const index = sections.indexOf(
+        `${window.location.pathname.split("/")[2]}/${
+          window.location.pathname.split("/")[3]
+        }`
+      );
+      return sections[index] || "pages/published";
+    }
+
+    const index = sections.indexOf(window.location.pathname.split("/")[2]);
+    return sections[index] || "";
+  };
+
+  useEffect(() => {
+    if (!section) {
+      dispatch(setSection(getSectionFromUrl() as TSection));
+    }
+  }, []);
 
   return (
     <div className="sidenav sidenav--open" id="js--sidenav">

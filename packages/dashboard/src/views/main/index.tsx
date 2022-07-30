@@ -10,6 +10,8 @@ import Dashboard from "./dashboard/Dashboard";
 import Analytics from "./analytics/Analytics";
 import Monetization from "./monetization/Monetization";
 import Subscriptions from "./subscriptions/Subscriptions";
+import HistoryPages from "./history/Pages";
+import HistoryComments from "./history/Comments";
 
 function Main() {
   return (
@@ -19,6 +21,9 @@ function Main() {
         <Routes>
           <Route path="/home" element={<Home />} />
           <Route path="/feed/subscriptions" element={<Subscriptions />} />
+          <Route path="/feed/history/pages" element={<HistoryPages />} />
+          <Route path="/feed/history/comments" element={<HistoryComments />} />
+
           <Route path="/u/dashboard" element={<Dashboard />} />
           <Route path="/u/analytics" element={<Analytics />} />
           <Route path="/u/monetization" element={<Monetization />} />

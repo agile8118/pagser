@@ -3,6 +3,11 @@ interface IUtil {
   convertToUrl: (string: string) => string;
   randomText: (length: number) => string;
   isBottom: (el: HTMLElement) => boolean;
+  pageUrl: (
+    url: string,
+    username: string,
+    type: "public" | "private"
+  ) => string;
 }
 
 const util: any = {};
@@ -41,6 +46,11 @@ util.randomText = (length: number) => {
 
 util.isBottom = (el: HTMLElement) => {
   return el.getBoundingClientRect().bottom <= window.innerHeight;
+};
+
+util.pageUrl = (url: string, username: string, type: "public" | "private") => {
+  if (type === "public") return `/public-pages/${url}`;
+  return `/${username}/${url}`;
 };
 
 export default util as IUtil;

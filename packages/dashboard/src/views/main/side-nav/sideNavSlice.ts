@@ -3,7 +3,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { AppThunk, RootState } from "../store";
 
-type TSection =
+export type TSection =
+  | ""
   | "home"
   | "subscriptions"
   | "history/pages"
@@ -23,7 +24,7 @@ interface SideNavState {
 }
 
 const initialState: SideNavState = {
-  section: "home",
+  section: "",
 };
 
 export const sideNavSlice = createSlice({

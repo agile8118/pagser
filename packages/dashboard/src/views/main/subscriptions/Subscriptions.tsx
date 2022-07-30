@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SubscriptionThumbnail from "./SubscriptionThumbnail";
 import { loadingModal, alert, request } from "@pagser/common";
+import { Loading } from "@pagser/reusable";
 
 interface ISubscription {
   _id: string;
@@ -14,20 +15,21 @@ interface ISubscription {
 
 const Subscriptions = () => {
   const [subscriptions, setSubscriptions] = useState<ISubscription[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    async () => {
+    (async () => {
       document.title = "Subscriptions | Pagser";
 
-      loadingModal("Loading...");
+      setLoading(true);
       const response = (await request.get(`/subscriptions`, {
         auth: true,
       })) as any;
 
       setSubscriptions(response.subs);
 
-      loadingModal();
-    };
+      setLoading(false);
+    })();
   }, []);
 
   const renderSubscriptions = () => {
@@ -52,7 +54,13 @@ const Subscriptions = () => {
       <div className="header-nav">
         <h3 className="heading-tertiary">Your Subscriptions:</h3>
       </div>
-      <div className="row">{renderSubscriptions()}</div>
+      {loading && (
+        <div className="center-content margin-top-1">
+          <Loading />
+        </div>
+      )}
+
+      {!loading && <div className="row">{renderSubscriptions()}</div>}
     </div>
   );
 };
