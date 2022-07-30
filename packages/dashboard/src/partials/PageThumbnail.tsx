@@ -9,7 +9,7 @@ interface IProps {
   briefDes: string;
   title: string;
   target: string;
-  label: string;
+  label?: string;
   url: string;
   image: string;
   authorUsername: string;

@@ -12,6 +12,7 @@ import Monetization from "./monetization/Monetization";
 import Subscriptions from "./subscriptions/Subscriptions";
 import HistoryPages from "./history/Pages";
 import HistoryComments from "./history/Comments";
+import ReadLater from "./read-later/ReadLater";
 
 function Main() {
   return (
@@ -23,6 +24,7 @@ function Main() {
           <Route path="/feed/subscriptions" element={<Subscriptions />} />
           <Route path="/feed/history/pages" element={<HistoryPages />} />
           <Route path="/feed/history/comments" element={<HistoryComments />} />
+          <Route path="/feed/read-later" element={<ReadLater />} />
 
           <Route path="/u/dashboard" element={<Dashboard />} />
           <Route path="/u/analytics" element={<Analytics />} />
