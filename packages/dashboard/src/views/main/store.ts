@@ -1,5 +1,5 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
-import sideNavReducer from "./features/sideNav/sideNavSlice";
+import sideNavReducer from "./side-nav/sideNavSlice";
 
 export const store = configureStore({
   reducer: {

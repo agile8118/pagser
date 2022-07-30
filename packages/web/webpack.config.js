@@ -4,7 +4,8 @@ module.exports = {
   entry: path.join(__dirname, "src", "index.tsx"),
   output: {
     filename: "bundle.js",
-    path: path.resolve(__dirname, "../server/public"),
+    chunkFilename: "[name].bundle.js",
+    path: path.resolve(__dirname, "../server/public/scripts"),
   },
   devtool: "inline-source-map",
   module: {

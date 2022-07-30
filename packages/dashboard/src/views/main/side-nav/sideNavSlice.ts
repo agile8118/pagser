@@ -1,7 +1,7 @@
 import { alert, request, util } from "@pagser/common";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { AppThunk, RootState } from "../../store";
+import { AppThunk, RootState } from "../store";
 
 type TSection =
   | "home"

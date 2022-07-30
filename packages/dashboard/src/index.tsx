@@ -3,8 +3,8 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 
-import NewPage from "./components/new-page";
-import Main from "./components/main";
+import NewPage from "./views/new-page";
+import Main from "./views/main";
 // import { store } from "./store/store";
 
 // {/* <Provider store={store}> */}
