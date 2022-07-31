@@ -8,8 +8,6 @@ const Password = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [confirmPasswordDisabled, setConfirmPasswordDisabled] = useState(true);
-  const [alertMessage, setAlertMessage] = useState(null);
-  const [alertType, setAlertType] = useState("success");
   const [buttonDisabled, setButtonDisabled] = useState(true);
 
   const confirmPasswordReset = () => {

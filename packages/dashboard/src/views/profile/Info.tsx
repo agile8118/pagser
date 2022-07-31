@@ -286,7 +286,7 @@ const Info = () => {
               <a
                 href={`/users/${username}`}
                 target="_blank"
-                className="btn-text btn-text-underlined"
+                className="button-text"
               >
                 View public profile <i className="fa fa-arrow-right" />
               </a>

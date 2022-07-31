@@ -88,14 +88,11 @@ export const fetchPages =
         ? `/users/${window.location.pathname.split("/")[2]}/pages`
         : `/${kind}?sortBy=${sortBy}&filterBy=${filterBy}`;
 
-    // if (kind !== "PB-pages") loadingModal("Loading...");
     const response = (await request.get(url, {
       auth: true,
     })) as any;
 
-    // loadingModal();
-
-    // @TODO: make it so that we always use data.pages
+    /** @todo: make it so that we always use data.pages */
     dispatch(setList(response.results || response.pages));
 
     if (filterBy) dispatch(setFilterBy(response.filterBy));

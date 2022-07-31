@@ -54,7 +54,7 @@ const Photo = () => {
           onClick={() => {
             setUploadPhotoModal(true);
           }}
-          className="btn-text btn-text-underlined"
+          className="button-text"
         >
           Change or upload a new photo
         </a>

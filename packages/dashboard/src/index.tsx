@@ -1,24 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import { Provider } from "react-redux";
 
 import NewPage from "./views/new-page";
 import Main from "./views/main";
 import Profile from "./views/profile";
-// import { store } from "./store/store";
+import PublicProfile from "./views/public-profile";
 
-// {/* <Provider store={store}> */}
-// {/* </Provider> */}
-{
-  /* <BrowserRouter basename="/"> */
-}
 const container = document.querySelector(".react-container") as HTMLElement;
 const containerName = container ? container.getAttribute("name") : null;
 let root = ReactDOM.createRoot(container);
 
 if (containerName === "main") {
-  // root = ReactDOM.createRoot(container);
   root.render(
     <React.StrictMode>
       <Main />
@@ -27,7 +19,6 @@ if (containerName === "main") {
 }
 
 if (containerName === "new-page") {
-  // root = ReactDOM.createRoot(container);
   root.render(
     <React.StrictMode>
       <NewPage />
@@ -36,10 +27,17 @@ if (containerName === "new-page") {
 }
 
 if (containerName === "profile") {
-  // root = ReactDOM.createRoot(container);
   root.render(
     <React.StrictMode>
       <Profile />
+    </React.StrictMode>
+  );
+}
+
+if (containerName === "public-profile") {
+  root.render(
+    <React.StrictMode>
+      <PublicProfile />
     </React.StrictMode>
   );
 }

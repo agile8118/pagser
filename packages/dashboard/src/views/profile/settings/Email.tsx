@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { request, alert } from "@pagser/common";
 import { Loading, Input, Button } from "@pagser/reusable";
 

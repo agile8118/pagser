@@ -10,7 +10,7 @@ interface IProps {
   name: string;
   desc: string;
   author: string;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 const Collection = (props: IProps) => {
