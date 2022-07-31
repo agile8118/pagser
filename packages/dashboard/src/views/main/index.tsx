@@ -21,6 +21,8 @@ import ReadLater from "./read-later/ReadLater";
 import LikedPages from "./liked-pages/LikedPages";
 import UserPagesPublished from "./user-pages/Published";
 import UserPagesDraft from "./user-pages/Draft";
+import Collections from "./collections/Collections";
+import CollectionShow from "./collections/CollectionShow";
 
 function Main() {
   return (
@@ -35,7 +37,8 @@ function Main() {
           <Route path="/feed/liked-pages" element={<LikedPages />} />
           <Route path="/u/pages/published" element={<UserPagesPublished />} />
           <Route path="/u/pages/draft" element={<UserPagesDraft />} />
-
+          <Route path="/u/collections" element={<Collections />} />
+          <Route path="/collection/:id" element={<CollectionShow />} />
           <Route
             path="/u/pages"
             element={<Navigate to="/u/pages/published" replace />}

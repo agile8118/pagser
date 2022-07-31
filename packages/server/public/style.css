@@ -1680,7 +1680,7 @@ pre {
       .dropdown__item--active:hover {
         background-color: #f2f2f2; }
 
-.form-group {
+.form-group:not(:first-child) {
   margin: 2.5rem 0; }
 
 .form-text {
