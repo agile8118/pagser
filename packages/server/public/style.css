@@ -1223,7 +1223,7 @@ pre {
       border-color: #ccc;
       color: #757575; }
   .button-default-outlined {
-    background-color: #fff;
+    background-color: transparent;
     color: #5c5b5b;
     border: 1px solid #5c5b5b; }
     .button-default-outlined:hover, .button-default-outlined:active {
@@ -1257,7 +1257,7 @@ pre {
       background: #6ab0de;
       border-color: #6ab0de; }
   .button-blue-outlined {
-    background-color: #fff;
+    background-color: transparent;
     color: #2980b9;
     border: 1px solid #2980b9; }
     .button-blue-outlined:hover, .button-blue-outlined:active {
@@ -1268,7 +1268,7 @@ pre {
     .button-blue-outlined:disabled {
       cursor: not-allowed;
       border-color: #6ab0de;
-      background-color: #fff;
+      background-color: transparent;
       color: #6ab0de; }
       .button-blue-outlined:disabled:hover {
         border-color: #6ab0de; }
@@ -1291,7 +1291,7 @@ pre {
       background: #a1a8ae;
       border-color: #a1a8ae; }
   .button-gray-outlined {
-    background-color: #fff;
+    background-color: transparent;
     color: #6c757d;
     border: 1px solid #6c757d; }
     .button-gray-outlined:hover, .button-gray-outlined:active {
@@ -1325,7 +1325,7 @@ pre {
       background: #f29f97;
       border-color: #f29f97; }
   .button-red-outlined {
-    background-color: #fff;
+    background-color: transparent;
     color: #e74c3c;
     border: 1px solid #e74c3c; }
     .button-red-outlined:hover, .button-red-outlined:active {
@@ -1359,7 +1359,7 @@ pre {
       background: #7ee2a8;
       border-color: #7ee2a8; }
   .button-green-outlined {
-    background-color: #fff;
+    background-color: transparent;
     color: #2ecc71;
     border: 1px solid #2ecc71; }
     .button-green-outlined:hover, .button-green-outlined:active {

@@ -186,11 +186,11 @@ app.get("/public-pages/:url/edit", (req, res) => {
 });
 
 app.get("/settings", function (req, res) {
-  res.render("admin");
+  res.render("profile");
 });
 
 app.get("/profile", function (req, res) {
-  res.render("admin");
+  res.render("profile");
 });
 
 // render a private page

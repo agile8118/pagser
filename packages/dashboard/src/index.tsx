@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 
 import NewPage from "./views/new-page";
 import Main from "./views/main";
+import Profile from "./views/profile";
 // import { store } from "./store/store";
 
 // {/* <Provider store={store}> */}
@@ -30,6 +31,15 @@ if (containerName === "new-page") {
   root.render(
     <React.StrictMode>
       <NewPage />
+    </React.StrictMode>
+  );
+}
+
+if (containerName === "profile") {
+  // root = ReactDOM.createRoot(container);
+  root.render(
+    <React.StrictMode>
+      <Profile />
     </React.StrictMode>
   );
 }

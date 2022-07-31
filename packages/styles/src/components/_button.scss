@@ -66,7 +66,7 @@
   }
 
   &-outlined {
-      background-color: #fff;
+      background-color: transparent;
       color: #5c5b5b;
       border: 1px solid #5c5b5b;
 
@@ -121,7 +121,7 @@
   }
 
   &-outlined {
-      background-color: #fff;
+      background-color: transparent;
       color: $color-blue;
       border: 1px solid $color-blue;
 
@@ -138,7 +138,7 @@
       &:disabled {
           cursor: not-allowed;
           border-color: lighten($color-blue, 20%);
-          background-color: #fff;
+          background-color: transparent;
           color: lighten($color-blue, 20%);
 
           &:hover {
@@ -176,7 +176,7 @@
   }
 
   &-outlined {
-      background-color: #fff;
+      background-color: transparent;
       color: $color-gray;
       border: 1px solid $color-gray;
 
@@ -230,7 +230,7 @@
   }
 
   &-outlined {
-      background-color: #fff;
+      background-color: transparent;
       color: $color-red;
       border: 1px solid $color-red;
 
@@ -284,7 +284,7 @@
   }
 
   &-outlined {
-      background-color: #fff;
+      background-color: transparent;
       color: $color-green;
       border: 1px solid $color-green;
 
