@@ -10,9 +10,9 @@ interface IProps {
   title: string;
   target: string;
   label?: string;
-  url: string;
-  image: string;
-  authorUsername: string;
+  url?: string;
+  image?: string;
+  authorUsername?: string;
   onClick?: () => void;
 }
 

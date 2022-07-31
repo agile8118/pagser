@@ -10,13 +10,20 @@ interface IPage {
   url: string;
   type: "public" | "private";
   dateVisited: string;
+  updatedAt: string;
   author: any;
 }
 
 export type TSortBy = "date-added-asc";
 export type TStatus = "normal" | "editing";
 export type TFilterBy = "all" | "private" | "public";
-export type TKind = "PB-pages" | "history" | "read-later" | "liked-pages";
+export type TKind =
+  | "PB-pages"
+  | "history"
+  | "read-later"
+  | "liked-pages"
+  | "user-pages/published"
+  | "user-pages/draft";
 
 interface PagesState {
   loading: boolean;
@@ -72,7 +79,7 @@ export const pagesSlice = createSlice({
 
 // Fetch pages from the server
 export const fetchPages =
-  (kind: TKind, filterBy: TFilterBy, sortBy?: TSortBy): AppThunk =>
+  (kind: TKind, filterBy?: TFilterBy, sortBy?: TSortBy): AppThunk =>
   async (dispatch, getState) => {
     dispatch(setLoading(true));
 
