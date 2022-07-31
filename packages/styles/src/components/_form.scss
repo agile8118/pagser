@@ -5,7 +5,6 @@
 }
 
 // text form
-
 .form-text {
   position: relative;
   width: 100%;
@@ -280,11 +279,11 @@
   &__textarea {
     display: block;
     resize: none;
-    color: $color-text;
+    color: #555;
     font-size: inherit;
     font-family: inherit;
     width: 100%;
-    padding: 1.1rem 1.2rem;
+    padding: 1.2rem 1.2rem;
     border-radius: 0.5rem;
     border: 1px solid #ccc;
 

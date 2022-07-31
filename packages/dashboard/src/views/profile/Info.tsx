@@ -44,9 +44,8 @@ const Info = () => {
           window.location.href = "/login?redirected=admin";
         }
       }
+      setLoading(false);
     })();
-
-    setLoading(false);
   }, []);
 
   // Name changes handle
@@ -131,21 +130,6 @@ const Info = () => {
     setLoadingSaving(false);
   };
 
-  if (loading)
-    return (
-      <div>
-        <div className="center-content">
-          <h3 className="heading-tertiary" id="information">
-            Your Information
-          </h3>
-        </div>
-        <br />
-        <div className="center-content">
-          <Loading />
-        </div>
-      </div>
-    );
-
   return (
     <div className="row">
       <div className="admin">
@@ -155,150 +139,160 @@ const Info = () => {
           </h3>
         </div>
 
-        {/* Name: */}
-        <div className="form-group">
-          <Input
-            value={name}
-            error={nameError}
-            label="Name"
-            placeholder="Full name"
-            onChange={(value) => {
-              setName(value);
-            }}
-          />
-        </div>
-
-        {/* Headline: */}
-        <div className="form-group">
-          <Input
-            maxLength={50}
-            label="Headline"
-            error={headlineError}
-            placeholder="Describe yourself in few words"
-            value={headline}
-            onChange={(value) => {
-              setHeadline(value);
-            }}
-          />
-        </div>
-
-        {/* Biography: */}
-        <div className="form-group">
-          <label className="form__label"></label>
-          <Textarea
-            label="Biography"
-            maxLength={250}
-            error={biographyError}
-            value={biography}
-            onChange={(value) => {
-              setBiography(value);
-            }}
-            placeholder="Add more information about yourself"
-            rows={4}
-          />
-        </div>
-
-        <div className="form__group">
-          <label className="form__label">Links</label>
-          <div className="form__group--sm">
-            <input
-              type="text"
-              maxLength={100}
-              placeholder="Website (http://www.example.com)"
-              className="form__input"
-              value={website}
-              onChange={(event) => {
-                setWebsite(event.target.value);
-              }}
-            />
+        {loading && (
+          <div className="center-content margin-top-2">
+            <Loading />
           </div>
+        )}
 
-          <div className="form__group--sm">
-            <div className="input__group">
-              <div>https://twitter.com/</div>
-              <input
-                maxLength={100}
-                type="text"
-                placeholder="Twitter Profile"
-                value={twitter}
-                className="form__input"
-                onChange={(event) => {
-                  setTwitter(event.target.value);
+        {!loading && (
+          <>
+            {/* Name: */}
+            <div className="form-group">
+              <Input
+                value={name}
+                error={nameError}
+                label="Name"
+                placeholder="Full name"
+                onChange={(value) => {
+                  setName(value);
                 }}
               />
             </div>
-          </div>
 
-          <div className="form__group--sm">
-            <div className="input__group">
-              <div>https://youtube.com/</div>
-              <input
-                maxLength={100}
-                type="text"
-                placeholder="Youtube Profile"
-                value={youtube}
-                className="form__input"
-                onChange={(event) => {
-                  setYoutube(event.target.value);
+            {/* Headline: */}
+            <div className="form-group">
+              <Input
+                maxLength={50}
+                label="Headline"
+                error={headlineError}
+                placeholder="Describe yourself in few words"
+                value={headline}
+                onChange={(value) => {
+                  setHeadline(value);
                 }}
               />
             </div>
-          </div>
 
-          <div className="form__group--sm">
-            <div className="input__group">
-              <div>https://linkedin.com/</div>
-              <input
-                maxLength={100}
-                type="text"
-                placeholder="LinkedIn Profile"
-                value={linkedin}
-                className="form__input"
-                onChange={(event) => {
-                  setLinkedin(event.target.value);
+            {/* Biography: */}
+            <div className="form-group">
+              <label className="form__label"></label>
+              <Textarea
+                label="Biography"
+                maxLength={250}
+                error={biographyError}
+                value={biography}
+                onChange={(value) => {
+                  setBiography(value);
                 }}
+                placeholder="Add more information about yourself"
+                rows={4}
               />
             </div>
-          </div>
 
-          <div className="form__group--sm">
-            <div className="input__group">
-              <div>https://facebook.com/</div>
-              <input
-                type="text"
-                maxLength={100}
-                placeholder="Facebook Profile"
-                value={facebook}
-                className="form__input"
-                onChange={(event) => {
-                  setFacebook(event.target.value);
-                }}
-              />
+            <div className="form__group">
+              <label className="form__label">Links</label>
+              <div className="form__group--sm">
+                <input
+                  type="text"
+                  maxLength={100}
+                  placeholder="Website (http://www.example.com)"
+                  className="form__input"
+                  value={website}
+                  onChange={(event) => {
+                    setWebsite(event.target.value);
+                  }}
+                />
+              </div>
+
+              <div className="form__group--sm">
+                <div className="input__group">
+                  <div>https://twitter.com/</div>
+                  <input
+                    maxLength={100}
+                    type="text"
+                    placeholder="Twitter Profile"
+                    value={twitter}
+                    className="form__input"
+                    onChange={(event) => {
+                      setTwitter(event.target.value);
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="form__group--sm">
+                <div className="input__group">
+                  <div>https://youtube.com/</div>
+                  <input
+                    maxLength={100}
+                    type="text"
+                    placeholder="Youtube Profile"
+                    value={youtube}
+                    className="form__input"
+                    onChange={(event) => {
+                      setYoutube(event.target.value);
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="form__group--sm">
+                <div className="input__group">
+                  <div>https://linkedin.com/</div>
+                  <input
+                    maxLength={100}
+                    type="text"
+                    placeholder="LinkedIn Profile"
+                    value={linkedin}
+                    className="form__input"
+                    onChange={(event) => {
+                      setLinkedin(event.target.value);
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="form__group--sm">
+                <div className="input__group">
+                  <div>https://facebook.com/</div>
+                  <input
+                    type="text"
+                    maxLength={100}
+                    placeholder="Facebook Profile"
+                    value={facebook}
+                    className="form__input"
+                    onChange={(event) => {
+                      setFacebook(event.target.value);
+                    }}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div className="u-flex-text-right">
-          <Button
-            outlined={true}
-            color="blue"
-            rounded={true}
-            disabled={btnDisabled}
-            loading={loadingSaving}
-            onClick={() => onSaveClick()}
-          >
-            Save
-          </Button>
-        </div>
-        <Photo />
-        <div className="right-content margin-top-4">
-          <a
-            href={`/users/${username}`}
-            target="_blank"
-            className="btn-text btn-text-underlined"
-          >
-            View public profile <i className="fa fa-arrow-right" />
-          </a>
-        </div>
+            <div className="u-flex-text-right">
+              <Button
+                outlined={true}
+                color="blue"
+                rounded={true}
+                disabled={btnDisabled}
+                loading={loadingSaving}
+                onClick={() => onSaveClick()}
+              >
+                Save
+              </Button>
+            </div>
+            <Photo />
+            <div className="right-content margin-top-4">
+              <a
+                href={`/users/${username}`}
+                target="_blank"
+                className="btn-text btn-text-underlined"
+              >
+                View public profile <i className="fa fa-arrow-right" />
+              </a>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
