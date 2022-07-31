@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 
 import Info from "./Info";
+import Settings from "./settings/Settings";
 import Header from "./Header";
 
 function Profile() {
@@ -15,7 +16,7 @@ function Profile() {
       <Header />
       <Routes>
         <Route path="/profile" element={<Info />} />
-        {/* <Route path="/settings" element={<Settings />} /> */}
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </Router>
   );
