@@ -154,7 +154,7 @@ const Collections = () => {
         }}
       >
         <form className="form" onSubmit={createCollection}>
-          <div className="form-group">
+          <div className="">
             <Input
               label="Name"
               type="text"

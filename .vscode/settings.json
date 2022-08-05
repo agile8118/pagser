@@ -4,7 +4,9 @@
   "prettier.packageManager": "yarn",
   "npm.packageManager": "yarn",
   "cSpell.words": [
-    "Crooper"
+    "Crooper",
+    "Mailgun",
+    "openapi"
   ]
 
 }

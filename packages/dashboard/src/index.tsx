@@ -5,6 +5,7 @@ import NewPage from "./views/new-page";
 import Main from "./views/main";
 import Profile from "./views/profile";
 import PublicProfile from "./views/public-profile";
+import EditPage from "./views/edit-page/EditPage";
 
 const container = document.querySelector(".react-container") as HTMLElement;
 const containerName = container ? container.getAttribute("name") : null;
@@ -38,6 +39,14 @@ if (containerName === "public-profile") {
   root.render(
     <React.StrictMode>
       <PublicProfile />
+    </React.StrictMode>
+  );
+}
+
+if (containerName === "edit-page") {
+  root.render(
+    <React.StrictMode>
+      <EditPage />
     </React.StrictMode>
   );
 }

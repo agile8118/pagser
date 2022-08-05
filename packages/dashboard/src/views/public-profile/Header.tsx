@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-// import { changeSection } from "actions";
+type TSection = "collections" | "home" | "pages";
 
 const Header = () => {
   const username = window.location.pathname.split("/")[2];
 
-  const [section, setSection] = useState("");
+  const [section, setSection] = useState<TSection | "">("");
 
   useEffect(() => {
-    setSection(getSection());
+    setSection(getSection() as TSection);
   }, []);
 
   // Return the current section based on the url
