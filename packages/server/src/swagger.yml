@@ -1,0 +1,85 @@
+# --- SETUP --- #
+openapi: 3.0.0
+info:
+  title: Pagser API
+  version: 1.0.0
+  description: All endpoints of Pagser
+servers:
+  - url: http://localhost:3080/api
+    description: All APIs
+# --- TAGS --- #
+tags:
+  - name: Authentication
+    description: for authenticating users
+paths:
+  /send-code:
+    # --- END POINT --- #
+    post:
+      tags:
+        - Authentication
+      summary: sends a code to the user email address for registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: email of the user
+                name:
+                  type: string
+                  description: name of the user
+                password:
+                  type: string
+                  description: password of the user
+                username:
+                  type: string
+                  description: username of the user
+              example:
+                name: John Doe
+                email: email@gmail.com
+                password: Asdfzxcv1
+                username: John100
+      responses:
+        200:
+          description: A code was sent to the email address.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: A brief message
+                example:
+                  message: code sent
+        400:
+          description: A bad value has been provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        422:
+          description: Email or username is already in use.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+
+# --- SCHEMAS --- #
+components:
+  schemas:
+    ErrorMessage:
+      properties:
+        message:
+          type: string
+      example:
+        message: An error message

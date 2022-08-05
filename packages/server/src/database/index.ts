@@ -35,7 +35,7 @@ pool.query(triggersSQL, (err, res) => {
 // Fetch from the database, returns an array if there were more than one
 // record or an object if there was only one record
 const find = (query: string) => {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve: (value: any[]) => void, reject) {
     pool.query(query, function (err, res) {
       if (err) {
         reject(err);
@@ -44,7 +44,7 @@ const find = (query: string) => {
         //   resolve(res[0]);
         // } else {
         // }
-        resolve(res);
+        resolve(res.rows);
       }
     });
   });

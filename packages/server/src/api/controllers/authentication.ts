@@ -8,6 +8,8 @@ const sendCode = (req: Request, res: Response) => {
   const html = `
   <p>Please verify your email address by entering this code:</p>
   <h1 style="letter-spacing: 4px;">${code}</h1>
+  <p>If you did not request to create an account at pagser.com with this email address, 
+  please ignore this email.</p>
   `;
 
   req.session.userEmailVerificationCode = code;

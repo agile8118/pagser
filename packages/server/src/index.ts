@@ -3,7 +3,8 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import compression from "compression";
 import swaggerUI from "swagger-ui-express";
-import swaggerJsDocs from "swagger-jsdoc";
+import path from "path";
+import YAML from "yamljs";
 import session from "express-session";
 
 import apiRouter from "./api/router";
@@ -16,29 +17,8 @@ const PORT = process.env.PORT || 3080;
 const app = express();
 
 // Swagger
-app.use(
-  "/api-docs",
-  swaggerUI.serve,
-  swaggerUI.setup(
-    swaggerJsDocs({
-      failOnErrors: true,
-      definition: {
-        openapi: "3.0.0",
-        info: {
-          title: "Pagser API",
-          version: "1.0.0",
-          description: "",
-        },
-        server: [
-          {
-            url: `http://localhost:${PORT}`,
-          },
-        ],
-      },
-      apis: ["./src/api/router.js"],
-    })
-  )
-);
+const swaggerDocument = YAML.load(path.join(__dirname, "./swagger.yml"));
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 // Body parser
 app.use(bodyParser.json()).use(bodyParser.urlencoded({ extended: true }));

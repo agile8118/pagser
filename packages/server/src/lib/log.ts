@@ -3,7 +3,7 @@ const path = require("path");
 /*
   if the message parameter is object we log error and if it's string we log info
 */
-export default (message: string) => {
+export default (message: string | any, type?: "error") => {
   // Format the current date to use for each log
   const d = new Date();
   const dateString =
@@ -37,7 +37,7 @@ export default (message: string) => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 
   // If we either pass an object or specify the second parameter as error
-  if (typeof message === "object") {
+  if (type === "error" || typeof message === "object") {
     const errorStr = JSON.stringify(message, [
       "message",
       "arguments",
