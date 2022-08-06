@@ -73,6 +73,53 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessage"
+  # --- END POINT --- #
+  /username-availability:
+    post:
+      tags:
+        - Authentication
+      summary: sends a code to the user email address for registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: the username which we want to check for availability
+      responses:
+        200:
+          description: Username is available
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: A brief message
+                example:
+                  message: username is available
+        400:
+          description: A bad value has been provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        422:
+          description: Username is already in use.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
 
 # --- SCHEMAS --- #
 components:

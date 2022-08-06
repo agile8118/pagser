@@ -23,6 +23,11 @@ const sendCode = (req: Request, res: Response) => {
   });
 };
 
-const controller = { sendCode };
+// Sends a message to client to indicate that the username is available
+const usernameAvailability = (req: Request, res: Response) => {
+  res.status(200).send({ message: "username is available" });
+};
+
+const controller = { sendCode, usernameAvailability };
 
 export default controller;
