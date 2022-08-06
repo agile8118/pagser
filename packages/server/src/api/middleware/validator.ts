@@ -97,6 +97,28 @@ const password = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const validator = { name, email, password, username, usernameAvailability };
+// Validate the email that we've sent to the user's email address for signing up
+const userEmailVerificationCode = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userEmailVerificationCode = req.body.userEmailVerificationCode;
+
+  if (userEmailVerificationCode === req.session.userEmailVerificationCode) {
+    next();
+  } else {
+    res.status(400).send({ message: "invalid code" });
+  }
+};
+
+const validator = {
+  name,
+  email,
+  password,
+  username,
+  usernameAvailability,
+  userEmailVerificationCode,
+};
 
 export default validator;

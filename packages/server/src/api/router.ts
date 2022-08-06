@@ -1,7 +1,10 @@
 import { Express } from "express";
 
 // Controllers
-import Authentication from "./controllers/authentication";
+import Authentication, {
+  requireAuth,
+  requireSignIn,
+} from "./controllers/authentication";
 
 // Middleware
 import validator from "./middleware/validator";
@@ -25,4 +28,19 @@ export default (app: Express) => {
     validator.usernameAvailability,
     Authentication.sendCode
   );
+
+  // Registers a user and sends back a token
+  app.post(
+    "/api/register",
+    validator.name,
+    validator.email,
+    validator.password,
+    validator.username,
+    validator.usernameAvailability,
+    validator.userEmailVerificationCode,
+    Authentication.register
+  );
+
+  // Logs a user in and sends back a token
+  app.post("/login", requireSignIn, Authentication.login);
 };

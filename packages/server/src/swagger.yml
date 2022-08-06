@@ -120,7 +120,64 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessage"
-
+  # --- END POINT --- #
+  /register:
+    post:
+      tags:
+        - Authentication
+      summary: registers the user to the application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: the username of the user
+                email:
+                  type: string
+                  description: the email of the user
+                password:
+                  type: string
+                  description: the password of the user
+                name:
+                  type: string
+                  description: the name of the user
+                userEmailVerificationCode:
+                  type: string
+                  description: the code that was sent to the specified email address 
+      responses:
+        200:
+          description: User was successfully registered.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: token for the user to use for authentication
+        400:
+          description: A bad value has been provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        422:
+          description: Username or email is already in use.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+      
 # --- SCHEMAS --- #
 components:
   schemas:

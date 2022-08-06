@@ -1,6 +1,12 @@
 import { Pool } from "pg";
 import fs from "fs";
 import path from "path";
+import { TTables, IUser, IPage } from "./types";
+
+// Make properties of a type optional
+type Partial<T> = {
+  [P in keyof T]?: T[P];
+};
 
 const pool = new Pool({
   user: "joseph",
@@ -51,8 +57,11 @@ const find = (query: string) => {
 };
 
 // Insert an item to the the specified table
-const insert = (table: string, data: any) => {
-  return new Promise(function (resolve, reject) {
+const insert = <T>(
+  table: TTables,
+  data: T extends IUser ? Partial<T> : never
+) => {
+  return new Promise(function (resolve: (insertedData: T) => void, reject) {
     const _values: any[] = [];
     let _valuesSpecifiers = "";
     let _columns = "";

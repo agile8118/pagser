@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   mongodb_url: process.env.MONGODB_URL,
   jwtSecret: process.env.JWTSECRET,
   sessionSecret: process.env.SESSIONSECRET,
