@@ -50,4 +50,34 @@ const find = (query: string) => {
   });
 };
 
-export const DB = { find };
+// Insert an item to the the specified table
+const insert = (table: string, data: any) => {
+  return new Promise(function (resolve, reject) {
+    const _values: any[] = [];
+    let _valuesSpecifiers = "";
+    let _columns = "";
+
+    // prepare out data for sql based on the data object provided
+    Object.keys(data).map((key, index) => {
+      _valuesSpecifiers += `$${index + 1}, `;
+      _columns += key + ", ";
+      _values.push(data[key]);
+    });
+
+    // remove the last 2 characters of value specifiers and columns
+    _valuesSpecifiers = _valuesSpecifiers.slice(0, -2);
+    _columns = _columns.slice(0, -2);
+
+    const query = `INSERT INTO ${table}(${_columns}) VALUES (${_valuesSpecifiers}) RETURNING *`;
+
+    pool.query(query, _values, function (error, result) {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(result.rows[0]);
+      }
+    });
+  });
+};
+
+export const DB = { find, insert };
