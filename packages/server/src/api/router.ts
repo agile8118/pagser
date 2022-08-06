@@ -1,13 +1,11 @@
 import { Express } from "express";
 
 // Controllers
-import Authentication, {
-  requireAuth,
-  requireSignIn,
-} from "./controllers/authentication";
+import Authentication from "./controllers/authentication";
 
 // Middleware
 import validator from "./middleware/validator";
+import { requireAuth, logTheUserIn } from "./services/passport";
 
 export default (app: Express) => {
   // Checks whether or not a username is available
@@ -42,5 +40,5 @@ export default (app: Express) => {
   );
 
   // Logs a user in and sends back a token
-  app.post("/login", requireSignIn, Authentication.login);
+  app.post("/api/login", logTheUserIn, Authentication.login);
 };

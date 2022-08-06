@@ -40,9 +40,8 @@ const register = async (req: Request, res: Response) => {
   const name = req.body.name;
 
   try {
-    const salt = await bcrypt.genSalt(10);
-    // hash (encrypt) the user password using the salt
-    const hash = await bcrypt.hash(password, salt);
+    // hash the user password, the second argument is 'salt round'
+    const hash = await bcrypt.hash(password, 10);
 
     // insert the user in the database and use 'hash' as for the user's password
     const user = await DB.insert<IUser>("users", {
@@ -60,10 +59,10 @@ const register = async (req: Request, res: Response) => {
 };
 
 // Logs a user in and gives them a token
-const login = async (req: Request, res: Response) => {};
-
-export const requireAuth = passport.authenticate("jwt", { session: false });
-export const requireSignIn = passport.authenticate("local", { session: false });
+const login = async (req: Request, res: Response) => {
+  // after validating their email and password (in the middleware), give the a token
+  if (req.user && req.user.id) res.send({ token: tokenForUser(req.user.id) });
+};
 
 const controller = { sendCode, usernameAvailability, register, login };
 

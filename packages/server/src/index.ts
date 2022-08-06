@@ -29,6 +29,16 @@ app.use(cors({ origin: "https://pagser.com/" }));
 // Compress all responses
 app.use(compression());
 
+// For passport (req.user)
+declare global {
+  namespace Express {
+    export interface User {
+      id: string;
+      username: string;
+    }
+  }
+}
+
 // Session
 declare module "express-session" {
   export interface SessionData {

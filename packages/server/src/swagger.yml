@@ -147,7 +147,7 @@ paths:
                   description: the name of the user
                 userEmailVerificationCode:
                   type: string
-                  description: the code that was sent to the specified email address 
+                  description: the code that was sent to the specified email address
       responses:
         200:
           description: User was successfully registered.
@@ -177,7 +177,49 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessage"
-      
+  # --- END POINT --- #
+  /login:
+    post:
+      tags:
+        - Authentication
+      summary: logs the the user in to the application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: the email of the user
+                password:
+                  type: string
+                  description: the password of the user
+      responses:
+        200:
+          description: User data was valid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: token for the user to use for authentication
+        401:
+          description: Email or password is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+
 # --- SCHEMAS --- #
 components:
   schemas:
