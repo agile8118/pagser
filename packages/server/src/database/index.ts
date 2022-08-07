@@ -40,9 +40,9 @@ pool.query(triggersSQL, (err, res) => {
 
 // Fetch from the database, returns an array if there were more than one
 // record or an object if there was only one record
-const find = (query: string) => {
+const find = (query: string, values: any[] = []) => {
   return new Promise(function (resolve: (value: any) => void, reject) {
-    pool.query(query, function (err, res) {
+    pool.query(query, values, function (err, res) {
       if (err) {
         reject(err);
       } else {
@@ -88,10 +88,15 @@ const insert = <T>(
 };
 
 // Update an item in a specific table
-const update = (table: TTables, data: any, where: string) => {
+const update = (
+  table: TTables,
+  data: any,
+  where: string,
+  valuesForWhere: any[] = []
+) => {
   return new Promise(function (resolve, reject) {
     let _columnsWithValueSpecifiers = "";
-    const _values: any[] = [];
+    let _values: any[] = [];
 
     // prepare out data for sql based on the data object provided
     Object.keys(data).map((key, index) => {
@@ -102,9 +107,12 @@ const update = (table: TTables, data: any, where: string) => {
     // remove the last 2 characters
     _columnsWithValueSpecifiers = _columnsWithValueSpecifiers.slice(0, -2);
 
-    const query = `UPDATE ${table} SET ${_columnsWithValueSpecifiers} WHERE ${where}`;
+    // values in the where condition
+    if (valuesForWhere.length) {
+      _values = [..._values, ...valuesForWhere];
+    }
 
-    console.log(query);
+    const query = `UPDATE ${table} SET ${_columnsWithValueSpecifiers} WHERE ${where}`;
 
     pool.query(query, _values, function (error, result) {
       if (error) {

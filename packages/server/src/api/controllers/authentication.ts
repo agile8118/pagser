@@ -17,7 +17,7 @@ const sendCode = async (req: Request, res: Response) => {
   const email = req.body.email;
   const code = Math.floor(Math.random() * 90000) + 10000; // generates a 5 digit number
   const html = `
-  <h3>Please verify your email address by entering this code:</h3>
+  <strong>Please verify your email address by entering this code:</strong>
   <h1 style="letter-spacing: 4px;">${code}</h1>
   <div style="text-align:center;margin-top: 20px;font-size: 12px;color: #555;">
     If you did not request to create an account at pagser.com with this email address, 
@@ -67,6 +67,7 @@ const login = async (req: Request, res: Response) => {
   if (req.user && req.user.id) res.send({ token: tokenForUser(req.user.id) });
 };
 
+// Sends an email to user's email address for them to use to reset their password
 const forgotPassword = async (req: Request, res: Response) => {
   const email = req.body.email;
 
@@ -78,7 +79,7 @@ const forgotPassword = async (req: Request, res: Response) => {
     const code = crypto.randomBytes(18).toString("hex");
     const link = `${keys.domain}/forgot-password?t=${code}&i=${user.id}`;
     const html = `
-    <h3>Please click on the link below to reset your password: </h3>
+    <strong>Please click on the link below to reset your password: </strong>
     <br />
     <a href="${link}">${link}</a>
     <div style="margin-top: 0.5rem;">
@@ -101,12 +102,39 @@ const forgotPassword = async (req: Request, res: Response) => {
   }
 };
 
+// Using the token that waws sent in their email address, reset their password and update the database
+const resetPassword = async (req: Request, res: Response) => {
+  const password = req.body.password;
+  const userId = req.body.user_id;
+
+  try {
+    // find the user
+    const user = await DB.find(
+      "SELECT token_code, token_date FROM users WHERE id = $1",
+      [userId]
+    );
+
+    if (!user) return res.status(400).send({ message: "invalid link" });
+
+    // hash the user password, the second argument is 'salt round'
+    const hash = await bcrypt.hash(password, 10);
+
+    // update user password password
+    await DB.update("users", { password: hash }, `id = $2`, [userId]);
+
+    res.status(200).send({ message: "password updated" });
+  } catch (e) {
+    handleServerError(e, res);
+  }
+};
+
 const controller = {
   sendCode,
   usernameAvailability,
   register,
   login,
   forgotPassword,
+  resetPassword,
 };
 
 export default controller;

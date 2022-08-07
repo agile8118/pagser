@@ -12,6 +12,8 @@ import log from "./lib/log";
 import keys from "./config/keys";
 import "./database";
 
+process.env.TZ = "GMT";
+
 const PORT = process.env.PORT || 3080;
 
 const app = express();

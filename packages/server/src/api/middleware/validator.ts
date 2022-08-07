@@ -1,8 +1,19 @@
 import { Request, Response, NextFunction } from "express";
-import isEmail from "validator/lib/isEmail";
+import vl from "validator";
 import { validate } from "@pagser/common";
 import { DB } from "../../database";
 import { handleServerError } from "../../lib/util";
+
+// Validate id
+const isId = (req: Request, res: Response, next: NextFunction) => {
+  const id = req.body.user_id;
+
+  if (vl.isNumeric(id)) {
+    next();
+  } else {
+    return res.status(400).send({ message: "id error" });
+  }
+};
 
 // Validate the user name
 const name = (req: Request, res: Response, next: NextFunction) => {
@@ -62,7 +73,7 @@ const usernameAvailability = async (
 const email = async (req: Request, res: Response, next: NextFunction) => {
   const email = req.body.email;
 
-  if (validate.isEmpty(email) || !isEmail(email))
+  if (validate.isEmpty(email) || !vl.isEmail(email))
     return res.status(400).send({ message: "email error" });
 
   next();
@@ -120,7 +131,35 @@ const userEmailVerificationCode = (
   }
 };
 
+// Verify the token that was sent to the user's email address for resetting their password
+const passwordResetToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const token = req.body.token;
+  const userId = req.body.user_id;
+
+  const user = await DB.find(
+    "SELECT token_code, token_date FROM users WHERE id = $1",
+    [userId]
+  );
+
+  if (!user) return res.status(400).send({ message: "invalid link" });
+
+  const tokenDate = new Date(user.token_date);
+
+  if (Date.now() - tokenDate.getTime() > 600000) {
+    return res.status(400).send({ message: "link expired" });
+  } else if (token === user.token_code) {
+    return next();
+  }
+
+  return res.status(400).send({ message: "invalid link" });
+};
+
 const validator = {
+  isId,
   name,
   email,
   emailAvailability,
@@ -128,6 +167,7 @@ const validator = {
   username,
   usernameAvailability,
   userEmailVerificationCode,
+  passwordResetToken,
 };
 
 export default validator;

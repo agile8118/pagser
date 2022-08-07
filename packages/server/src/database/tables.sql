@@ -1,3 +1,5 @@
+SET timezone TO 'GMT';
+-- CREATE USERS TABLE
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   name VARCHAR(200) NOT NULL,
@@ -16,8 +18,8 @@ CREATE TABLE IF NOT EXISTS users (
   verified BOOLEAN,
   token_code VARCHAR(200),
   token_date TIMESTAMP,
-  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
   UNIQUE (username),
   UNIQUE (email)
 );

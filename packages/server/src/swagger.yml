@@ -243,9 +243,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  token:
+                  message:
                     type: string
-                    description: token for the user to use for authentication
+                    description: A brief message
+                example:
+                  message: email was sent
         400:
           description: A bad value has been provided.
           content:
@@ -259,6 +261,53 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessage"
 
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+  # --- END POINT --- #
+  /reset-password:
+    post:
+      tags:
+        - Authentication
+      summary: resets the user's password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  description: the id of the user
+                password:
+                  type: string
+                  description: the new password
+                token:
+                  type: string
+                  description: the code that was sent to the user's email address
+      responses:
+        200:
+          description: Password was changed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: A brief message
+                example:
+                  message: password was changed
+        400:
+          description: A bad value has been provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
         500:
           description: Internal server error.
           content:

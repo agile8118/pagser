@@ -44,10 +44,19 @@ export default (app: Express) => {
   // Logs a user in and sends back a token
   app.post("/api/login", logTheUserIn, Authentication.login);
 
-  // Send a link to user's email to use for resetting their password
+  // Sends a link to user's email to use for resetting their password
   app.post(
     "/api/forgot-password",
     validator.email,
     Authentication.forgotPassword
+  );
+
+  // Using the token that waws sent in their email address, reset their password and update the database
+  app.post(
+    "/api/reset-password",
+    validator.isId,
+    validator.password,
+    validator.passwordResetToken,
+    Authentication.resetPassword
   );
 };
