@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
+import crypto from "crypto";
 import bcrypt from "bcrypt";
 import sendEmail from "../services/mailgun";
 import { tokenForUser, handleServerError } from "../../lib/util";
 import { DB } from "../../database";
 import { IUser } from "../../database/types";
+import keys from "../../config/keys";
 
 // Sends a message to client to indicate that the username is available
 const usernameAvailability = (req: Request, res: Response) => {
@@ -11,25 +13,26 @@ const usernameAvailability = (req: Request, res: Response) => {
 };
 
 // Send a code to the user email address to verify that user owns the email
-const sendCode = (req: Request, res: Response) => {
+const sendCode = async (req: Request, res: Response) => {
   const email = req.body.email;
   const code = Math.floor(Math.random() * 90000) + 10000; // generates a 5 digit number
   const html = `
-  <p>Please verify your email address by entering this code:</p>
+  <h3>Please verify your email address by entering this code:</h3>
   <h1 style="letter-spacing: 4px;">${code}</h1>
-  <p>If you did not request to create an account at pagser.com with this email address, 
-  please ignore this email.</p>
+  <div style="text-align:center;margin-top: 20px;font-size: 12px;color: #555;">
+    If you did not request to create an account at pagser.com with this email address, 
+    please ignore this email.
+  </div>
   `;
 
   req.session.userEmailVerificationCode = code;
 
-  sendEmail(email, "Verify your email address", html, (msg, info) => {
-    if (msg === "success") {
-      res.status(200).send({ message: "code sent" });
-    } else {
-      handleServerError(info, res);
-    }
-  });
+  try {
+    await sendEmail(email, "Verify your email address", html);
+    res.status(200).send({ message: "code sent" });
+  } catch (e) {
+    handleServerError(e, res);
+  }
 };
 
 // Registers a user and sends back a token
@@ -64,6 +67,46 @@ const login = async (req: Request, res: Response) => {
   if (req.user && req.user.id) res.send({ token: tokenForUser(req.user.id) });
 };
 
-const controller = { sendCode, usernameAvailability, register, login };
+const forgotPassword = async (req: Request, res: Response) => {
+  const email = req.body.email;
+
+  try {
+    const user = await DB.find(`SELECT id FROM users WHERE email = '${email}'`);
+
+    if (!user) return res.status(404).send({ message: "no email found" });
+
+    const code = crypto.randomBytes(18).toString("hex");
+    const link = `${keys.domain}/forgot-password?t=${code}&i=${user.id}`;
+    const html = `
+    <h3>Please click on the link below to reset your password: </h3>
+    <br />
+    <a href="${link}">${link}</a>
+    <div style="margin-top: 0.5rem;">
+      <em>Link is valid for just 10 minutes.</em>
+    </div>
+    <div style="text-align:center;margin-top: 20px;font-size: 12px;color: #555;">
+      If you didn't request for a password reset, feel free to ignore this email.
+    </div>`;
+
+    await DB.update(
+      "users",
+      { token_code: code, token_date: new Date() },
+      `email = '${email}'`
+    );
+
+    await sendEmail(email, "Reset your password", html);
+    res.status(200).send({ message: "code was sent" });
+  } catch (e) {
+    handleServerError(e, res);
+  }
+};
+
+const controller = {
+  sendCode,
+  usernameAvailability,
+  register,
+  login,
+  forgotPassword,
+};
 
 export default controller;

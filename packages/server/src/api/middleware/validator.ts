@@ -44,11 +44,11 @@ const usernameAvailability = async (
 
   // check to see that the username is not taken
   try {
-    const results = await DB.find(
+    const result = await DB.find(
       `SELECT username FROM users WHERE username='${username}'`
     );
 
-    if (!results.length) {
+    if (!result) {
       next();
     } else {
       return res.status(422).send({ message: "username is in use" });
@@ -65,13 +65,21 @@ const email = async (req: Request, res: Response, next: NextFunction) => {
   if (validate.isEmpty(email) || !isEmail(email))
     return res.status(400).send({ message: "email error" });
 
-  // validate the the email does not exist
+  next();
+};
+
+// validate the the email does not exist
+const emailAvailability = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const results = await DB.find(
+    const result = await DB.find(
       `SELECT email FROM users WHERE email='${email}'`
     );
 
-    if (!results.length) {
+    if (!result) {
       next();
     } else {
       return res.status(422).send({ message: "email is in use" });
@@ -115,6 +123,7 @@ const userEmailVerificationCode = (
 const validator = {
   name,
   email,
+  emailAvailability,
   password,
   username,
   usernameAvailability,

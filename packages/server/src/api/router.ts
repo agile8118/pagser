@@ -21,6 +21,7 @@ export default (app: Express) => {
     "/api/send-code",
     validator.name,
     validator.email,
+    validator.emailAvailability,
     validator.password,
     validator.username,
     validator.usernameAvailability,
@@ -32,6 +33,7 @@ export default (app: Express) => {
     "/api/register",
     validator.name,
     validator.email,
+    validator.emailAvailability,
     validator.password,
     validator.username,
     validator.usernameAvailability,
@@ -41,4 +43,11 @@ export default (app: Express) => {
 
   // Logs a user in and sends back a token
   app.post("/api/login", logTheUserIn, Authentication.login);
+
+  // Send a link to user's email to use for resetting their password
+  app.post(
+    "/api/forgot-password",
+    validator.email,
+    Authentication.forgotPassword
+  );
 };

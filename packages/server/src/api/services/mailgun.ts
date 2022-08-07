@@ -10,23 +10,22 @@ const mg = mailgun({
 });
 
 // Send an email to any address
-const sendEmail = (
-  to: string,
-  subject: string,
-  html: string,
-  callback: (status: "error" | "success", body: any) => void
-) => {
-  const data = {
-    from: "Pagser <noreply@email.pagser.com>",
-    to,
-    subject: subject,
-    html: html,
-  };
+const sendEmail = (to: string, subject: string, html: string) => {
+  return new Promise(function (resolve, reject) {
+    const data = {
+      from: "Pagser <noreply@email.pagser.com>",
+      to,
+      subject: subject,
+      html: html,
+    };
 
-  mg.messages().send(data, function (error, body) {
-    console.log(error);
-    if (error) callback("error", error);
-    else callback("success", body);
+    mg.messages().send(data, function (error, body) {
+      if (error) {
+        return reject(error);
+      } else {
+        resolve(body);
+      }
+    });
   });
 };
 

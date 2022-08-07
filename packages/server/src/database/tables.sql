@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
   token_code VARCHAR(200),
   token_date TIMESTAMP,
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
   UNIQUE (username),
   UNIQUE (email)
 );

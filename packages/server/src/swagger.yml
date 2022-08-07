@@ -219,6 +219,52 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessage"
+  # --- END POINT --- #
+  /forgot-password:
+    post:
+      tags:
+        - Authentication
+      summary: sends an email to the user's email address to use to reset their password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: the email of the user
+      responses:
+        200:
+          description: Email was sent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: token for the user to use for authentication
+        400:
+          description: A bad value has been provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        404:
+          description: No one with this email was found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
 
 # --- SCHEMAS --- #
 components:

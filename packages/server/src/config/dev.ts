@@ -5,7 +5,7 @@ export default {
     "mongodb+srv://pagser:Uj2WCkAvrkuR@cluster0.pidxc.mongodb.net/pagser?retryWrites=true&w=majority",
   jwtSecret: "JDHWIUDYT^%&*29uijDKNW",
   sessionSecret: "WDJHY^&@*()IDOEJKNBHKJNL",
-  domain: "localhost:3080",
+  domain: "http://localhost:3080",
   cloudinary_api_key: "527577115118424",
   cloudinary_api_secret: "whPeK95JJ2IhwMI8Zw3u9vFYaFs",
   accessKeyId: "AKIAU3QLQSE43V76DTE5",

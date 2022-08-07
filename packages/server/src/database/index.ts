@@ -46,11 +46,9 @@ const find = (query: string) => {
       if (err) {
         reject(err);
       } else {
-        if (res.rows.length === 1) {
-          resolve(res.rows[0]);
-        } else {
-          resolve(res.rows);
-        }
+        if (res.rows.length === 1) return resolve(res.rows[0]);
+        if (!res.rows || !res.rows.length) return resolve(null);
+        resolve(res.rows);
       }
     });
   });
@@ -89,4 +87,33 @@ const insert = <T>(
   });
 };
 
-export const DB = { find, insert };
+// Update an item in a specific table
+const update = (table: TTables, data: any, where: string) => {
+  return new Promise(function (resolve, reject) {
+    let _columnsWithValueSpecifiers = "";
+    const _values: any[] = [];
+
+    // prepare out data for sql based on the data object provided
+    Object.keys(data).map((key, index) => {
+      _columnsWithValueSpecifiers += `${key} = $${index + 1}, `;
+      _values.push(data[key]);
+    });
+
+    // remove the last 2 characters
+    _columnsWithValueSpecifiers = _columnsWithValueSpecifiers.slice(0, -2);
+
+    const query = `UPDATE ${table} SET ${_columnsWithValueSpecifiers} WHERE ${where}`;
+
+    console.log(query);
+
+    pool.query(query, _values, function (error, result) {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(result.rows[0]);
+      }
+    });
+  });
+};
+
+export const DB = { find, insert, update };
