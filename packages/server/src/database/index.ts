@@ -1,7 +1,9 @@
 import { Pool } from "pg";
-import fs from "fs";
-import path from "path";
 import { TTables, IUser, IPage } from "./types";
+
+/**
+ * @important Run the seed.js file first to get our tables, triggers and some starter data
+ */
 
 // Make properties of a type optional
 type Partial<T> = {
@@ -14,28 +16,6 @@ const pool = new Pool({
   database: "pagser",
   password: "",
   port: 5432,
-});
-
-// Grab the tables sql file
-const tablesSQL = fs
-  .readFileSync(path.join(__dirname, "./tables.sql"))
-  .toString();
-
-// Grab the triggers sql file
-const triggersSQL = fs
-  .readFileSync(path.join(__dirname, "./triggers.sql"))
-  .toString();
-
-// Execute the sql file to create our tables
-pool.query(tablesSQL, (err, res) => {
-  if (err) return console.log(err);
-  console.log("[postgres] tables were created successfully.");
-});
-
-// Execute the sql file to fire up our triggers
-pool.query(triggersSQL, (err, res) => {
-  if (err) return console.log(err);
-  console.log("[postgres] triggers were fired up successfully.");
 });
 
 // Fetch from the database, returns an array if there were more than one

@@ -5,6 +5,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "seed": "node ./src/database/seed.js",
     "start": "node ./dist/index.js",
     "build": "tsc -p .",
     "dev": "nodemon ./src/index.ts"
