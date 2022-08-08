@@ -6,7 +6,7 @@ info:
   description: All endpoints of Pagser
 servers:
   - url: http://localhost:3080/api
-    description: All APIs
+    description: All JSON APIs
 # --- TAGS --- #
 tags:
   - name: Authentication
@@ -78,7 +78,7 @@ paths:
     post:
       tags:
         - Authentication
-      summary: sends a code to the user email address for registration
+      summary: checks in the database to see whether or not a username is taken
       requestBody:
         required: true
         content:
@@ -149,7 +149,7 @@ paths:
                   type: string
                   description: the code that was sent to the specified email address
       responses:
-        200:
+        201:
           description: User was successfully registered.
           content:
             application/json:
@@ -269,7 +269,7 @@ paths:
                 $ref: "#/components/schemas/ErrorMessage"
   # --- END POINT --- #
   /reset-password:
-    post:
+    patch:
       tags:
         - Authentication
       summary: resets the user's password

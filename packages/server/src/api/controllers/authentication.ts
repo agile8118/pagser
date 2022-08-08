@@ -55,7 +55,7 @@ const register = async (req: Request, res: Response) => {
       verified: true,
     });
 
-    res.send({ token: tokenForUser(user.id) });
+    res.status(201).send({ token: tokenForUser(user.id) });
   } catch (e) {
     handleServerError(e, res);
   }

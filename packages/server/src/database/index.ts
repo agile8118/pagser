@@ -10,6 +10,7 @@ type Partial<T> = {
   [P in keyof T]?: T[P];
 };
 
+// Connect to the postgres database
 const pool = new Pool({
   user: "joseph",
   host: "localhost",

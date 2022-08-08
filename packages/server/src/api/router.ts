@@ -52,7 +52,7 @@ export default (app: Express) => {
   );
 
   // Using the token that waws sent in their email address, reset their password and update the database
-  app.post(
+  app.patch(
     "/api/reset-password",
     validator.isId,
     validator.password,
