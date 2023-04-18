@@ -66,6 +66,9 @@ export default (app: Express) => {
     Authentication.resetPassword
   );
 
+  // Checks whether or not the user is authenticated, returns user id and photo if so
+  app.post("/auth", requireAuth, Authentication.getAuth);
+
   // ------------------------------------------------ //
   // ***************** PAGE ROUTES ****************** //
   // ------------------------------------------------ //

@@ -130,6 +130,20 @@ const resetPassword = async (req: Request, res: Response) => {
   }
 };
 
+// Return the id and photo of the user if authenticated
+const getAuth = async (req: Request, res: Response) => {
+  if (req.user.id) {
+    const user = await DB.find<IUser>(
+      "SELECT id, photo_url FROM users WHERE id = $1",
+      [req.user.id]
+    );
+
+    res.status(200).send({ user: { id: user.id, photo: user.photo_url } });
+  } else {
+    res.status(400).send();
+  }
+};
+
 const controller = {
   sendCode,
   usernameAvailability,
@@ -137,6 +151,7 @@ const controller = {
   login,
   forgotPassword,
   resetPassword,
+  getAuth,
 };
 
 export default controller;
