@@ -385,6 +385,8 @@ paths:
                 example:
                   message: created
                   id: ""
+        400:
+          description: Bad data specified
         401:
           description: Not authenticated
         404:

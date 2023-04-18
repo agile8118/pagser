@@ -26,6 +26,11 @@ export interface IPageType {
   type: "public" | "private";
 }
 
+export interface IPageStatus {
+  id: number;
+  type: "published" | "draft";
+}
+
 export interface IPage {
   id: string;
   type_id: number;

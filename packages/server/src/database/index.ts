@@ -79,7 +79,7 @@ const update = <T>(
     let _columnsWithValueSpecifiers = "";
     let _values: any[] = [];
 
-    // prepare out data for sql based on the data object provided
+    // prepare our data for sql based on the data object provided
     Object.keys(data).map((key, index) => {
       _columnsWithValueSpecifiers += `${key} = $${index + 1}, `;
       _values.push(data[key]);

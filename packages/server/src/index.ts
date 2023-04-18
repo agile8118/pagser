@@ -90,14 +90,20 @@ app.use((req, res, next) => {
   next();
 });
 
-// Error handler
-app.use((error, req, res, next) => {
-  log(error, "error");
-  res.status(500).send("Internal server error.");
-});
-
 // API routes
 apiRouter(app);
+
+// Error handler
+app.use((error, req, res, next) => {
+  if (error.customError) {
+    res.status(error.status).send(error.customError);
+  } else {
+    console.log("THIS IS FROM THE ERROR HANDLER!");
+
+    log(error, "error");
+    res.status(500).send("Internal server error.");
+  }
+});
 
 app.listen(PORT, () => {
   log(
