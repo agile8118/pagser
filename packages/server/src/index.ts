@@ -90,6 +90,12 @@ app.use((req, res, next) => {
   next();
 });
 
+// Error handler
+app.use((error, req, res, next) => {
+  log(error, "error");
+  res.status(500).send("Internal server error.");
+});
+
 // API routes
 apiRouter(app);
 

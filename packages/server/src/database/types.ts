@@ -1,4 +1,4 @@
-export type TTables = "users" | "pages";
+export type TTables = "users" | "pages" | "tags";
 
 export interface IUser {
   id: string;
@@ -21,6 +21,28 @@ export interface IUser {
   created_at: Date;
 }
 
-export interface IPage {
+export interface IPageType {
+  id: number;
   type: "public" | "private";
+}
+
+export interface IPage {
+  id: string;
+  type_id: number;
+  status_id: number;
+  title?: string;
+  brief_description?: string;
+  targets?: string;
+  body?: string;
+  anonymously?: boolean;
+  comments_disabled?: boolean;
+  ratings_disabled?: boolean;
+  links_disabled?: boolean;
+  url?: string;
+  cropped_photo_key?: string;
+  cropped_photo_url?: string;
+  photo_key?: string;
+  photo_url?: string;
+  user_id: number;
+  created_at: Date;
 }

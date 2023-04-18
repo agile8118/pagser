@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import keys from "../../config/keys";
 import { DB } from "../../database";
+import { IUser } from "../../database/types";
 
 // Create local strategy
 const localLogin = new LocalStrategy(
@@ -13,7 +14,7 @@ const localLogin = new LocalStrategy(
     // if it is the correct email and password
     // otherwise, call done with false
     try {
-      const user = await DB.find(
+      const user = await DB.find<IUser>(
         `SELECT id, username, password FROM users WHERE email = '${email}'`
       );
 
@@ -43,7 +44,7 @@ const jwtLogin = new JwtStrategy(
     // If it does, call 'done' with that user object
     // otherwise, call done without a user object
     try {
-      const user = await DB.find(
+      const user = await DB.find<IUser>(
         `SELECT id, username FROM users WHERE id = '${payload.sub}'`
       );
 

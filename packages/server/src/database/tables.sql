@@ -39,7 +39,7 @@ CREATE TABLE page_statuses (id SERIAL PRIMARY KEY, status VARCHAR(200));
 INSERT INTO page_statuses (type) -- in the future we could add 'archived'
 VALUES ('published'),
   ('draft');
--- CRAETE PAGES TABLE
+-- CREATE PAGES TABLE
 CREATE TABLE IF NOT EXISTS pages (
   id SERIAL PRIMARY KEY,
   type_id INT,
@@ -68,11 +68,11 @@ CREATE TABLE IF NOT EXISTS pages (
 -- CRAETE TAGS TABLE
 CREATE TABLE IF NOT EXISTS tags (
   id SERIAL PRIMARY KEY,
-  name VARCHAR(200) NOT NULL,
   page_id INT NOT NULL,
+  name VARCHAR(200) NOT NULL,
   CONSTRAINT fk_page FOREIGN KEY (page_id) REFERENCES pages(id),
 );
--- CRAETE ATTACH FILES TABLE
+-- CREATE ATTACH FILES TABLE
 CREATE TABLE IF NOT EXISTS attach_files (
   id SERIAL PRIMARY KEY,
   key VARCHAR(200) NOT NULL,

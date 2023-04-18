@@ -2,12 +2,18 @@ import { Express } from "express";
 
 // Controllers
 import Authentication from "./controllers/authentication";
+import Page from "./controllers/page";
 
 // Middleware
 import validator from "./middleware/validator";
+import authorization from "./middleware/authorization";
 import { requireAuth, logTheUserIn } from "./services/passport";
 
 export default (app: Express) => {
+  // ------------------------------------------------ //
+  // ************ AUTHENTICATION ROUTES ************* //
+  // ------------------------------------------------ //
+
   // Checks whether or not a username is available
   app.post(
     "/api/username-availability",
@@ -58,5 +64,17 @@ export default (app: Express) => {
     validator.password,
     validator.passwordResetToken,
     Authentication.resetPassword
+  );
+
+  // ------------------------------------------------ //
+  // ***************** PAGE ROUTES ****************** //
+  // ------------------------------------------------ //
+
+  // Update or create a draft page
+  app.patch(
+    "/api/new-page/:stage/:id",
+    requireAuth,
+    authorization.draftPageOwnership,
+    Page.updateDraftPageData
   );
 };

@@ -11,6 +11,8 @@ servers:
 tags:
   - name: Authentication
     description: for authenticating users
+  - name: Page
+    description: operations relating to public & private pages
 paths:
   /send-code:
     # --- END POINT --- #
@@ -314,6 +316,85 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessage"
+  # --------- FOR PAGES ------------ #
+  # --- END POINT --- #
+  /new-page/{stage}/{id}:
+    patch:
+      tags:
+        - Page
+      summary: updates or creates a page draft
+      parameters:
+        - in: path
+          name: stage
+          required: true
+          schema:
+            type: string
+            enum:
+              - "initial-step"
+              - "page-contents"
+              - "final-step"
+          description: The stage of the draft page creation
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The id of the draft page
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                page:
+                  $ref: "#/components/schemas/DraftPage"
+                  description: the content for the draft page
+      responses:
+        200:
+          description: Draft page was updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: A message for draft page updated
+                  id:
+                    type: string
+                    description: The id of the page updated
+                example:
+                  message: updated
+                  id: ""
+        201:
+          description: Draft page was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: A message for draft page creation
+                  id:
+                    type: string
+                    description: The id of the page created
+                example:
+                  message: created
+                  id: ""
+        404:
+          description: Draft page was not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
 
 # --- SCHEMAS --- #
 components:
@@ -324,3 +405,55 @@ components:
           type: string
       example:
         message: An error message
+    DraftPage:
+      properties:
+        type:
+          type: string
+          description: Type of the page, either private or public
+        url:
+          type: string
+          description: A url for the page if it's private
+        contents:
+          type: object
+          properties:
+            title:
+              type: string
+              description: A title for the page
+            briefDes:
+              type: string
+              description: A description for the page
+            body:
+              type: string
+              description: A body for the page
+            targets:
+              type: string
+              description: A target for the page
+        configurations:
+          type: object
+          properties:
+            anonymously:
+              type: boolean
+              description: Whether or not the page should be created anonymously
+            comments:
+              type: boolean
+              description: Whether or not users could comment on the page
+            rating:
+              type: boolean
+              description: Whether or not likes & dislikes should be enabled for the page
+            links:
+              type: boolean
+              description: Whether or not other related content should be shown on the page
+      example:
+        type: private
+        url: ""
+        contents:
+          title: "Just another title"
+          description: ""
+          targets: ""
+          body: "<p>Hi there!<p>"
+        configurations:
+            anonymously: false
+            comments: true
+            rating: true
+            links: true
+          

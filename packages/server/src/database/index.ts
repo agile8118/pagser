@@ -21,15 +21,15 @@ const pool = new Pool({
 
 // Fetch from the database, returns an array if there were more than one
 // record or an object if there was only one record
-const find = (query: string, values: any[] = []) => {
-  return new Promise(function (resolve: (value: any) => void, reject) {
+const find = <T>(query: string, values: any[] = []) => {
+  return new Promise(function (resolve: (value: T | null) => void, reject) {
     pool.query(query, values, function (err, res) {
       if (err) {
         reject(err);
       } else {
-        if (res.rows.length === 1) return resolve(res.rows[0]);
+        if (res.rows.length === 1) return resolve(res.rows[0] as T);
         if (!res.rows || !res.rows.length) return resolve(null);
-        resolve(res.rows);
+        resolve(res.rows as any);
       }
     });
   });
@@ -38,7 +38,7 @@ const find = (query: string, values: any[] = []) => {
 // Insert an item to the the specified table
 const insert = <T>(
   table: TTables,
-  data: T extends IUser ? Partial<T> : never
+  data: T extends IUser ? Partial<T> : T extends IPage ? Partial<T> : never
 ) => {
   return new Promise(function (resolve: (insertedData: T) => void, reject) {
     const _values: any[] = [];
@@ -69,13 +69,13 @@ const insert = <T>(
 };
 
 // Update an item in a specific table
-const update = (
+const update = <T>(
   table: TTables,
-  data: any,
+  data: Partial<T>,
   where: string,
   valuesForWhere: any[] = []
 ) => {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve: (insertedData: T) => void, reject) {
     let _columnsWithValueSpecifiers = "";
     let _values: any[] = [];
 
@@ -105,4 +105,36 @@ const update = (
   });
 };
 
-export const DB = { find, insert, update };
+// Delete from the database
+const del = <T>(table: TTables, where: string, values: any[] = []) => {
+  return new Promise(function (resolve: (value: T | null) => void, reject) {
+    pool.query(
+      `DELETE FROM ${table} WHERE ${where}`,
+      values,
+      function (err, res) {
+        if (err) {
+          reject(err);
+        } else {
+          if (res.rows.length === 1) return resolve(res.rows[0] as T);
+          if (!res.rows || !res.rows.length) return resolve(null);
+          resolve(res.rows as any);
+        }
+      }
+    );
+  });
+};
+
+// For any general query, will be used for less common and more advanced queries
+const query = (query: string, values: any[] = []) => {
+  return new Promise(function (resolve: (value: any) => void, reject) {
+    pool.query(query, values, function (err, res) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(res.rows);
+      }
+    });
+  });
+};
+
+export const DB = { find, insert, update, delete: del, query };

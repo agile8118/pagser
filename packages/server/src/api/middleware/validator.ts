@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import vl from "validator";
 import { validate } from "@pagser/common";
 import { DB } from "../../database";
+import { IUser } from "../../database/types";
+
 import { handleServerError } from "../../lib/util";
 
 // Validate id
@@ -140,7 +142,7 @@ const passwordResetToken = async (
   const token = req.body.token;
   const userId = req.body.user_id;
 
-  const user = await DB.find(
+  const user = await DB.find<IUser>(
     "SELECT token_code, token_date FROM users WHERE id = $1",
     [userId]
   );

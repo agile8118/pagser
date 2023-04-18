@@ -72,7 +72,9 @@ const forgotPassword = async (req: Request, res: Response) => {
   const email = req.body.email;
 
   try {
-    const user = await DB.find(`SELECT id FROM users WHERE email = '${email}'`);
+    const user = await DB.find<any>(
+      `SELECT id FROM users WHERE email = '${email}'`
+    );
 
     if (!user) return res.status(404).send({ message: "no email found" });
 
