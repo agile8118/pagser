@@ -8,6 +8,7 @@ import YAML from "yamljs";
 import session from "express-session";
 
 import apiRouter from "./api/router";
+import templatesRouter from "./templates/router";
 import log from "./lib/log";
 import keys from "./config/keys";
 import "./database";
@@ -28,8 +29,14 @@ app.use(bodyParser.json()).use(bodyParser.urlencoded({ extended: true }));
 // CORS
 app.use(cors({ origin: "https://pagser.com/" }));
 
+// For our view engine
+app.set("view engine", "ejs");
+
 // Compress all responses
 app.use(compression());
+
+// Use the public folder for our static files
+app.use(express.static(path.join(__dirname, "../public")));
 
 // For passport (req.user)
 declare global {
@@ -92,6 +99,8 @@ app.use((req, res, next) => {
 
 // API routes
 apiRouter(app);
+// Template routes
+templatesRouter(app);
 
 // Error handler
 app.use((error, req, res, next) => {
