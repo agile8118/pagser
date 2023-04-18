@@ -1,0 +1,182 @@
+<div id="snackbar" class="display-none"></div>
+<script>
+  // Close/Open dropdowns based on where user clicks
+  document.querySelector("body").addEventListener("click", (e) => {
+    // Open or close a dropdown
+    function toggleDropDowns(element, e) {
+      if (
+        element.getAttribute("data-dropdown") !==
+        e.target.getAttribute("data-dropdown")
+      ) {
+        element.classList.remove("dropdown--open");
+        element.classList.add("dropdown--close");
+      } else {
+        // Open or close the selected dropdown
+        if (element.classList.contains("dropdown--open")) {
+          // Close the dropdown
+          element.classList.remove("dropdown--open");
+          element.classList.add("dropdown--close");
+        } else {
+          // Open the dropdown
+          element.classList.add("dropdown--open");
+          element.classList.remove("dropdown--close");
+        }
+      }
+    }
+
+    // If user clicks anywhere other that a dropdown
+    if (e.target.getAttribute("data-role") !== "dropdown") {
+      // Close all regular dropdowns except navigation dropdowns
+      document.querySelectorAll(".dropdown").forEach((element) => {
+        element.classList.remove("dropdown--open");
+        element.classList.add("dropdown--close");
+      });
+    } else {
+      // If user clicks on the dropdown
+      // Open the dropdown clicked on and close the others
+      document.querySelectorAll(".dropdown").forEach((element) => {
+        toggleDropDowns(element, e);
+      });
+      document.querySelectorAll(".nav-dropdown").forEach((element) => {
+        toggleDropDowns(element, e);
+      });
+    }
+  });
+
+  // Buttons won't get focused on click
+  document.addEventListener("click", function (e) {
+    if (
+      document.activeElement.toString() == "[object HTMLButtonElement]" ||
+      document.activeElement.toString() == "javascript:void(0)"
+    ) {
+      document.activeElement.blur();
+    }
+  });
+
+  if (window.location.href.indexOf("new-page") > -1) {
+    document.querySelectorAll(".js--create-page").forEach(function (el) {
+      el.classList.add("display-none");
+    });
+  }
+
+  if (localStorage.getItem("theme") === "dark") {
+    changeTheme("dark");
+  } else {
+    changeTheme("light");
+  }
+
+  document.querySelectorAll(".js--themeSwitch").forEach(function (elem) {
+    elem.addEventListener("change", (event) => {
+      if (event.target.checked) {
+        changeTheme("dark");
+      } else {
+        changeTheme("light");
+      }
+    });
+  });
+
+  function changeTheme(theme) {
+    if (theme === "dark") {
+      var link = document.createElement("link");
+      link.setAttribute("rel", "stylesheet");
+      link.setAttribute("href", "/dark-style.css");
+      document.querySelector("head").appendChild(link);
+      document.querySelectorAll(".js--themeSwitch").forEach(function (elem) {
+        elem.checked = true;
+      });
+      document.querySelector("#pagserLogoSm").src =
+        "/images/pagser-logo-light.svg";
+      document.querySelector("#pagserLogoMd").src =
+        "/images/pagser-logo-light.svg";
+      localStorage.setItem("theme", "dark");
+    }
+
+    if (theme === "light") {
+      if (document.querySelectorAll("link[href='/dark-style.css']")[0]) {
+        document
+          .querySelector("head")
+          .removeChild(
+            document.querySelectorAll("link[href='/dark-style.css']")[0]
+          );
+        document.querySelectorAll(".js--themeSwitch").forEach(function (elem) {
+          elem.checked = false;
+        });
+        document.querySelector("#pagserLogoSm").src = "/images/pagser-logo.svg";
+        document.querySelector("#pagserLogoMd").src = "/images/pagser-logo.svg";
+        localStorage.setItem("theme", "light");
+      }
+    }
+  }
+
+  // If user profile image couldn't render, then show user placeholer default image
+  var userImages = document.querySelectorAll(".js--user-image");
+  for (var i = 0; i < userImages.length; i++) {
+    userImages[i].addEventListener("error", function (e) {
+      e.target.src = "/images/users/placeholder.png";
+    });
+  }
+
+  function sidenavTogglerClicked(e) {
+    if (
+      document.querySelector("#js--sidenav").classList.contains("sidenav--open")
+    ) {
+      // Close the side navigation
+      document.querySelector("body").style.marginLeft = "0";
+      document.querySelector("#js--sidenav").classList.remove("sidenav--open");
+      document.querySelector("#js--sidenav").classList.add("sidenav--close");
+    } else {
+      // Open the side navigation
+      document.querySelector("body").style.marginLeft = "24rem";
+      document.querySelector("#js--sidenav").classList.add("sidenav--open");
+      document.querySelector("#js--sidenav").classList.remove("sidenav--close");
+    }
+  }
+
+  function navOpenerClicked() {
+    var navItems = document.querySelector(".navigation-sm__hidden");
+    if (navItems.classList[1] === "display-none") {
+      navItems.classList.remove("display-none");
+    } else {
+      navItems.classList.add("display-none");
+    }
+  }
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function () {
+    if (this.status === 200) {
+      // If user is authenticated
+      try {
+        document.querySelectorAll(".js--user-image")[0].src = JSON.parse(
+          this.response
+        ).user.photo;
+
+        document.querySelectorAll(".js--user-image")[1].src = JSON.parse(
+          this.response
+        ).user.photo;
+      } catch (e) {}
+    } else if (this.status === 401) {
+      // If user is not authenticated
+      document.querySelectorAll(".js--create-page")[0].href =
+        "/login?redirected=new-page";
+      document.querySelectorAll(".js--create-page")[1].href =
+        "/login?redirected=new-page";
+      document.querySelector("#js--login-md").classList.remove("display-none");
+      document.querySelector("#js--login-sm").classList.remove("display-none");
+      document
+        .querySelector("#js--nav-dropdown-md-notification")
+        .classList.add("display-none");
+      document
+        .querySelector("#js--nav-dropdown-md")
+        .classList.add("display-none");
+      document
+        .querySelector("#js--nav-dropdown-sm-notification")
+        .classList.add("display-none");
+      document
+        .querySelector("#js--nav-dropdown-sm")
+        .classList.add("display-none");
+    }
+  };
+  xhttp.open("POST", "/auth", true);
+  xhttp.setRequestHeader("authorization", localStorage.getItem("token"));
+  xhttp.send();
+</script>
