@@ -323,6 +323,8 @@ paths:
       tags:
         - Page
       summary: updates or creates a page draft
+      security:
+         - ApiKeyAuth: []
       parameters:
         - in: path
           name: stage
@@ -383,6 +385,8 @@ paths:
                 example:
                   message: created
                   id: ""
+        401:
+          description: Not authenticated
         404:
           description: Draft page was not found.
           content:
@@ -398,6 +402,11 @@ paths:
 
 # --- SCHEMAS --- #
 components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: authorization
   schemas:
     ErrorMessage:
       properties:

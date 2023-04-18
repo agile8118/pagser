@@ -6,7 +6,9 @@ const draftPageOwnership = (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+) => {
+  next();
+};
 
 const authorization = {
   draftPageOwnership,

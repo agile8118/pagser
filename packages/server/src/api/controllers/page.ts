@@ -9,6 +9,7 @@ import keys from "../../config/keys";
 
 // Update or create a draft page
 const updateDraftPageData = async (req: Request, res: Response) => {
+  res.send("OK!");
   const pageId = req.params.id;
   const stage = req.params.stage;
   const page = req.body.page;
