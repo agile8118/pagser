@@ -9,6 +9,23 @@ const Authentication = React.lazy(
     import("./views/authentication" /* webpackChunkName: "authentication" */)
 );
 
+const Library = React.lazy(
+  () => import("./views/library" /* webpackChunkName: "library" */)
+);
+
+const NewPage = React.lazy(
+  () => import("./views/new-page" /* webpackChunkName: "new-page" */)
+);
+
+const Profile = React.lazy(
+  () => import("./views/profile" /* webpackChunkName: "profile" */)
+);
+
+const PublicProfile = React.lazy(
+  () =>
+    import("./views/public-profile" /* webpackChunkName: "public-profile" */)
+);
+
 // // import Actions from "./views/show-page/Actions";
 // // import Photo from "./views/show-page/Photo";
 // // import AttachFiles from "./views/show-page/AttachFiles";
@@ -145,6 +162,62 @@ if (containerName === "show-private") {
       <Provider store={showPageStore}>
         <ShowPrivate />
       </Provider>
+    );
+  })();
+}
+
+if (containerName === "main") {
+  (async () => {
+    // const Authentication = (await import("./views/authentication" /* webpackChunkName: "authentication" */)).default;
+    const authenticationRoot = ReactDOM.createRoot(container);
+    authenticationRoot.render(
+      <React.Suspense fallback={<Loading />}>
+        <React.StrictMode>
+          <Library />
+        </React.StrictMode>
+      </React.Suspense>
+    );
+  })();
+}
+
+if (containerName === "new-page") {
+  (async () => {
+    // const Authentication = (await import("./views/authentication" /* webpackChunkName: "authentication" */)).default;
+    const authenticationRoot = ReactDOM.createRoot(container);
+    authenticationRoot.render(
+      <React.Suspense fallback={<Loading />}>
+        <React.StrictMode>
+          <NewPage />
+        </React.StrictMode>
+      </React.Suspense>
+    );
+  })();
+}
+
+if (containerName === "profile") {
+  (async () => {
+    // const Authentication = (await import("./views/authentication" /* webpackChunkName: "authentication" */)).default;
+    const authenticationRoot = ReactDOM.createRoot(container);
+    authenticationRoot.render(
+      <React.Suspense fallback={<Loading />}>
+        <React.StrictMode>
+          <Profile />
+        </React.StrictMode>
+      </React.Suspense>
+    );
+  })();
+}
+
+if (containerName === "public-profile") {
+  (async () => {
+    // const Authentication = (await import("./views/authentication" /* webpackChunkName: "authentication" */)).default;
+    const authenticationRoot = ReactDOM.createRoot(container);
+    authenticationRoot.render(
+      <React.Suspense fallback={<Loading />}>
+        <React.StrictMode>
+          <PublicProfile />
+        </React.StrictMode>
+      </React.Suspense>
     );
   })();
 }

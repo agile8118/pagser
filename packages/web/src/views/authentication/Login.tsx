@@ -9,7 +9,7 @@ import {
   Button,
   Input,
 } from "@pagser/reusable";
-import { util } from "@pagser/common";
+import { util, request } from "@pagser/common";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -50,7 +50,7 @@ const Login = () => {
   const onForgotPasswordSubmit = () => {
     setLoadingForgotPassword(true);
     axios
-      .post(`/api/forgotpassword`, {
+      .post(`/api/forgot-password`, {
         email: email,
       })
       .then((response) => {
@@ -73,7 +73,7 @@ const Login = () => {
     setLoading(true);
 
     axios
-      .post(`/login`, {
+      .post(`/api/login`, {
         email,
         password,
       })

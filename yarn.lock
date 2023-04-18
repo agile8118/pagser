@@ -5388,7 +5388,7 @@ react-router@6.3.0:
 
 react-tinymce@^0.7.0:
   version "0.7.0"
-  resolved "https://registry.npmjs.org/react-tinymce/-/react-tinymce-0.7.0.tgz"
+  resolved "https://registry.yarnpkg.com/react-tinymce/-/react-tinymce-0.7.0.tgz#4dc3f2511d8e33c7ef4511fa22732c497b2faab8"
   integrity sha512-qg2TVz/hLFVgEiMSWWLdbklSAnzWgogtfOdBwrgn1yOHJRg3vFMln3pjJTKt2uPtN7E6WwNIFJonUUt757ZD6A==
   dependencies:
     create-react-class "^15.6.2"
