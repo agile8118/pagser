@@ -34,12 +34,12 @@ const FinalStep = () => {
         )) as any;
 
         setType(response.page.type);
-        setComments(response.page.configurations.comments);
-        setRating(response.page.configurations.rating);
-        setAnonymously(response.page.configurations.anonymously);
-        setLinks(response.page.configurations.links);
-        setTags(response.page.tags[0] ? response.page.tags[0] : "");
-        setUsername(response.page.author.username);
+        setComments(response.page.comments_disabled);
+        setRating(response.page.ratings_disabled);
+        setAnonymously(response.page.anonymously);
+        setLinks(response.page.links_disabled);
+        setTags(response.tags);
+        setUsername(response.page.user_username);
         setUrl(response.page.url || null);
         setUsedUrls(response.urls);
       } catch (error: any) {

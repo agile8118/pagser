@@ -59,6 +59,12 @@ export interface IAttachFile {
   page_id: number;
 }
 
+export interface ITag {
+  id: number;
+  page_id: number;
+  name: string;
+}
+
 // These should reflect exactly what we have in database
 // One use case for these would be to eliminate the need for a query to database
 // each time we need something static such as the page type or status

@@ -11,6 +11,7 @@ import {
   PAGE_STATUS,
   PAGE_TYPE,
   IAttachFile,
+  ITag,
 } from "../../database/types";
 import keys from "../../config/keys";
 
@@ -126,30 +127,12 @@ const fetchDraftPageData = async (
         [page.user_id, PAGE_STATUS.publishedId, PAGE_TYPE.privateId]
       );
 
-      console.log("urls");
-      console.log(urls);
+      const tags = await DB.find<ITag[]>(
+        `SELECT id, name from tags WHERE page_id = $1`,
+        [pageId]
+      );
 
-      // DraftPage.findById(pageId)
-      //   .select("configurations url password tags type author")
-      //   .populate({
-      //     path: "author",
-      //     select: "username",
-      //     model: "User",
-      //   })
-      //   .exec((err, page) => {
-      //     if (err) return res.status(500).send("error");
-      //     Page.find(
-      //       { author: userId, status: "published", type: "private" },
-      //       "url",
-      //       (err, results) => {
-      //         if (err) return res.status(500).send("error");
-      //         var urls = results.map((result) => {
-      //           return result.url;
-      //         });
-      //         res.send({ page, urls });
-      //       }
-      //     );
-      //   });
+      res.send({ page, urls: urls || [], tags: tags || [] });
     }
   } catch (e) {
     next(e);
@@ -210,7 +193,7 @@ const updateDraftPageData = async (
 
         res.status(200).send({ id: pageId, message: "updated" });
       } catch (e) {
-        handleServerError(e, res);
+        next(e);
       }
     };
 
@@ -230,7 +213,7 @@ const updateDraftPageData = async (
         }
 
         // update the page
-        const result = await DB.update<IPage>(
+        await DB.update<IPage>(
           "pages",
           {
             url: page.type === "private" ? page.url : "", // We don't want to update the url if the type is public
@@ -239,12 +222,12 @@ const updateDraftPageData = async (
             ratings_disabled: page.configurations.rating,
             links_disabled: page.configurations.links,
           },
-          "id = $1",
+          "id = $6",
           [pageId]
         );
-        res.status(200).send({ id: result.id, message: "updated" });
+        res.status(200).send({ id: pageId, message: "updated" });
       } catch (e) {
-        handleServerError(e, res);
+        next(e);
       }
     };
 
