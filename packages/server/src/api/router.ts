@@ -69,7 +69,7 @@ export default (app: Express) => {
   // Checks whether or not the user is authenticated, returns user id and photo if so
   app.post("/auth", requireAuth, Authentication.getAuth);
 
-  // ------------------------------------------------ //
+  // ------------------------------------------------- //
   // ***************** PAGE ROUTES ****************** //
   // ------------------------------------------------ //
   // Create a new draft page
@@ -97,4 +97,36 @@ export default (app: Express) => {
 
   // Create a page from a draft page
   // app.post("/api/new-page/:id", requireAuth, Page.create);
+
+  // ---- Shared for draft page and published pages ---- //
+  // app.put(
+  //   "/api/pages/:id/photo",
+  //   requireAuth,
+  //   middleware.checkPageOwnership,
+  //   Page.uploadPagePhoto
+  // );
+  // app.delete(
+  //   "/api/pages/:id/photo",
+  //   requireAuth,
+  //   middleware.checkPageOwnership,
+  //   Page.removePagePhoto
+  // );
+  // // add an attach file to a page
+  // app.post(
+  //   "/api/pages/:id/attach-files",
+  //   requireAuth,
+  //   middleware.checkPageOwnership,
+  //   Page.addAttachFile
+  // );
+  // // get one attach file
+  // app.get("/api/pages/:id/attach-files/:name", Page.getAttachFile);
+  // get attach files
+  app.get("/api/pages/:id/attach-files", Page.getAttachFiles);
+  // // delete an attach file
+  // app.delete(
+  //   "/api/pages/:id/attach-files/:fileId",
+  //   requireAuth,
+  //   middleware.checkPageOwnership,
+  //   Page.deleteAttachFile
+  // );
 };

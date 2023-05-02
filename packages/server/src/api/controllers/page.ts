@@ -4,7 +4,14 @@ import bcrypt from "bcrypt";
 import sendEmail from "../services/mailgun";
 import { tokenForUser, handleServerError, cleanHTML } from "../../lib/util";
 import { DB } from "../../database";
-import { IPage, IPageType, IPageStatus } from "../../database/types";
+import {
+  IPage,
+  IPageType,
+  IPageStatus,
+  PAGE_STATUS,
+  PAGE_TYPE,
+  IAttachFile,
+} from "../../database/types";
 import keys from "../../config/keys";
 
 // Create a new draft page
@@ -90,8 +97,6 @@ const fetchDraftPageData = async (
         [pageId]
       );
 
-      console.log(page);
-
       if (!page) res.status(404).send();
 
       res.send({ page });
@@ -116,7 +121,13 @@ const fetchDraftPageData = async (
         [pageId]
       );
 
-      console.log(page);
+      const urls = await DB.find<IPage[]>(
+        `SELECT url from pages WHERE user_id = $1 AND status_id = $2 AND type_id = $3`,
+        [page.user_id, PAGE_STATUS.publishedId, PAGE_TYPE.privateId]
+      );
+
+      console.log("urls");
+      console.log(urls);
 
       // DraftPage.findById(pageId)
       //   .select("configurations url password tags type author")
@@ -255,10 +266,31 @@ const updateDraftPageData = async (
   }
 };
 
+// Get a list of attach file for a page
+const getAttachFiles = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const pageId = req.params.id;
+
+    const attachFiles = await DB.find<IAttachFile[]>(
+      `SELECT id, key as name, url FROM attach_files WHERE page_id = $1`,
+      [pageId]
+    );
+
+    res.send({ attachFiles: attachFiles || [] });
+  } catch (e) {
+    next(e);
+  }
+};
+
 const controller = {
   newDraftPage,
   fetchDraftPageData,
   updateDraftPageData,
+  getAttachFiles,
 };
 
 export default controller;

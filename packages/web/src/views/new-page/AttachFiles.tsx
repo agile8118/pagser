@@ -11,7 +11,7 @@ import ProgressBar from "./ProgressBar";
 
 interface IFile {
   name: string;
-  _id: string;
+  id: string;
 }
 
 const AttachFiles = () => {
@@ -73,7 +73,7 @@ const AttachFiles = () => {
               // This will prevent the file from starting to get downloaded
               e.preventDefault();
               setConfirmationMdl(true);
-              setConfirmationMdlDataId(file._id);
+              setConfirmationMdlDataId(file.id);
             }}
           >
             <i className="fa fa-times" aria-hidden="true" />

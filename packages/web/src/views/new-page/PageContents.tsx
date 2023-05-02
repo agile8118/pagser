@@ -261,9 +261,6 @@ const PageContents = () => {
     const minLen = type === "public" ? 50 : 1;
     const tinymceEL = document.querySelector(".mce-tinymce") as HTMLElement;
 
-    console.log(type);
-    console.log(bodyText);
-    console.log(bodyText.length < minLen);
     if (bodyText.length < minLen && tinymceEL) {
       tinymceEL.style.border = "1px solid #e74c3c";
 

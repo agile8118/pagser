@@ -28,7 +28,7 @@ export interface IPageType {
 
 export interface IPageStatus {
   id: number;
-  type: "published" | "draft";
+  status: "published" | "draft";
 }
 
 export interface IPage {
@@ -51,3 +51,28 @@ export interface IPage {
   user_id: number;
   created_at: Date;
 }
+
+export interface IAttachFile {
+  id: number;
+  key: string;
+  url: string;
+  page_id: number;
+}
+
+// These should reflect exactly what we have in database
+// One use case for these would be to eliminate the need for a query to database
+// each time we need something static such as the page type or status
+
+export const PAGE_STATUS = {
+  published: "published",
+  publishedId: 1,
+  draft: "draft",
+  draftId: 2,
+};
+
+export const PAGE_TYPE = {
+  private: "private",
+  privateId: 1,
+  public: "public",
+  publicId: 2,
+};

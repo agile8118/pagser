@@ -25,7 +25,7 @@ const PageThumbnail = () => {
           { auth: true }
         )) as any;
 
-        setPhoto(response?.page?.photo?.secure_url);
+        setPhoto(response?.page?.photo_url);
         setLoading(false);
       } catch (e: any) {
         if (e.status === 401) {
