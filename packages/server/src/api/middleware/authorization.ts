@@ -14,8 +14,17 @@ const draftPageOwnership = (
   next();
 };
 
+const pageOwnership = (req: Request, res: Response, next: NextFunction) => {
+  const pageId = req.params.id;
+  const userId = req.user.id;
+  const stage = req.params.stage;
+
+  next();
+};
+
 const authorization = {
   draftPageOwnership,
+  pageOwnership,
 };
 
 export default authorization;

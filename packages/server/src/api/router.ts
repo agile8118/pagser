@@ -3,6 +3,7 @@ import { Express } from "express";
 // Controllers
 import Authentication from "./controllers/authentication";
 import Page from "./controllers/page";
+import Uploader from "./controllers/uploader";
 
 // Middleware
 import validator from "./middleware/validator";
@@ -99,12 +100,14 @@ export default (app: Express) => {
   // app.post("/api/new-page/:id", requireAuth, Page.create);
 
   // ---- Shared for draft page and published pages ---- //
-  // app.put(
-  //   "/api/pages/:id/photo",
-  //   requireAuth,
-  //   middleware.checkPageOwnership,
-  //   Page.uploadPagePhoto
-  // );
+  // upload a new page thumbnail for a page
+  app.put(
+    "/api/pages/:id/photo",
+    requireAuth,
+    authorization.pageOwnership,
+    Uploader.uploadPagePhoto
+  );
+
   // app.delete(
   //   "/api/pages/:id/photo",
   //   requireAuth,
