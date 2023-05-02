@@ -35,11 +35,11 @@ const PageContents = () => {
           `/new-page/page-contents/${pageId}`,
           { auth: true }
         )) as any;
-        setBody(response.page.contents.body);
-        setType(response.page.type);
-        setTitle(response.page.contents.title);
-        setTargets(response.page.contents.targets);
-        setBriefDes(response.page.contents.briefDes);
+        setBody(response.page.body || "");
+        setType(response.page.type || "");
+        setTitle(response.page.title || "");
+        setTargets(response.page.targets || "");
+        setBriefDes(response.page.brief_description || "");
       } catch (e: any) {
         if (e.status === 401) {
           window.location.href = "/login?redirected=new-page";
@@ -258,9 +258,12 @@ const PageContents = () => {
     let bodyText = div.textContent || div.innerText || "";
     bodyText = bodyText.replace(/\s+/g, " ").trim();
 
-    const minLen = type === "public" ? 50 : 0;
+    const minLen = type === "public" ? 50 : 1;
     const tinymceEL = document.querySelector(".mce-tinymce") as HTMLElement;
 
+    console.log(type);
+    console.log(bodyText);
+    console.log(bodyText.length < minLen);
     if (bodyText.length < minLen && tinymceEL) {
       tinymceEL.style.border = "1px solid #e74c3c";
 

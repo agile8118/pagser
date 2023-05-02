@@ -75,7 +75,7 @@ const update = <T>(
   where: string,
   valuesForWhere: any[] = []
 ) => {
-  return new Promise(function (resolve: (insertedData: T) => void, reject) {
+  return new Promise(function (resolve: (result: any) => void, reject) {
     let _columnsWithValueSpecifiers = "";
     let _values: any[] = [];
 
@@ -99,7 +99,7 @@ const update = <T>(
       if (error) {
         reject(error);
       } else {
-        resolve(result.rows[0]);
+        resolve(result);
       }
     });
   });

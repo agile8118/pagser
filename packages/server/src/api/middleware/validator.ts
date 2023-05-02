@@ -6,8 +6,18 @@ import { IUser } from "../../database/types";
 
 import { handleServerError } from "../../lib/util";
 
-// Validate id
+// --- Validators for ids --- //
 const isId = (req: Request, res: Response, next: NextFunction) => {
+  const id = req.params.id;
+
+  if (vl.isNumeric(id)) {
+    next();
+  } else {
+    return res.status(400).send({ message: "id error" });
+  }
+};
+
+const isBodyUserId = (req: Request, res: Response, next: NextFunction) => {
   const id = req.body.user_id;
 
   if (vl.isNumeric(id)) {
@@ -160,8 +170,25 @@ const passwordResetToken = async (
   return res.status(400).send({ message: "invalid link" });
 };
 
+// --- Validators for page creation --- //
+const isStage = (req: Request, res: Response, next: NextFunction) => {
+  const stage = req.params.stage;
+
+  if (
+    stage === "initial-step" ||
+    stage === "page-contents" ||
+    stage === "page-thumbnail" ||
+    stage === "final-step"
+  ) {
+    next();
+  } else {
+    return res.status(400).send({ message: "stage error" });
+  }
+};
+
 const validator = {
   isId,
+  isBodyUserId,
   name,
   email,
   emailAvailability,
@@ -170,6 +197,8 @@ const validator = {
   usernameAvailability,
   userEmailVerificationCode,
   passwordResetToken,
+  // for page creation
+  isStage,
 };
 
 export default validator;

@@ -1,4 +1,3 @@
-import { Loading } from "@pagser/reusable";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
@@ -44,7 +43,7 @@ if (containerName === "authentication") {
     // const Authentication = (await import("./views/authentication" /* webpackChunkName: "authentication" */)).default;
     const authenticationRoot = ReactDOM.createRoot(container);
     authenticationRoot.render(
-      <React.Suspense fallback={<Loading />}>
+      <React.Suspense fallback={<div />}>
         <React.StrictMode>
           <Authentication />
         </React.StrictMode>
@@ -171,7 +170,7 @@ if (containerName === "main") {
     // const Authentication = (await import("./views/authentication" /* webpackChunkName: "authentication" */)).default;
     const authenticationRoot = ReactDOM.createRoot(container);
     authenticationRoot.render(
-      <React.Suspense fallback={<Loading />}>
+      <React.Suspense fallback={<div />}>
         <React.StrictMode>
           <Library />
         </React.StrictMode>
@@ -185,10 +184,10 @@ if (containerName === "new-page") {
     // const Authentication = (await import("./views/authentication" /* webpackChunkName: "authentication" */)).default;
     const authenticationRoot = ReactDOM.createRoot(container);
     authenticationRoot.render(
-      <React.Suspense fallback={<Loading />}>
-        <React.StrictMode>
-          <NewPage />
-        </React.StrictMode>
+      <React.Suspense fallback={<div />}>
+        {/* <React.StrictMode> */}
+        <NewPage />
+        {/* </React.StrictMode> */}
       </React.Suspense>
     );
   })();
@@ -199,7 +198,7 @@ if (containerName === "profile") {
     // const Authentication = (await import("./views/authentication" /* webpackChunkName: "authentication" */)).default;
     const authenticationRoot = ReactDOM.createRoot(container);
     authenticationRoot.render(
-      <React.Suspense fallback={<Loading />}>
+      <React.Suspense fallback={<div />}>
         <React.StrictMode>
           <Profile />
         </React.StrictMode>
@@ -213,7 +212,7 @@ if (containerName === "public-profile") {
     // const Authentication = (await import("./views/authentication" /* webpackChunkName: "authentication" */)).default;
     const authenticationRoot = ReactDOM.createRoot(container);
     authenticationRoot.render(
-      <React.Suspense fallback={<Loading />}>
+      <React.Suspense fallback={<div />}>
         <React.StrictMode>
           <PublicProfile />
         </React.StrictMode>

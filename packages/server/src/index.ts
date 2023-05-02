@@ -16,6 +16,7 @@ import "./database";
 process.env.TZ = "GMT";
 
 const PORT = process.env.PORT || 3080;
+const HOST = "localhost";
 
 const app = express();
 
@@ -124,5 +125,6 @@ app.listen(PORT, () => {
   );
   console.log("****************************");
   console.log("Server has started on", PORT);
+  console.log("View the API docs here:", `http://localhost:${PORT}/api-docs`);
   console.log("****************************");
 });

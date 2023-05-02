@@ -11,10 +11,7 @@ const draftPageOwnership = (
   const userId = req.user.id;
   const stage = req.params.stage;
 
-  if (stage === "initial-step") {
-    next();
-  } else {
-  }
+  next();
 };
 
 const authorization = {

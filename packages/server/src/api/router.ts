@@ -60,7 +60,7 @@ export default (app: Express) => {
   // Using the token that waws sent in their email address, reset their password and update the database
   app.patch(
     "/api/reset-password",
-    validator.isId,
+    validator.isBodyUserId,
     validator.password,
     validator.passwordResetToken,
     Authentication.resetPassword
@@ -72,12 +72,29 @@ export default (app: Express) => {
   // ------------------------------------------------ //
   // ***************** PAGE ROUTES ****************** //
   // ------------------------------------------------ //
+  // Create a new draft page
+  app.post("/api/new-page", requireAuth, Page.newDraftPage);
+
+  // Get the info of a draft page
+  app.get(
+    "/api/new-page/:stage/:id",
+    requireAuth,
+    validator.isId,
+    validator.isStage,
+    authorization.draftPageOwnership,
+    Page.fetchDraftPageData
+  );
 
   // Update or create a draft page
   app.patch(
     "/api/new-page/:stage/:id",
     requireAuth,
+    validator.isId,
+    validator.isStage,
     authorization.draftPageOwnership,
     Page.updateDraftPageData
   );
+
+  // Create a page from a draft page
+  // app.post("/api/new-page/:id", requireAuth, Page.create);
 };
