@@ -1,5 +1,5 @@
-import { Pool } from "pg";
-import { TTables, IUser, IPage } from "./types";
+import pkg from "pg";
+import { TTables, IUser, IPage } from "./types.js";
 
 /**
  * @important Run the seed.js file first to get our tables, triggers and some starter data
@@ -11,7 +11,7 @@ type Partial<T> = {
 };
 
 // Connect to the postgres database
-const pool = new Pool({
+const pool = new pkg.Pool({
   user: "joseph",
   host: "localhost",
   database: "pagser",

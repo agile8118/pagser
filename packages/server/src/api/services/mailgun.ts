@@ -1,5 +1,5 @@
 import mailgun from "mailgun-js";
-import keys from "../../config/keys";
+import keys from "../../config/keys.js";
 
 const DOMAIN = "email.pagser.com";
 

@@ -1,16 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import vl from "validator";
 import { validate } from "@pagser/common";
-import { DB } from "../../database";
-import { IUser } from "../../database/types";
+import { DB } from "../../database/index.js";
+import { IUser } from "../../database/types.js";
 
-import { handleServerError } from "../../lib/util";
+import { handleServerError } from "../../lib/util.js";
 
 // --- Validators for ids --- //
 const isId = (req: Request, res: Response, next: NextFunction) => {
   const id = req.params.id;
 
-  if (vl.isNumeric(id)) {
+  if (vl.default.isNumeric(id)) {
     next();
   } else {
     return res.status(400).send({ message: "id error" });
@@ -20,7 +20,7 @@ const isId = (req: Request, res: Response, next: NextFunction) => {
 const isBodyUserId = (req: Request, res: Response, next: NextFunction) => {
   const id = req.body.user_id;
 
-  if (vl.isNumeric(id)) {
+  if (vl.default.isNumeric(id)) {
     next();
   } else {
     return res.status(400).send({ message: "id error" });
@@ -85,7 +85,7 @@ const usernameAvailability = async (
 const email = async (req: Request, res: Response, next: NextFunction) => {
   const email = req.body.email;
 
-  if (validate.isEmpty(email) || !vl.isEmail(email))
+  if (validate.isEmpty(email) || !vl.default.isEmail(email))
     return res.status(400).send({ message: "email error" });
 
   next();

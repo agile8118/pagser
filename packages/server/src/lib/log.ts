@@ -1,5 +1,5 @@
-const fs = require("fs");
-const path = require("path");
+import fs from "node:fs";
+import path from "node:path";
 /*
   if the message parameter is object we log error and if it's string we log info
 */
@@ -20,7 +20,7 @@ export default (message: string | any, type?: "error") => {
     ("0" + d.getUTCSeconds()).slice(-2);
 
   // Base log directory
-  let dir = path.join(__dirname, "../../logs");
+  let dir = path.join(path.resolve(), "./logs");
 
   // If we don't have logs folder, create it
   if (!fs.existsSync(dir)) fs.mkdirSync(dir);

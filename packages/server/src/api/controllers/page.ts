@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
-import sendEmail from "../services/mailgun";
-import { tokenForUser, handleServerError, cleanHTML } from "../../lib/util";
-import { DB } from "../../database";
+import sendEmail from "../services/mailgun.js";
+import { tokenForUser, handleServerError, cleanHTML } from "../../lib/util.js";
+import { DB } from "../../database/index.js";
 import {
   IPage,
   IPageType,
@@ -12,8 +12,8 @@ import {
   PAGE_TYPE,
   IAttachFile,
   ITag,
-} from "../../database/types";
-import keys from "../../config/keys";
+} from "../../database/types.js";
+import keys from "../../config/keys.js";
 
 // Create a new draft page
 const newDraftPage = async (

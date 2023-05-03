@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
-import sendEmail from "../services/mailgun";
-import { tokenForUser, handleServerError } from "../../lib/util";
-import { DB } from "../../database";
-import { IUser } from "../../database/types";
-import keys from "../../config/keys";
+import sendEmail from "../services/mailgun.js";
+import { tokenForUser, handleServerError } from "../../lib/util.js";
+import { DB } from "../../database/index.js";
+import { IUser } from "../../database/types.js";
+import keys from "../../config/keys.js";
 
 // Sends a message to client to indicate that the username is available
 const usernameAvailability = (req: Request, res: Response) => {

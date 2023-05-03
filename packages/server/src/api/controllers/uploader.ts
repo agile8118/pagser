@@ -4,15 +4,16 @@
 
 import { Request, Response, NextFunction } from "express";
 import cloudinary from "cloudinary";
-import fs from "fs";
+import fs from "node:fs/promises";
+import path from "node:path";
 import AWS from "aws-sdk";
 import busboy from "busboy";
 import { fileTypeFromBuffer } from "file-type";
 // const { fileTypeFromBuffer } = require("file-type");
 import crypto from "crypto";
-import sendEmail from "../services/mailgun";
-import { tokenForUser, handleServerError, cleanHTML } from "../../lib/util";
-import { DB } from "../../database";
+import sendEmail from "../services/mailgun.js";
+import { tokenForUser, handleServerError, cleanHTML } from "../../lib/util.js";
+import { DB } from "../../database/index.js";
 import {
   IPage,
   IPageType,
@@ -21,8 +22,8 @@ import {
   PAGE_TYPE,
   IAttachFile,
   ITag,
-} from "../../database/types";
-import keys from "../../config/keys";
+} from "../../database/types.js";
+import keys from "../../config/keys.js";
 
 // Configurations for AWS S3
 const BUCKET_NAME = "pagser";
@@ -49,7 +50,7 @@ const uploadPagePhoto = async (
 ) => {
   const pageId = req.params.id;
   const type = req.query.type; // To see if the page is draft
-  const cropData = JSON.parse(req.body.cropData);
+  // const cropData = JSON.parse(req.body.cropData);
 
   const bb = busboy({ headers: req.headers });
   let size = 0;
@@ -63,7 +64,7 @@ const uploadPagePhoto = async (
 
   req.pipe(bb);
 
-  bb.on("file", (name, file, info) => {
+  bb.on("file", async (name, file, info) => {
     const { filename, encoding, mimeType } = info;
     // console.log(
     //   `File [${name}]: filename: %j, encoding: %j, mimeType: %j`,
@@ -79,7 +80,11 @@ const uploadPagePhoto = async (
       crypto.randomBytes(2).toString("hex") +
       "." +
       filename.split(".").pop();
-    const writable = fs.createWriteStream(__dirname + "/storage/" + fileName);
+    const fileHandle = await fs.open(
+      path.resolve() + "/storage/" + fileName,
+      "w"
+    );
+    const writable = fileHandle.createWriteStream();
 
     file
       .on("data", (data) => {
@@ -95,6 +100,7 @@ const uploadPagePhoto = async (
         (async () => {
           if (!hasCheckedFileType) {
             const fileType = await fileTypeFromBuffer(data);
+            console.log(fileType);
 
             if (
               (fileType && ALLOWED_FILE_TYPES.indexOf(fileType.mime) === -1) ||
@@ -135,15 +141,15 @@ const uploadPagePhoto = async (
   });
 
   bb.on("error", (err) => {
-    fs.unlink(__dirname + "/storage/" + fileName, (err) => {});
+    // fs.unlink(path.resolve() + "./storage/" + fileName, (err) => {});
     req.unpipe(bb);
     bb.removeAllListeners();
     res.status(400).send({ message: err });
   });
 
   bb.on("close", () => {
-    console.log("Done parsing form!");
-    res.send({ message: "Done uploading!" });
+    // console.log("Done parsing form!");
+    // res.send({ message: "Done uploading!" });
   });
 };
 

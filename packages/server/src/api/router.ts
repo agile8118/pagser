@@ -1,14 +1,14 @@
 import { Express } from "express";
 
 // Controllers
-import Authentication from "./controllers/authentication";
-import Page from "./controllers/page";
-import Uploader from "./controllers/uploader";
+import Authentication from "./controllers/authentication.js";
+import Page from "./controllers/page.js";
+import Uploader from "./controllers/uploader.js";
 
 // Middleware
-import validator from "./middleware/validator";
-import authorization from "./middleware/authorization";
-import { requireAuth, logTheUserIn } from "./services/passport";
+import validator from "./middleware/validator.js";
+import authorization from "./middleware/authorization.js";
+import { requireAuth, logTheUserIn } from "./services/passport.js";
 
 export default (app: Express) => {
   // ------------------------------------------------ //

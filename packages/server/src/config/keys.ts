@@ -1,5 +1,5 @@
-import prod from "./prod";
-import dev from "./dev";
+import prod from "./prod.js";
+import dev from "./dev.js";
 
 interface IObject {
   [key: string]: string;

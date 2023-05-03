@@ -2,9 +2,9 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcrypt";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
-import keys from "../../config/keys";
-import { DB } from "../../database";
-import { IUser } from "../../database/types";
+import keys from "../../config/keys.js";
+import { DB } from "../../database/index.js";
+import { IUser } from "../../database/types.js";
 
 // Create local strategy
 const localLogin = new LocalStrategy(

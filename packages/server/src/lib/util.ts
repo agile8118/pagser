@@ -1,8 +1,8 @@
 import { Response } from "express";
 import jwt from "jwt-simple";
 import sanitizeHtml from "sanitize-html";
-import log from "./log";
-import keys from "../config/keys";
+import log from "./log.js";
+import keys from "../config/keys.js";
 
 // Handle unexpected errors (500 errors)
 export const handleServerError = (error: any, res: Response) => {

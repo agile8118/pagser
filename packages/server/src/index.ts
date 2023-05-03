@@ -7,11 +7,11 @@ import path from "path";
 import YAML from "yamljs";
 import session from "express-session";
 
-import apiRouter from "./api/router";
-import templatesRouter from "./templates/router";
-import log from "./lib/log";
-import keys from "./config/keys";
-import "./database";
+import apiRouter from "./api/router.js";
+import templatesRouter from "./templates/router.js";
+import log from "./lib/log.js";
+import keys from "./config/keys.js";
+import "./database/index.js";
 
 process.env.TZ = "GMT";
 
@@ -21,7 +21,10 @@ const HOST = "localhost";
 const app = express();
 
 // Swagger
-const swaggerDocument = YAML.load(path.join(__dirname, "./swagger.yml"));
+// const __dirname = path.resolve();
+const swaggerDocument = YAML.load(
+  path.join(path.resolve(), "./src/swagger.yml")
+);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 // Body parser
@@ -37,7 +40,7 @@ app.set("view engine", "ejs");
 app.use(compression());
 
 // Use the public folder for our static files
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(express.static(path.join(path.resolve(), "./public")));
 
 // For passport (req.user)
 declare global {
