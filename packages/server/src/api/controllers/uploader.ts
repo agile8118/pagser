@@ -51,20 +51,27 @@ const uploadPagePhoto = async (
   next: NextFunction
 ) => {
   const pageId = req.params.id;
-  const type = req.query.type; // To see if the page is draft
+  const MAX_FILE_SIZE = 8 * 1024 * 1024; // file size in bytes
+  const ALLOWED_FILE_TYPES = ["image/png", "image/jpeg", "image/jpg"];
 
-  const bb = busboy({ headers: req.headers });
+  const bb = busboy({
+    headers: req.headers,
+  });
+
   let size = 0;
   let hasCheckedFileType = false;
-  let hasFinished = false;
   let cropData;
   let cloudinaryRImgStream;
   let cloudinaryCroppedImgStream;
 
-  const MAX_FILE_SIZE = 1 * 1000 * 1000; // file size in bytes
-  const ALLOWED_FILE_TYPES = ["image/png", "image/jpeg", "image/jpg"];
+  // Grab the existing photo keys from database
+  const page = await DB.find<IPage>(
+    "SELECT photo_key, cropped_photo_key FROM pages WHERE id = $1",
+    [pageId]
+  );
 
-  req.pipe(bb);
+  const perv_photo_key = page.photo_key;
+  const perv_cropped_photo_key = page.cropped_photo_key;
 
   // We're going to get this before the file event, because client is sending this first
   bb.on("field", (name, val, info) => {
@@ -75,22 +82,43 @@ const uploadPagePhoto = async (
       // Write stream for cloudinary, regular image (no cropping)
       cloudinaryRImgStream = cloudinary.uploader.upload_stream(
         {
-          folder: "images/pages-test/",
+          timeout: 60000,
+          folder: "images/pages/",
           transformation: [{ width: 1200, crop: "scale" }],
         },
-        async (error, { secure_url, public_id }) => {
-          if (error) next(error);
+        async (error, response) => {
+          if (error) return next(error);
 
           // save the image that was just uploaded to the database
-          console.log("Regular: ");
-          console.log(secure_url, public_id);
+          if (response) {
+            try {
+              // Update the database with the new photo key and url
+              await DB.update<IPage>(
+                "pages",
+                {
+                  photo_url: response.secure_url,
+                  photo_key: response.public_id,
+                },
+                "id = $3",
+                [pageId]
+              );
+
+              res.send({
+                message: "image-uploaded",
+                image: response.secure_url,
+              });
+            } catch (e) {
+              next(e);
+            }
+          }
         }
       );
 
-      // Write stream for cloudinary, cropped image\
+      // Write stream for cloudinary, cropped image
       cloudinaryCroppedImgStream = cloudinary.uploader.upload_stream(
         {
-          folder: "images/pages-test/",
+          timeout: 60000,
+          folder: "images/pages/",
           transformation: [
             {
               width: Math.round(Number(cropData.width)),
@@ -102,12 +130,25 @@ const uploadPagePhoto = async (
             { width: 400, height: 225, crop: "scale" },
           ],
         },
-        async (error, { secure_url, public_id }) => {
-          if (error) next(error);
+        async (error, response) => {
+          if (error) return next(error);
 
           // save the image that was just uploaded to the database
-          console.log("Cropped: ");
-          console.log(secure_url, public_id);
+          if (response) {
+            try {
+              await DB.update<IPage>(
+                "pages",
+                {
+                  cropped_photo_url: response.secure_url,
+                  cropped_photo_key: response.public_id,
+                },
+                "id = $3",
+                [pageId]
+              );
+            } catch (e) {
+              next(e);
+            }
+          }
         }
       );
     }
@@ -125,39 +166,42 @@ const uploadPagePhoto = async (
       file.resume();
     });
 
-    file.on("data", (data) => {
+    file.on("data", async (data) => {
       // Check file size
       size += data.length;
       if (size > MAX_FILE_SIZE) {
         file.destroy();
+        cloudinaryRImgStream.destroy();
+        cloudinaryCroppedImgStream.destroy();
+
         return bb.emit(
           "error",
-          new Error(`Maximum file size is: ${MAX_FILE_SIZE / (1000 * 1000)}MB`)
+          new Error(`Maximum file size is: ${MAX_FILE_SIZE / (1024 * 1024)}MB`)
         );
       }
 
-      // Checking file type
-      (async () => {
-        if (!hasCheckedFileType) {
-          const fileType = await fileTypeFromBuffer(data);
+      // Checking file type, only for the first buffer
+      if (!hasCheckedFileType) {
+        const fileType = await fileTypeFromBuffer(data);
 
-          if (
-            (fileType && ALLOWED_FILE_TYPES.indexOf(fileType.mime) === -1) ||
-            ALLOWED_FILE_TYPES.indexOf(mimeType) === -1
-          ) {
-            file.destroy();
-            return bb.emit(
-              "error",
-              new Error(
-                `Only these file types are allowed: ${ALLOWED_FILE_TYPES}`
-              )
-            );
-          }
+        if (
+          (fileType && ALLOWED_FILE_TYPES.indexOf(fileType.mime) === -1) ||
+          ALLOWED_FILE_TYPES.indexOf(mimeType) === -1
+        ) {
+          file.destroy();
+          cloudinaryRImgStream.destroy();
+          cloudinaryCroppedImgStream.destroy();
 
-          hasCheckedFileType = true;
-          if (hasFinished) bb.end();
+          return bb.emit(
+            "error",
+            new Error(
+              `Only these file types are allowed: ${ALLOWED_FILE_TYPES}`
+            )
+          );
         }
-      })();
+
+        hasCheckedFileType = true;
+      }
 
       if (!cloudinaryRImgStream.write(data)) {
         file.pause();
@@ -168,25 +212,32 @@ const uploadPagePhoto = async (
       }
     });
 
-    file.on("close", () => {
+    file.on("close", async () => {
+      // Remove the previous photos from cloudinary
+      try {
+        perv_photo_key && (await cloudinary.uploader.destroy(perv_photo_key));
+        perv_cropped_photo_key &&
+          (await cloudinary.uploader.destroy(perv_cropped_photo_key));
+      } catch (e) {
+        next(e);
+      }
+
       cloudinaryRImgStream.end();
       cloudinaryCroppedImgStream.end();
     });
-  });
-
-  bb.on("finish", () => {
-    hasFinished = true;
-    if (hasCheckedFileType) res.send({ message: "Done uploading!" });
   });
 
   // Handle all errors relating to file upload
   bb.on("error", (err: Error) => {
     req.unpipe(bb);
     bb.removeAllListeners();
-    cloudinaryCroppedImgStream.destroy();
-    cloudinaryRImgStream.destroy();
-    return res.status(400).send({ message: err.message });
+    if (!cloudinaryRImgStream.destroyed) cloudinaryRImgStream.destroy();
+    if (!cloudinaryCroppedImgStream.destroyed)
+      cloudinaryCroppedImgStream.destroy();
+    return next({ customError: err.message, status: 400 });
   });
+
+  req.pipe(bb);
 };
 
 const uploader = {
