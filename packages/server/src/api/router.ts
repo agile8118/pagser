@@ -100,7 +100,7 @@ export default (app: Express) => {
   // app.post("/api/new-page/:id", requireAuth, Page.create);
 
   // ---- Shared for draft page and published pages ---- //
-  // upload a new page thumbnail for a page
+  // Upload a new page thumbnail for a page
   app.put(
     "/api/pages/:id/photo",
     requireAuth,
@@ -108,12 +108,13 @@ export default (app: Express) => {
     Uploader.uploadPagePhoto
   );
 
-  // app.delete(
-  //   "/api/pages/:id/photo",
-  //   requireAuth,
-  //   middleware.checkPageOwnership,
-  //   Page.removePagePhoto
-  // );
+  // Remove the page thumbnail of a pge
+  app.delete(
+    "/api/pages/:id/photo",
+    requireAuth,
+    authorization.pageOwnership,
+    Page.removePagePhoto
+  );
   // // add an attach file to a page
   // app.post(
   //   "/api/pages/:id/attach-files",

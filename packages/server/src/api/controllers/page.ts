@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
+import { v2 as cloudinary } from "cloudinary";
 import sendEmail from "../services/mailgun.js";
 import { tokenForUser, handleServerError, cleanHTML } from "../../lib/util.js";
 import { DB } from "../../database/index.js";
@@ -14,6 +15,13 @@ import {
   ITag,
 } from "../../database/types.js";
 import keys from "../../config/keys.js";
+
+// Configure cloudinary
+cloudinary.config({
+  cloud_name: "dxlsmrixd",
+  api_key: keys.cloudinary_api_key,
+  api_secret: keys.cloudinary_api_secret,
+});
 
 // Create a new draft page
 const newDraftPage = async (
@@ -249,6 +257,44 @@ const updateDraftPageData = async (
   }
 };
 
+// Remove page photo from a published or draft page
+const removePagePhoto = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const pageId = req.params.id;
+
+    // Grab the existing photo keys from database
+    const { photo_key, cropped_photo_key } = await DB.find<IPage>(
+      "SELECT photo_key, cropped_photo_key FROM pages WHERE id = $1",
+      [pageId]
+    );
+
+    // Remove photos from cloudinary
+    photo_key && (await cloudinary.uploader.destroy(photo_key));
+    cropped_photo_key && (await cloudinary.uploader.destroy(cropped_photo_key));
+
+    // Remove photo urls from database
+    await DB.update<IPage>(
+      "pages",
+      {
+        photo_key: "",
+        photo_url: "",
+        cropped_photo_url: "",
+        cropped_photo_key: "",
+      },
+      "id = $5",
+      [pageId]
+    );
+
+    res.send({ message: "photo removed" });
+  } catch (e) {
+    next(e);
+  }
+};
+
 // Get a list of attach file for a page
 const getAttachFiles = async (
   req: Request,
@@ -273,6 +319,7 @@ const controller = {
   newDraftPage,
   fetchDraftPageData,
   updateDraftPageData,
+  removePagePhoto,
   getAttachFiles,
 };
 
