@@ -57,12 +57,12 @@ const UploadPhoto = (props: IProps) => {
 
     // Prepare the form data to be sent to server
     let formData = new FormData();
-    // @ts-ignore
-    formData.append("img", document.querySelector("#image-input").files[0]);
     formData.set(
       "cropData",
       `{ "x": "${cropData.x}", "y": "${cropData.y}", "width": "${cropData.width}", "height": "${cropData.height}" }`
     );
+    // @ts-ignore
+    formData.append("img", document.querySelector("#image-input").files[0]);
 
     try {
       const response = (await request.put(props.url, formData, {
