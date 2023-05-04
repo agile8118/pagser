@@ -1,4 +1,4 @@
-export type TTables = "users" | "pages" | "tags";
+export type TTables = "users" | "pages" | "tags" | "attach_files";
 
 export interface IUser {
   id: string;
@@ -55,6 +55,7 @@ export interface IPage {
 export interface IAttachFile {
   id: number;
   key: string;
+  name: string;
   url: string;
   page_id: number;
 }

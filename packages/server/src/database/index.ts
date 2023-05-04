@@ -1,5 +1,5 @@
 import pkg from "pg";
-import { TTables, IUser, IPage } from "./types.js";
+import { TTables, IUser, IPage, IAttachFile } from "./types.js";
 
 /**
  * @important Run the seed.js file first to get our tables, triggers and some starter data
@@ -38,7 +38,13 @@ const find = <T>(query: string, values: any[] = []) => {
 // Insert an item to the the specified table
 const insert = <T>(
   table: TTables,
-  data: T extends IUser ? Partial<T> : T extends IPage ? Partial<T> : never
+  data: T extends IUser
+    ? Partial<T>
+    : T extends IPage
+    ? Partial<T>
+    : T extends IAttachFile
+    ? Partial<T>
+    : never
 ) => {
   return new Promise(function (resolve: (insertedData: T) => void, reject) {
     const _values: any[] = [];

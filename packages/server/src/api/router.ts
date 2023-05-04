@@ -73,6 +73,7 @@ export default (app: Express) => {
   // ------------------------------------------------- //
   // ***************** PAGE ROUTES ****************** //
   // ------------------------------------------------ //
+  // ---- Unique for draft pages ---- //
   // Create a new draft page
   app.post("/api/new-page", requireAuth, Page.newDraftPage);
 
@@ -99,7 +100,7 @@ export default (app: Express) => {
   // Create a page from a draft page
   // app.post("/api/new-page/:id", requireAuth, Page.create);
 
-  // ---- Shared for draft page and published pages ---- //
+  // ---- Shared for draft and published pages ---- //
   // Upload a new page thumbnail for a page
   app.put(
     "/api/pages/:id/photo",
@@ -115,22 +116,26 @@ export default (app: Express) => {
     authorization.pageOwnership,
     Page.removePagePhoto
   );
-  // // add an attach file to a page
-  // app.post(
-  //   "/api/pages/:id/attach-files",
-  //   requireAuth,
-  //   middleware.checkPageOwnership,
-  //   Page.addAttachFile
-  // );
-  // // get one attach file
-  // app.get("/api/pages/:id/attach-files/:name", Page.getAttachFile);
-  // get attach files
+
+  // Get attach files for either a draft or published page
   app.get("/api/pages/:id/attach-files", Page.getAttachFiles);
-  // // delete an attach file
+
+  // Add an attach file to a page
+  app.post(
+    "/api/pages/:id/attach-files",
+    requireAuth,
+    authorization.pageOwnership,
+    Uploader.uploadPageAttachFile
+  );
+
+  // Get one attach file
+  app.get("/api/pages/:id/attach-files/:name", Page.getAttachFile);
+
+  // Delete an attach file
   // app.delete(
   //   "/api/pages/:id/attach-files/:fileId",
   //   requireAuth,
-  //   middleware.checkPageOwnership,
+  //   authorization.pageOwnership,
   //   Page.deleteAttachFile
   // );
 };

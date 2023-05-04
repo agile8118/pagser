@@ -102,7 +102,7 @@ const pool = new Pool({
         "[postgres] 3 users were added to the database with the password 'string'."
       );
 
-      pool.end();
+      // pool.end();
     }
   );
 })();

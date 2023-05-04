@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
+import AWS from "aws-sdk";
 import { v2 as cloudinary } from "cloudinary";
 import sendEmail from "../services/mailgun.js";
 import { tokenForUser, handleServerError, cleanHTML } from "../../lib/util.js";
@@ -16,7 +17,19 @@ import {
 } from "../../database/types.js";
 import keys from "../../config/keys.js";
 
+// Configurations for AWS S3
+// S3 here will only be used to get files
+const BUCKET_NAME = "pagser";
+const IAM_USER_KEY = keys.AWSAccessKey;
+const IAM_USER_SECRET = keys.AWSSecretAccessKey;
+
+let S3 = new AWS.S3({
+  accessKeyId: IAM_USER_KEY,
+  secretAccessKey: IAM_USER_SECRET,
+});
+
 // Configure cloudinary
+// Cloudinary here will only be used to modify the images already there e.g. deleting
 cloudinary.config({
   cloud_name: "dxlsmrixd",
   api_key: keys.cloudinary_api_key,
@@ -305,11 +318,41 @@ const getAttachFiles = async (
     const pageId = req.params.id;
 
     const attachFiles = await DB.find<IAttachFile[]>(
-      `SELECT id, key as name, url FROM attach_files WHERE page_id = $1`,
+      `SELECT id, key as key, name, url FROM attach_files WHERE page_id = $1`,
       [pageId]
     );
 
-    res.send({ attachFiles: attachFiles || [] });
+    const arr = [];
+
+    arr.push(attachFiles);
+
+    console.log(attachFiles);
+
+    res.send({ attachFiles: arr });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Download only one attach file for a page
+const getAttachFile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const pageId = req.params.id;
+    const fileName = req.params.name;
+
+    const key = `${pageId}/${fileName}`;
+
+    res.attachment(key);
+    const fileStream = S3.getObject({
+      Bucket: BUCKET_NAME,
+      Key: key,
+    }).createReadStream();
+
+    fileStream.pipe(res);
   } catch (e) {
     next(e);
   }
@@ -320,6 +363,7 @@ const controller = {
   fetchDraftPageData,
   updateDraftPageData,
   removePagePhoto,
+  getAttachFile,
   getAttachFiles,
 };
 

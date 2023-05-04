@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS attach_files (
   id SERIAL PRIMARY KEY,
   key VARCHAR(200) NOT NULL,
   url VARCHAR(200) NOT NULL,
+  name VARCHAR(200) NOT NULL,
   page_id INT NOT NULL,
   CONSTRAINT fk_page FOREIGN KEY (page_id) REFERENCES pages(id)
 );

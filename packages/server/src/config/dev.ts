@@ -8,7 +8,7 @@ export default {
   domain: "http://localhost:3080",
   cloudinary_api_key: "527577115118424",
   cloudinary_api_secret: "whPeK95JJ2IhwMI8Zw3u9vFYaFs",
-  accessKeyId: "AKIAU3QLQSE43V76DTE5",
-  secretAccessKey: "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",
+  AWSAccessKey: "AKIA4GWB5ACJD4JJ6IGY",
+  AWSSecretAccessKey: "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",
   mailgunApiKey: "key-4ee93455b95f094926338df3e7b6c79e",
 };
