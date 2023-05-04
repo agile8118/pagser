@@ -322,13 +322,22 @@ const getAttachFiles = async (
       [pageId]
     );
 
-    const arr = [];
+    let result;
 
-    arr.push(attachFiles);
+    if (!attachFiles) {
+      // No attach files for this page
+      result = [];
+    } else if (Array.isArray(attachFiles)) {
+      result = attachFiles;
+    } else {
+      // result is now just an object
+      // So we create a new array, push attachFiles to it and then save array to result
+      const arr = [];
+      arr.push(attachFiles);
+      result = arr;
+    }
 
-    console.log(attachFiles);
-
-    res.send({ attachFiles: arr });
+    res.send({ attachFiles: result });
   } catch (e) {
     next(e);
   }
