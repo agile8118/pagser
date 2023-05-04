@@ -9,10 +9,10 @@ import { Request, Response, NextFunction } from "express";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { pipeline } from "node:stream";
+import { pipeline, PassThrough, Transform } from "node:stream";
 import AWS from "aws-sdk";
 import busboy from "busboy";
-import { fileTypeFromBuffer } from "file-type";
+import { fileTypeFromBuffer, fileTypeFromStream } from "file-type";
 import crypto from "crypto";
 import sendEmail from "../services/mailgun.js";
 import { tokenForUser, handleServerError, cleanHTML } from "../../lib/util.js";
@@ -241,6 +241,7 @@ const uploadPagePhoto = async (
   req.pipe(bb);
 };
 
+// Upload an attach file for a page
 const uploadPageAttachFile = async (
   req: Request,
   res: Response,
@@ -253,50 +254,115 @@ const uploadPageAttachFile = async (
     headers: req.headers,
   });
 
-  bb.on("file", (name, file, info) => {
-    const { filename } = info;
+  bb.on("file", async (name, file, info) => {
+    const { filename, mimeType } = info;
 
     // Validate file name length
     if (filename.length > 100) {
       file.destroy();
-      bb.emit(
+      return bb.emit(
         "error",
         new Error(`File name should be less that 100 characters.`)
       );
     }
 
+    // Grab the list of existing attach files for the page
+    const currentAttachFiles = await DB.findMany<IAttachFile[]>(
+      `SELECT * from attach_files WHERE page_id = $1`,
+      [pageId]
+    );
+
     // Validate if there are less than 5 attach files for the page
+    if (currentAttachFiles.length >= 5) {
+      file.destroy();
+      return bb.emit(
+        "error",
+        new Error(`You can only upload up to 5 files for each page.`)
+      );
+    }
 
     // Validate if the file name is not duplicated
-
-    // Upload the file to S3
-    const key = `${pageId}/${filename}`;
-    S3.createBucket(() => {
-      const params = {
-        Bucket: BUCKET_NAME,
-        Key: key,
-        Body: file,
-      };
-      S3.upload(params, async (err, data) => {
-        if (err) return next(err);
-
-        console.log("data", data);
-
-        // If upload was successful, update the database
-        try {
-          const attachFile = await DB.insert<IAttachFile>("attach_files", {
-            page_id: Number(pageId),
-            key: data.Key,
-            url: data.Location,
-            name: filename,
-          });
-
-          res.send({ message: "file uploaded" });
-        } catch (e) {
-          next(e);
-        }
-      });
+    const uploadedFileInDatabase = currentAttachFiles.filter((item) => {
+      return item.name === filename;
     });
+    if (uploadedFileInDatabase.length > 0) {
+      file.destroy();
+      return bb.emit(
+        "error",
+        new Error(
+          `You have already uploaded a file with this name for the page.`
+        )
+      );
+    }
+
+    function upload(S3) {
+      let pass = new PassThrough();
+
+      // Upload the file to S3
+      const key = `${pageId}/${filename}`;
+      S3.createBucket(() => {
+        const params = {
+          Bucket: BUCKET_NAME,
+          Key: key,
+          Body: pass,
+        };
+        S3.upload(params, async (err: Error, data) => {
+          if (err) {
+            if (err.message === "FILE_SIZE_EXCEEDED") {
+              return next({
+                customError: `Maximum file size is: ${
+                  MAX_FILE_SIZE / (1024 * 1024)
+                }MB`,
+                status: 400,
+              });
+            } else {
+              return next(err);
+            }
+          }
+
+          // If upload was successful, update the database
+          try {
+            await DB.insert<IAttachFile>("attach_files", {
+              page_id: Number(pageId),
+              key: data.Key,
+              url: data.Location,
+              name: filename,
+            });
+
+            res.send({ message: "file uploaded" });
+          } catch (e) {
+            next(e);
+          }
+        });
+      });
+
+      return pass;
+    }
+
+    if (!file.destroyed) {
+      let bytesRead = 0;
+      pipeline(
+        file,
+        // A transform stream that checks the file size
+        new Transform({
+          transform(chunk, encoding, callback) {
+            bytesRead += chunk.length;
+            if (bytesRead > MAX_FILE_SIZE) {
+              // return an error and close the pipeline
+              callback(new Error("FILE_SIZE_EXCEEDED"));
+            } else {
+              callback(null, chunk);
+            }
+          },
+        }),
+        upload(S3),
+        (err) => {
+          if (err) {
+            upload(S3).destroy();
+          }
+        }
+      );
+    }
   });
 
   // Handle all errors relating to file upload
@@ -307,76 +373,6 @@ const uploadPageAttachFile = async (
   });
 
   req.pipe(bb);
-
-  // uploadFile(req, res, async (err) => {
-  //   try {
-  //     if (err) res.status(500).send({ message: "Internal server error." });
-
-  //     const filePath = req.file ? req.file.path : null;
-  //     const fileName = req.file.originalname;
-
-  //     // Validate file size
-  //     if (req.file.size > 10000000) {
-  //       fs.unlink(filePath, () => {});
-  //       return res.status(400).send({ error: "Maximum file size is 10MB." });
-  //     }
-
-  //     // Grab either a published or draft page from database
-  //     let page;
-  //     if (type === "draft") {
-  //       page = await DraftPage.findById(pageId, "attachFiles");
-  //     } else {
-  //       page = await Page.findById(pageId, "attachFiles");
-  //     }
-
-  //     // Validate if there are less than attach files for the page
-  //     if (page.attachFiles.length >= 5) {
-  //       fs.unlink(filePath, () => {});
-  //       return res.status(400).send({
-  //         error: "You have already uploaded 5 attach files for this page.",
-  //       });
-  //     }
-
-  //     // Validate if the file name is not duplicated
-  //     const uploadedFileInDatabase = page.attachFiles.filter((item) => {
-  //       return item.name === fileName;
-  //     });
-  //     if (uploadedFileInDatabase.length > 0) {
-  //       fs.unlink(filePath, () => {});
-  //       return res.status(400).send({
-  //         error:
-  //           "You have already uploaded a file with this name for the page.",
-  //       });
-  //     }
-
-  //     const fileStream = fs.createReadStream(filePath);
-  //     const key = `${pageId}/${fileName}`;
-  //     S3.createBucket(() => {
-  //       const params = {
-  //         Bucket: BUCKET_NAME,
-  //         Key: key,
-  //         Body: fileStream,
-  //       };
-  //       S3.upload(params, async (err, data) => {
-  //         fs.unlink(filePath, () => {});
-
-  //         const obj = {
-  //           $push: { attachFiles: { name: fileName } },
-  //         };
-  //         if (type === "draft") {
-  //           await DraftPage.findByIdAndUpdate(pageId, obj, { new: true });
-  //         } else {
-  //           await Page.findByIdAndUpdate(pageId, obj, { new: true });
-  //         }
-
-  //         res.send({ message: "file uploaded" });
-  //       });
-  //     });
-  //   } catch (e) {
-  //     log(e);
-  //     res.status(500).send({ message: "Internal server error." });
-  //   }
-  // });
 };
 
 const uploader = {

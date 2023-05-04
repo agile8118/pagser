@@ -41,7 +41,7 @@ const find = <T>(query: string, values: any[] = []) => {
 
 // Fetch from database all in one array
 const findMany = <T>(query: string, values: any[] = []) => {
-  return new Promise(function (resolve: (value: T | []) => void, reject) {
+  return new Promise(function (resolve: (value: T) => void, reject) {
     pool.query(query, values, function (err, res) {
       if (err) {
         reject(err);
@@ -50,7 +50,7 @@ const findMany = <T>(query: string, values: any[] = []) => {
           return resolve(res.rows as any);
         }
 
-        return resolve([]);
+        return resolve([] as any);
       }
     });
   });

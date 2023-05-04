@@ -6,8 +6,8 @@
   "private": true,
   "exports": "./index.js",
   "engines": {
-		"node": ">=14.16"
-	},
+    "node": ">=14.16"
+  },
   "scripts": {
     "seed": "node ./src/database/seed.cjs",
     "start": "node ./dist/index.js",
