@@ -22,14 +22,35 @@ const pool = new pkg.Pool({
 // Fetch from the database, returns an array if there were more than one
 // record or an object if there was only one record
 const find = <T>(query: string, values: any[] = []) => {
-  return new Promise(function (resolve: (value: T | null) => void, reject) {
+  return new Promise(function (
+    resolve: (value: T extends T[] ? T[] : T | null) => void,
+    reject
+  ) {
     pool.query(query, values, function (err, res) {
       if (err) {
         reject(err);
       } else {
-        if (res.rows.length === 1) return resolve(res.rows[0] as T);
+        if (res.rows.length === 1)
+          return resolve(res.rows[0] as T extends T[] ? T[] : T);
         if (!res.rows || !res.rows.length) return resolve(null);
-        resolve(res.rows as any);
+        resolve(res.rows as T extends T[] ? T[] : T);
+      }
+    });
+  });
+};
+
+// Fetch from database all in one array
+const findMany = <T>(query: string, values: any[] = []) => {
+  return new Promise(function (resolve: (value: T | []) => void, reject) {
+    pool.query(query, values, function (err, res) {
+      if (err) {
+        reject(err);
+      } else {
+        if (res.rows.length) {
+          return resolve(res.rows as any);
+        }
+
+        return resolve([]);
       }
     });
   });
@@ -143,4 +164,4 @@ const query = (query: string, values: any[] = []) => {
   });
 };
 
-export const DB = { find, insert, update, delete: del, query };
+export const DB = { find, findMany, insert, update, delete: del, query };
