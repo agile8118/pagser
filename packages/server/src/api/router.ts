@@ -132,10 +132,10 @@ export default (app: Express) => {
   app.get("/api/pages/:id/attach-files/:name", Page.getAttachFile);
 
   // Delete an attach file
-  // app.delete(
-  //   "/api/pages/:id/attach-files/:fileId",
-  //   requireAuth,
-  //   authorization.pageOwnership,
-  //   Page.deleteAttachFile
-  // );
+  app.delete(
+    "/api/pages/:id/attach-files/:fileId",
+    requireAuth,
+    authorization.pageOwnership,
+    Page.deleteAttachFile
+  );
 };

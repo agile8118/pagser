@@ -18,7 +18,7 @@ import {
 import keys from "../../config/keys.js";
 
 // Configurations for AWS S3
-// S3 here will only be used to get files
+// S3 here will only be used to get & delete files
 const BUCKET_NAME = "pagser";
 const IAM_USER_KEY = keys.AWSAccessKey;
 const IAM_USER_SECRET = keys.AWSSecretAccessKey;
@@ -358,6 +358,38 @@ const getAttachFile = async (
   }
 };
 
+// Delete only one attach file from a page
+const deleteAttachFile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const pageId = req.params.id;
+    const fileId = req.params.fileId;
+
+    // Delete the attach file from database based on the file id given
+    const result = await DB.delete<IAttachFile>("attach_files", "id = $1", [
+      fileId,
+    ]);
+
+    // Grab the name from the result of database delete query and delete the file
+    // from the S3 bucket
+    S3.deleteObject(
+      {
+        Bucket: BUCKET_NAME,
+        Key: `${pageId}/${result.name}`,
+      },
+      (err, data) => {
+        if (err) return next(err);
+        res.send({ message: "file deleted" });
+      }
+    );
+  } catch (e) {
+    next(e);
+  }
+};
+
 const controller = {
   newDraftPage,
   fetchDraftPageData,
@@ -365,6 +397,7 @@ const controller = {
   removePagePhoto,
   getAttachFile,
   getAttachFiles,
+  deleteAttachFile,
 };
 
 export default controller;
