@@ -108,6 +108,7 @@ templatesRouter(app);
 
 // Error handler
 app.use((error, req, res, next) => {
+  res.set("Connection", "close");
   if (error.customError) {
     res.status(error.status).send(error.customError);
   } else {
