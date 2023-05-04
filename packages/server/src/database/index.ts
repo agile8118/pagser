@@ -115,7 +115,7 @@ const update = <T>(
 const del = <T>(table: TTables, where: string, values: any[] = []) => {
   return new Promise(function (resolve: (value: T | null) => void, reject) {
     pool.query(
-      `DELETE FROM ${table} WHERE ${where}`,
+      `DELETE FROM ${table} WHERE ${where} RETURNING *`,
       values,
       function (err, res) {
         if (err) {
