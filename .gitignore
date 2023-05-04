@@ -1,5 +1,6 @@
 node_modules/
 dev.js
+dev.ts
 note.txt
 .DS_Store
 ecosystem.config.js

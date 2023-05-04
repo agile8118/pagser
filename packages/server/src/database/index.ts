@@ -72,7 +72,7 @@ const insert = <T>(
     let _valuesSpecifiers = "";
     let _columns = "";
 
-    // prepare out data for sql based on the data object provided
+    // prepare our data for sql based on the data object provided
     Object.keys(data).map((key, index) => {
       _valuesSpecifiers += `$${index + 1}, `;
       _columns += key + ", ";

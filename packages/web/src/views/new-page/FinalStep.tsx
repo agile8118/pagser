@@ -38,7 +38,18 @@ const FinalStep = () => {
         setRating(response.page.ratings_disabled);
         setAnonymously(response.page.anonymously);
         setLinks(response.page.links_disabled);
-        setTags(response.tags);
+
+        // We are getting the tags in a format of an array, but in order for our
+        // tag input to work, we need to convert it into a string. So something like
+        // [{id: 1, name: 'tag1'}, {id: 2, name: 'tag2'}] will be converted to 'tag1,tag2'
+        let tagsStr = "";
+        response.tags.map((t) => {
+          tagsStr += `${t.name},`;
+        });
+        // Remove the last comma
+        if (tagsStr.length) tagsStr = tagsStr.slice(0, -1);
+
+        setTags(tagsStr);
         setUsername(response.page.user_username);
         setUrl(response.page.url || null);
         setUsedUrls(response.urls);

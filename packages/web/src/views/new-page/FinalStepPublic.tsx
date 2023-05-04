@@ -60,7 +60,7 @@ const FinalStepPublic = (props: IProps) => {
           links: links,
           anonymously: anonymously,
         },
-        tags: tags,
+        tags: tags.split(","), // the server needs the tags in a format of an array
       };
 
       await request.patch(
@@ -82,6 +82,8 @@ const FinalStepPublic = (props: IProps) => {
 
   // Check if the tags are valid
   const checkTagsValidation = () => {
+    console.log(tags);
+
     if (tags.split(",").length < 5) {
       setTagsError("Please choose at least 5 tags.");
       return false;

@@ -228,8 +228,8 @@ const updateDraftPageData = async (
 
           // once the old tags are removed, insert the new ones
           await DB.query(
-            "INSERT INTO tags(page_id, name) VALUES($1, UNNEST(ARRAY$2))",
-            [pageId, ["tag1", "tag2"]]
+            "INSERT INTO tags(page_id, name) VALUES ($1, unnest($2::text[]))",
+            [pageId, page.tags]
           );
         }
 
