@@ -7,6 +7,8 @@ import ProgressBar from "./ProgressBar";
 import { TType } from "./InitialStep";
 
 const PageContents = () => {
+  const [loading, setLoading] = useState<boolean>(true);
+
   const [type, setType] = useState<TType | null>(null);
 
   const [title, setTitle] = useState("");
@@ -27,6 +29,7 @@ const PageContents = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    setLoading(true);
     (async () => {
       const pageId = util.getParameterByName("id", window.location.href);
       try {
@@ -36,7 +39,7 @@ const PageContents = () => {
           { auth: true }
         )) as any;
         setBody(response.page.body || "");
-        setType(response.page.type || "");
+        setType(response.page.type as TType);
         setTitle(response.page.title || "");
         setTargets(response.page.targets || "");
         setBriefDes(response.page.brief_description || "");
@@ -47,6 +50,8 @@ const PageContents = () => {
           navigate(`/new-page/initial-step`);
         }
       }
+
+      setLoading(false);
     })();
   }, []);
 
@@ -179,22 +184,10 @@ const PageContents = () => {
   // Check if the title provided by user is valid or not.
   // This will run by onblur and onchange event on title input
   const checkTitleValidation = (text?: string) => {
-    const minLen = type === "public" ? 15 : 1;
+    const errMsg = validate.page(type as TType).title(text ? text : title);
 
-    const val = text ? text : title;
-
-    if (val.length < minLen) {
-      setTitleError(
-        type === "public"
-          ? `Title should be more than ${minLen} characters.`
-          : "Title cannot be be blank."
-      );
-
-      return false;
-    }
-
-    if (val.length > 50) {
-      setTitleError("Title should be less than 50 characters.");
+    if (errMsg) {
+      setTitleError(errMsg);
       return false;
     }
 
@@ -205,19 +198,10 @@ const PageContents = () => {
   // Check if the brief description provided by user is valid or not.
   // This will run by onblur and onchange event on briefDes input
   const checkBriefDesValidation = () => {
-    const minLen = type === "public" ? 30 : 0;
+    const errMsg = validate.page(type as TType).briefDes(briefDes);
 
-    if (briefDes.length < minLen) {
-      setBriefDesError(
-        type === "public"
-          ? `Brief description should be more than ${minLen} characters.`
-          : ""
-      );
-      return false;
-    }
-
-    if (briefDes.length > 300) {
-      setBriefDesError("Brief description should be less than 300 characters.");
+    if (errMsg) {
+      setBriefDesError(errMsg);
       return false;
     }
 
@@ -228,19 +212,11 @@ const PageContents = () => {
   // Check if the targets provided by user is valid or not.
   // This will run by onblur and onchange event on targets input
   const checkTargetsValidation = () => {
-    const minLen = type === "public" ? 20 : 0;
+    if (!type) return;
+    const errMsg = validate.page(type as TType).targets(targets);
 
-    if (targets.length < minLen) {
-      setTargetsError(
-        `Targets description should be more than ${minLen} characters.`
-      );
-      return false;
-    }
-
-    if (targets.length > 300) {
-      setTargetsError(
-        "Targets description should be less than 300 characters."
-      );
+    if (errMsg) {
+      setTargetsError(errMsg);
       return false;
     }
 
@@ -297,30 +273,15 @@ const PageContents = () => {
     let bodyText = div.textContent || div.innerText || "";
     bodyText = bodyText.replace(/\s+/g, " ").trim();
 
-    if (type === "public") {
-      if (
-        validate.len(title, 15, 50) &&
-        validate.len(briefDes, 30, 300) &&
-        validate.len(targets, 20, 300) &&
-        validate.len(bodyText, 50, 20000)
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-
-    if (type === "private") {
-      if (
-        validate.len(title, 1, 50) &&
-        validate.len(briefDes, 0, 300) &&
-        validate.len(targets, 0, 300) &&
-        validate.len(bodyText, 1, 200000)
-      ) {
-        return true;
-      } else {
-        return false;
-      }
+    if (
+      !validate.page(type as TType).title(title) &&
+      !validate.page(type as TType).briefDes(briefDes) &&
+      !validate.page(type as TType).targets(targets) &&
+      validate.len(bodyText, type === "public" ? 50 : 1, 20000)
+    ) {
+      return true;
+    } else {
+      return false;
     }
   };
 
@@ -536,7 +497,7 @@ const PageContents = () => {
         </p>
       </div>
 
-      <div className="page-new">{renderContents()}</div>
+      <div className="page-new">{!loading ? renderContents() : <div />}</div>
     </React.Fragment>
   );
 };
