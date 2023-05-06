@@ -91,9 +91,10 @@ export default (app: Express) => {
   app.patch(
     "/api/new-page/:stage/:id",
     requireAuth,
+    authorization.draftPageOwnership,
     validator.isId,
     validator.isStage,
-    authorization.draftPageOwnership,
+    validator.pageType,
     Page.updateDraftPageData
   );
 

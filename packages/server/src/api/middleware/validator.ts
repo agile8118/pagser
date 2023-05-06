@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import vl from "validator";
 import { validate } from "@pagser/common";
 import { DB } from "../../database/index.js";
-import { IUser } from "../../database/types.js";
+import { IUser, PAGE_STATUS, PAGE_TYPE } from "../../database/types.js";
 
 import { handleServerError } from "../../lib/util.js";
 
@@ -186,6 +186,130 @@ const isStage = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+// Validate page type
+const pageType = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const type = req.body.page.type;
+
+    if (type === "public" || type === "private") {
+      next();
+    } else {
+      throw new Error("");
+    }
+  } catch (e) {
+    return res.status(400).send({ message: "page type error" });
+  }
+};
+
+/** @todo: use for edit page */
+// Validate page contents (title, brief description, targets, body)
+const pageContents = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (req.params.stage !== "page-contents") return next();
+
+    const type = req.body.page.type;
+
+    const title = req.body.page.contents.title;
+    const targets = req.body.page.contents.targets;
+    const briefDes = req.body.page.contents.briefDes;
+    const body = req.body.page.contents.body;
+
+    if (
+      !validate.page(type).title(title) &&
+      !validate.page(type).targets(targets) &&
+      !validate.page(type).briefDes(briefDes) &&
+      validate.len(body, 0, 200000) // ten times more than textContent max length in front end
+    ) {
+      next();
+    } else {
+      throw new Error("");
+    }
+  } catch (e) {
+    return res.status(400).send({ message: "page contents error" });
+  }
+};
+
+/** @todo: use for edit page */
+// Validate page configurations (anonymously, comments, rating, links)
+const pageConfigurations = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (req.params.stage !== "final-step") return next();
+
+    const type = req.body.page.type;
+
+    const anonymously = req.body.page.configurations.title;
+    const comments = req.body.page.configurations.targets;
+    const rating = req.body.page.configurations.briefDes;
+    const links = req.body.page.configurations.links; // could be undefined
+
+    const linksCondition =
+      type === "public" ? typeof links === "boolean" : true;
+
+    if (
+      typeof anonymously === "boolean" &&
+      typeof comments === "boolean" &&
+      typeof rating === "boolean" &&
+      linksCondition
+    ) {
+      next();
+    } else {
+      throw new Error("");
+    }
+  } catch (e) {
+    return res.status(400).send({ message: "page configurations error" });
+  }
+};
+
+/** @todo: use for edit page */
+// Validate the page tags for public pages
+const publicPageTags = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (req.params.stage !== "final-step") return next();
+
+    const tags = req.body.page.tags;
+
+    if (!validate.page("public").tags(tags)) {
+      next();
+    } else {
+      throw new Error("");
+    }
+  } catch (e) {
+    return res.status(400).send({ message: "page tags error" });
+  }
+};
+
+/** @todo: use for edit page */
+// Validate the page url for private pages
+const privatePageUrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (req.params.stage !== "final-step") return next();
+
+    const url = req.body.page.url;
+    const userId = req.user.id;
+
+    const usedUrls = await DB.find<string[]>(
+      `SELECT url from pages WHERE user_id = $1 AND status_id = $2 AND type_id = $3`,
+      [userId, PAGE_STATUS.publishedId, PAGE_TYPE.privateId]
+    );
+
+    if (!validate.page("private").url(url, usedUrls)) {
+      next();
+    } else {
+      throw new Error("");
+    }
+  } catch (e) {
+    return res.status(400).send({ message: "page url error" });
+  }
+};
+
 const validator = {
   isId,
   isBodyUserId,
@@ -197,8 +321,13 @@ const validator = {
   usernameAvailability,
   userEmailVerificationCode,
   passwordResetToken,
-  // for page creation
+  // For page creation:
   isStage,
+  pageType,
+  pageContents,
+  pageConfigurations,
+  publicPageTags,
+  privatePageUrl,
 };
 
 export default validator;

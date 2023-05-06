@@ -98,6 +98,7 @@ const PageContents = () => {
         )}`,
         {
           page: {
+            type,
             contents: {
               title,
               briefDes,

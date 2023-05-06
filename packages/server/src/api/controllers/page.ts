@@ -3,7 +3,7 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 import AWS from "aws-sdk";
 import { v2 as cloudinary } from "cloudinary";
-import { util } from "@pagser/common";
+import { util, validate } from "@pagser/common";
 import sendEmail from "../services/mailgun.js";
 import { tokenForUser, handleServerError, cleanHTML } from "../../lib/util.js";
 import { DB } from "../../database/index.js";
@@ -162,7 +162,7 @@ const fetchDraftPageData = async (
 };
 
 // Update or create a draft page
-/** @todo: use util validate page to validate all the content */
+/** @todo: impose content length limits */
 const updateDraftPageData = async (
   req: Request,
   res: Response,
@@ -180,8 +180,6 @@ const updateDraftPageData = async (
           "SELECT id, type FROM page_types WHERE type = $1",
           [page.type]
         );
-
-        if (!pageType) return next({ customError: "bad data", status: 400 });
 
         const result = await DB.find<IPage>(
           `SELECT id FROM pages WHERE id = $1`,
@@ -282,14 +280,17 @@ const removePagePhoto = async (
     const pageId = req.params.id;
 
     // Grab the existing photo keys from database
-    const { photo_key, cropped_photo_key } = await DB.find<IPage>(
+    const page = await DB.find<IPage>(
       "SELECT photo_key, cropped_photo_key FROM pages WHERE id = $1",
       [pageId]
     );
 
+    if (!page) return next({ customError: "page was not found", status: 404 });
+
     // Remove photos from cloudinary
-    photo_key && (await cloudinary.uploader.destroy(photo_key));
-    cropped_photo_key && (await cloudinary.uploader.destroy(cropped_photo_key));
+    page.photo_key && (await cloudinary.uploader.destroy(page.photo_key));
+    page.cropped_photo_key &&
+      (await cloudinary.uploader.destroy(page.cropped_photo_key));
 
     // Remove photo urls from database
     await DB.update<IPage>(
@@ -409,7 +410,7 @@ const publish = async (req: Request, res: Response, next: NextFunction) => {
 
     const draftPage = await DB.find<any>(
       `SELECT pages.id, 
-        type_id, 
+        page_types.type as type, 
         status_id, 
         url,
         title,
@@ -419,9 +420,12 @@ const publish = async (req: Request, res: Response, next: NextFunction) => {
         users.username as author_username
         FROM pages 
         JOIN users ON users.id = pages.user_id 
+        JOIN page_types ON pages.type_id = page_types.id 
         WHERE pages.id = $1`,
       [pageId]
     );
+
+    /** @todo: validate the page */
 
     // If the page is private
     if (draftPage.type_id === PAGE_TYPE.privateId) {
