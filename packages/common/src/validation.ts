@@ -7,6 +7,15 @@ interface IValidate {
   isNormalPassword: (password: string) => boolean;
   isEmail: (email: string) => boolean;
   letterPercentage: (string: string, min: number) => boolean;
+  page: (type: "public" | "private") => IInPageValidation;
+}
+
+interface IInPageValidation {
+  title: (title: string) => string | null;
+  briefDes: (briefDes: string) => string | null;
+  targets: (targets: string) => string | null;
+  tags: (tags: string[]) => string | null;
+  url: (url: string, usedUrls: string[]) => string | null;
 }
 
 const validate: any = {};
@@ -89,6 +98,127 @@ validate.letterPercentage = (string: string, minPercent: number) => {
     }
   } else {
     return true;
+  }
+};
+
+/**
+ * Validations for the whole page, will be used both in front and back.
+ * If any of the functions return a string that means there's an error.
+ *
+ * @return null => input is ok
+ * @return string => error message
+ *
+ * EX: validate.page("public").title("This is some title");
+ */
+validate.page = (type: "public" | "private") => {
+  if (type === "public") {
+    return {
+      // Validate the chosen url by user, only for private pages
+      url: (url: string, usedUrls: string[]) => {
+        if (url && url.length > 0 && usedUrls.indexOf(url) === -1) {
+          return null;
+        } else if (usedUrls.indexOf(url) !== -1) {
+          return `You have already used "${url}" url, choose something else.`;
+        } else {
+          return "Please choose a URL for your page.";
+        }
+      },
+      // Validate the page title, only the length
+      title: (title: string) => {
+        const minLen = 15;
+
+        if (title.length < minLen) {
+          return `Title should be more than ${minLen} characters.`;
+        }
+
+        if (title.length > 50) {
+          return "Title should be less than 50 characters.";
+        }
+
+        return null;
+      },
+      // Validate the page brief description, only the length
+      briefDes: (briefDes: string) => {
+        const minLen = 30;
+
+        if (briefDes.length < minLen) {
+          return `Brief description should be more than ${minLen} characters.`;
+        }
+
+        if (briefDes.length > 300) {
+          return "Brief description should be less than 300 characters.";
+        }
+
+        return null;
+      },
+      // Validate the page targets description, only the length
+      targets: (targets: string) => {
+        const minLen = 20;
+
+        if (targets.length < minLen) {
+          return `Targets description should be more than ${minLen} characters.`;
+        }
+
+        if (targets.length > 300) {
+          return "Targets description should be less than 300 characters.";
+        }
+
+        return null;
+      },
+    };
+  }
+
+  if (type === "private") {
+    return {
+      // Validate tags, only for public pages
+      tags: (tags: string[]) => {
+        // number of tags
+        if (tags.length < 5) {
+          return "Please choose at least 5 tags.";
+        }
+
+        // Total length of tags
+        let totalLength = 0;
+        tags.forEach((tag: string) => {
+          totalLength += tag.length;
+        });
+        if (totalLength >= 200) {
+          return "Total length of tags must be less than 200 characters.";
+        }
+
+        return null;
+      },
+      // Validate the page title, only the length
+      title: (title: string) => {
+        const minLen = 1;
+
+        if (title.length < minLen) {
+          return "Title cannot be be blank.";
+        }
+
+        if (title.length > 50) {
+          return "Title should be less than 50 characters.";
+        }
+
+        return null;
+      },
+      // Validate the page brief description, only the length
+      briefDes: (briefDes: string) => {
+        if (briefDes.length > 300) {
+          return "Brief description should be less than 300 characters.";
+        }
+
+        return null;
+      },
+      // Validate the page title, only the length
+      targets: (targets: string) => {
+        if (targets.length > 300) {
+          return "Targets description should be less than 300 characters.";
+        }
+
+        return null;
+      },
+    };
   }
 };
 
