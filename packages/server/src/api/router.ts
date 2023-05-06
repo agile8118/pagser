@@ -97,8 +97,13 @@ export default (app: Express) => {
     Page.updateDraftPageData
   );
 
-  // Create a page from a draft page
-  // app.post("/api/new-page/:id", requireAuth, Page.create);
+  // Publish a draft page
+  app.post(
+    "/api/new-page/:id",
+    requireAuth,
+    authorization.draftPageOwnership,
+    Page.publish
+  );
 
   // ---- Shared for draft and published pages ---- //
   // Upload a new page thumbnail for a page

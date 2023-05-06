@@ -22,6 +22,7 @@ util.getParameterByName = (name: string, url?: string) => {
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 };
 
+// Converts a string to a url (mostly used for creating public page urls)
 util.convertToUrl = (string: string) => {
   return (
     string

@@ -3,6 +3,7 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 import AWS from "aws-sdk";
 import { v2 as cloudinary } from "cloudinary";
+import { util } from "@pagser/common";
 import sendEmail from "../services/mailgun.js";
 import { tokenForUser, handleServerError, cleanHTML } from "../../lib/util.js";
 import { DB } from "../../database/index.js";
@@ -161,6 +162,7 @@ const fetchDraftPageData = async (
 };
 
 // Update or create a draft page
+/** @todo: use util validate page to validate all the content */
 const updateDraftPageData = async (
   req: Request,
   res: Response,
@@ -399,6 +401,92 @@ const deleteAttachFile = async (
   }
 };
 
+// Publish a draft page
+const publish = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const pageId = req.params.id;
+    let resObj;
+
+    const draftPage = await DB.find<any>(
+      `SELECT pages.id, 
+        type_id, 
+        status_id, 
+        url,
+        title,
+        brief_description,
+        targets,
+        body,
+        users.username as author_username
+        FROM pages 
+        JOIN users ON users.id = pages.user_id 
+        WHERE pages.id = $1`,
+      [pageId]
+    );
+
+    // If the page is private
+    if (draftPage.type_id === PAGE_TYPE.privateId) {
+      // Genera a url for the page off of the title
+      let newUrl = util.convertToUrl(draftPage.title);
+
+      // Generate a new url if url is duplicated, this loop will run only once in most cases
+      while (true) {
+        // Check if the url is already taken
+        const existingPage = await DB.find<IPage>(
+          "SELECT id FROM pages WHERE url = $1",
+          [newUrl]
+        );
+
+        // If the url is taken, add a random hex number to the end of the url (2 chars)
+        if (existingPage) {
+          newUrl = newUrl + "_" + crypto.randomBytes(1).toString("hex");
+        } else {
+          // No page was found, so the url is unique and we can't break the loop
+          break;
+        }
+      }
+
+      // Change the status of the page to published and update the url
+      await DB.update<IPage>(
+        "pages",
+        { url: newUrl, status_id: PAGE_STATUS.publishedId },
+        "id = $3",
+        [pageId]
+      );
+
+      // Delete all the tags for this page (tags are only for public pages)
+      await DB.delete<ITag>("tags", "page_id = $1", [pageId]);
+
+      resObj = { url: newUrl };
+    }
+
+    // If the page is public
+    if (draftPage.type_id === PAGE_TYPE.publicId) {
+      // Change the status of the page to published
+      await DB.update<IPage>(
+        "pages",
+        { status_id: PAGE_STATUS.publishedId },
+        "id = $2",
+        [pageId]
+      );
+
+      resObj = { url: draftPage.url, username: draftPage.author_username };
+    }
+
+    // if (
+    //   !util.validatePage(draftPage, "type") ||
+    //   !util.validatePage(draftPage, "contents") ||
+    //   !util.validatePage(draftPage, "configurations") ||
+    //   !util.validatePage(draftPage, "tags") ||
+    //   !util.validatePage(draftPage, "url")
+    // )
+    //   return res.status(400).send({ error: "error with contents" });
+
+    return res.status(200).send(resObj);
+  } catch (e) {
+    next(e);
+  }
+};
+
 const controller = {
   newDraftPage,
   fetchDraftPageData,
@@ -407,6 +495,7 @@ const controller = {
   getAttachFile,
   getAttachFiles,
   deleteAttachFile,
+  publish,
 };
 
 export default controller;
