@@ -113,15 +113,23 @@ validate.letterPercentage = (string: string, minPercent: number) => {
 validate.page = (type: "public" | "private") => {
   if (type === "public") {
     return {
-      // Validate the chosen url by user, only for private pages
-      url: (url: string, usedUrls: string[]) => {
-        if (url && url.length > 0 && usedUrls.indexOf(url) === -1) {
-          return null;
-        } else if (usedUrls.indexOf(url) !== -1) {
-          return `You have already used "${url}" url, choose something else.`;
-        } else {
-          return "Please choose a URL for your page.";
+      // Validate tags, only for public pages
+      tags: (tags: string[]) => {
+        // number of tags
+        if (tags.length < 5) {
+          return "Please choose at least 5 tags.";
         }
+
+        // Total length of tags
+        let totalLength = 0;
+        tags.forEach((tag: string) => {
+          totalLength += tag.length;
+        });
+        if (totalLength >= 200) {
+          return "Total length of tags must be less than 200 characters.";
+        }
+
+        return null;
       },
       // Validate the page title, only the length
       title: (title: string) => {
@@ -170,23 +178,22 @@ validate.page = (type: "public" | "private") => {
 
   if (type === "private") {
     return {
-      // Validate tags, only for public pages
-      tags: (tags: string[]) => {
-        // number of tags
-        if (tags.length < 5) {
-          return "Please choose at least 5 tags.";
+      // Validate the chosen url by user, only for private pages
+      url: (url: string, usedUrls: string[]) => {
+        if (
+          url &&
+          url.length > 0 &&
+          url.length < 200 &&
+          usedUrls.indexOf(url) === -1
+        ) {
+          return null;
+        } else if (usedUrls.indexOf(url) !== -1) {
+          return `You have already used "${url}" url, choose something else.`;
+        } else if (url.length === 0) {
+          return "Please choose a URL for your page.";
+        } else {
+          return "URL should be less than 200 characters.";
         }
-
-        // Total length of tags
-        let totalLength = 0;
-        tags.forEach((tag: string) => {
-          totalLength += tag.length;
-        });
-        if (totalLength >= 200) {
-          return "Total length of tags must be less than 200 characters.";
-        }
-
-        return null;
       },
       // Validate the page title, only the length
       title: (title: string) => {

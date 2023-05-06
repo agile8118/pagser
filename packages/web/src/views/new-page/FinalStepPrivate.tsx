@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Loading, Button, ConfirmModal, Input } from "@pagser/reusable";
-import { util, request, loadingModal, alert } from "@pagser/common";
+import { util, request, loadingModal, alert, validate } from "@pagser/common";
 import { useNavigate } from "react-router-dom";
 
 interface IProps {
@@ -51,16 +51,15 @@ const FinalStepPrivate = (props: IProps) => {
 
   // Check to see if a chosen URL is valid
   const checkUrlValidation = () => {
-    if (url && url.length > 0 && props.usedUrls.indexOf(url) === -1) {
-      setUrlError("");
-      return true;
-    } else if (props.usedUrls.indexOf(url) !== -1) {
-      setUrlError(`You have already used "${url}" url, choose something else.`);
-      return false;
-    } else {
-      setUrlError("Please choose a URL for your page.");
+    const errMsg = validate.page("private").url(url, props.usedUrls);
+
+    if (errMsg) {
+      setUrlError(errMsg);
       return false;
     }
+
+    setUrlError("");
+    return true;
   };
 
   // Sends a request to the server to update the draft page

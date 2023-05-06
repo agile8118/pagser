@@ -7,8 +7,6 @@ import ProgressBar from "./ProgressBar";
 import { TType } from "./InitialStep";
 
 const PageContents = () => {
-  const [loading, setLoading] = useState<boolean>(true);
-
   const [type, setType] = useState<TType | null>(null);
 
   const [title, setTitle] = useState("");
@@ -29,7 +27,6 @@ const PageContents = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setLoading(true);
     (async () => {
       const pageId = util.getParameterByName("id", window.location.href);
       try {
@@ -50,8 +47,6 @@ const PageContents = () => {
           navigate(`/new-page/initial-step`);
         }
       }
-
-      setLoading(false);
     })();
   }, []);
 
@@ -497,7 +492,7 @@ const PageContents = () => {
         </p>
       </div>
 
-      <div className="page-new">{!loading ? renderContents() : <div />}</div>
+      <div className="page-new">{renderContents()}</div>
     </React.Fragment>
   );
 };

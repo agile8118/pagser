@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Loading, Button, ConfirmModal, Input } from "@pagser/reusable";
-import { util, request, loadingModal, alert, tagsInput } from "@pagser/common";
+import {
+  util,
+  request,
+  loadingModal,
+  alert,
+  tagsInput,
+  validate,
+} from "@pagser/common";
 import { useNavigate } from "react-router-dom";
 
 interface IProps {
@@ -82,15 +89,10 @@ const FinalStepPublic = (props: IProps) => {
 
   // Check if the tags are valid
   const checkTagsValidation = () => {
-    console.log(tags);
+    const errMsg = validate.page("public").tags(tags.split(","));
 
-    if (tags.split(",").length < 5) {
-      setTagsError("Please choose at least 5 tags.");
-      return false;
-    }
-
-    if (tags.replace(/,/g, "").length >= 200) {
-      setTagsError("Tags must be less than 200 characters.");
+    if (errMsg) {
+      setTagsError(errMsg);
       return false;
     }
 
