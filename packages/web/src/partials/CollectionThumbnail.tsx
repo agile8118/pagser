@@ -1,4 +1,5 @@
 import React from "react";
+import { COLLECTION_PLACEHOLDER_IMAGE } from "@pagser/common";
 import { Link } from "react-router-dom";
 
 interface IProps {
@@ -26,7 +27,7 @@ const Collection = (props: IProps) => {
           src={props.img}
           onError={(e) => {
             (e.target as HTMLImageElement).src =
-              "/images/collection-placeholder.svg";
+              COLLECTION_PLACEHOLDER_IMAGE;
           }}
         />
         <div className="collection-thumbnail__num-label">

@@ -1,4 +1,5 @@
 import React, { ReactElement } from "react";
+import { PAGE_PLACEHOLDER_IMAGE } from "@pagser/common";
 
 interface IProps {
   id: string;
@@ -107,10 +108,10 @@ const PageThumbnail = (props: IProps) => {
       <a href={url} target={target}>
         <div className="page-thumbnail__photo">
           <img
-            src={props.image}
+            src={props.image || PAGE_PLACEHOLDER_IMAGE}
             onError={(e) => {
               (e.target as HTMLImageElement).src =
-                "/images/pages/placeholder.svg";
+                PAGE_PLACEHOLDER_IMAGE;
             }}
           />
         </div>

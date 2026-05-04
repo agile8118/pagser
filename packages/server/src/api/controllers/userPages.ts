@@ -1,0 +1,176 @@
+import { Request, Response, NextFunction } from "express";
+import { DB } from "../../database/index.js";
+import { IPage, PAGE_STATUS, PAGE_TYPE } from "../../database/types.js";
+import { timeSince } from "../../lib/util.js";
+
+// Fetch published pages for the current user
+const fetchPublishedPages = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user.id;
+
+    console.log(userId);
+    const filterBy = (req.query.filterBy || "all") as string;
+
+    let query = `
+      SELECT
+        pages.id,
+        pages.url,
+        page_types.type,
+        pages.title,
+        pages.brief_description,
+        pages.cropped_photo_url,
+        json_build_object(
+          'title', pages.title,
+          'briefDes', pages.brief_description
+        ) as contents,
+        users.username
+      FROM pages
+      JOIN users ON pages.user_id = users.id
+      JOIN page_types ON pages.type_id = page_types.id
+      WHERE pages.user_id = $1 AND pages.status_id = $2
+    `;
+
+    const queryParams: any[] = [userId, PAGE_STATUS.publishedId];
+
+    if (filterBy === "public") {
+      query += ` AND pages.type_id = $3`;
+      queryParams.push(PAGE_TYPE.publicId);
+    } else if (filterBy === "private") {
+      query += ` AND pages.type_id = $3`;
+      queryParams.push(PAGE_TYPE.privateId);
+    }
+
+    query += ` ORDER BY pages.updated_at DESC`;
+
+    const pages = await DB.findMany<any>(query, queryParams);
+
+    // Format the response to match what the frontend expects
+    const formattedPages = (pages || []).map((page: any) => ({
+      id: page.id,
+      url: page.url,
+      type: page.type,
+      contents: page.contents,
+      photo: page.cropped_photo_url
+        ? {
+            secure_url: page.cropped_photo_url,
+          }
+        : null,
+      author: {
+        username: page.username,
+      },
+    }));
+
+    res.send({
+      results: formattedPages,
+      filterBy,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Fetch draft pages for the current user
+const fetchDraftPages = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user.id;
+
+    const pages = await DB.findMany<any>(
+      `
+      SELECT id, title, brief_description, updated_at
+      FROM pages
+      WHERE user_id = $1 AND status_id = $2 AND title IS NOT NULL
+      ORDER BY updated_at DESC
+      `,
+      [userId, PAGE_STATUS.draftId],
+    );
+
+    const formattedPages = (pages || []).map((page: any) => ({
+      id: page.id,
+      contents: {
+        title: page.title,
+        briefDes: page.brief_description,
+      },
+      updatedAt: timeSince(page.updated_at),
+    }));
+
+    res.send({
+      results: formattedPages,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Delete draft pages for the current user
+const deleteDraftPages = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user.id;
+    const { ids } = req.body;
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).send({ message: "Invalid ids array" });
+    }
+
+    // Build a parameterized query for safe deletion
+    const placeholders = ids.map((_, i) => `$${i + 1}`).join(",");
+    const query = `
+      DELETE FROM pages
+      WHERE id IN (${placeholders}) AND user_id = $${ids.length + 1} AND status_id = $${ids.length + 2}
+    `;
+
+    await DB.query(query, [...ids, userId, PAGE_STATUS.draftId]);
+
+    res.send({ message: "success" });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Delete published pages for the current user (bulk)
+const deletePublishedPages = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user.id;
+    const { ids } = req.body;
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).send({ message: "Invalid ids array" });
+    }
+
+    const placeholders = ids.map((_, i) => `$${i + 1}`).join(",");
+    const query = `
+      DELETE FROM pages
+      WHERE id IN (${placeholders}) AND user_id = $${ids.length + 1} AND status_id = $${ids.length + 2}
+    `;
+
+    await DB.query(query, [...ids, userId, PAGE_STATUS.publishedId]);
+
+    res.send({ message: "success" });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const controller = {
+  fetchPublishedPages,
+  fetchDraftPages,
+  deleteDraftPages,
+  deletePublishedPages,
+};
+
+export default controller;

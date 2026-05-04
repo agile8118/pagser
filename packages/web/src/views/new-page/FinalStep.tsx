@@ -26,16 +26,20 @@ const FinalStep = () => {
         const response = (await request.get(
           `/new-page/final-step/${util.getParameterByName(
             "id",
-            window.location.href
+            window.location.href,
           )}`,
           {
             auth: true,
-          }
+          },
         )) as any;
 
+        console.log(response);
         setType(response.page.type);
         setComments(response.page.comments_disabled);
         setRating(response.page.ratings_disabled);
+
+        console.log("-----");
+        console.log(response.page.anonymously);
         setAnonymously(response.page.anonymously);
         setLinks(response.page.links_disabled);
 

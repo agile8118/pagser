@@ -42,7 +42,7 @@ const AttachFiles = () => {
               onClick={(e) => {
                 // This will prevent the file from starting to get downloaded
                 e.preventDefault();
-                setConfirmModalFileId(file._id);
+                setConfirmModalFileId(String(file.id));
                 setConfirmModalFileName(file.name);
                 setConfirmModalOpen(true);
               }}

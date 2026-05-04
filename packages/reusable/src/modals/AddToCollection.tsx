@@ -59,7 +59,7 @@ const CollectionModal = (props: IProps) => {
     )) as any;
 
     // Add the page in the newly created collection
-    togglePageInCL(response.collection._id);
+    togglePageInCL(response.collection.id);
   };
 
   // Send the request to server to either remove the page from selected collection

@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { useDispatch } from "react-redux";
+import { USER_PLACEHOLDER_IMAGE } from "@pagser/common";
 import CommentActions from "./CommentActions";
 import CommentBody from "./CommentBody";
 import AddReplyForm from "./AddReplyForm";
@@ -49,7 +50,7 @@ const CommentReply = (props: IProps) => {
               alt="comment's author image"
               onError={(e) => {
                 (e.target as HTMLImageElement).src =
-                  "/images/users/placeholder.png";
+                  USER_PLACEHOLDER_IMAGE;
               }}
             />
             <div className="comment__header__name-and-date">

@@ -8,7 +8,7 @@ import {
   Textarea,
   Loading,
 } from "@pagser/reusable";
-import { loadingModal, alert, request } from "@pagser/common";
+import { loadingModal, alert, request, COLLECTION_PLACEHOLDER_IMAGE } from "@pagser/common";
 
 const CollectionShow = () => {
   const [infoStatus, setInfoStatus] = useState<"normal" | "editing">("normal");
@@ -54,7 +54,7 @@ const CollectionShow = () => {
 
       setBtn(response.btn);
       setViewer(response.viewer);
-      setId(response.collection._id);
+      setId(String(response.collection.id));
       setName(response.collection.name);
       setDesc(response.collection.description);
       setPhoto(response.collection.photo.secure_url);
@@ -173,7 +173,7 @@ const CollectionShow = () => {
 
     try {
       (await request.put(
-        `/api/collection/remove-pages/${id}`,
+        `/collection/remove-pages/${id}`,
         { pageIds: selectedPages },
         {
           auth: true,
@@ -184,7 +184,7 @@ const CollectionShow = () => {
       alert("Page(s) removed from your collection successfully.", "success");
 
       const newArr = pages.filter((page) => {
-        return selectedPages.indexOf(page._id) === -1;
+        return selectedPages.indexOf(page.id) === -1;
       });
 
       setPages(newArr);
@@ -201,27 +201,25 @@ const CollectionShow = () => {
       return (
         <div
           className="col-lg-1-of-5 col-md-1-of-5 col-sm-1-of-3 col-xs-1-of-2 col-xxs-1-of-1"
-          key={item._id}
+          key={item.id}
         >
           <PageThumbnail
             id={item.id}
-            selected={selectedPages.indexOf(item._id) > -1 ? true : false}
+            selected={selectedPages.indexOf(item.id) > -1 ? true : false}
             status={pagesStatus}
             briefDes={item.contents.briefDes}
             title={item.contents.title}
-            image={item.cropedPhoto.secure_url}
+            image={item.photo?.secure_url || ""}
             target="_blank"
             url={item.url}
             type={item.type}
             authorUsername={item.author.username}
             onClick={() => {
               if (pagesStatus === "editing") {
-                const index = selectedPages.indexOf(item._id);
+                const index = selectedPages.indexOf(item.id);
                 if (index === -1) {
-                  // Add the page to the selected list
-                  setSelectedPages([...selectedPages, item._id]);
+                  setSelectedPages([...selectedPages, item.id]);
                 } else {
-                  // Remove the page from the selected list
                   setSelectedPages([
                     ...selectedPages.slice(0, index),
                     ...selectedPages.slice(index + 1),
@@ -301,7 +299,7 @@ const CollectionShow = () => {
               src={photo}
               onError={(e) => {
                 (e.target as HTMLImageElement).src =
-                  "/images/collection-placeholder.svg";
+                  COLLECTION_PLACEHOLDER_IMAGE;
               }}
             />
             <div className="img-upload-btn__cover">
@@ -320,7 +318,7 @@ const CollectionShow = () => {
         src={photo}
         onError={(e) => {
           (e.target as HTMLImageElement).src =
-            "/images/collection-placeholder.svg";
+            COLLECTION_PLACEHOLDER_IMAGE;
         }}
       />
     );
@@ -551,12 +549,12 @@ const CollectionShow = () => {
                   className="btn-text"
                   disabled={
                     selectedPages.length !== 1 ||
-                    pages[0]._id === selectedPages[0]
+                    pages[0].id === selectedPages[0]
                   }
                   onClick={() => {
                     const newArr = [...pages];
                     const idx = newArr.findIndex(
-                      (p) => p._id === selectedPages[0]
+                      (p) => p.id === selectedPages[0]
                     );
                     const temp = newArr[idx];
                     newArr[idx] = newArr[idx - 1];
@@ -572,12 +570,12 @@ const CollectionShow = () => {
                   className="btn-text"
                   disabled={
                     selectedPages.length !== 1 ||
-                    pages[pages.length - 1]._id === selectedPages[0]
+                    pages[pages.length - 1].id === selectedPages[0]
                   }
                   onClick={() => {
                     const newArr = [...pages];
                     const idx = newArr.findIndex(
-                      (p) => p._id === selectedPages[0]
+                      (p) => p.id === selectedPages[0]
                     );
                     const temp = newArr[idx];
                     newArr[idx] = newArr[idx + 1];

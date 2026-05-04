@@ -164,14 +164,12 @@ const update = <T>(
     // Validate the where condition, since developer might not know where the index was ended, they might go with $1. Check of the $ values don't count exactly from index, throw an error
     const whereDollarSigns = where.match(/\$\d+/g);
     if (whereDollarSigns) {
-      whereDollarSigns.forEach((sign) => {
-        const number = parseInt(sign.replace("$", ""));
-        if (number + 1 !== _values.length + 1) {
-          throw new Error(
-            `The where condition has a value specifier ${sign} which is out of range. \nThe final query looks like this which is invalid: ${query}`,
-          );
-        }
-      });
+      const maxPlaceholder = Math.max(...whereDollarSigns.map(sign => parseInt(sign.replace("$", ""))));
+      if (maxPlaceholder !== _values.length) {
+        throw new Error(
+          `The where condition has a value specifier $${maxPlaceholder} which is out of range. \nThe final query looks like this which is invalid: ${query}`,
+        );
+      }
     }
 
     pool.query(query, _values, function (error, result) {

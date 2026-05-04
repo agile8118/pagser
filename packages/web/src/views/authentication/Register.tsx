@@ -89,7 +89,7 @@ const Register = () => {
 
     if (fieldName === "username") {
       axios
-        .post(`/usernameAvailability`, {
+        .post(`/api/username-availability`, {
           username: value,
         })
         .then((respond) => {
@@ -219,7 +219,7 @@ const Register = () => {
       setLoading(true);
       const user = { name, email, username, password };
       axios
-        .post(`/api/sendcode`, user)
+        .post(`/api/send-code`, user)
         .then((response) => {
           setLoading(false);
           setAlertMessage(null);

@@ -33,8 +33,12 @@ const PageContents = () => {
         // Get the current page data from server and set those data in inputs
         const response = (await request.get(
           `/new-page/page-contents/${pageId}`,
-          { auth: true }
+          { auth: true },
         )) as any;
+
+        // This is logged correctly!
+        console.log(response.page.type);
+
         setBody(response.page.body || "");
         setType(response.page.type as TType);
         setTitle(response.page.title || "");
@@ -58,7 +62,7 @@ const PageContents = () => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [title, body, briefDes, targets]);
+  }, [title, body, briefDes, targets, type, saved]);
 
   useEffect(() => {
     checkPageBodyValidation();
@@ -84,6 +88,7 @@ const PageContents = () => {
   // This will run when user wants to change the current stage
   // either by going to the next or previous stage
   const updatePage = async (to?: string, successMessage?: string) => {
+    console.log(type);
     if (to && !to?.includes("page-thumbnail")) loadingModal("Loading...");
 
     if (to && to.includes("page-thumbnail")) {
@@ -94,7 +99,7 @@ const PageContents = () => {
       await request.patch(
         `/new-page/page-contents/${util.getParameterByName(
           "id",
-          window.location.href
+          window.location.href,
         )}`,
         {
           page: {
@@ -107,7 +112,7 @@ const PageContents = () => {
             },
           },
         },
-        { auth: true }
+        { auth: true },
       );
 
       setSaved(true);
@@ -134,8 +139,8 @@ const PageContents = () => {
     updatePage(
       `/new-page/initial-step?id=${util.getParameterByName(
         "id",
-        window.location.href
-      )}`
+        window.location.href,
+      )}`,
     );
   };
 
@@ -144,8 +149,8 @@ const PageContents = () => {
       updatePage(
         `/new-page/page-thumbnail?id=${util.getParameterByName(
           "id",
-          window.location.href
-        )}`
+          window.location.href,
+        )}`,
       );
     } else {
       if (!checkTitleValidation()) {
@@ -156,7 +161,7 @@ const PageContents = () => {
 
       if (!checkBriefDesValidation()) {
         const briefDesEl = document.querySelector(
-          "#briefDes"
+          "#briefDes",
         ) as HTMLInputElement;
         briefDesEl.focus();
         return;
@@ -164,7 +169,7 @@ const PageContents = () => {
 
       if (!checkTargetsValidation()) {
         const targetsEl = document.querySelector(
-          "#targets"
+          "#targets",
         ) as HTMLInputElement;
         targetsEl.focus();
         return;
@@ -239,7 +244,7 @@ const PageContents = () => {
       setBodyError(
         type === "public"
           ? `Body should be more than ${minLen} characters.`
-          : "Body cannot be blank."
+          : "Body cannot be blank.",
       );
 
       return false;
@@ -402,13 +407,13 @@ const PageContents = () => {
                   if (localStorage.getItem("theme") === "dark") {
                     // @ts-ignore
                     document.querySelector(
-                      "iframe"
+                      "iframe",
                       // @ts-ignore
                     ).contentDocument.children[0].children[1].style.background =
                       "#555";
                     // @ts-ignore
                     document.querySelector(
-                      "iframe"
+                      "iframe",
                       // @ts-ignore
                     ).contentDocument.children[0].children[1].style.color =
                       "#fff";

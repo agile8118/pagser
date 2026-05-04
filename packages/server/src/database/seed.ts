@@ -84,6 +84,33 @@ const databasePath = new URL("./", import.meta.url).pathname;
   const tagsTableSQL = fs
     .readFileSync(path.join(databasePath, "./tables/tags.sql"))
     .toString();
+  const commentsTableSQL = fs
+    .readFileSync(path.join(databasePath, "./tables/comments.sql"))
+    .toString();
+  const ratingsTableSQL = fs
+    .readFileSync(path.join(databasePath, "./tables/ratings.sql"))
+    .toString();
+  const readLaterTableSQL = fs
+    .readFileSync(path.join(databasePath, "./tables/read_later.sql"))
+    .toString();
+  const historyTableSQL = fs
+    .readFileSync(path.join(databasePath, "./tables/history.sql"))
+    .toString();
+  const viewsTableSQL = fs
+    .readFileSync(path.join(databasePath, "./tables/views.sql"))
+    .toString();
+  const subscriptionsTableSQL = fs
+    .readFileSync(path.join(databasePath, "./tables/subscriptions.sql"))
+    .toString();
+  const collectionsTableSQL = fs
+    .readFileSync(path.join(databasePath, "./tables/collections.sql"))
+    .toString();
+  const collectionPagesTableSQL = fs
+    .readFileSync(path.join(databasePath, "./tables/collection_pages.sql"))
+    .toString();
+  const userSavedCollectionsTableSQL = fs
+    .readFileSync(path.join(databasePath, "./tables/user_saved_collections.sql"))
+    .toString();
 
   // Grab the triggers sql file
   const triggersSQL = fs
@@ -91,8 +118,26 @@ const databasePath = new URL("./", import.meta.url).pathname;
     .toString();
 
   try {
-    // Drop all out tables
+    // Drop all our tables (respecting foreign key constraints)
     console.log("\nDropping the tables...");
+    await pool.query("DROP TABLE IF EXISTS user_saved_collections");
+    console.log("[postgres] user_saved_collections table was dropped.");
+    await pool.query("DROP TABLE IF EXISTS collection_pages");
+    console.log("[postgres] collection_pages table was dropped.");
+    await pool.query("DROP TABLE IF EXISTS collections");
+    console.log("[postgres] collections table was dropped.");
+    await pool.query("DROP TABLE IF EXISTS subscriptions");
+    console.log("[postgres] subscriptions table was dropped.");
+    await pool.query("DROP TABLE IF EXISTS views");
+    console.log("[postgres] views table was dropped.");
+    await pool.query("DROP TABLE IF EXISTS history");
+    console.log("[postgres] history table was dropped.");
+    await pool.query("DROP TABLE IF EXISTS read_later");
+    console.log("[postgres] read_later table was dropped.");
+    await pool.query("DROP TABLE IF EXISTS ratings");
+    console.log("[postgres] ratings table was dropped.");
+    await pool.query("DROP TABLE IF EXISTS comments");
+    console.log("[postgres] comments table was dropped.");
     await pool.query("DROP TABLE IF EXISTS attach_files");
     console.log("[postgres] attach_files table was dropped.");
     await pool.query("DROP TABLE IF EXISTS pages cascade");
@@ -120,6 +165,24 @@ const databasePath = new URL("./", import.meta.url).pathname;
     console.log("[postgres] attach_files table was created successfully.");
     await pool.query(tagsTableSQL);
     console.log("[postgres] tags table was created successfully.");
+    await pool.query(commentsTableSQL);
+    console.log("[postgres] comments table was created successfully.");
+    await pool.query(ratingsTableSQL);
+    console.log("[postgres] ratings table was created successfully.");
+    await pool.query(readLaterTableSQL);
+    console.log("[postgres] read_later table was created successfully.");
+    await pool.query(historyTableSQL);
+    console.log("[postgres] history table was created successfully.");
+    await pool.query(viewsTableSQL);
+    console.log("[postgres] views table was created successfully.");
+    await pool.query(subscriptionsTableSQL);
+    console.log("[postgres] subscriptions table was created successfully.");
+    await pool.query(collectionsTableSQL);
+    console.log("[postgres] collections table was created successfully.");
+    await pool.query(collectionPagesTableSQL);
+    console.log("[postgres] collection_pages table was created successfully.");
+    await pool.query(userSavedCollectionsTableSQL);
+    console.log("[postgres] user_saved_collections table was created successfully.");
 
     // Execute the sql file to fire up our triggers
     console.log("\nSetting up the triggers...");

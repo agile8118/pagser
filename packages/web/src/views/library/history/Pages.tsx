@@ -79,7 +79,7 @@ const Pages = () => {
               status={status}
               briefDes={item.contents.briefDes}
               title={item.contents.title}
-              image={item.photo.secure_url}
+              image={item.photo_url || undefined}
               target="_blank"
               url={item.url}
               type={item.type}

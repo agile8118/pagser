@@ -101,7 +101,7 @@ const ForgotPassword = () => {
   const onFormSubmit = () => {
     setLoading(true);
     axios
-      .post(`/api/resetpassword`, {
+      .patch(`/api/reset-password`, {
         userId: util.getParameterByName("i"),
         token: { code: util.getParameterByName("t") },
         password: password,

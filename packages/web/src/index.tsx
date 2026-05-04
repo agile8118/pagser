@@ -25,6 +25,10 @@ const PublicProfile = React.lazy(
     import("./views/public-profile" /* webpackChunkName: "public-profile" */)
 );
 
+const EditPage = React.lazy(
+  () => import("./views/edit-page/EditPage" /* webpackChunkName: "edit-page" */)
+);
+
 // // import Actions from "./views/show-page/Actions";
 // // import Photo from "./views/show-page/Photo";
 // // import AttachFiles from "./views/show-page/AttachFiles";
@@ -216,6 +220,17 @@ if (containerName === "public-profile") {
         <React.StrictMode>
           <PublicProfile />
         </React.StrictMode>
+      </React.Suspense>
+    );
+  })();
+}
+
+if (containerName === "edit-page") {
+  (async () => {
+    const editPageRoot = ReactDOM.createRoot(container);
+    editPageRoot.render(
+      <React.Suspense fallback={<div />}>
+        <EditPage />
       </React.Suspense>
     );
   })();

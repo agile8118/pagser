@@ -274,7 +274,7 @@ const uploadPageAttachFile = async (
     }
 
     // Grab the list of existing attach files for the page
-    const currentAttachFiles = await DB.findMany<IAttachFile[]>(
+    const currentAttachFiles = await DB.findMany<IAttachFile>(
       `SELECT * from attach_files WHERE page_id = $1`,
       [pageId]
     );

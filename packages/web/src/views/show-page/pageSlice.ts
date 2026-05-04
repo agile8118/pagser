@@ -40,8 +40,9 @@ interface IRatings {
 }
 
 interface IAttachFile {
+  id: number;
   name: string;
-  _id: string;
+  url: string;
 }
 
 interface PageState {
@@ -140,40 +141,44 @@ export const {
 
 // Fetch the data needed for a public page
 export const fetchPublicPage = (): AppThunk => async (dispatch) => {
-  const response = (await request.get(
-    `/public-pages/${window.location.pathname.split("/")[2]}`,
-    {
-      auth: true,
-    }
-  )) as any;
+  try {
+    const response = (await request.get(
+      `/public-pages/${window.location.pathname.split("/")[2]}`,
+      {
+        auth: true,
+      }
+    )) as any;
 
-  dispatch(setLoading(false));
-  dispatch(setId(response.page.id));
-  dispatch(setContents({ title: response.page.contents.title }));
-  dispatch(setPhotoUrl(response.page.photo.secure_url));
-  dispatch(
-    setAuthor({
-      id: response.page.author._id,
-      photoUrl: response.page.author.photo.secure_url,
-      biography: response.page.author.biography,
-      username: response.page.author.username,
-      name: response.page.author.name,
-      subscribersCount: response.page.author.subscribersNum,
-    })
-  );
-  dispatch(setDate(response.page.date));
-  dispatch(
-    setRatings({
-      likes: response.page.likes,
-      dislikes: response.page.dislikes,
-    })
-  );
-  dispatch(setAttachFiles(response.page.attachFiles));
-  // From the userSlice
-  dispatch(setUserId(response.viewer.id));
-  dispatch(setUserStatus(response.viewer.status));
-  dispatch(setUserSubscribed(response.viewer.subscribed));
-  dispatch(setUserReadLater(response.viewer.readLater));
+    dispatch(setLoading(false));
+    dispatch(setId(response.page.id));
+    dispatch(setContents(response.page.contents));
+    dispatch(setPhotoUrl(response.page.photoUrl));
+    dispatch(
+      setAuthor({
+        id: response.page.author.id,
+        photoUrl: response.page.author.photoUrl,
+        biography: response.page.author.biography,
+        username: response.page.author.username,
+        name: response.page.author.name || response.page.author.username,
+        subscribersCount: response.page.author.subscribersCount,
+      })
+    );
+    dispatch(setDate(response.page.date));
+    dispatch(
+      setRatings({
+        likes: response.page.likes,
+        dislikes: response.page.dislikes,
+      })
+    );
+    dispatch(setAttachFiles(response.page.attachFiles));
+    // From the userSlice
+    dispatch(setUserId(response.viewer.id));
+    dispatch(setUserStatus(response.viewer.status));
+    dispatch(setUserSubscribed(response.viewer.subscribed || false));
+    dispatch(setUserReadLater(response.viewer.readLater || false));
+  } catch (e) {
+    dispatch(setLoading(false));
+  }
 };
 
 // Fetch the data needed for a private page
@@ -192,15 +197,15 @@ export const fetchPrivatePage = (): AppThunk => async (dispatch) => {
     dispatch(setId(response.page.id));
     dispatch(setContents(response.page.contents));
     dispatch(setConfigurations(response.page.configurations));
-    dispatch(setPhotoUrl(response.page.photo.secure_url));
+    dispatch(setPhotoUrl(response.page.photoUrl));
     dispatch(
       setAuthor({
-        id: response.page.author._id,
-        photoUrl: response.page.author.photo.secure_url,
+        id: response.page.author.id,
+        photoUrl: response.page.author.photoUrl,
         biography: response.page.author.biography,
         username: response.page.author.username,
-        name: response.page.author.name,
-        subscribersCount: response.page.author.subscribersNum,
+        name: response.page.author.name || response.page.author.username,
+        subscribersCount: response.page.author.subscribersCount,
       })
     );
     dispatch(setDate(response.page.date));
@@ -214,8 +219,8 @@ export const fetchPrivatePage = (): AppThunk => async (dispatch) => {
     // From the userSlice
     dispatch(setUserId(response.viewer.id));
     dispatch(setUserStatus(response.viewer.status));
-    dispatch(setUserSubscribed(response.viewer.subscribed));
-    dispatch(setUserReadLater(response.viewer.readLater));
+    dispatch(setUserSubscribed(response.viewer.subscribed || false));
+    dispatch(setUserReadLater(response.viewer.readLater || false));
   } catch (e: any) {
     if (e.status === 404) {
       dispatch(setId("0")); // zero indicates not found

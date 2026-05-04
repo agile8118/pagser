@@ -39,9 +39,9 @@ const Pages = () => {
           <PageThumbnail
             status="normal"
             id={item.id}
-            briefDes={item.briefDes}
-            title={item.title}
-            image={item.photo}
+            briefDes={item.contents?.briefDes}
+            title={item.contents?.title}
+            image={item.photo?.secure_url}
             target="_blank"
             url={item.url}
             type="public"

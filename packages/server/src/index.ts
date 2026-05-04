@@ -12,6 +12,7 @@ import templatesRouter from "./templates/router.js";
 import log from "./lib/log.js";
 import keys from "./config/keys.js";
 import "./database/index.js";
+import { USER_PLACEHOLDER_IMAGE, PAGE_PLACEHOLDER_IMAGE, COLLECTION_PLACEHOLDER_IMAGE } from "@pagser/common";
 
 process.env.TZ = "GMT";
 
@@ -19,6 +20,9 @@ const PORT = process.env.PORT || 3080;
 const HOST = "localhost";
 
 const app = express();
+app.locals.USER_PLACEHOLDER_IMAGE       = USER_PLACEHOLDER_IMAGE;
+app.locals.PAGE_PLACEHOLDER_IMAGE       = PAGE_PLACEHOLDER_IMAGE;
+app.locals.COLLECTION_PLACEHOLDER_IMAGE = COLLECTION_PLACEHOLDER_IMAGE;
 
 // Swagger
 // const __dirname = path.resolve();

@@ -10,6 +10,9 @@ logs/
 .cspell
 .vscode/
 .idea/
+.claude/
+.mcp.json
+CLAUDE.md
 
 # production
 /build

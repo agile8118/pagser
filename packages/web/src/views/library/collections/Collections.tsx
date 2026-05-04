@@ -13,12 +13,12 @@ import { useDispatch } from "react-redux";
 import { setSection } from "../side-nav/sideNavSlice";
 
 interface ICollection {
-  _id: string;
+  id: number;
   name: string;
-  photo: any;
+  photo_secure_url: string | null;
   description: string;
-  user: any;
-  pages: any;
+  user?: { name: string; username: string };
+  pages_count: number;
 }
 
 const Collections = () => {
@@ -125,16 +125,16 @@ const Collections = () => {
     return list.map((cl) => {
       return (
         <div
-          key={cl._id}
+          key={cl.id}
           className="col-lg-1-of-5 col-md-1-of-5 col-sm-1-of-3 col-xs-1-of-2 col-xxs-1-of-1"
         >
           <Collection
-            id={cl._id}
+            id={String(cl.id)}
             name={cl.name}
-            img={cl.photo.secure_url}
+            img={cl.photo_secure_url || ""}
             desc={cl.description}
-            pageNum={cl.pages.length}
-            author={cl.user.name}
+            pageNum={cl.pages_count}
+            author={cl.user?.name || ""}
             onClick={() => {
               dispatch(setSection(""));
             }}

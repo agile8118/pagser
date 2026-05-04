@@ -8,6 +8,7 @@ interface IUtil {
     username: string,
     type: "public" | "private"
   ) => string;
+  timeSince: (date: string | Date) => string;
 }
 
 const util: any = {};
@@ -52,6 +53,17 @@ util.isBottom = (el: HTMLElement) => {
 util.pageUrl = (url: string, username: string, type: "public" | "private") => {
   if (type === "public") return `/public-pages/${url}`;
   return `/${username}/${url}`;
+};
+
+util.timeSince = (date: string | Date) => {
+  const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+  const interval = (s: number) => Math.floor(seconds / s);
+  if (interval(31536000) > 1) return interval(31536000) + " years ago";
+  if (interval(2592000) > 1) return interval(2592000) + " months ago";
+  if (interval(86400) > 1) return interval(86400) + " days ago";
+  if (interval(3600) > 1) return interval(3600) + " hours ago";
+  if (interval(60) > 1) return interval(60) + " minutes ago";
+  return "Just now";
 };
 
 export default util as IUtil;

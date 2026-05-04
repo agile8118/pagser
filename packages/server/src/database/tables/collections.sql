@@ -1,0 +1,13 @@
+-- CREATE COLLECTIONS TABLE
+CREATE TABLE IF NOT EXISTS collections (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(200) NOT NULL,
+  description TEXT,
+  user_id INT NOT NULL,
+  photo_key VARCHAR(200),
+  photo_url VARCHAR(200),
+  shared BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id)
+);

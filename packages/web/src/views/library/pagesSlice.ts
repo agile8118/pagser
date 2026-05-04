@@ -6,7 +6,7 @@ import { AppThunk, RootState } from "./store";
 interface IPage {
   id: string;
   contents: any;
-  photo: any;
+  photo_url: string | null;
   url: string;
   type: "public" | "private";
   dateVisited: string;

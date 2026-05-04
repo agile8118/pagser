@@ -16,6 +16,17 @@ export const tokenForUser = (userId: string) => {
   return jwt.encode({ sub: userId, iat: timestamp }, keys.jwtSecret);
 };
 
+export const timeSince = (date: string | Date): string => {
+  const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+  const interval = (s: number) => Math.floor(seconds / s);
+  if (interval(31536000) > 1) return interval(31536000) + " years ago";
+  if (interval(2592000) > 1) return interval(2592000) + " months ago";
+  if (interval(86400) > 1) return interval(86400) + " days ago";
+  if (interval(3600) > 1) return interval(3600) + " hours ago";
+  if (interval(60) > 1) return interval(60) + " minutes ago";
+  return "Just now";
+};
+
 export const cleanHTML = (html: string) => {
   return sanitizeHtml(html, {
     allowedTags: [

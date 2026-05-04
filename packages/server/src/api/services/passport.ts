@@ -63,3 +63,10 @@ passport.use(localLogin);
 
 export const requireAuth = passport.authenticate("jwt", { session: false });
 export const logTheUserIn = passport.authenticate("local", { session: false });
+
+export const optionalAuth = (req: any, res: any, next: any) => {
+  passport.authenticate("jwt", { session: false }, (_err: any, user: any) => {
+    if (user) req.user = user;
+    next();
+  })(req, res, next);
+};

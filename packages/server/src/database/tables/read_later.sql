@@ -1,0 +1,10 @@
+-- CREATE READ_LATER TABLE
+CREATE TABLE IF NOT EXISTS read_later (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL,
+  page_id INT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+  CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id),
+  CONSTRAINT fk_page FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE,
+  UNIQUE (user_id, page_id)
+);

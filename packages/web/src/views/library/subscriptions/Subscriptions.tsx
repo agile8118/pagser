@@ -4,13 +4,11 @@ import { loadingModal, alert, request } from "@pagser/common";
 import { Loading } from "@pagser/reusable";
 
 interface ISubscription {
-  _id: string;
-  author: {
-    name: string;
-    username: string;
-    headline: string;
-    photo: { secure_url: string };
-  };
+  id: string;
+  name: string;
+  username: string;
+  headline: string;
+  photo_url: string;
 }
 
 const Subscriptions = () => {
@@ -39,11 +37,11 @@ const Subscriptions = () => {
     return subscriptions.map((item) => {
       return (
         <SubscriptionThumbnail
-          key={item._id}
-          name={item.author.name}
-          username={item.author.username}
-          headline={item.author.headline}
-          image={item.author.photo.secure_url}
+          key={item.id}
+          name={item.name}
+          username={item.username}
+          headline={item.headline}
+          image={item.photo_url}
         />
       );
     });

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { UploadPhoto } from "@pagser/reusable";
-import { request } from "@pagser/common";
+import { request, USER_PLACEHOLDER_IMAGE } from "@pagser/common";
 
 const Photo = () => {
-  const [photo, setPhoto] = useState("/images/users/placeholder.png");
+  const [photo, setPhoto] = useState(USER_PLACEHOLDER_IMAGE);
   const [uploadPhotoModal, setUploadPhotoModal] = useState(false);
 
   // Is used to avoid memory leak.
@@ -20,7 +20,7 @@ const Photo = () => {
 
         const user = response.user;
         if (_isMounted) {
-          setPhoto(user.photo.secure_url || "/images/users/placeholder.png");
+          setPhoto(user.photo_url || USER_PLACEHOLDER_IMAGE);
         }
       } catch (e: any) {
         if (e.status === 401) {
@@ -45,7 +45,7 @@ const Photo = () => {
           className="profile__img"
           src={photo}
           onError={() => {
-            setPhoto("/images/users/placeholder.png");
+            setPhoto(USER_PLACEHOLDER_IMAGE);
           }}
         />
         <br />

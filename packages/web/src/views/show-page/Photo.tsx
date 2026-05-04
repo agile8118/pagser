@@ -24,7 +24,7 @@ const Photo = () => {
   return (
     <React.Fragment>
       {/* Show the page photo */}
-      {!loading && (
+      {!loading && photoUrl && (
         <div className="page__photo">
           <img
             src={photoUrl}

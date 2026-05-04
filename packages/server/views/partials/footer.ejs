@@ -112,7 +112,7 @@
   var userImages = document.querySelectorAll(".js--user-image");
   for (var i = 0; i < userImages.length; i++) {
     userImages[i].addEventListener("error", function (e) {
-      e.target.src = "/images/users/placeholder.png";
+      e.target.src = "<%= USER_PLACEHOLDER_IMAGE %>";
     });
   }
 

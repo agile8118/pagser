@@ -30,9 +30,9 @@ const Info = () => {
         const response = (await request.get(`/profile`, { auth: true })) as any;
         const user = response.user;
 
-        setName(user.name);
-        setHeadline(user.headline);
-        setBiography(user.biography);
+        setName(user.name || "");
+        setHeadline(user.headline || "");
+        setBiography(user.biography || "");
         setUsername(user.username);
         setWebsite(user.links.website);
         setTwitter(user.links.twitter);

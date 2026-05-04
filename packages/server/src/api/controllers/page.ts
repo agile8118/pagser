@@ -9,7 +9,7 @@ import {
 import { v2 as cloudinary } from "cloudinary";
 import { util, validate } from "@pagser/common";
 import sendEmail from "../services/mailgun.js";
-import { tokenForUser, handleServerError, cleanHTML } from "../../lib/util.js";
+import { tokenForUser, handleServerError, cleanHTML, timeSince } from "../../lib/util.js";
 import { DB } from "../../database/index.js";
 import {
   IPage,
@@ -47,7 +47,7 @@ cloudinary.config({
 const newDraftPage = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const page = req.body.page;
   const STATUS = "draft";
@@ -56,13 +56,13 @@ const newDraftPage = async (
     // grab the page type id from the database
     const pageType = await DB.find<IPageType>(
       "SELECT id, type FROM page_types WHERE type = $1",
-      [page.type]
+      [page.type],
     );
 
     // grab the page status id from the database
     const pageStatus = await DB.find<IPageStatus>(
       "SELECT id, status FROM page_statuses WHERE status = $1",
-      [STATUS]
+      [STATUS],
     );
 
     // create a page as a draft page
@@ -83,7 +83,7 @@ const newDraftPage = async (
 const fetchDraftPageData = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const pageId = req.params.id;
   const stage = req.params.stage;
@@ -97,7 +97,7 @@ const fetchDraftPageData = async (
         `SELECT pages.id as id, page_types.type as type FROM pages 
           JOIN page_types ON pages.type_id = page_types.id 
           WHERE pages.id = $1`,
-        [pageId]
+        [pageId],
       );
 
       if (!pageId) throw new Error("page id not found");
@@ -111,7 +111,7 @@ const fetchDraftPageData = async (
         `SELECT pages.id, page_types.type as type, title, brief_description, targets, body
           FROM pages
           JOIN page_types ON pages.type_id = page_types.id WHERE pages.id = $1`,
-        [pageId]
+        [pageId],
       );
 
       if (!page) res.status(404).send();
@@ -123,7 +123,7 @@ const fetchDraftPageData = async (
     if (stage === "page-thumbnail") {
       const page = await DB.find<IPage>(
         "SELECT id, cropped_photo_key, cropped_photo_url, photo_key, photo_url FROM pages WHERE id = $1",
-        [pageId]
+        [pageId],
       );
 
       if (!page) res.status(404).send();
@@ -133,7 +133,7 @@ const fetchDraftPageData = async (
 
     // Grabbing configurations and url if applicable
     if (stage === "final-step") {
-      const page = await DB.find<IPage>(
+      const page = await DB.find<any>(
         `SELECT pages.id,
                 page_types.type as type,
                 anonymously,
@@ -144,20 +144,20 @@ const fetchDraftPageData = async (
                 user_id,
                 users.username as user_username
                 FROM pages
-                JOIN page_types ON pages.type_id = page_types.id 
-                JOIN users ON pages.user_id = users.id 
+                JOIN page_types ON pages.type_id = page_types.id
+                JOIN users ON pages.user_id = users.id
                 WHERE pages.id = $1`,
-        [pageId]
+        [pageId],
       );
 
       const urls = await DB.findMany<IPage>(
         `SELECT url from pages WHERE user_id = $1 AND status_id = $2 AND type_id = $3`,
-        [page.user_id, PAGE_STATUS.publishedId, PAGE_TYPE.privateId]
+        [page.user_id, PAGE_STATUS.publishedId, PAGE_TYPE.privateId],
       );
 
       const tags = await DB.findMany<ITag>(
         `SELECT id, name from tags WHERE page_id = $1`,
-        [pageId]
+        [pageId],
       );
 
       res.send({ page, urls, tags });
@@ -172,7 +172,7 @@ const fetchDraftPageData = async (
 const updateDraftPageData = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const pageId = req.params.id;
   const stage = req.params.stage;
@@ -184,12 +184,12 @@ const updateDraftPageData = async (
         // grab the page type id from the database
         const pageType = await DB.find<IPageType>(
           "SELECT id, type FROM page_types WHERE type = $1",
-          [page.type]
+          [page.type],
         );
 
         const result = await DB.find<IPage>(
           `SELECT id FROM pages WHERE id = $1`,
-          [pageId]
+          [pageId],
         );
 
         // update the page
@@ -215,7 +215,7 @@ const updateDraftPageData = async (
             targets: page.contents.targets || "",
           },
           "id = $5",
-          [pageId]
+          [pageId],
         );
 
         res.status(200).send({ id: pageId, message: "updated" });
@@ -235,22 +235,25 @@ const updateDraftPageData = async (
           // once the old tags are removed, insert the new ones
           await DB.query(
             "INSERT INTO tags(page_id, name) VALUES ($1, unnest($2::text[]))",
-            [pageId, page.tags]
+            [pageId, page.tags],
           );
         }
 
         // update the page
+        const updateFields: Partial<IPage> = {
+          anonymously: page.configurations.anonymously,
+          comments_disabled: page.configurations.comments,
+          ratings_disabled: page.configurations.rating,
+          links_disabled: page.configurations.links,
+        };
+        if (page.type === "private") updateFields.url = page.url;
+
+        const paramCount = Object.keys(updateFields).length + 1;
         await DB.update<IPage>(
           "pages",
-          {
-            url: page.type === "private" ? page.url : "", // We don't want to update the url if the type is public
-            anonymously: page.configurations.anonymously,
-            comments_disabled: page.configurations.comments,
-            ratings_disabled: page.configurations.rating,
-            links_disabled: page.configurations.links,
-          },
-          "id = $6",
-          [pageId]
+          updateFields,
+          `id = $${paramCount}`,
+          [pageId],
         );
         res.status(200).send({ id: pageId, message: "updated" });
       } catch (e) {
@@ -260,13 +263,13 @@ const updateDraftPageData = async (
 
     switch (stage) {
       case "initial-step":
-        initialStepHandler();
+        await initialStepHandler();
         break;
       case "page-contents":
-        pageContentsHandler();
+        await pageContentsHandler();
         break;
       case "final-step":
-        finalStepHandler();
+        await finalStepHandler();
         break;
       default:
         res.status(404).send("draft page not founded");
@@ -280,7 +283,7 @@ const updateDraftPageData = async (
 const removePagePhoto = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const pageId = req.params.id;
@@ -288,7 +291,7 @@ const removePagePhoto = async (
     // Grab the existing photo keys from database
     const page = await DB.find<IPage>(
       "SELECT photo_key, cropped_photo_key FROM pages WHERE id = $1",
-      [pageId]
+      [pageId],
     );
 
     if (!page) return next({ customError: "page was not found", status: 404 });
@@ -308,7 +311,7 @@ const removePagePhoto = async (
         cropped_photo_key: "",
       },
       "id = $5",
-      [pageId]
+      [pageId],
     );
 
     res.send({ message: "photo removed" });
@@ -321,14 +324,14 @@ const removePagePhoto = async (
 const getAttachFiles = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const pageId = req.params.id;
 
     const attachFiles = await DB.findMany<IAttachFile>(
       `SELECT id, key as key, name, url FROM attach_files WHERE page_id = $1`,
-      [pageId]
+      [pageId],
     );
 
     res.send({ attachFiles });
@@ -341,7 +344,7 @@ const getAttachFiles = async (
 const getAttachFile = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const pageId = req.params.id;
@@ -354,7 +357,7 @@ const getAttachFile = async (
       new GetObjectCommand({
         Bucket: BUCKET_NAME,
         Key: key,
-      })
+      }),
     );
 
     (response.Body as any).pipe(res);
@@ -367,7 +370,7 @@ const getAttachFile = async (
 const deleteAttachFile = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const pageId = req.params.id;
@@ -383,7 +386,7 @@ const deleteAttachFile = async (
       new DeleteObjectCommand({
         Bucket: BUCKET_NAME,
         Key: `${pageId}/${result.name}`,
-      })
+      }),
     );
 
     res.send({ message: "file deleted" });
@@ -396,7 +399,7 @@ const deleteAttachFile = async (
 const fetchPublishedPages = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
@@ -408,7 +411,7 @@ const fetchPublishedPages = async (
         pages.url,
         page_types.type,
         pages.user_id,
-        pages.photo_secure_url as "secure_url",
+        pages.cropped_photo_url,
         json_build_object(
           'title', pages.title,
           'briefDes', pages.brief_description
@@ -440,11 +443,7 @@ const fetchPublishedPages = async (
       url: page.url,
       type: page.type,
       contents: page.contents,
-      photo: page.secure_url
-        ? {
-            secure_url: page.secure_url,
-          }
-        : null,
+      photo_url: page.cropped_photo_url || null,
       author: {
         username: page.authorUsername,
       },
@@ -479,58 +478,51 @@ const publish = async (req: Request, res: Response, next: NextFunction) => {
         JOIN users ON users.id = pages.user_id 
         JOIN page_types ON pages.type_id = page_types.id 
         WHERE pages.id = $1`,
-      [pageId]
+      [pageId],
     );
 
     /** @todo: validate the page */
 
     // If the page is private
-    if (draftPage.type_id === PAGE_TYPE.privateId) {
-      // Genera a url for the page off of the title
-      let newUrl = util.convertToUrl(draftPage.title);
-
-      // Generate a new url if url is duplicated, this loop will run only once in most cases
-      while (true) {
-        // Check if the url is already taken
-        const existingPage = await DB.find<IPage>(
-          "SELECT id FROM pages WHERE url = $1",
-          [newUrl]
-        );
-
-        // If the url is taken, add a random hex number to the end of the url (2 chars)
-        if (existingPage) {
-          newUrl = newUrl + "_" + crypto.randomBytes(1).toString("hex");
-        } else {
-          // No page was found, so the url is unique and we can't break the loop
-          break;
-        }
-      }
-
-      // Change the status of the page to published and update the url
+    if (draftPage.type === PAGE_TYPE.private) {
+      // Use the user-provided URL stored during the final step
       await DB.update<IPage>(
         "pages",
-        { url: newUrl, status_id: PAGE_STATUS.publishedId },
+        { url: draftPage.url, status_id: PAGE_STATUS.publishedId },
         "id = $3",
-        [pageId]
+        [pageId],
       );
 
       // Delete all the tags for this page (tags are only for public pages)
       await DB.delete<ITag>("tags", "page_id = $1", [pageId]);
 
-      resObj = { url: newUrl };
+      resObj = { url: draftPage.url, username: draftPage.author_username };
     }
 
     // If the page is public
-    if (draftPage.type_id === PAGE_TYPE.publicId) {
-      // Change the status of the page to published
+    if (draftPage.type === PAGE_TYPE.public) {
+      let newUrl = util.convertToUrl(draftPage.title);
+
+      while (true) {
+        const existingPage = await DB.find<IPage>(
+          "SELECT id FROM pages WHERE url = $1",
+          [newUrl],
+        );
+        if (existingPage) {
+          newUrl = newUrl + "_" + crypto.randomBytes(1).toString("hex");
+        } else {
+          break;
+        }
+      }
+
       await DB.update<IPage>(
         "pages",
-        { status_id: PAGE_STATUS.publishedId },
-        "id = $2",
-        [pageId]
+        { url: newUrl, status_id: PAGE_STATUS.publishedId },
+        "id = $3",
+        [pageId],
       );
 
-      resObj = { url: draftPage.url, username: draftPage.author_username };
+      resObj = { url: newUrl, username: draftPage.author_username };
     }
 
     // if (
@@ -548,6 +540,488 @@ const publish = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+// Fetch public page data (for public page viewing)
+const fetchPublicPageData = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const url = req.params.url;
+    const userId = req.user?.id;
+
+    // Set session timestamp for view tracking
+    (req.session as any).viewStartTrack = Date.now();
+
+    const page = await DB.find<any>(
+      `
+      SELECT
+        pages.id,
+        pages.title,
+        pages.brief_description,
+        pages.targets,
+        pages.body,
+        pages.url,
+        COALESCE(pages.photo_url, pages.cropped_photo_url) as page_photo_url,
+        pages.created_at,
+        pages.user_id,
+        users.id as author_id,
+        users.username,
+        users.name,
+        users.biography,
+        users.photo_url
+      FROM pages
+      JOIN users ON pages.user_id = users.id
+      WHERE pages.url = $1 AND pages.type_id = $2
+      `,
+      [url, PAGE_TYPE.publicId],
+    );
+
+    if (!page) {
+      return res.status(404).send({ message: "Page not found" });
+    }
+
+    // Get subscription count
+    const subCount = await DB.find<{ count: string }>(
+      `SELECT COUNT(*) as count FROM subscriptions WHERE author_id = $1`,
+      [page.user_id],
+    );
+
+    // Get likes/dislikes count
+    const likes = await DB.find<{ count: string }>(
+      `SELECT COUNT(*) as count FROM ratings WHERE page_id = $1 AND liked = true`,
+      [page.id],
+    );
+
+    const dislikes = await DB.find<{ count: string }>(
+      `SELECT COUNT(*) as count FROM ratings WHERE page_id = $1 AND liked = false`,
+      [page.id],
+    );
+
+    // Get attach files
+    const attachFiles = await DB.findMany<any>(
+      `SELECT id, name, url FROM attach_files WHERE page_id = $1`,
+      [page.id],
+    );
+
+    let viewer: any = { status: "spectator", id: userId };
+
+    if (userId) {
+      viewer = { status: "authenticated", id: userId };
+
+      if (page.user_id === parseInt(userId)) {
+        viewer = { status: "owner", id: userId };
+      } else {
+        // Check if user has read-later
+        const readLater = await DB.find<any>(
+          `SELECT id FROM read_later WHERE user_id = $1 AND page_id = $2`,
+          [userId, page.id],
+        );
+        if (readLater) viewer.readLater = true;
+
+        // Check if user is subscribed
+        const subscribed = await DB.find<any>(
+          `SELECT id FROM subscriptions WHERE subscriber_id = $1 AND author_id = $2`,
+          [userId, page.user_id],
+        );
+        if (subscribed) viewer.subscribed = true;
+      }
+
+      // Update or create history
+      const existing = await DB.find<any>(
+        `SELECT id FROM history WHERE user_id = $1 AND page_id = $2`,
+        [userId, page.id],
+      );
+
+      if (existing) {
+        await DB.update(
+          `history`,
+          { updated_at: new Date() },
+          `user_id = $2 AND page_id = $3`,
+          [userId, page.id],
+        );
+      } else {
+        await DB.insert(`history`, {
+          user_id: parseInt(userId),
+          page_id: page.id,
+        });
+      }
+    }
+
+    res.send({
+      page: {
+        id: page.id,
+        contents: {
+          title: page.title,
+          briefDescription: page.brief_description,
+          targets: page.targets,
+          body: page.body,
+        },
+        photoUrl: page.page_photo_url || null,
+        date: timeSince(page.created_at),
+        likes: parseInt(likes?.count || "0"),
+        dislikes: parseInt(dislikes?.count || "0"),
+        attachFiles,
+        author: {
+          id: page.author_id,
+          photoUrl: page.photo_url || null,
+          name: page.name,
+          username: page.username,
+          biography: page.biography,
+          subscribersCount: parseInt(subCount?.count || "0"),
+        },
+      },
+      viewer,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Fetch private page data (for private page viewing)
+const fetchPrivatePageData = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const username = req.params.username;
+    const url = req.params.url;
+    const userId = req.user?.id;
+
+    // Set session timestamp for view tracking
+    (req.session as any).viewStartTrack = Date.now();
+
+    const author = await DB.find<{ id: number }>(
+      `SELECT id FROM users WHERE username = $1`,
+      [username],
+    );
+
+    if (!author) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    const page = await DB.find<any>(
+      `
+      SELECT
+        pages.id,
+        pages.title,
+        pages.brief_description,
+        pages.targets,
+        pages.body,
+        pages.url,
+        COALESCE(pages.photo_url, pages.cropped_photo_url) as page_photo_url,
+        pages.anonymously,
+        pages.comments_disabled,
+        pages.ratings_disabled,
+        pages.links_disabled,
+        pages.created_at,
+        pages.user_id,
+        users.id as author_id,
+        users.username,
+        users.name,
+        users.biography,
+        users.photo_url
+      FROM pages
+      JOIN users ON pages.user_id = users.id
+      WHERE pages.url = $1 AND pages.user_id = $2 AND pages.type_id = $3 AND pages.status_id = $4
+      `,
+      [url, author.id, PAGE_TYPE.privateId, PAGE_STATUS.publishedId],
+    );
+
+    if (!page) {
+      return res.status(404).send({ message: "Page not found" });
+    }
+
+    // Check if user is owner
+    if (page.user_id !== parseInt(userId || "0")) {
+      return res.status(403).send({ message: "Unauthorized" });
+    }
+
+    // Get subscriber count
+    const subCount = await DB.find<{ count: string }>(
+      `SELECT COUNT(*) as count FROM subscriptions WHERE author_id = $1`,
+      [page.user_id],
+    );
+
+    // Get likes/dislikes count
+    const likes = await DB.find<{ count: string }>(
+      `SELECT COUNT(*) as count FROM ratings WHERE page_id = $1 AND liked = true`,
+      [page.id],
+    );
+
+    const dislikes = await DB.find<{ count: string }>(
+      `SELECT COUNT(*) as count FROM ratings WHERE page_id = $1 AND liked = false`,
+      [page.id],
+    );
+
+    // Get attach files
+    const attachFiles = await DB.findMany<any>(
+      `SELECT id, name, url FROM attach_files WHERE page_id = $1`,
+      [page.id],
+    );
+
+    let viewer = { status: "owner", id: userId };
+
+    // Update history
+    const existing = await DB.find<any>(
+      `SELECT id FROM history WHERE user_id = $1 AND page_id = $2`,
+      [userId, page.id],
+    );
+
+    if (existing) {
+      await DB.update(
+        `history`,
+        { updated_at: new Date() },
+        `user_id = $2 AND page_id = $3`,
+        [userId, page.id],
+      );
+    } else {
+      await DB.insert(`history`, {
+        user_id: parseInt(userId),
+        page_id: page.id,
+      });
+    }
+
+    res.send({
+      page: {
+        id: page.id,
+        contents: {
+          title: page.title,
+          briefDescription: page.brief_description,
+          targets: page.targets,
+          body: page.body,
+        },
+        photoUrl: page.page_photo_url || null,
+        configurations: {
+          anonymously: page.anonymously,
+          comments: page.comments_disabled,
+          rating: page.ratings_disabled,
+          links: page.links_disabled,
+        },
+        date: timeSince(page.created_at),
+        likes: parseInt(likes?.count || "0"),
+        dislikes: parseInt(dislikes?.count || "0"),
+        attachFiles,
+        author: {
+          id: page.author_id,
+          photoUrl: page.photo_url || null,
+          biography: page.biography,
+          username: page.username,
+          name: page.name,
+          subscribersCount: parseInt(subCount?.count || "0"),
+        },
+      },
+      viewer,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Fetch page data for editing
+const fetchEditPageData = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user.id;
+    let page: any;
+
+    if (req.params.username && req.params.url) {
+      const username = req.params.username;
+      const urlSlug = req.params.url;
+
+      if (username === "public-pages") {
+        // Public page lookup by URL slug
+        page = await DB.find<any>(
+          `SELECT pages.*, page_types.type
+           FROM pages
+           JOIN page_types ON pages.type_id = page_types.id
+           WHERE pages.url = $1 AND pages.type_id = $2 AND pages.user_id = $3 AND pages.status_id = $4`,
+          [urlSlug, PAGE_TYPE.publicId, userId, PAGE_STATUS.publishedId],
+        );
+      } else {
+        // Private page lookup by username + URL slug
+        const author = await DB.find<{ id: number }>(
+          `SELECT id FROM users WHERE username = $1`,
+          [username],
+        );
+
+        if (!author) return res.status(404).send({ message: "User not found" });
+        if (author.id !== parseInt(userId)) return res.status(403).send({ message: "Unauthorized" });
+
+        page = await DB.find<any>(
+          `SELECT pages.*, page_types.type
+           FROM pages
+           JOIN page_types ON pages.type_id = page_types.id
+           WHERE pages.url = $1 AND pages.user_id = $2 AND pages.type_id = $3 AND pages.status_id = $4`,
+          [urlSlug, userId, PAGE_TYPE.privateId, PAGE_STATUS.publishedId],
+        );
+      }
+    } else {
+      // ID-based lookup (fallback)
+      const pageId = req.params.id || req.query.id;
+      page = await DB.find<any>(
+        `SELECT pages.*, page_types.type
+         FROM pages
+         JOIN page_types ON pages.type_id = page_types.id
+         WHERE pages.id = $1 AND pages.user_id = $2 AND pages.status_id = $3`,
+        [pageId, userId, PAGE_STATUS.publishedId],
+      );
+    }
+
+    if (!page) return res.status(404).send({ message: "Page not found" });
+
+    if (page.user_id !== parseInt(userId)) {
+      return res.status(403).send({ message: "Unauthorized" });
+    }
+
+    // Fetch tags for public pages
+    let tags: string[] = [];
+    if (page.type === "public") {
+      const tagResults = await DB.findMany<any>(
+        `SELECT name FROM tags WHERE page_id = $1`,
+        [page.id],
+      );
+      tags = tagResults.map((t: any) => t.name);
+    }
+
+    // Fetch used URLs for private pages (excluding current page's URL)
+    let usedUrls: string[] = [];
+    if (page.type === "private") {
+      const urlResults = await DB.findMany<any>(
+        `SELECT url FROM pages WHERE user_id = $1 AND status_id = $2 AND type_id = $3 AND id != $4`,
+        [userId, PAGE_STATUS.publishedId, PAGE_TYPE.privateId, page.id],
+      );
+      usedUrls = urlResults.map((p: any) => p.url).filter(Boolean);
+    }
+
+    res.send({
+      page: {
+        ...page,
+        tags,
+      },
+      usedUrls,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Update published page
+const updatePage = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const pageId = req.params.id;
+    const userId = req.user.id;
+    const { page: pageData } = req.body;
+
+    // Check ownership and get page type + current URL
+    const page = await DB.find<any>(
+      `SELECT pages.user_id, page_types.type, pages.url as current_url
+       FROM pages
+       JOIN page_types ON pages.type_id = page_types.id
+       WHERE pages.id = $1`,
+      [pageId],
+    );
+
+    if (!page || page.user_id !== parseInt(userId)) {
+      return res.status(403).send({ message: "Unauthorized" });
+    }
+
+    // Get username for redirect URL
+    const user = await DB.find<any>(
+      `SELECT username FROM users WHERE id = $1`,
+      [userId],
+    );
+
+    // Build update data with content and configurations
+    const updateData: Record<string, any> = {
+      title: pageData.title,
+      brief_description: pageData.briefDes,
+      body: cleanHTML(pageData.body),
+      targets: pageData.targets || "",
+      anonymously: pageData.configurations?.anonymously ?? false,
+      comments_disabled: pageData.configurations?.comments ?? false,
+      ratings_disabled: pageData.configurations?.rating ?? false,
+      links_disabled: pageData.configurations?.links ?? false,
+    };
+
+    // Allow URL change for private pages
+    if (page.type === "private" && pageData.url && pageData.url !== page.current_url) {
+      const urlTaken = await DB.find<any>(
+        `SELECT id FROM pages WHERE url = $1 AND id != $2`,
+        [pageData.url, pageId],
+      );
+      if (urlTaken) return res.status(400).send({ message: "URL already taken" });
+      updateData.url = pageData.url;
+    }
+
+    const fieldCount = Object.keys(updateData).length;
+    await DB.update("pages", updateData, `id = $${fieldCount + 1}`, [pageId]);
+
+    // Handle tags for public pages
+    if (page.type === "public" && pageData.tags) {
+      await DB.delete("tags", `page_id = $1`, [pageId]);
+
+      const tagsArray: string[] = Array.isArray(pageData.tags)
+        ? pageData.tags
+        : pageData.tags.split(",").filter(Boolean);
+
+      for (const tag of tagsArray) {
+        const trimmed = tag.trim();
+        if (trimmed) {
+          await DB.insert("tags", { page_id: parseInt(pageId), name: trimmed });
+        }
+      }
+    }
+
+    const finalUrl = updateData.url ?? page.current_url;
+
+    res.send({
+      url: finalUrl,
+      type: page.type,
+      username: user?.username,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Delete a published page
+const deletePage = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const pageId = req.params.id;
+    const userId = req.user.id;
+
+    // Check ownership
+    const page = await DB.find<IPage>(
+      `SELECT user_id, photo_key, cropped_photo_key FROM pages WHERE id = $1`,
+      [pageId],
+    );
+
+    if (!page || page.user_id !== parseInt(userId)) {
+      return res.status(403).send({ message: "Unauthorized" });
+    }
+
+    // Delete Cloudinary photos
+    if (page.photo_key) {
+      await cloudinary.uploader.destroy(page.photo_key);
+    }
+    if (page.cropped_photo_key) {
+      await cloudinary.uploader.destroy(page.cropped_photo_key);
+    }
+
+    // Delete page (cascade will handle comments, ratings, read_later, history, etc.)
+    await DB.delete(`pages`, `id = $1`, [pageId]);
+
+    res.send({ message: "success" });
+  } catch (e) {
+    next(e);
+  }
+};
+
 const controller = {
   newDraftPage,
   fetchDraftPageData,
@@ -558,6 +1032,11 @@ const controller = {
   deleteAttachFile,
   publish,
   fetchPublishedPages,
+  fetchPublicPageData,
+  fetchPrivatePageData,
+  fetchEditPageData,
+  updatePage,
+  deletePage,
 };
 
 export default controller;

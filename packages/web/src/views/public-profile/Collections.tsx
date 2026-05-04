@@ -16,7 +16,7 @@ const Collections = () => {
       `/collections/shared/${window.location.pathname.split("/")[2]}`,
       {
         auth: true,
-      }
+      },
     )) as any;
 
     setCollections(response.collections);
@@ -41,16 +41,16 @@ const Collections = () => {
     return collections.map((cl) => {
       return (
         <div
-          key={cl._id}
+          key={cl.id}
           className="col-lg-1-of-5 col-md-1-of-5 col-sm-1-of-3 col-xs-1-of-2 col-xxs-1-of-1"
         >
           <Collection
-            id={cl._id}
+            id={cl.id}
             name={cl.name}
-            img={cl.photo.secure_url}
+            img={cl.photo?.secure_url || ""}
             desc={cl.description}
-            pageNum={cl.pages.length}
-            author={cl.user.name}
+            pageNum={cl.pageCount}
+            author={cl.user?.username}
             refresh={true}
             target="_blank"
           />

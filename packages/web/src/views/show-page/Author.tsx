@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loadingModal, alert } from "@pagser/common";
+import { loadingModal, alert, USER_PLACEHOLDER_IMAGE } from "@pagser/common";
 import { ConfirmModal, Button } from "@pagser/reusable";
 import { subscribe, selectLoading, selectId, selectAuthor } from "./pageSlice";
 import { selectStatus, selectSubscribed } from "./userSlice";
@@ -26,12 +26,12 @@ const Author = () => {
     }
   };
 
-  if (loading) return <div />;
+  if (loading || !author) return <div />;
 
-  let userBio = author.biography.length
+  let userBio = author.biography?.length
     ? author.biography
     : "This user has not added a biography.";
-  let bioClassName = author.biography.length
+  let bioClassName = author.biography?.length
     ? "page__author__bio"
     : "page__author__bio italic";
 
@@ -55,12 +55,12 @@ const Author = () => {
       <div className="page__author">
         <div className="page__author__head">
           <img
-            src={author.photoUrl}
+            src={author.photoUrl || USER_PLACEHOLDER_IMAGE}
             id="user-photo"
             alt="Author image"
             onError={() => {
               (document.querySelector("#user-photo") as HTMLImageElement).src =
-                "/images/users/placeholder.png";
+                USER_PLACEHOLDER_IMAGE;
             }}
           />
           <div className="page__author__details">

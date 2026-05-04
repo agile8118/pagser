@@ -54,7 +54,7 @@ const VerifyEmail = (props: IProps) => {
   const resendCode = () => {
     setLoading(true);
     axios
-      .post(`/api/sendcode`, {
+      .post(`/api/send-code`, {
         name: props.name,
         username: props.username,
         password: props.password,
@@ -80,34 +80,27 @@ const VerifyEmail = (props: IProps) => {
     const code = `${firstDigit}${secondDigit}${thirdDigit}${fourthDigit}${fifthDigit}`;
 
     axios
-      .post(`/register/validatecode`, {
+      .post(`/api/register`, {
+        name: props.name,
+        username: props.username,
+        password: props.password,
+        email: props.email,
         code: Number(code),
       })
       .then((response) => {
-        axios
-          .post(`/register`, {
-            name: props.name,
-            username: props.username,
-            password: props.password,
-            email: props.email,
-            code: Number(code),
-          })
-          .then((response) => {
-            localStorage.setItem("token", response.data.token);
-            window.location.href = `/home`;
-          })
-          .catch((error) => {
-            setLoading(false);
-            setAlertMessage("Something went wrong, please try again.");
-            setAlertType("error");
-            resetDigits();
-          });
+        localStorage.setItem("token", response.data.token);
+        window.location.href = `/home`;
       })
       .catch((error) => {
         setLoading(false);
-        setAlertMessage(
-          "The code is invalid, make sure that you put the exact code we've sent to your email. You may want to resend the code."
-        );
+        const errorMsg = error.response?.data?.message;
+        if (Array.isArray(errorMsg) ? errorMsg[0]?.includes("code") : errorMsg?.includes?.("code")) {
+          setAlertMessage(
+            "The code is invalid, make sure that you put the exact code we've sent to your email. You may want to resend the code."
+          );
+        } else {
+          setAlertMessage("Something went wrong, please try again.");
+        }
         setAlertType("error");
         resetDigits();
       });
@@ -116,7 +109,7 @@ const VerifyEmail = (props: IProps) => {
   const onChangeEmailSubmit = () => {
     setLoadingChangeEmail(true);
     axios
-      .post(`/api/sendcode`, {
+      .post(`/api/send-code`, {
         name: props.name,
         username: props.username,
         password: props.password,
