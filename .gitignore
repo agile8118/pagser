@@ -7,6 +7,10 @@ ecosystem.config.js
 deploy.sh
 logs/
 
+.cspell
+.vscode/
+.idea/
+
 # production
 /build
 build/

@@ -10,7 +10,12 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { pipeline, PassThrough, Transform } from "node:stream";
-import AWS from "aws-sdk";
+import {
+  S3Client,
+  CreateBucketCommand,
+  HeadBucketCommand,
+} from "@aws-sdk/client-s3";
+import { Upload } from "@aws-sdk/lib-storage";
 import busboy from "busboy";
 import { fileTypeFromBuffer, fileTypeFromStream } from "file-type";
 import crypto from "crypto";
@@ -33,9 +38,11 @@ const BUCKET_NAME = "pagser";
 const IAM_USER_KEY = keys.AWSAccessKey;
 const IAM_USER_SECRET = keys.AWSSecretAccessKey;
 
-let S3 = new AWS.S3({
-  accessKeyId: IAM_USER_KEY,
-  secretAccessKey: IAM_USER_SECRET,
+const s3Client = new S3Client({
+  credentials: {
+    accessKeyId: IAM_USER_KEY,
+    secretAccessKey: IAM_USER_SECRET,
+  },
 });
 
 // Configure cloudinary
@@ -295,46 +302,55 @@ const uploadPageAttachFile = async (
       );
     }
 
-    function upload(S3) {
+    function upload(client: S3Client) {
       let pass = new PassThrough();
 
-      // Upload the file to S3
-      const key = `${pageId}/${filename}`;
-      S3.createBucket(() => {
-        const params = {
-          Bucket: BUCKET_NAME,
-          Key: key,
-          Body: pass,
-        };
-        S3.upload(params, async (err: Error, data) => {
-          if (err) {
-            if (err.message === "FILE_SIZE_EXCEEDED") {
-              return next({
-                customError: `Maximum file size is: ${
-                  MAX_FILE_SIZE / (1024 * 1024)
-                }MB`,
-                status: 400,
-              });
-            } else {
-              return next(err);
-            }
+      // Check if bucket exists, create if not
+      (async () => {
+        try {
+          try {
+            await client.send(new HeadBucketCommand({ Bucket: BUCKET_NAME }));
+          } catch (err) {
+            await client.send(
+              new CreateBucketCommand({ Bucket: BUCKET_NAME })
+            );
           }
+
+          // Upload the file to S3
+          const key = `${pageId}/${filename}`;
+          const upload = new Upload({
+            client,
+            params: {
+              Bucket: BUCKET_NAME,
+              Key: key,
+              Body: pass,
+            },
+          });
+
+          const result = await upload.done();
 
           // If upload was successful, update the database
-          try {
-            await DB.insert<IAttachFile>("attach_files", {
-              page_id: Number(pageId),
-              key: data.Key,
-              url: data.Location,
-              name: filename,
-            });
+          await DB.insert<IAttachFile>("attach_files", {
+            page_id: Number(pageId),
+            key: result.Key,
+            url: result.Location,
+            name: filename,
+          });
 
-            res.send({ message: "file uploaded" });
-          } catch (e) {
-            next(e);
+          res.send({ message: "file uploaded" });
+        } catch (err) {
+          if (err.message === "FILE_SIZE_EXCEEDED") {
+            return next({
+              customError: `Maximum file size is: ${
+                MAX_FILE_SIZE / (1024 * 1024)
+              }MB`,
+              status: 400,
+            });
+          } else {
+            return next(err);
           }
-        });
-      });
+        }
+      })();
 
       return pass;
     }
@@ -355,10 +371,10 @@ const uploadPageAttachFile = async (
             }
           },
         }),
-        upload(S3),
+        upload(s3Client),
         (err) => {
           if (err) {
-            upload(S3).destroy();
+            upload(s3Client).destroy();
           }
         }
       );

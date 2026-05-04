@@ -5,8 +5,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "webpack --mode development -w",
-    "build": "rm -rf ../server/public/scripts && webpack --mode production"
+    "dev": "webpack --mode development -w",
+    "build": "webpack --mode production"
   },
   "dependencies": {
     "@pagser/common": "1.0.0",

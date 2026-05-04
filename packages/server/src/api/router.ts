@@ -144,4 +144,7 @@ export default (app: Express) => {
     authorization.pageOwnership,
     Page.deleteAttachFile
   );
+
+  // Get published pages for the current user
+  app.get("/api/user-pages/published", requireAuth, Page.fetchPublishedPages);
 };

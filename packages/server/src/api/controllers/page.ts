@@ -1,7 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
-import AWS from "aws-sdk";
+import {
+  S3Client,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 import { v2 as cloudinary } from "cloudinary";
 import { util, validate } from "@pagser/common";
 import sendEmail from "../services/mailgun.js";
@@ -24,9 +28,11 @@ const BUCKET_NAME = "pagser";
 const IAM_USER_KEY = keys.AWSAccessKey;
 const IAM_USER_SECRET = keys.AWSSecretAccessKey;
 
-let S3 = new AWS.S3({
-  accessKeyId: IAM_USER_KEY,
-  secretAccessKey: IAM_USER_SECRET,
+const s3Client = new S3Client({
+  credentials: {
+    accessKeyId: IAM_USER_KEY,
+    secretAccessKey: IAM_USER_SECRET,
+  },
 });
 
 // Configure cloudinary
@@ -144,17 +150,17 @@ const fetchDraftPageData = async (
         [pageId]
       );
 
-      const urls = await DB.find<IPage[]>(
+      const urls = await DB.findMany<IPage>(
         `SELECT url from pages WHERE user_id = $1 AND status_id = $2 AND type_id = $3`,
         [page.user_id, PAGE_STATUS.publishedId, PAGE_TYPE.privateId]
       );
 
-      const tags = await DB.find<ITag[]>(
+      const tags = await DB.findMany<ITag>(
         `SELECT id, name from tags WHERE page_id = $1`,
         [pageId]
       );
 
-      res.send({ page, urls: urls || [], tags: tags || [] });
+      res.send({ page, urls, tags });
     }
   } catch (e) {
     next(e);
@@ -320,27 +326,12 @@ const getAttachFiles = async (
   try {
     const pageId = req.params.id;
 
-    const attachFiles = await DB.find<IAttachFile[]>(
+    const attachFiles = await DB.findMany<IAttachFile>(
       `SELECT id, key as key, name, url FROM attach_files WHERE page_id = $1`,
       [pageId]
     );
 
-    let result;
-
-    if (!attachFiles) {
-      // No attach files for this page
-      result = [];
-    } else if (Array.isArray(attachFiles)) {
-      result = attachFiles;
-    } else {
-      // result is now just an object
-      // So we create a new array, push attachFiles to it and then save array to result
-      const arr = [];
-      arr.push(attachFiles);
-      result = arr;
-    }
-
-    res.send({ attachFiles: result });
+    res.send({ attachFiles });
   } catch (e) {
     next(e);
   }
@@ -359,12 +350,14 @@ const getAttachFile = async (
     const key = `${pageId}/${fileName}`;
 
     res.attachment(key);
-    const fileStream = S3.getObject({
-      Bucket: BUCKET_NAME,
-      Key: key,
-    }).createReadStream();
+    const response = await s3Client.send(
+      new GetObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: key,
+      })
+    );
 
-    fileStream.pipe(res);
+    (response.Body as any).pipe(res);
   } catch (e) {
     next(e);
   }
@@ -385,18 +378,82 @@ const deleteAttachFile = async (
       fileId,
     ]);
 
-    // Grab the name from the result of database delete query and delete the file
-    // from the S3 bucket
-    S3.deleteObject(
-      {
+    // Delete the file from the S3 bucket
+    await s3Client.send(
+      new DeleteObjectCommand({
         Bucket: BUCKET_NAME,
         Key: `${pageId}/${result.name}`,
-      },
-      (err, data) => {
-        if (err) return next(err);
-        res.send({ message: "file deleted" });
-      }
+      })
     );
+
+    res.send({ message: "file deleted" });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Fetch published pages for the current user
+const fetchPublishedPages = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.user.id;
+    const filterBy = (req.query.filterBy || "all") as string;
+
+    let query = `
+      SELECT
+        pages.id,
+        pages.url,
+        page_types.type,
+        pages.user_id,
+        pages.photo_secure_url as "secure_url",
+        json_build_object(
+          'title', pages.title,
+          'briefDes', pages.brief_description
+        ) as contents,
+        users.username as "authorUsername"
+      FROM pages
+      JOIN users ON pages.user_id = users.id
+      JOIN page_types ON pages.type_id = page_types.id
+      WHERE pages.user_id = $1 AND pages.status_id = $2
+    `;
+
+    const queryParams: any[] = [userId, PAGE_STATUS.publishedId];
+
+    if (filterBy === "public") {
+      query += ` AND pages.type_id = $3`;
+      queryParams.push(PAGE_TYPE.publicId);
+    } else if (filterBy === "private") {
+      query += ` AND pages.type_id = $3`;
+      queryParams.push(PAGE_TYPE.privateId);
+    }
+
+    query += ` ORDER BY pages.updated_at DESC`;
+
+    const pages = await DB.findMany<any>(query, queryParams);
+
+    // Format the response to match what the frontend expects
+    const formattedPages = (pages || []).map((page: any) => ({
+      id: page.id,
+      url: page.url,
+      type: page.type,
+      contents: page.contents,
+      photo: page.secure_url
+        ? {
+            secure_url: page.secure_url,
+          }
+        : null,
+      author: {
+        username: page.authorUsername,
+      },
+    }));
+
+    res.send({
+      results: formattedPages,
+      filterBy,
+    });
   } catch (e) {
     next(e);
   }
@@ -500,6 +557,7 @@ const controller = {
   getAttachFiles,
   deleteAttachFile,
   publish,
+  fetchPublishedPages,
 };
 
 export default controller;

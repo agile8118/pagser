@@ -295,7 +295,7 @@ const privatePageUrl = async (
     const url = req.body.page.url;
     const userId = req.user.id;
 
-    const usedUrls = await DB.find<string[]>(
+    const usedUrls = await DB.findMany<string>(
       `SELECT url from pages WHERE user_id = $1 AND status_id = $2 AND type_id = $3`,
       [userId, PAGE_STATUS.publishedId, PAGE_TYPE.privateId]
     );

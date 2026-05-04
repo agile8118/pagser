@@ -1,41 +1,93 @@
-const { Pool } = require("pg");
-const fs = require("fs");
-const path = require("path");
-const bcrypt = require("bcrypt");
+import { Pool } from "pg";
+import fs from "fs";
+import path from "path";
+import keys from "../config/keys.js";
+import bcrypt from "bcrypt";
+
+// Create the database if it doesn't exist
+async function createDatabase() {
+  const adminPool = new Pool({
+    user: keys.dbUser,
+    host: keys.dbHost,
+    database: "postgres", // default DB
+    password: keys.dbPassword,
+    port: Number(keys.dbPort),
+    ssl:
+      process.env.NODE_ENV_DB === "production"
+        ? {
+            rejectUnauthorized: false,
+          }
+        : false,
+  });
+
+  const result = await adminPool.query(
+    `
+    SELECT 1 FROM pg_database WHERE datname = $1
+  `,
+    [keys.dbDatabase],
+  );
+
+  if (result.rowCount === 0) {
+    await adminPool.query(`CREATE DATABASE ${keys.dbDatabase};`);
+    console.log(`[postgres] created database: ${keys.dbDatabase}`);
+  }
+
+  await adminPool.end();
+}
+
+await createDatabase();
 
 const pool = new Pool({
-  user: "joseph",
-  host: "localhost",
-  database: "pagser",
-  password: "",
-  port: 5432,
+  user: keys.dbUser as string,
+  host: keys.dbHost as string,
+  database: keys.dbDatabase as string,
+  password: keys.dbPassword as string,
+  port: Number(keys.dbPort),
+  ssl:
+    process.env.NODE_ENV_DB === "production"
+      ? {
+          rejectUnauthorized: false,
+        }
+      : false,
 });
+
+// Test the database connection
+try {
+  const client = await pool.connect();
+  console.log(`[postgres] connected to database: ${keys.dbDatabase}`);
+  client.release();
+} catch (err) {
+  console.error("[postgres] database connection failed:", err);
+  process.exit(1);
+}
+
+const databasePath = new URL("./", import.meta.url).pathname;
 
 // Create triggers and tables
 (async () => {
   // Grab the tables sql file
   const usersTableSQL = fs
-    .readFileSync(path.join(__dirname, "./tables/users.sql"))
+    .readFileSync(path.join(databasePath, "./tables/users.sql"))
     .toString();
   const pageTypesTableSQL = fs
-    .readFileSync(path.join(__dirname, "./tables/page_types.sql"))
+    .readFileSync(path.join(databasePath, "./tables/page_types.sql"))
     .toString();
   const pageStatusesTableSQL = fs
-    .readFileSync(path.join(__dirname, "./tables/page_statuses.sql"))
+    .readFileSync(path.join(databasePath, "./tables/page_statuses.sql"))
     .toString();
   const pagesTableSQL = fs
-    .readFileSync(path.join(__dirname, "./tables/pages.sql"))
+    .readFileSync(path.join(databasePath, "./tables/pages.sql"))
     .toString();
   const attachFilesTableSQL = fs
-    .readFileSync(path.join(__dirname, "./tables/attach_files.sql"))
+    .readFileSync(path.join(databasePath, "./tables/attach_files.sql"))
     .toString();
   const tagsTableSQL = fs
-    .readFileSync(path.join(__dirname, "./tables/tags.sql"))
+    .readFileSync(path.join(databasePath, "./tables/tags.sql"))
     .toString();
 
   // Grab the triggers sql file
   const triggersSQL = fs
-    .readFileSync(path.join(__dirname, "./triggers.sql"))
+    .readFileSync(path.join(databasePath, "./triggers.sql"))
     .toString();
 
   try {
@@ -99,10 +151,10 @@ const pool = new Pool({
     (err, res) => {
       if (err) return console.log(err);
       console.log(
-        "[postgres] 3 users were added to the database with the password 'string'."
+        "[postgres] 3 users were added to the database with the password 'string'.",
       );
 
       // pool.end();
-    }
+    },
   );
 })();
