@@ -1,22 +1,27 @@
-import { Express } from "express";
+import type {
+  Cpeak,
+  CpeakRequest as Request,
+  CpeakResponse as Response,
+  Next as NextFunction,
+} from "cpeak";
 import { DB } from "../database/index.js";
 import { timeSince } from "../lib/util.js";
 import { PAGE_TYPE } from "../database/types.js";
 
-export default (app: Express) => {
-  app.get("/home", (req, res) => {
+export default (app: Cpeak) => {
+  app.route("get", "/home", (req, res) => {
     res.render("main");
   });
 
-  app.get("/feed/*", (req, res) => {
+  app.route("get", "/feed/*", (req, res) => {
     res.render("main");
   });
 
-  app.get("/u/*", (req, res) => {
+  app.route("get", "/u/*", (req, res) => {
     res.render("main");
   });
 
-  app.get("/collection/:id", (req, res) => {
+  app.route("get", "/collection/:id", (req, res) => {
     res.render("main");
   });
 
@@ -26,9 +31,9 @@ export default (app: Express) => {
         `SELECT name, username, headline, biography, photo_url,
                 links_website, links_facebook, links_youtube, links_twitter, links_linkedin
          FROM users WHERE username = $1`,
-        [req.params.username]
+        [req.params.username],
       );
-      if (!user) return res.status(404).send("User not found");
+      if (!user) return res.status(404).json({ message: "User not found" });
       res.render("public-profile", {
         user: {
           ...user,
@@ -42,39 +47,39 @@ export default (app: Express) => {
         },
       });
     } catch (e) {
-      res.status(500).send("Internal server error");
+      res.status(500).json({ message: "Internal server error" });
     }
   };
 
-  app.get("/users/:username/*", renderPublicProfile);
-  app.get("/users/:username", renderPublicProfile);
+  app.route("get", "/users/:username/*", renderPublicProfile);
+  app.route("get", "/users/:username", renderPublicProfile);
 
-  app.get("/login", (req, res) => {
+  app.route("get", "/login", (req, res) => {
     res.render("auth");
   });
 
-  app.get("/register", (req, res) => {
+  app.route("get", "/register", (req, res) => {
     res.render("auth");
   });
 
-  app.get("/forgot-password", (req, res) => {
+  app.route("get", "/forgot-password", (req, res) => {
     res.render("auth");
   });
 
-  app.get("/verify-email", (req, res) => {
+  app.route("get", "/verify-email", (req, res) => {
     res.render("auth");
   });
 
-  app.get("/new-page/*", (req, res) => {
+  app.route("get", "/new-page/*", (req, res) => {
     res.render("new-page");
   });
 
-  app.get("/new-page", (req, res) => {
+  app.route("get", "/new-page", (req, res) => {
     res.render("new-page");
   });
 
   // render a public page
-  app.get("/public-pages/:url", async (req, res) => {
+  app.route("get", "/public-pages/:url", async (req, res) => {
     try {
       const url = req.params.url;
 
@@ -113,44 +118,44 @@ export default (app: Express) => {
         timeAgo: timeSince(page.created_at),
       });
     } catch (e) {
-      res.status(500).send({ message: "Internal server error" });
+      res.status(500).json({ message: "Internal server error" });
     }
   });
 
-  app.get("/public-pages/:url/edit", (req, res) => {
+  app.route("get", "/public-pages/:url/edit", (req, res) => {
     res.render("edit-page");
   });
 
-  app.get("/settings", (req, res) => {
+  app.route("get", "/settings", (req, res) => {
     res.render("profile");
   });
 
-  app.get("/profile", (req, res) => {
+  app.route("get", "/profile", (req, res) => {
     res.render("profile");
   });
 
   // render a private page
-  app.get("/:username/:url", (req, res) => {
+  app.route("get", "/:username/:url", (req, res) => {
     res.render("show-page/private");
   });
 
-  app.get("/:username/:url/edit", (req, res) => {
+  app.route("get", "/:username/:url/edit", (req, res) => {
     res.render("edit-page");
   });
 
-  app.get("/admin/pages/*", (req, res) => {
+  app.route("get", "/admin/pages/*", (req, res) => {
     res.render("admin");
   });
 
-  app.get("/privacy-policy", (req, res) => {
+  app.route("get", "/privacy-policy", (req, res) => {
     res.render("privacy-policy");
   });
 
-  app.get("/terms-of-use", (req, res) => {
+  app.route("get", "/terms-of-use", (req, res) => {
     res.render("terms-of-use");
   });
 
-  app.get("*", (req, res) => {
-    res.send("Page Not Found!");
-  });
+  // app.route("get", "*", (req, res) => {
+  //   res.json({ message: "Page Not Found!" });
+  // });
 };

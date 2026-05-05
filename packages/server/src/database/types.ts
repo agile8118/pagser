@@ -11,7 +11,9 @@ export type TTables =
   | "subscriptions"
   | "collections"
   | "collection_pages"
-  | "user_saved_collections";
+  | "user_saved_collections"
+  | "tokens"
+  | "email_codes";
 
 export interface IUser {
   id: string;

@@ -1,13 +1,23 @@
-import { Request, Response, NextFunction } from "express";
+// import { Request, Response, NextFunction } from "express";
+
+import type {
+  Cpeak,
+  CpeakRequest as Request,
+  CpeakResponse as Response,
+  Next as NextFunction,
+} from "cpeak";
 import crypto from "crypto";
-import bcrypt from "bcrypt";
 import {
   S3Client,
   GetObjectCommand,
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { util, validate } from "@pagser/common";
-import { tokenForUser, handleServerError, cleanHTML, timeSince } from "../../lib/util.js";
+import {
+  handleServerError,
+  cleanHTML,
+  timeSince,
+} from "../../lib/util.js";
 import { DB } from "../../database/index.js";
 import {
   IPage,
@@ -21,7 +31,6 @@ import {
 import keys, { AWS_REGION, S3_BUCKET } from "../../config/keys.js";
 
 const s3Client = new S3Client({ region: AWS_REGION });
-
 
 // Create a new draft page
 const newDraftPage = async (
@@ -53,7 +62,7 @@ const newDraftPage = async (
       user_id: parseInt(req.user.id),
     });
 
-    res.status(201).send({ id: newPage.id, message: "created" });
+    res.status(201).json({ id: newPage.id, message: "created" });
   } catch (e) {
     next(e);
   }
@@ -82,7 +91,7 @@ const fetchDraftPageData = async (
 
       if (!pageId) throw new Error("page id not found");
 
-      res.send({ type: page.type });
+      res.json({ type: page.type });
     }
 
     // Grabbing page contents
@@ -94,9 +103,9 @@ const fetchDraftPageData = async (
         [pageId],
       );
 
-      if (!page) res.status(404).send();
+      if (!page) res.status(404).json();
 
-      res.send({ page });
+      res.json({ page });
     }
 
     // Grabbing page thumbnail photo
@@ -106,9 +115,9 @@ const fetchDraftPageData = async (
         [pageId],
       );
 
-      if (!page) res.status(404).send();
+      if (!page) res.status(404).json();
 
-      res.send({ page });
+      res.json({ page });
     }
 
     // Grabbing configurations and url if applicable
@@ -140,7 +149,7 @@ const fetchDraftPageData = async (
         [pageId],
       );
 
-      res.send({ page, urls, tags });
+      res.json({ page, urls, tags });
     }
   } catch (e) {
     next(e);
@@ -176,7 +185,7 @@ const updateDraftPageData = async (
         await DB.update<IPage>("pages", { type_id: pageType.id }, "id = $2", [
           pageId,
         ]);
-        res.status(200).send({ id: result.id, message: "updated" });
+        res.status(200).json({ id: result.id, message: "updated" });
       } catch (e) {
         next(e);
       }
@@ -198,7 +207,7 @@ const updateDraftPageData = async (
           [pageId],
         );
 
-        res.status(200).send({ id: pageId, message: "updated" });
+        res.status(200).json({ id: pageId, message: "updated" });
       } catch (e) {
         next(e);
       }
@@ -229,13 +238,10 @@ const updateDraftPageData = async (
         if (page.type === "private") updateFields.url = page.url;
 
         const paramCount = Object.keys(updateFields).length + 1;
-        await DB.update<IPage>(
-          "pages",
-          updateFields,
-          `id = $${paramCount}`,
-          [pageId],
-        );
-        res.status(200).send({ id: pageId, message: "updated" });
+        await DB.update<IPage>("pages", updateFields, `id = $${paramCount}`, [
+          pageId,
+        ]);
+        res.status(200).json({ id: pageId, message: "updated" });
       } catch (e) {
         next(e);
       }
@@ -252,7 +258,7 @@ const updateDraftPageData = async (
         await finalStepHandler();
         break;
       default:
-        res.status(404).send("draft page not founded");
+        res.status(404).json("draft page not founded");
     }
   } catch (e) {
     next(e);
@@ -278,8 +284,26 @@ const removePagePhoto = async (
 
     // Remove photos from S3
     await Promise.all([
-      page.photo_key ? s3Client.send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: page.photo_key })).catch(() => {}) : Promise.resolve(),
-      page.cropped_photo_key ? s3Client.send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: page.cropped_photo_key })).catch(() => {}) : Promise.resolve(),
+      page.photo_key
+        ? s3Client
+            .send(
+              new DeleteObjectCommand({
+                Bucket: S3_BUCKET,
+                Key: page.photo_key,
+              }),
+            )
+            .catch(() => {})
+        : Promise.resolve(),
+      page.cropped_photo_key
+        ? s3Client
+            .send(
+              new DeleteObjectCommand({
+                Bucket: S3_BUCKET,
+                Key: page.cropped_photo_key,
+              }),
+            )
+            .catch(() => {})
+        : Promise.resolve(),
     ]);
 
     // Remove photo urls from database
@@ -295,7 +319,7 @@ const removePagePhoto = async (
       [pageId],
     );
 
-    res.send({ message: "photo removed" });
+    res.json({ message: "photo removed" });
   } catch (e) {
     next(e);
   }
@@ -315,7 +339,7 @@ const getAttachFiles = async (
       [pageId],
     );
 
-    res.send({ attachFiles });
+    res.json({ attachFiles });
   } catch (e) {
     next(e);
   }
@@ -370,7 +394,7 @@ const deleteAttachFile = async (
       }),
     );
 
-    res.send({ message: "file deleted" });
+    res.json({ message: "file deleted" });
   } catch (e) {
     next(e);
   }
@@ -430,7 +454,7 @@ const fetchPublishedPages = async (
       },
     }));
 
-    res.send({
+    res.json({
       results: formattedPages,
       filterBy,
     });
@@ -513,9 +537,9 @@ const publish = async (req: Request, res: Response, next: NextFunction) => {
     //   !util.validatePage(draftPage, "tags") ||
     //   !util.validatePage(draftPage, "url")
     // )
-    //   return res.status(400).send({ error: "error with contents" });
+    //   return res.status(400).json({ error: "error with contents" });
 
-    return res.status(200).send(resObj);
+    return res.status(200).json(resObj);
   } catch (e) {
     next(e);
   }
@@ -531,8 +555,11 @@ const fetchPublicPageData = async (
     const url = req.params.url;
     const userId = req.user?.id;
 
-    // Set session timestamp for view tracking
-    (req.session as any).viewStartTrack = Date.now();
+    res.cookie("viewStart", String(Date.now()), {
+      signed: true,
+      httpOnly: true,
+      maxAge: 5 * 60 * 1000,
+    });
 
     const page = await DB.find<any>(
       `
@@ -559,7 +586,7 @@ const fetchPublicPageData = async (
     );
 
     if (!page) {
-      return res.status(404).send({ message: "Page not found" });
+      return res.status(404).json({ message: "Page not found" });
     }
 
     // Get subscription count
@@ -629,7 +656,7 @@ const fetchPublicPageData = async (
       }
     }
 
-    res.send({
+    res.json({
       page: {
         id: page.id,
         contents: {
@@ -670,8 +697,11 @@ const fetchPrivatePageData = async (
     const url = req.params.url;
     const userId = req.user?.id;
 
-    // Set session timestamp for view tracking
-    (req.session as any).viewStartTrack = Date.now();
+    res.cookie("viewStart", String(Date.now()), {
+      signed: true,
+      httpOnly: true,
+      maxAge: 5 * 60 * 1000,
+    });
 
     const author = await DB.find<{ id: number }>(
       `SELECT id FROM users WHERE username = $1`,
@@ -679,7 +709,7 @@ const fetchPrivatePageData = async (
     );
 
     if (!author) {
-      return res.status(404).send({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
     const page = await DB.find<any>(
@@ -711,12 +741,12 @@ const fetchPrivatePageData = async (
     );
 
     if (!page) {
-      return res.status(404).send({ message: "Page not found" });
+      return res.status(404).json({ message: "Page not found" });
     }
 
     // Check if user is owner
     if (page.user_id !== parseInt(userId || "0")) {
-      return res.status(403).send({ message: "Unauthorized" });
+      return res.status(403).json({ message: "Unauthorized" });
     }
 
     // Get subscriber count
@@ -764,7 +794,7 @@ const fetchPrivatePageData = async (
       });
     }
 
-    res.send({
+    res.json({
       page: {
         id: page.id,
         contents: {
@@ -830,8 +860,9 @@ const fetchEditPageData = async (
           [username],
         );
 
-        if (!author) return res.status(404).send({ message: "User not found" });
-        if (author.id !== parseInt(userId)) return res.status(403).send({ message: "Unauthorized" });
+        if (!author) return res.status(404).json({ message: "User not found" });
+        if (author.id !== parseInt(userId))
+          return res.status(403).json({ message: "Unauthorized" });
 
         page = await DB.find<any>(
           `SELECT pages.*, page_types.type
@@ -853,10 +884,10 @@ const fetchEditPageData = async (
       );
     }
 
-    if (!page) return res.status(404).send({ message: "Page not found" });
+    if (!page) return res.status(404).json({ message: "Page not found" });
 
     if (page.user_id !== parseInt(userId)) {
-      return res.status(403).send({ message: "Unauthorized" });
+      return res.status(403).json({ message: "Unauthorized" });
     }
 
     // Fetch tags for public pages
@@ -879,7 +910,7 @@ const fetchEditPageData = async (
       usedUrls = urlResults.map((p: any) => p.url).filter(Boolean);
     }
 
-    res.send({
+    res.json({
       page: {
         ...page,
         tags,
@@ -908,7 +939,7 @@ const updatePage = async (req: Request, res: Response, next: NextFunction) => {
     );
 
     if (!page || page.user_id !== parseInt(userId)) {
-      return res.status(403).send({ message: "Unauthorized" });
+      return res.status(403).json({ message: "Unauthorized" });
     }
 
     // Get username for redirect URL
@@ -930,12 +961,17 @@ const updatePage = async (req: Request, res: Response, next: NextFunction) => {
     };
 
     // Allow URL change for private pages
-    if (page.type === "private" && pageData.url && pageData.url !== page.current_url) {
+    if (
+      page.type === "private" &&
+      pageData.url &&
+      pageData.url !== page.current_url
+    ) {
       const urlTaken = await DB.find<any>(
         `SELECT id FROM pages WHERE url = $1 AND id != $2`,
         [pageData.url, pageId],
       );
-      if (urlTaken) return res.status(400).send({ message: "URL already taken" });
+      if (urlTaken)
+        return res.status(400).json({ message: "URL already taken" });
       updateData.url = pageData.url;
     }
 
@@ -960,7 +996,7 @@ const updatePage = async (req: Request, res: Response, next: NextFunction) => {
 
     const finalUrl = updateData.url ?? page.current_url;
 
-    res.send({
+    res.json({
       url: finalUrl,
       type: page.type,
       username: user?.username,
@@ -983,19 +1019,37 @@ const deletePage = async (req: Request, res: Response, next: NextFunction) => {
     );
 
     if (!page || page.user_id !== parseInt(userId)) {
-      return res.status(403).send({ message: "Unauthorized" });
+      return res.status(403).json({ message: "Unauthorized" });
     }
 
     // Delete photos from S3
     await Promise.all([
-      page.photo_key ? s3Client.send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: page.photo_key })).catch(() => {}) : Promise.resolve(),
-      page.cropped_photo_key ? s3Client.send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: page.cropped_photo_key })).catch(() => {}) : Promise.resolve(),
+      page.photo_key
+        ? s3Client
+            .send(
+              new DeleteObjectCommand({
+                Bucket: S3_BUCKET,
+                Key: page.photo_key,
+              }),
+            )
+            .catch(() => {})
+        : Promise.resolve(),
+      page.cropped_photo_key
+        ? s3Client
+            .send(
+              new DeleteObjectCommand({
+                Bucket: S3_BUCKET,
+                Key: page.cropped_photo_key,
+              }),
+            )
+            .catch(() => {})
+        : Promise.resolve(),
     ]);
 
     // Delete page (cascade will handle comments, ratings, read_later, history, etc.)
     await DB.delete(`pages`, `id = $1`, [pageId]);
 
-    res.send({ message: "success" });
+    res.json({ message: "success" });
   } catch (e) {
     next(e);
   }

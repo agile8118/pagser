@@ -1,7 +1,7 @@
 export default {
   // mongodb_url: process.env.MONGODB_URL,
-  jwtSecret: process.env.JWTSECRET,
-  sessionSecret: process.env.SESSIONSECRET,
+  tokenSecret: process.env.TOKEN_SECRET,
+  cookieSecret: process.env.COOKIE_SECRET,
   domain: process.env.DOMAIN,
   // accessKeyId: process.env.ACCESS_KEY_ID,
   // secretAccessKey: process.env.SECRET_ACCESS_KEY,

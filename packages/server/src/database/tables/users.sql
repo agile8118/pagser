@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
   name VARCHAR(200) NOT NULL,
   username VARCHAR(200) NOT NULL,
   email VARCHAR(200) NOT NULL,
-  password VARCHAR(200) NOT NULL,
+  password TEXT NOT NULL,
   biography VARCHAR(200),
   headline VARCHAR(200),
   links_website VARCHAR(200),

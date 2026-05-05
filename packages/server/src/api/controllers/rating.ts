@@ -1,4 +1,11 @@
-import { Request, Response, NextFunction } from "express";
+// import { Request, Response, NextFunction } from "express";
+
+import type {
+  Cpeak,
+  CpeakRequest as Request,
+  CpeakResponse as Response,
+  Next as NextFunction,
+} from "cpeak";
 import { DB } from "../../database/index.js";
 import { PAGE_TYPE } from "../../database/types.js";
 
@@ -10,7 +17,7 @@ const ratePage = async (req: Request, res: Response, next: NextFunction) => {
     const { rate } = req.body;
 
     if (!["like", "dislike"].includes(rate)) {
-      return res.status(400).send({ message: "Invalid rate value" });
+      return res.status(400).json({ message: "Invalid rate value" });
     }
 
     const liked = rate === "like";
@@ -18,7 +25,7 @@ const ratePage = async (req: Request, res: Response, next: NextFunction) => {
     // Check if user has already rated this page
     const existing = await DB.find<any>(
       `SELECT id, liked FROM ratings WHERE user_id = $1 AND page_id = $2`,
-      [userId, pageId]
+      [userId, pageId],
     );
 
     if (existing) {
@@ -30,12 +37,10 @@ const ratePage = async (req: Request, res: Response, next: NextFunction) => {
         ]);
       } else {
         // Opposite vote exists, flip it
-        await DB.update(
-          `ratings`,
-          { liked },
-          `user_id = $2 AND page_id = $3`,
-          [userId, pageId]
-        );
+        await DB.update(`ratings`, { liked }, `user_id = $2 AND page_id = $3`, [
+          userId,
+          pageId,
+        ]);
       }
     } else {
       // No vote exists, create one
@@ -49,15 +54,15 @@ const ratePage = async (req: Request, res: Response, next: NextFunction) => {
     // Get updated counts
     const likes = await DB.find<{ count: string }>(
       `SELECT COUNT(*) as count FROM ratings WHERE page_id = $1 AND liked = true`,
-      [pageId]
+      [pageId],
     );
 
     const dislikes = await DB.find<{ count: string }>(
       `SELECT COUNT(*) as count FROM ratings WHERE page_id = $1 AND liked = false`,
-      [pageId]
+      [pageId],
     );
 
-    res.send({
+    res.json({
       likes: parseInt(likes?.count || "0"),
       dislikes: parseInt(dislikes?.count || "0"),
     });
@@ -67,11 +72,7 @@ const ratePage = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 // Rate a comment (like only)
-const rateComment = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const rateComment = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user.id;
     const commentId = req.params.id;
@@ -79,7 +80,7 @@ const rateComment = async (
     // Check if user has already liked this comment
     const existing = await DB.find<any>(
       `SELECT id FROM ratings WHERE user_id = $1 AND comment_id = $2 AND liked = true`,
-      [userId, commentId]
+      [userId, commentId],
     );
 
     if (existing) {
@@ -92,7 +93,7 @@ const rateComment = async (
       // Check if there's a dislike and flip to like, otherwise create like
       const dislike = await DB.find<any>(
         `SELECT id FROM ratings WHERE user_id = $1 AND comment_id = $2 AND liked = false`,
-        [userId, commentId]
+        [userId, commentId],
       );
 
       if (dislike) {
@@ -100,7 +101,7 @@ const rateComment = async (
           `ratings`,
           { liked: true },
           `user_id = $2 AND comment_id = $3`,
-          [userId, commentId]
+          [userId, commentId],
         );
       } else {
         await DB.insert(`ratings`, {
@@ -114,10 +115,10 @@ const rateComment = async (
     // Get updated like count
     const likes = await DB.find<{ count: string }>(
       `SELECT COUNT(*) as count FROM ratings WHERE comment_id = $1 AND liked = true`,
-      [commentId]
+      [commentId],
     );
 
-    res.send({ likes: parseInt(likes?.count || "0") });
+    res.json({ likes: parseInt(likes?.count || "0") });
   } catch (e) {
     next(e);
   }
@@ -127,7 +128,7 @@ const rateComment = async (
 const fetchLikedPages = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
@@ -179,7 +180,7 @@ const fetchLikedPages = async (
       },
     }));
 
-    res.send({
+    res.json({
       results: formattedPages,
       filterBy,
     });
@@ -192,14 +193,14 @@ const fetchLikedPages = async (
 const removeLikedPages = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
     const { ids } = req.body;
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).send({ message: "Invalid ids array" });
+      return res.status(400).json({ message: "Invalid ids array" });
     }
 
     const placeholders = ids.map((_, i) => `$${i + 1}`).join(",");
@@ -210,7 +211,7 @@ const removeLikedPages = async (
 
     await DB.query(query, [...ids, userId]);
 
-    res.send({ message: "success" });
+    res.json({ message: "success" });
   } catch (e) {
     next(e);
   }

@@ -1,4 +1,9 @@
-import { Express } from "express";
+import type {
+  Cpeak,
+  CpeakRequest as Request,
+  CpeakResponse as Response,
+  HandleErr,
+} from "cpeak";
 
 // Controllers
 import Authentication from "./controllers/authentication.js";
@@ -19,21 +24,27 @@ import Analytics from "./controllers/analytics.js";
 // Middleware
 import validator from "./middleware/validator.js";
 import authorization from "./middleware/authorization.js";
-import { requireAuth, logTheUserIn, optionalAuth } from "./services/passport.js";
+import {
+  requireAuth,
+  logTheUserIn,
+  optionalAuth,
+} from "./services/guards.js";
 
-export default (app: Express) => {
+export default (app: Cpeak) => {
   // ================================================ //
   // ============= AUTHENTICATION ROUTES =========== //
   // ================================================ //
 
-  app.post(
+  app.route(
+    "post",
     "/api/username-availability",
     validator.username,
     validator.usernameAvailability,
     Authentication.usernameAvailability,
   );
 
-  app.post(
+  app.route(
+    "post",
     "/api/send-code",
     validator.name,
     validator.email,
@@ -44,7 +55,8 @@ export default (app: Express) => {
     Authentication.sendCode,
   );
 
-  app.post(
+  app.route(
+    "post",
     "/api/register",
     validator.name,
     validator.email,
@@ -56,15 +68,17 @@ export default (app: Express) => {
     Authentication.register,
   );
 
-  app.post("/api/login", logTheUserIn, Authentication.login);
+  app.route("post", "/api/login", validator.loginCredentials, logTheUserIn, Authentication.login);
 
-  app.post(
+  app.route(
+    "post",
     "/api/forgot-password",
     validator.email,
     Authentication.forgotPassword,
   );
 
-  app.patch(
+  app.route(
+    "patch",
     "/api/reset-password",
     validator.isBodyUserId,
     validator.password,
@@ -72,16 +86,17 @@ export default (app: Express) => {
     Authentication.resetPassword,
   );
 
-  app.post("/auth", requireAuth, Authentication.getAuth);
+  app.route("post", "/auth", requireAuth, Authentication.getAuth);
 
   // ================================================ //
   // ================= PAGE ROUTES ================= //
   // ================================================ //
 
   // ---- Draft Pages ---- //
-  app.post("/api/new-page", requireAuth, Page.newDraftPage);
+  app.route("post", "/api/new-page", requireAuth, Page.newDraftPage);
 
-  app.get(
+  app.route(
+    "get",
     "/api/new-page/:stage/:id",
     requireAuth,
     validator.isId,
@@ -90,7 +105,8 @@ export default (app: Express) => {
     Page.fetchDraftPageData,
   );
 
-  app.patch(
+  app.route(
+    "patch",
     "/api/new-page/:stage/:id",
     requireAuth,
     authorization.draftPageOwnership,
@@ -100,7 +116,8 @@ export default (app: Express) => {
     Page.updateDraftPageData,
   );
 
-  app.post(
+  app.route(
+    "post",
     "/api/new-page/:id",
     requireAuth,
     authorization.draftPageOwnership,
@@ -108,32 +125,36 @@ export default (app: Express) => {
   );
 
   // ---- Page Photos & Attachments ---- //
-  app.put(
+  app.route(
+    "put",
     "/api/pages/:id/photo",
     requireAuth,
     authorization.pageOwnership,
     Uploader.uploadPagePhoto,
   );
 
-  app.delete(
+  app.route(
+    "delete",
     "/api/pages/:id/photo",
     requireAuth,
     authorization.pageOwnership,
     Page.removePagePhoto,
   );
 
-  app.get("/api/pages/:id/attach-files", Page.getAttachFiles);
+  app.route("get", "/api/pages/:id/attach-files", Page.getAttachFiles);
 
-  app.post(
+  app.route(
+    "post",
     "/api/pages/:id/attach-files",
     requireAuth,
     authorization.pageOwnership,
     Uploader.uploadPageAttachFile,
   );
 
-  app.get("/api/pages/:id/attach-files/:name", Page.getAttachFile);
+  app.route("get", "/api/pages/:id/attach-files/:name", Page.getAttachFile);
 
-  app.delete(
+  app.route(
+    "delete",
     "/api/pages/:id/attach-files/:fileId",
     requireAuth,
     authorization.pageOwnership,
@@ -141,143 +162,239 @@ export default (app: Express) => {
   );
 
   // ---- User Pages Manager ---- //
-  app.get(
+  app.route(
+    "get",
     "/api/user-pages/published",
     requireAuth,
     UserPages.fetchPublishedPages,
   );
 
-  app.delete(
+  app.route(
+    "delete",
     "/api/user-pages/published",
     requireAuth,
     UserPages.deletePublishedPages,
   );
 
-  app.get("/api/user-pages/draft", requireAuth, UserPages.fetchDraftPages);
+  app.route(
+    "get",
+    "/api/user-pages/draft",
+    requireAuth,
+    UserPages.fetchDraftPages,
+  );
 
-  app.delete("/api/user-pages/draft", requireAuth, UserPages.deleteDraftPages);
+  app.route(
+    "delete",
+    "/api/user-pages/draft",
+    requireAuth,
+    UserPages.deleteDraftPages,
+  );
 
   // ---- Published Page Management ---- //
-  app.get("/api/pages/:id/edit", requireAuth, Page.fetchEditPageData);
+  app.route("get", "/api/pages/:id/edit", requireAuth, Page.fetchEditPageData);
 
-  app.put("/api/pages/:id", requireAuth, Page.updatePage);
+  app.route("put", "/api/pages/:id", requireAuth, Page.updatePage);
 
-  app.delete("/api/pages/:id", requireAuth, Page.deletePage);
+  app.route("delete", "/api/pages/:id", requireAuth, Page.deletePage);
 
   // ================================================ //
   // =============== COMMENT ROUTES ================ //
   // ================================================ //
 
-  app.post("/api/comment/:pageId", requireAuth, Comment.addComment);
-  app.get("/api/comments/history", requireAuth, Comment.commentsHistory);
-  app.get("/api/comments/:pageId", optionalAuth, Comment.fetchComments);
-  app.get("/api/comment/:id/replies", optionalAuth, Comment.fetchReplies);
-  app.put("/api/comment/:id", requireAuth, Comment.updateComment);
-  app.delete("/api/comment/:id", requireAuth, Comment.deleteComment);
+  app.route("post", "/api/comment/:pageId", requireAuth, Comment.addComment);
+  app.route(
+    "get",
+    "/api/comments/history",
+    requireAuth,
+    Comment.commentsHistory,
+  );
+  app.route(
+    "get",
+    "/api/comments/:pageId",
+    optionalAuth,
+    Comment.fetchComments,
+  );
+  app.route(
+    "get",
+    "/api/comment/:id/replies",
+    optionalAuth,
+    Comment.fetchReplies,
+  );
+  app.route("put", "/api/comment/:id", requireAuth, Comment.updateComment);
+  app.route("delete", "/api/comment/:id", requireAuth, Comment.deleteComment);
 
   // ================================================ //
   // =============== HISTORY ROUTES ================ //
   // ================================================ //
 
-  app.get("/api/history/", requireAuth, History.fetch);
-  app.delete("/api/history", requireAuth, History.remove);
+  app.route("get", "/api/history", requireAuth, History.fetch);
+  app.route("delete", "/api/history", requireAuth, History.remove);
 
   // ================================================ //
   // =============== READ LATER ROUTES ============= //
   // ================================================ //
 
-  app.patch("/api/read-later/:id", requireAuth, ReadLater.toggle);
-  app.delete("/api/read-later", requireAuth, ReadLater.remove);
-  app.get("/api/read-later/", requireAuth, ReadLater.fetch);
+  app.route("patch", "/api/read-later/:id", requireAuth, ReadLater.toggle);
+  app.route("delete", "/api/read-later", requireAuth, ReadLater.remove);
+  app.route("get", "/api/read-later", requireAuth, ReadLater.fetch);
 
   // ================================================ //
   // ================ RATING ROUTES ================ //
   // ================================================ //
 
-  app.patch("/api/rate/page/:id", requireAuth, Rating.ratePage);
-  app.patch("/api/rate/comment/:id", requireAuth, Rating.rateComment);
-  app.get("/api/liked-pages/", requireAuth, Rating.fetchLikedPages);
-  app.delete("/api/liked-pages", requireAuth, Rating.removeLikedPages);
+  app.route("patch", "/api/rate/page/:id", requireAuth, Rating.ratePage);
+  app.route("patch", "/api/rate/comment/:id", requireAuth, Rating.rateComment);
+  app.route("get", "/api/liked-pages", requireAuth, Rating.fetchLikedPages);
+  app.route("delete", "/api/liked-pages", requireAuth, Rating.removeLikedPages);
 
   // ================================================ //
   // ============= SUBSCRIPTION ROUTES ============= //
   // ================================================ //
 
-  app.post("/api/subscription/:id", requireAuth, Subscription.toggle);
-  app.get("/api/subscriptions", requireAuth, Subscription.fetchSubscriptions);
+  app.route("post", "/api/subscription/:id", requireAuth, Subscription.toggle);
+  app.route(
+    "get",
+    "/api/subscriptions",
+    requireAuth,
+    Subscription.fetchSubscriptions,
+  );
 
   // ================================================ //
   // =============== PROFILE ROUTES ================ //
   // ================================================ //
 
-  app.get("/api/profile", requireAuth, Profile.fetchUserData);
-  app.patch("/api/profile", requireAuth, Profile.updateUserData);
-  app.put("/api/profile/photo", requireAuth, Profile.uploadUserImage);
+  app.route("get", "/api/profile", requireAuth, Profile.fetchUserData);
+  app.route("patch", "/api/profile", requireAuth, Profile.updateUserData);
+  app.route("put", "/api/profile/photo", requireAuth, Profile.uploadUserImage);
 
   // ================================================ //
   // =============== SETTINGS ROUTES =============== //
   // ================================================ //
 
-  app.get("/api/settings/email", requireAuth, Settings.fetchUserEmail);
-  app.patch("/api/settings/email", requireAuth, Settings.updateUserEmail);
-  app.patch("/api/settings/password", requireAuth, Settings.updateUserPassword);
+  app.route("get", "/api/settings/email", requireAuth, Settings.fetchUserEmail);
+  app.route(
+    "patch",
+    "/api/settings/email",
+    requireAuth,
+    Settings.updateUserEmail,
+  );
+  app.route(
+    "patch",
+    "/api/settings/password",
+    requireAuth,
+    Settings.updateUserPassword,
+  );
 
   // ================================================ //
   // ============= PUBLIC PROFILE ROUTES =========== //
   // ================================================ //
 
-  app.get("/api/users/:username/pages", PublicProfile.fetchPages);
-  app.get("/api/users/:username/collections", PublicProfile.fetchCollections);
+  app.route("get", "/api/users/:username/pages", PublicProfile.fetchPages);
+  app.route(
+    "get",
+    "/api/users/:username/collections",
+    PublicProfile.fetchCollections,
+  );
 
   // ================================================ //
   // =============== COLLECTION ROUTES ============= //
   // ================================================ //
 
-  app.post("/api/collection", requireAuth, Collection.create);
-  app.get("/api/collection/:id", optionalAuth, Collection.fetchOne);
-  app.post(
+  app.route("post", "/api/collection", requireAuth, Collection.create);
+  app.route("get", "/api/collection/:id", optionalAuth, Collection.fetchOne);
+  app.route(
+    "post",
     "/api/collection/add-remove/:id/:pageId",
     requireAuth,
     Collection.addRemovePage,
   );
-  app.post(
+  app.route(
+    "post",
     "/api/collection/toggle-library/:id",
     requireAuth,
     Collection.toggleLibrary,
   );
-  app.post("/api/collection/sharing/:id", requireAuth, Collection.sharing);
-  app.put("/api/collection/photo/:id", requireAuth, Collection.uploadPhoto);
-  app.put("/api/collection/info/:id", requireAuth, Collection.updateInfo);
-  app.put(
+  app.route(
+    "post",
+    "/api/collection/sharing/:id",
+    requireAuth,
+    Collection.sharing,
+  );
+  app.route(
+    "put",
+    "/api/collection/photo/:id",
+    requireAuth,
+    Collection.uploadPhoto,
+  );
+  app.route(
+    "put",
+    "/api/collection/info/:id",
+    requireAuth,
+    Collection.updateInfo,
+  );
+  app.route(
+    "put",
     "/api/collection/remove-pages/:id",
     requireAuth,
     Collection.removePages,
   );
-  app.delete("/api/collection/:id", requireAuth, Collection.deleteCollection);
-  app.get("/api/collections/created", requireAuth, Collection.fetchCreated);
-  app.get(
+  app.route(
+    "delete",
+    "/api/collection/:id",
+    requireAuth,
+    Collection.deleteCollection,
+  );
+  app.route(
+    "get",
+    "/api/collections/created",
+    requireAuth,
+    Collection.fetchCreated,
+  );
+  app.route(
+    "get",
     "/api/collections/created/:pageId",
     requireAuth,
     Collection.fetchCreatedFAP,
   );
-  app.get(
+  app.route(
+    "get",
     "/api/collections/created-saved",
     requireAuth,
     Collection.fetchCreatedAndSaved,
   );
-  app.get("/api/collections/saved", requireAuth, Collection.fetchSaved);
-  app.get("/api/collections/shared/:username", Collection.fetchShared);
+  app.route(
+    "get",
+    "/api/collections/saved",
+    requireAuth,
+    Collection.fetchSaved,
+  );
+  app.route("get", "/api/collections/shared/:username", Collection.fetchShared);
 
   // ================================================ //
   // =============== ANALYTICS ROUTES ============== //
   // ================================================ //
 
-  app.post("/api/views/:id", Analytics.trackView);
+  app.route("post", "/api/views/:id", optionalAuth, Analytics.trackView);
 
   // ---- Public/Private Page Viewing (Wildcard Routes - must come last) ---- //
-  app.get("/api/public-pages/:url", optionalAuth, Page.fetchPublicPageData);
+  app.route(
+    "get",
+    "/api/public-pages/:url",
+    optionalAuth,
+    Page.fetchPublicPageData,
+  );
 
-  app.get("/api/:username/:url", requireAuth, Page.fetchPrivatePageData);
+  app.route(
+    "get",
+    "/api/:username/:url",
+    requireAuth,
+    Page.fetchPrivatePageData,
+  );
 
-  app.get("/api/:username/:url/edit", requireAuth, Page.fetchEditPageData);
+  app.route(
+    "get",
+    "/api/:username/:url/edit",
+    requireAuth,
+    Page.fetchEditPageData,
+  );
 };

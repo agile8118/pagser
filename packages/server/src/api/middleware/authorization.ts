@@ -1,30 +1,43 @@
-import { Request, Response, NextFunction } from "express";
-import { DB } from "../../database/index.js";
-import { handleServerError } from "../../lib/util.js";
+import type {
+  CpeakRequest as Request,
+  CpeakResponse as Response,
+  Next as NextFunction,
+} from "cpeak";
 
-const draftPageOwnership = (
+import { DB } from "../../database/index.js";
+
+const checkPageOwnership = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const pageId = req.params.id;
   const userId = req.user.id;
-  const stage = req.params.stage;
 
-  next();
-};
+  if (!pageId || !/^\d+$/.test(pageId)) {
+    return res.status(400).json({ message: "id error" });
+  }
 
-const pageOwnership = (req: Request, res: Response, next: NextFunction) => {
-  const pageId = req.params.id;
-  const userId = req.user.id;
-  const stage = req.params.stage;
+  try {
+    const page = await DB.find<{ user_id: number }>(
+      "SELECT user_id FROM pages WHERE id = $1",
+      [pageId],
+    );
 
-  next();
+    if (!page) return res.status(404).json({ message: "Page not found" });
+    if (String(page.user_id) !== String(userId)) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    next();
+  } catch (e) {
+    next(e);
+  }
 };
 
 const authorization = {
-  draftPageOwnership,
-  pageOwnership,
+  draftPageOwnership: checkPageOwnership,
+  pageOwnership: checkPageOwnership,
 };
 
 export default authorization;

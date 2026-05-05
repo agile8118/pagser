@@ -1,4 +1,9 @@
-import { Request, Response, NextFunction } from "express";
+import type {
+  Cpeak,
+  CpeakRequest as Request,
+  CpeakResponse as Response,
+  Next as NextFunction,
+} from "cpeak";
 import { DB } from "../../database/index.js";
 
 // Toggle subscription to an author
@@ -7,14 +12,14 @@ const toggle = async (req: Request, res: Response, next: NextFunction) => {
     const subscriberId = req.user.id;
     const authorId = req.params.id;
 
-    if (subscriberId === authorId) {
-      return res.status(400).send({ message: "Cannot subscribe to yourself" });
+    if (String(subscriberId) === String(authorId)) {
+      return res.status(400).json({ message: "Cannot subscribe to yourself" });
     }
 
     // Check if subscription exists
     const existing = await DB.find<any>(
       `SELECT id FROM subscriptions WHERE subscriber_id = $1 AND author_id = $2`,
-      [subscriberId, authorId]
+      [subscriberId, authorId],
     );
 
     if (existing) {
@@ -22,7 +27,7 @@ const toggle = async (req: Request, res: Response, next: NextFunction) => {
       await DB.delete(
         `subscriptions`,
         `subscriber_id = $1 AND author_id = $2`,
-        [subscriberId, authorId]
+        [subscriberId, authorId],
       );
     } else {
       // Add subscription
@@ -35,10 +40,10 @@ const toggle = async (req: Request, res: Response, next: NextFunction) => {
     // Get updated subscription count
     const subCount = await DB.find<{ count: string }>(
       `SELECT COUNT(*) as count FROM subscriptions WHERE author_id = $1`,
-      [authorId]
+      [authorId],
     );
 
-    res.send({
+    res.json({
       subscribed: !existing,
       subNum: parseInt(subCount?.count || "0"),
     });
@@ -51,7 +56,7 @@ const toggle = async (req: Request, res: Response, next: NextFunction) => {
 const fetchSubscriptions = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const subscriberId = req.user.id;
@@ -70,10 +75,10 @@ const fetchSubscriptions = async (
       WHERE subscriptions.subscriber_id = $1
       ORDER BY subscriptions.created_at DESC
       `,
-      [subscriberId]
+      [subscriberId],
     );
 
-    res.send({ subs });
+    res.json({ subs });
   } catch (e) {
     next(e);
   }

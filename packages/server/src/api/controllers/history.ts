@@ -1,4 +1,11 @@
-import { Request, Response, NextFunction } from "express";
+// import { Request, Response, NextFunction } from "express";
+
+import type {
+  Cpeak,
+  CpeakRequest as Request,
+  CpeakResponse as Response,
+  Next as NextFunction,
+} from "cpeak";
 import { DB } from "../../database/index.js";
 import { PAGE_TYPE } from "../../database/types.js";
 import { timeSince } from "../../lib/util.js";
@@ -56,7 +63,7 @@ const fetch = async (req: Request, res: Response, next: NextFunction) => {
       dateVisited: timeSince(page.date_visited),
     }));
 
-    res.send({
+    res.json({
       results: formattedPages,
       filterBy,
     });
@@ -72,7 +79,7 @@ const remove = async (req: Request, res: Response, next: NextFunction) => {
     const { ids } = req.body;
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).send({ message: "Invalid ids array" });
+      return res.status(400).json({ message: "Invalid ids array" });
     }
 
     const placeholders = ids.map((_, i) => `$${i + 1}`).join(",");
@@ -83,7 +90,7 @@ const remove = async (req: Request, res: Response, next: NextFunction) => {
 
     await DB.query(query, [...ids, userId]);
 
-    res.send({ message: "success" });
+    res.json({ message: "success" });
   } catch (e) {
     next(e);
   }

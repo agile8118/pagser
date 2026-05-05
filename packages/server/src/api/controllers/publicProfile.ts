@@ -1,4 +1,11 @@
-import { Request, Response, NextFunction } from "express";
+// import { Request, Response, NextFunction } from "express";
+
+import type {
+  Cpeak,
+  CpeakRequest as Request,
+  CpeakResponse as Response,
+  Next as NextFunction,
+} from "cpeak";
 import { DB } from "../../database/index.js";
 import { PAGE_STATUS } from "../../database/types.js";
 import { timeSince } from "../../lib/util.js";
@@ -29,7 +36,7 @@ const fetchPages = async (req: Request, res: Response, next: NextFunction) => {
       WHERE users.username = $1 AND pages.status_id = $2 AND page_types.type = 'public'
       ORDER BY pages.created_at DESC
       `,
-      [username, PAGE_STATUS.publishedId]
+      [username, PAGE_STATUS.publishedId],
     );
 
     const formattedPages = (pages || []).map((page: any) => ({
@@ -48,7 +55,7 @@ const fetchPages = async (req: Request, res: Response, next: NextFunction) => {
       contents: page.contents,
     }));
 
-    res.send({ pages: formattedPages });
+    res.json({ pages: formattedPages });
   } catch (e) {
     next(e);
   }
@@ -58,7 +65,7 @@ const fetchPages = async (req: Request, res: Response, next: NextFunction) => {
 const fetchCollections = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const username = req.params.username;
@@ -77,7 +84,7 @@ const fetchCollections = async (
       WHERE users.username = $1 AND collections.shared = true
       ORDER BY collections.created_at DESC
       `,
-      [username]
+      [username],
     );
 
     const formattedCollections = (collections || []).map((col: any) => ({
@@ -91,7 +98,7 @@ const fetchCollections = async (
       },
     }));
 
-    res.send({ collections: formattedCollections });
+    res.json({ collections: formattedCollections });
   } catch (e) {
     next(e);
   }

@@ -1,4 +1,11 @@
-import { Request, Response, NextFunction } from "express";
+// import { Request, Response, NextFunction } from "express";
+
+import type {
+  Cpeak,
+  CpeakRequest as Request,
+  CpeakResponse as Response,
+  Next as NextFunction,
+} from "cpeak";
 import sharp from "sharp";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
@@ -11,7 +18,11 @@ const s3Client = new S3Client({ region: AWS_REGION });
 
 function isAllowedImageType(chunk: Uint8Array): boolean {
   const isJpeg = chunk[0] === 0xff && chunk[1] === 0xd8 && chunk[2] === 0xff;
-  const isPng = chunk[0] === 0x89 && chunk[1] === 0x50 && chunk[2] === 0x4e && chunk[3] === 0x47;
+  const isPng =
+    chunk[0] === 0x89 &&
+    chunk[1] === 0x50 &&
+    chunk[2] === 0x4e &&
+    chunk[3] === 0x47;
   return isJpeg || isPng;
 }
 
@@ -25,12 +36,18 @@ function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
       size += chunk.length;
       if (size > maxBytes) {
         req.destroy();
-        return reject({ customError: `Maximum file size is: ${maxBytes / (1024 * 1024)}MB`, status: 400 });
+        return reject({
+          customError: `Maximum file size is: ${maxBytes / (1024 * 1024)}MB`,
+          status: 400,
+        });
       }
       if (!checkedMagic) {
         if (!isAllowedImageType(chunk)) {
           req.destroy();
-          return reject({ customError: "Only JPEG and PNG files are allowed.", status: 400 });
+          return reject({
+            customError: "Only JPEG and PNG files are allowed.",
+            status: 400,
+          });
         }
         checkedMagic = true;
       }
@@ -45,7 +62,7 @@ function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
 const fetchUserData = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
@@ -55,14 +72,14 @@ const fetchUserData = async (
               links_website, links_facebook, links_youtube, links_twitter, links_linkedin,
               photo_key, photo_url, verified, created_at
        FROM users WHERE id = $1`,
-      [userId]
+      [userId],
     );
 
     if (!user) {
-      return res.status(404).send({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    res.send({
+    res.json({
       user: {
         ...user,
         links: {
@@ -83,7 +100,7 @@ const fetchUserData = async (
 const updateUserData = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
@@ -102,7 +119,7 @@ const updateUserData = async (
         links_linkedin: links?.linkedin,
       },
       `id = $9`,
-      [userId]
+      [userId],
     );
 
     // Re-fetch and return updated data
@@ -111,10 +128,10 @@ const updateUserData = async (
               links_website, links_facebook, links_youtube, links_twitter, links_linkedin,
               photo_key, photo_url, verified, created_at
        FROM users WHERE id = $1`,
-      [userId]
+      [userId],
     );
 
-    res.send({
+    res.json({
       user: {
         ...user,
         links: {
@@ -135,13 +152,16 @@ const updateUserData = async (
 const uploadUserImage = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
     const MAX_FILE_SIZE = 8 * 1024 * 1024;
 
-    const user = await DB.find<IUser>(`SELECT photo_key FROM users WHERE id = $1`, [userId]);
+    const user = await DB.find<IUser>(
+      `SELECT photo_key FROM users WHERE id = $1`,
+      [userId],
+    );
     const prevKey = user?.photo_key;
 
     const x = Math.round(Number(req.query.x));
@@ -160,7 +180,12 @@ const uploadUserImage = async (
     const key = `images/users/${crypto.randomUUID()}.jpg`;
     const upload = new Upload({
       client: s3Client,
-      params: { Bucket: S3_BUCKET, Key: key, Body: processed, ContentType: "image/jpeg" },
+      params: {
+        Bucket: S3_BUCKET,
+        Key: key,
+        Body: processed,
+        ContentType: "image/jpeg",
+      },
     });
     await upload.done();
     const url = `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
@@ -169,14 +194,16 @@ const uploadUserImage = async (
       "users",
       { photo_url: url, photo_key: key },
       "id = $3",
-      [userId]
+      [userId],
     );
 
     if (prevKey) {
-      await s3Client.send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: prevKey })).catch(() => {});
+      await s3Client
+        .send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: prevKey }))
+        .catch(() => {});
     }
 
-    res.send({ message: "image-uploaded", image: url });
+    res.json({ message: "image-uploaded", image: url });
   } catch (e: any) {
     if (e.customError) return next(e);
     next(e);

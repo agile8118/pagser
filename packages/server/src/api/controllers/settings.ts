@@ -1,26 +1,32 @@
-import { Request, Response, NextFunction } from "express";
+// import { Request, Response, NextFunction } from "express";
+
+import type {
+  Cpeak,
+  CpeakRequest as Request,
+  CpeakResponse as Response,
+  Next as NextFunction,
+} from "cpeak";
 import { DB } from "../../database/index.js";
-import bcrypt from "bcrypt";
 
 // Fetch user's email
 const fetchUserEmail = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
 
     const user = await DB.find<{ email: string }>(
       `SELECT email FROM users WHERE id = $1`,
-      [userId]
+      [userId],
     );
 
     if (!user) {
-      return res.status(404).send({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    res.send({ email: user.email });
+    res.json({ email: user.email });
   } catch (e) {
     next(e);
   }
@@ -30,7 +36,7 @@ const fetchUserEmail = async (
 const updateUserEmail = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
@@ -39,16 +45,16 @@ const updateUserEmail = async (
     // Check if email already exists
     const existing = await DB.find<any>(
       `SELECT id FROM users WHERE email = $1 AND id != $2`,
-      [email, userId]
+      [email, userId],
     );
 
     if (existing) {
-      return res.status(422).send({ message: "Email already in use" });
+      return res.status(422).json({ message: "Email already in use" });
     }
 
     await DB.update(`users`, { email }, `id = $2`, [userId]);
 
-    res.send({ message: "Email updated successfully" });
+    res.json({ message: "Email updated successfully" });
   } catch (e) {
     next(e);
   }
@@ -58,22 +64,17 @@ const updateUserEmail = async (
 const updateUserPassword = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
     const { password } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await req.hashPassword({ password });
 
-    await DB.update(
-      `users`,
-      { password: hashedPassword },
-      `id = $2`,
-      [userId]
-    );
+    await DB.update(`users`, { password: hashedPassword }, `id = $2`, [userId]);
 
-    res.send({ message: "Password updated successfully" });
+    res.json({ message: "Password updated successfully" });
   } catch (e) {
     next(e);
   }

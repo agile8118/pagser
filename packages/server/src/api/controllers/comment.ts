@@ -1,4 +1,11 @@
-import { Request, Response, NextFunction } from "express";
+// import { Request, Response, NextFunction } from "express";
+
+import type {
+  Cpeak,
+  CpeakRequest as Request,
+  CpeakResponse as Response,
+  Next as NextFunction,
+} from "cpeak";
 import { DB } from "../../database/index.js";
 import { IComment } from "../../database/types.js";
 import { timeSince } from "../../lib/util.js";
@@ -12,7 +19,7 @@ const addComment = async (req: Request, res: Response, next: NextFunction) => {
     const { text, inReplyTo, inReplyToCommentReply } = req.body;
 
     if (!text || text.trim().length === 0) {
-      return res.status(400).send({ message: "Comment text is required" });
+      return res.status(400).json({ message: "Comment text is required" });
     }
 
     const comment = await DB.insert<IComment>(`comments`, {
@@ -42,14 +49,14 @@ const addComment = async (req: Request, res: Response, next: NextFunction) => {
       JOIN users ON comments.user_id = users.id
       WHERE comments.id = $1
       `,
-      [comment.id]
+      [comment.id],
     );
 
     const parentId = fullComment.in_reply_to
       ? String(fullComment.in_reply_to)
       : null;
 
-    res.status(201).send({
+    res.status(201).json({
       comment: {
         id: String(fullComment.id),
         text: fullComment.text,
@@ -79,7 +86,7 @@ const addComment = async (req: Request, res: Response, next: NextFunction) => {
 const fetchComments = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const pageId = req.params.pageId;
@@ -111,12 +118,12 @@ const fetchComments = async (
       ORDER BY c.created_at DESC
       LIMIT $2 OFFSET $3
       `,
-      [pageId, limit, offset]
+      [pageId, limit, offset],
     );
 
     const totalCount = await DB.find<{ count: string }>(
       `SELECT COUNT(*) as count FROM comments WHERE page_id = $1 AND in_reply_to IS NULL`,
-      [pageId]
+      [pageId],
     );
 
     const formattedComments = (comments || []).map((c: any) => ({
@@ -134,13 +141,14 @@ const fetchComments = async (
       status: "normal",
       showReplies: false,
       highlightedReplies: [],
-      viewer: userId && String(userId) === String(c.user_id) ? "owner" : "spectator",
+      viewer:
+        userId && String(userId) === String(c.user_id) ? "owner" : "spectator",
       readByPageOwner: c.read_by_page_owner,
       lovedByPageOwner: c.loved_by_page_owner,
       inReplyTo: c.in_reply_to,
     }));
 
-    res.send({
+    res.json({
       comments: formattedComments,
       userId,
       length: parseInt(totalCount?.count || "0"),
@@ -151,7 +159,11 @@ const fetchComments = async (
 };
 
 // Fetch replies to a comment
-const fetchReplies = async (req: Request, res: Response, next: NextFunction) => {
+const fetchReplies = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const commentId = req.params.id;
     const userId = req.user?.id;
@@ -175,7 +187,7 @@ const fetchReplies = async (req: Request, res: Response, next: NextFunction) => 
       WHERE c.in_reply_to = $1
       ORDER BY c.created_at ASC
       `,
-      [commentId]
+      [commentId],
     );
 
     const formattedReplies = (replies || []).map((r: any) => ({
@@ -190,7 +202,8 @@ const fetchReplies = async (req: Request, res: Response, next: NextFunction) => 
       date: timeSince(r.created_at),
       likes: parseInt(r.like_count || "0"),
       status: "normal",
-      viewer: userId && String(userId) === String(r.user_id) ? "owner" : "spectator",
+      viewer:
+        userId && String(userId) === String(r.user_id) ? "owner" : "spectator",
       toName: "",
       inReplyTo: String(commentId),
       inReplyToCommentReply: r.in_reply_to_comment_reply,
@@ -198,7 +211,7 @@ const fetchReplies = async (req: Request, res: Response, next: NextFunction) => 
       lovedByPageOwner: r.loved_by_page_owner,
     }));
 
-    res.send({ replies: formattedReplies, commentId });
+    res.json({ replies: formattedReplies, commentId });
   } catch (e) {
     next(e);
   }
@@ -208,7 +221,7 @@ const fetchReplies = async (req: Request, res: Response, next: NextFunction) => 
 const updateComment = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
@@ -216,24 +229,24 @@ const updateComment = async (
     const { text } = req.body;
 
     if (!text || text.trim().length === 0) {
-      return res.status(400).send({ message: "Comment text is required" });
+      return res.status(400).json({ message: "Comment text is required" });
     }
 
     // Check ownership
     const comment = await DB.find<IComment>(
       `SELECT user_id, in_reply_to FROM comments WHERE id = $1`,
-      [commentId]
+      [commentId],
     );
 
     if (!comment || comment.user_id !== parseInt(userId)) {
-      return res.status(403).send({ message: "Unauthorized" });
+      return res.status(403).json({ message: "Unauthorized" });
     }
 
     await DB.update(
       `comments`,
       { text: text.trim(), edited: true },
       `id = $3`,
-      [commentId]
+      [commentId],
     );
 
     const updatedComment = await DB.find<any>(
@@ -245,10 +258,10 @@ const updateComment = async (
       FROM comments
       WHERE comments.id = $1
       `,
-      [commentId]
+      [commentId],
     );
 
-    res.send({
+    res.json({
       commentId,
       newComment: updatedComment.text,
       inReplyTo: updatedComment.in_reply_to,
@@ -262,7 +275,7 @@ const updateComment = async (
 const deleteComment = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
@@ -271,19 +284,15 @@ const deleteComment = async (
     // Check ownership
     const comment = await DB.find<IComment>(
       `SELECT user_id, in_reply_to FROM comments WHERE id = $1`,
-      [commentId]
+      [commentId],
     );
 
     if (!comment || comment.user_id !== parseInt(userId)) {
-      return res.status(403).send({ message: "Unauthorized" });
+      return res.status(403).json({ message: "Unauthorized" });
     }
 
     // Delete replies that point to this comment via in_reply_to_comment_reply
-    await DB.delete(
-      `comments`,
-      `in_reply_to_comment_reply = $1`,
-      [commentId]
-    );
+    await DB.delete(`comments`, `in_reply_to_comment_reply = $1`, [commentId]);
 
     // Delete all replies to this comment
     await DB.delete(`comments`, `in_reply_to = $1`, [commentId]);
@@ -291,7 +300,7 @@ const deleteComment = async (
     // Delete the comment itself
     await DB.delete(`comments`, `id = $1`, [commentId]);
 
-    res.send({
+    res.json({
       commentId,
       parent: comment.in_reply_to,
     });
@@ -304,7 +313,7 @@ const deleteComment = async (
 const commentsHistory = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
@@ -334,7 +343,7 @@ const commentsHistory = async (
       WHERE c.user_id = $1
       ORDER BY c.created_at DESC
       `,
-      [userId]
+      [userId],
     );
 
     const comments = (rows || []).map((c: any) => {
@@ -365,7 +374,7 @@ const commentsHistory = async (
       };
     });
 
-    res.send({ comments });
+    res.json({ comments });
   } catch (e) {
     next(e);
   }

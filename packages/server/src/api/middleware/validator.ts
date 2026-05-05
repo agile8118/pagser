@@ -1,4 +1,11 @@
-import { Request, Response, NextFunction } from "express";
+// import { Request, Response, NextFunction } from "express";
+
+import type {
+  Cpeak,
+  CpeakRequest as Request,
+  CpeakResponse as Response,
+  Next as NextFunction,
+} from "cpeak";
 import vl from "validator";
 import { validate } from "@pagser/common";
 import { DB } from "../../database/index.js";
@@ -13,17 +20,17 @@ const isId = (req: Request, res: Response, next: NextFunction) => {
   if (vl.default.isNumeric(id)) {
     next();
   } else {
-    return res.status(400).send({ message: "id error" });
+    return res.status(400).json({ message: "id error" });
   }
 };
 
 const isBodyUserId = (req: Request, res: Response, next: NextFunction) => {
   const id = req.body.user_id;
 
-  if (vl.default.isNumeric(id)) {
+  if (id != null && vl.default.isNumeric(String(id))) {
     next();
   } else {
-    return res.status(400).send({ message: "id error" });
+    return res.status(400).json({ message: "id error" });
   }
 };
 
@@ -38,7 +45,7 @@ const name = (req: Request, res: Response, next: NextFunction) => {
   ) {
     next();
   } else {
-    return res.status(400).send({ message: "name error" });
+    return res.status(400).json({ message: "name error" });
   }
 };
 
@@ -51,7 +58,7 @@ const username = (req: Request, res: Response, next: NextFunction) => {
     !validate.len(username, 5, 15) ||
     !validate.isUsername(username)
   ) {
-    return res.status(400).send({ message: "username error" });
+    return res.status(400).json({ message: "username error" });
   }
 
   next();
@@ -61,20 +68,21 @@ const username = (req: Request, res: Response, next: NextFunction) => {
 const usernameAvailability = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const username = req.body.username;
 
   // check to see that the username is not taken
   try {
     const result = await DB.find(
-      `SELECT username FROM users WHERE username='${username}'`
+      `SELECT username FROM users WHERE username = $1`,
+      [username],
     );
 
     if (!result) {
       next();
     } else {
-      return res.status(422).send({ message: "username is in use" });
+      return res.status(422).json({ message: "username is in use" });
     }
   } catch (e) {
     handleServerError(e, res);
@@ -86,7 +94,7 @@ const email = async (req: Request, res: Response, next: NextFunction) => {
   const email = req.body.email;
 
   if (validate.isEmpty(email) || !vl.default.isEmail(email))
-    return res.status(400).send({ message: "email error" });
+    return res.status(400).json({ message: "email error" });
 
   next();
 };
@@ -95,22 +103,29 @@ const email = async (req: Request, res: Response, next: NextFunction) => {
 const emailAvailability = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
-    const result = await DB.find(
-      `SELECT email FROM users WHERE email = $1`,
-      [req.body.email]
-    );
+    const result = await DB.find(`SELECT email FROM users WHERE email = $1`, [
+      req.body.email,
+    ]);
 
     if (!result) {
       next();
     } else {
-      return res.status(422).send({ message: "email is in use" });
+      return res.status(422).json({ message: "email is in use" });
     }
   } catch (e) {
     handleServerError(e, res);
   }
+};
+
+// Validate login credentials are present in the body
+const loginCredentials = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.body?.email || !req.body?.password) {
+    return res.status(400).json({ message: "email and password are required" });
+  }
+  next();
 };
 
 // Validate the password user has provided
@@ -125,22 +140,33 @@ const password = (req: Request, res: Response, next: NextFunction) => {
   ) {
     next();
   } else {
-    return res.status(400).send({ message: "password error" });
+    return res.status(400).json({ message: "password error" });
   }
 };
 
 // Validate the email that we've sent to the user's email address for signing up
-const userEmailVerificationCode = (
+const userEmailVerificationCode = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const userEmailVerificationCode = req.body.userEmailVerificationCode;
+  const email = req.body.email;
 
-  if (userEmailVerificationCode === req.session.userEmailVerificationCode) {
+  try {
+    const row = await DB.find<{ code: number }>(
+      "SELECT code FROM email_codes WHERE email = $1 AND expires_at > NOW()",
+      [email],
+    );
+
+    if (!row || row.code !== Number(userEmailVerificationCode)) {
+      return res.status(400).json({ message: "invalid code" });
+    }
+
+    await DB.delete("email_codes", "email = $1", [email]);
     next();
-  } else {
-    res.status(400).send({ message: "invalid code" });
+  } catch (e) {
+    handleServerError(e, res);
   }
 };
 
@@ -148,27 +174,27 @@ const userEmailVerificationCode = (
 const passwordResetToken = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const token = req.body.token;
   const userId = req.body.user_id;
 
   const user = await DB.find<IUser>(
     "SELECT token_code, token_date FROM users WHERE id = $1",
-    [userId]
+    [userId],
   );
 
-  if (!user) return res.status(400).send({ message: "invalid link" });
+  if (!user) return res.status(400).json({ message: "invalid link" });
 
   const tokenDate = new Date(user.token_date);
 
   if (Date.now() - tokenDate.getTime() > 600000) {
-    return res.status(400).send({ message: "link expired" });
+    return res.status(400).json({ message: "link expired" });
   } else if (token === user.token_code) {
     return next();
   }
 
-  return res.status(400).send({ message: "invalid link" });
+  return res.status(400).json({ message: "invalid link" });
 };
 
 // --- Validators for page creation --- //
@@ -183,7 +209,7 @@ const isStage = (req: Request, res: Response, next: NextFunction) => {
   ) {
     next();
   } else {
-    return res.status(400).send({ message: "stage error" });
+    return res.status(400).json({ message: "stage error" });
   }
 };
 
@@ -198,7 +224,7 @@ const pageType = (req: Request, res: Response, next: NextFunction) => {
       throw new Error("");
     }
   } catch (e) {
-    return res.status(400).send({ message: "page type error" });
+    return res.status(400).json({ message: "page type error" });
   }
 };
 
@@ -226,7 +252,7 @@ const pageContents = (req: Request, res: Response, next: NextFunction) => {
       throw new Error("");
     }
   } catch (e) {
-    return res.status(400).send({ message: "page contents error" });
+    return res.status(400).json({ message: "page contents error" });
   }
 };
 
@@ -235,7 +261,7 @@ const pageContents = (req: Request, res: Response, next: NextFunction) => {
 const pageConfigurations = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     if (req.params.stage !== "final-step") return next();
@@ -261,7 +287,7 @@ const pageConfigurations = (
       throw new Error("");
     }
   } catch (e) {
-    return res.status(400).send({ message: "page configurations error" });
+    return res.status(400).json({ message: "page configurations error" });
   }
 };
 
@@ -279,7 +305,7 @@ const publicPageTags = (req: Request, res: Response, next: NextFunction) => {
       throw new Error("");
     }
   } catch (e) {
-    return res.status(400).send({ message: "page tags error" });
+    return res.status(400).json({ message: "page tags error" });
   }
 };
 
@@ -288,7 +314,7 @@ const publicPageTags = (req: Request, res: Response, next: NextFunction) => {
 const privatePageUrl = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     if (req.params.stage !== "final-step") return next();
@@ -298,7 +324,7 @@ const privatePageUrl = async (
 
     const usedUrls = await DB.findMany<string>(
       `SELECT url from pages WHERE user_id = $1 AND status_id = $2 AND type_id = $3`,
-      [userId, PAGE_STATUS.publishedId, PAGE_TYPE.privateId]
+      [userId, PAGE_STATUS.publishedId, PAGE_TYPE.privateId],
     );
 
     if (!validate.page("private").url(url, usedUrls)) {
@@ -307,7 +333,7 @@ const privatePageUrl = async (
       throw new Error("");
     }
   } catch (e) {
-    return res.status(400).send({ message: "page url error" });
+    return res.status(400).json({ message: "page url error" });
   }
 };
 
@@ -318,6 +344,7 @@ const validator = {
   email,
   emailAvailability,
   password,
+  loginCredentials,
   username,
   usernameAvailability,
   userEmailVerificationCode,

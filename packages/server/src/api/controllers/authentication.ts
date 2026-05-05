@@ -1,15 +1,21 @@
-import { Request, Response } from "express";
+// import { Request, Response } from "express";
+
+import type {
+  Cpeak,
+  CpeakRequest as Request,
+  CpeakResponse as Response,
+  Next as NextFunction,
+} from "cpeak";
 import crypto from "crypto";
-import bcrypt from "bcrypt";
 import sendEmail from "../services/email.js";
-import { tokenForUser, handleServerError } from "../../lib/util.js";
+import { handleServerError } from "../../lib/util.js";
 import { DB } from "../../database/index.js";
 import { IUser } from "../../database/types.js";
 import keys from "../../config/keys.js";
 
 // Sends a message to client to indicate that the username is available
 const usernameAvailability = (req: Request, res: Response) => {
-  res.status(200).send({ message: "ok" });
+  res.status(200).json({ message: "ok" });
 };
 
 // Send a code to the user email address to verify that user owns the email
@@ -25,11 +31,15 @@ const sendCode = async (req: Request, res: Response) => {
   </div>
   `;
 
-  req.session.userEmailVerificationCode = code;
-
   try {
+    await DB.delete("email_codes", "email = $1", [email]);
+    await DB.insert("email_codes", {
+      email,
+      code,
+      expires_at: new Date(Date.now() + 10 * 60 * 1000),
+    });
     await sendEmail(email, "Verify your email address", html);
-    res.status(200).send({ message: "code sent" });
+    res.status(200).json({ message: "code sent" });
   } catch (e) {
     handleServerError(e, res);
   }
@@ -44,7 +54,7 @@ const register = async (req: Request, res: Response) => {
 
   try {
     // hash the user password, the second argument is 'salt round'
-    const hash = await bcrypt.hash(password, 10);
+    const hash = await req.hashPassword({ password });
 
     // insert the user in the database and use 'hash' as for the user's password
     const user = await DB.insert<IUser>("users", {
@@ -55,7 +65,9 @@ const register = async (req: Request, res: Response) => {
       verified: true,
     });
 
-    res.status(201).send({ token: tokenForUser(user.id) });
+    // issue a token for the newly registered user
+    const token = await req.login({ password, hashedPassword: hash, userId: String(user.id) });
+    res.status(201).json({ token });
   } catch (e) {
     handleServerError(e, res);
   }
@@ -63,8 +75,7 @@ const register = async (req: Request, res: Response) => {
 
 // Logs a user in and gives them a token
 const login = async (req: Request, res: Response) => {
-  // after validating their email and password (in the middleware), give the a token
-  if (req.user && req.user.id) res.send({ token: tokenForUser(req.user.id) });
+  if (req.user && req._token) res.json({ token: req._token });
 };
 
 // Sends an email to user's email address for them to use to reset their password
@@ -73,10 +84,10 @@ const forgotPassword = async (req: Request, res: Response) => {
 
   try {
     const user = await DB.find<any>(
-      `SELECT id FROM users WHERE email = '${email}'`
+      `SELECT id FROM users WHERE email = '${email}'`,
     );
 
-    if (!user) return res.status(404).send({ message: "no email found" });
+    if (!user) return res.status(404).json({ message: "no email found" });
 
     const code = crypto.randomBytes(18).toString("hex");
     const link = `${keys.domain}/forgot-password?t=${code}&i=${user.id}`;
@@ -94,11 +105,11 @@ const forgotPassword = async (req: Request, res: Response) => {
     await DB.update(
       "users",
       { token_code: code, token_date: new Date() },
-      `email = '${email}'`
+      `email = '${email}'`,
     );
 
     await sendEmail(email, "Reset your password", html);
-    res.status(200).send({ message: "code was sent" });
+    res.status(200).json({ message: "code was sent" });
   } catch (e) {
     handleServerError(e, res);
   }
@@ -113,18 +124,18 @@ const resetPassword = async (req: Request, res: Response) => {
     // find the user
     const user = await DB.find(
       "SELECT token_code, token_date FROM users WHERE id = $1",
-      [userId]
+      [userId],
     );
 
-    if (!user) return res.status(400).send({ message: "invalid link" });
+    if (!user) return res.status(400).json({ message: "invalid link" });
 
     // hash the user password, the second argument is 'salt round'
-    const hash = await bcrypt.hash(password, 10);
+    const hash = await req.hashPassword({ password });
 
-    // update user password password
+    // update user password
     await DB.update("users", { password: hash }, `id = $2`, [userId]);
 
-    res.status(200).send({ message: "password updated" });
+    res.status(200).json({ message: "password updated" });
   } catch (e) {
     handleServerError(e, res);
   }
@@ -135,12 +146,12 @@ const getAuth = async (req: Request, res: Response) => {
   if (req.user.id) {
     const user = await DB.find<IUser>(
       "SELECT id, photo_url FROM users WHERE id = $1",
-      [req.user.id]
+      [req.user.id],
     );
 
-    res.status(200).send({ user: { id: user.id, photo: user.photo_url } });
+    res.status(200).json({ user: { id: user.id, photo: user.photo_url } });
   } else {
-    res.status(400).send();
+    res.status(400).json({});
   }
 };
 

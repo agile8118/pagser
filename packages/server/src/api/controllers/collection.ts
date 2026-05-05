@@ -1,4 +1,11 @@
-import { Request, Response, NextFunction } from "express";
+// import { Request, Response, NextFunction } from "express";
+
+import type {
+  Cpeak,
+  CpeakRequest as Request,
+  CpeakResponse as Response,
+  Next as NextFunction,
+} from "cpeak";
 import sharp from "sharp";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
@@ -10,7 +17,11 @@ const s3Client = new S3Client({ region: AWS_REGION });
 
 function isAllowedImageType(chunk: Uint8Array): boolean {
   const isJpeg = chunk[0] === 0xff && chunk[1] === 0xd8 && chunk[2] === 0xff;
-  const isPng = chunk[0] === 0x89 && chunk[1] === 0x50 && chunk[2] === 0x4e && chunk[3] === 0x47;
+  const isPng =
+    chunk[0] === 0x89 &&
+    chunk[1] === 0x50 &&
+    chunk[2] === 0x4e &&
+    chunk[3] === 0x47;
   return isJpeg || isPng;
 }
 
@@ -24,12 +35,18 @@ function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
       size += chunk.length;
       if (size > maxBytes) {
         req.destroy();
-        return reject({ customError: `Maximum file size is: ${maxBytes / (1024 * 1024)}MB`, status: 400 });
+        return reject({
+          customError: `Maximum file size is: ${maxBytes / (1024 * 1024)}MB`,
+          status: 400,
+        });
       }
       if (!checkedMagic) {
         if (!isAllowedImageType(chunk)) {
           req.destroy();
-          return reject({ customError: "Only JPEG and PNG files are allowed.", status: 400 });
+          return reject({
+            customError: "Only JPEG and PNG files are allowed.",
+            status: 400,
+          });
         }
         checkedMagic = true;
       }
@@ -47,7 +64,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
     const { name, description } = req.body;
 
     if (!name || name.trim().length === 0) {
-      return res.status(400).send({ message: "Collection name is required" });
+      return res.status(400).json({ message: "Collection name is required" });
     }
 
     const collection = await DB.insert<ICollection>(`collections`, {
@@ -56,7 +73,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
       user_id: parseInt(userId),
     });
 
-    res.status(201).send({
+    res.status(201).json({
       message: "Collection created successfully",
       collection,
     });
@@ -80,16 +97,16 @@ const fetchOne = async (req: Request, res: Response, next: NextFunction) => {
       JOIN users u ON c.user_id = u.id
       WHERE c.id = $1
       `,
-      [collectionId]
+      [collectionId],
     );
 
     if (!collection) {
-      return res.status(404).send({ message: "Collection not found" });
+      return res.status(404).json({ message: "Collection not found" });
     }
 
     // Check if shared or user is owner
     if (!collection.shared && collection.user_id !== parseInt(userId || "0")) {
-      return res.status(403).send({ message: "Collection is private" });
+      return res.status(403).json({ message: "Collection is private" });
     }
 
     // Fetch pages in collection
@@ -115,7 +132,7 @@ const fetchOne = async (req: Request, res: Response, next: NextFunction) => {
       WHERE cp.collection_id = $1
       ORDER BY cp.order_index ASC
       `,
-      [collectionId]
+      [collectionId],
     );
 
     const formattedPages = pages.map((p: any) => ({
@@ -148,12 +165,12 @@ const fetchOne = async (req: Request, res: Response, next: NextFunction) => {
     } else if (userId) {
       const saved = await DB.find<any>(
         `SELECT id FROM user_saved_collections WHERE user_id = $1 AND collection_id = $2`,
-        [userId, collectionId]
+        [userId, collectionId],
       );
       btn = saved ? "remove" : "save";
     }
 
-    res.send({
+    res.json({
       collection: {
         id: String(collection.id),
         name: collection.name,
@@ -177,7 +194,7 @@ const fetchOne = async (req: Request, res: Response, next: NextFunction) => {
 const addRemovePage = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
@@ -187,17 +204,17 @@ const addRemovePage = async (
     // Check collection ownership
     const collection = await DB.find<ICollection>(
       `SELECT user_id FROM collections WHERE id = $1`,
-      [collectionId]
+      [collectionId],
     );
 
     if (!collection || collection.user_id !== parseInt(userId)) {
-      return res.status(403).send({ message: "Unauthorized" });
+      return res.status(403).json({ message: "Unauthorized" });
     }
 
     // Check if page is in collection
     const existing = await DB.find<any>(
       `SELECT id FROM collection_pages WHERE collection_id = $1 AND page_id = $2`,
-      [collectionId, pageId]
+      [collectionId, pageId],
     );
 
     if (existing) {
@@ -205,14 +222,14 @@ const addRemovePage = async (
       await DB.delete(
         `collection_pages`,
         `collection_id = $1 AND page_id = $2`,
-        [collectionId, pageId]
+        [collectionId, pageId],
       );
-      res.send({ message: "success", selected: false, clName: "fa-bookmark" });
+      res.json({ message: "success", selected: false, clName: "fa-bookmark" });
     } else {
       // Add with max order index
       const maxOrder = await DB.find<{ max_index: number | null }>(
         `SELECT MAX(order_index) as max_index FROM collection_pages WHERE collection_id = $1`,
-        [collectionId]
+        [collectionId],
       );
 
       const nextOrder = (maxOrder?.max_index || 0) + 1;
@@ -223,7 +240,7 @@ const addRemovePage = async (
         order_index: nextOrder,
       });
 
-      res.send({
+      res.json({
         message: "success",
         selected: true,
         clName: "fa-bookmark-fill",
@@ -238,7 +255,7 @@ const addRemovePage = async (
 const toggleLibrary = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
@@ -246,22 +263,22 @@ const toggleLibrary = async (
 
     const existing = await DB.find<any>(
       `SELECT id FROM user_saved_collections WHERE user_id = $1 AND collection_id = $2`,
-      [userId, collectionId]
+      [userId, collectionId],
     );
 
     if (existing) {
       await DB.delete(
         `user_saved_collections`,
         `user_id = $1 AND collection_id = $2`,
-        [userId, collectionId]
+        [userId, collectionId],
       );
-      res.send({ message: "success", status: "removed" });
+      res.json({ message: "success", status: "removed" });
     } else {
       await DB.insert(`user_saved_collections`, {
         user_id: parseInt(userId),
         collection_id: parseInt(collectionId),
       });
-      res.send({ message: "success", status: "added" });
+      res.json({ message: "success", status: "added" });
     }
   } catch (e) {
     next(e);
@@ -277,34 +294,27 @@ const sharing = async (req: Request, res: Response, next: NextFunction) => {
     // Check ownership
     const collection = await DB.find<ICollection>(
       `SELECT user_id, shared FROM collections WHERE id = $1`,
-      [collectionId]
+      [collectionId],
     );
 
     if (!collection || collection.user_id !== parseInt(userId)) {
-      return res.status(403).send({ message: "Unauthorized" });
+      return res.status(403).json({ message: "Unauthorized" });
     }
 
     const newShared = !collection.shared;
 
-    await DB.update(
-      `collections`,
-      { shared: newShared },
-      `id = $2`,
-      [collectionId]
-    );
+    await DB.update(`collections`, { shared: newShared }, `id = $2`, [
+      collectionId,
+    ]);
 
-    res.send({ message: "success", sharing: newShared });
+    res.json({ message: "success", sharing: newShared });
   } catch (e) {
     next(e);
   }
 };
 
 // Update collection info
-const updateInfo = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const updateInfo = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user.id;
     const collectionId = req.params.id;
@@ -313,49 +323,42 @@ const updateInfo = async (
     // Check ownership
     const collection = await DB.find<ICollection>(
       `SELECT user_id FROM collections WHERE id = $1`,
-      [collectionId]
+      [collectionId],
     );
 
     if (!collection || collection.user_id !== parseInt(userId)) {
-      return res.status(403).send({ message: "Unauthorized" });
+      return res.status(403).json({ message: "Unauthorized" });
     }
 
-    await DB.update(
-      `collections`,
-      { name, description },
-      `id = $3`,
-      [collectionId]
-    );
+    await DB.update(`collections`, { name, description }, `id = $3`, [
+      collectionId,
+    ]);
 
-    res.send({ message: "updated" });
+    res.json({ message: "updated" });
   } catch (e) {
     next(e);
   }
 };
 
 // Remove pages from collection
-const removePages = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const removePages = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user.id;
     const collectionId = req.params.id;
     const { pageIds } = req.body;
 
     if (!pageIds || !Array.isArray(pageIds) || pageIds.length === 0) {
-      return res.status(400).send({ message: "Invalid pageIds" });
+      return res.status(400).json({ message: "Invalid pageIds" });
     }
 
     // Check ownership
     const collection = await DB.find<ICollection>(
       `SELECT user_id FROM collections WHERE id = $1`,
-      [collectionId]
+      [collectionId],
     );
 
     if (!collection || collection.user_id !== parseInt(userId)) {
-      return res.status(403).send({ message: "Unauthorized" });
+      return res.status(403).json({ message: "Unauthorized" });
     }
 
     const placeholders = pageIds.map((_, i) => `$${i + 1}`).join(",");
@@ -366,7 +369,7 @@ const removePages = async (
 
     await DB.query(query, [...pageIds, collectionId]);
 
-    res.send({ message: "success" });
+    res.json({ message: "success" });
   } catch (e) {
     next(e);
   }
@@ -376,7 +379,7 @@ const removePages = async (
 const deleteCollection = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
@@ -385,16 +388,16 @@ const deleteCollection = async (
     // Check ownership
     const collection = await DB.find<ICollection>(
       `SELECT user_id FROM collections WHERE id = $1`,
-      [collectionId]
+      [collectionId],
     );
 
     if (!collection || collection.user_id !== parseInt(userId)) {
-      return res.status(403).send({ message: "Unauthorized" });
+      return res.status(403).json({ message: "Unauthorized" });
     }
 
     await DB.delete(`collections`, `id = $1`, [collectionId]);
 
-    res.send({ message: "success" });
+    res.json({ message: "success" });
   } catch (e) {
     next(e);
   }
@@ -404,7 +407,7 @@ const deleteCollection = async (
 const fetchCreated = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
@@ -427,7 +430,7 @@ const fetchCreated = async (
 
     const collections = await DB.findMany<any>(query, [userId]);
 
-    res.send({
+    res.json({
       createdCollections: collections,
       sortBy,
     });
@@ -440,7 +443,7 @@ const fetchCreated = async (
 const fetchCreatedAndSaved = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
@@ -455,7 +458,7 @@ const fetchCreatedAndSaved = async (
       GROUP BY c.id
       ORDER BY c.created_at DESC
       `,
-      [userId]
+      [userId],
     );
 
     const savedCollections = await DB.findMany<any>(
@@ -476,10 +479,10 @@ const fetchCreatedAndSaved = async (
       GROUP BY c.id, u.name, u.username, usc.created_at
       ORDER BY usc.created_at DESC
       `,
-      [userId]
+      [userId],
     );
 
-    res.send({
+    res.json({
       createdCollections,
       savedCollections: savedCollections.map((col: any) => ({
         id: col.id,
@@ -499,11 +502,7 @@ const fetchCreatedAndSaved = async (
 };
 
 // Fetch saved (shared) collections
-const fetchSaved = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const fetchSaved = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user.id;
 
@@ -525,10 +524,10 @@ const fetchSaved = async (
       GROUP BY c.id, u.name, u.username, usc.created_at
       ORDER BY usc.created_at DESC
       `,
-      [userId]
+      [userId],
     );
 
-    res.send({
+    res.json({
       savedCollections: collections.map((col: any) => ({
         id: col.id,
         name: col.name,
@@ -547,11 +546,7 @@ const fetchSaved = async (
 };
 
 // Fetch shared collections for a public user
-const fetchShared = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const fetchShared = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const username = req.params.username;
 
@@ -569,7 +564,7 @@ const fetchShared = async (
       WHERE u.username = $1 AND c.shared = true
       ORDER BY c.created_at DESC
       `,
-      [username]
+      [username],
     );
 
     const formattedCollections = (collections || []).map((col: any) => ({
@@ -581,7 +576,7 @@ const fetchShared = async (
       user: { username: col.username },
     }));
 
-    res.send({ collections: formattedCollections });
+    res.json({ collections: formattedCollections });
   } catch (e) {
     next(e);
   }
@@ -591,7 +586,7 @@ const fetchShared = async (
 const fetchCreatedFAP = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user.id;
@@ -608,10 +603,10 @@ const fetchCreatedFAP = async (
       WHERE c.user_id = $2
       ORDER BY c.created_at DESC
       `,
-      [pageId, userId]
+      [pageId, userId],
     );
 
-    res.send({
+    res.json({
       collections: collections.map((col: any) => ({
         id: col.id,
         name: col.name,
@@ -632,11 +627,11 @@ const uploadPhoto = async (req: Request, res: Response, next: NextFunction) => {
 
     const collection = await DB.find<ICollection>(
       `SELECT user_id, photo_key FROM collections WHERE id = $1`,
-      [collectionId]
+      [collectionId],
     );
 
     if (!collection || collection.user_id !== parseInt(userId)) {
-      return res.status(403).send({ message: "Unauthorized" });
+      return res.status(403).json({ message: "Unauthorized" });
     }
 
     const prevKey = collection.photo_key;
@@ -657,7 +652,12 @@ const uploadPhoto = async (req: Request, res: Response, next: NextFunction) => {
     const key = `images/collections/${crypto.randomUUID()}.jpg`;
     const upload = new Upload({
       client: s3Client,
-      params: { Bucket: S3_BUCKET, Key: key, Body: processed, ContentType: "image/jpeg" },
+      params: {
+        Bucket: S3_BUCKET,
+        Key: key,
+        Body: processed,
+        ContentType: "image/jpeg",
+      },
     });
     await upload.done();
     const url = `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
@@ -666,14 +666,16 @@ const uploadPhoto = async (req: Request, res: Response, next: NextFunction) => {
       "collections",
       { photo_url: url, photo_key: key },
       "id = $3",
-      [collectionId]
+      [collectionId],
     );
 
     if (prevKey) {
-      await s3Client.send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: prevKey })).catch(() => {});
+      await s3Client
+        .send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: prevKey }))
+        .catch(() => {});
     }
 
-    res.send({ message: "image-uploaded", image: url });
+    res.json({ message: "image-uploaded", image: url });
   } catch (e: any) {
     if (e.customError) return next(e);
     next(e);

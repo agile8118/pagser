@@ -19,6 +19,8 @@ CLAUDE.md
 build/
 /dist
 dist/
-bundle.js
-bundle.js.map
-dashboard.bundle.js
+packages/server/public/scripts/
+
+# test coverage
+coverage/
+.nyc_output/

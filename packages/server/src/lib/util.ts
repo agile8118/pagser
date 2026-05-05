@@ -1,19 +1,18 @@
-import { Response } from "express";
-import jwt from "jwt-simple";
+// import { Response } from "express";
+
+import type {
+  Cpeak,
+  CpeakRequest as Request,
+  CpeakResponse as Response,
+  Next as NextFunction,
+} from "cpeak";
 import sanitizeHtml from "sanitize-html";
 import log from "./log.js";
-import keys from "../config/keys.js";
 
 // Handle unexpected errors (500 errors)
 export const handleServerError = (error: any, res: Response) => {
   log(error, "error");
-  return res.status(500).send({ message: "Internal server error." });
-};
-
-// Returns a token for a user based off of the userId
-export const tokenForUser = (userId: string) => {
-  const timestamp = new Date().getTime();
-  return jwt.encode({ sub: userId, iat: timestamp }, keys.jwtSecret);
+  return res.status(500).json({ message: "Internal server error." });
 };
 
 export const timeSince = (date: string | Date): string => {

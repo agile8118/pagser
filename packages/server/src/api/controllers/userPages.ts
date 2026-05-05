@@ -1,4 +1,11 @@
-import { Request, Response, NextFunction } from "express";
+// import { Request, Response, NextFunction } from "express";
+
+import type {
+  Cpeak,
+  CpeakRequest as Request,
+  CpeakResponse as Response,
+  Next as NextFunction,
+} from "cpeak";
 import { DB } from "../../database/index.js";
 import { IPage, PAGE_STATUS, PAGE_TYPE } from "../../database/types.js";
 import { timeSince } from "../../lib/util.js";
@@ -11,8 +18,6 @@ const fetchPublishedPages = async (
 ) => {
   try {
     const userId = req.user.id;
-
-    console.log(userId);
     const filterBy = (req.query.filterBy || "all") as string;
 
     let query = `
@@ -64,7 +69,7 @@ const fetchPublishedPages = async (
       },
     }));
 
-    res.send({
+    res.json({
       results: formattedPages,
       filterBy,
     });
@@ -101,7 +106,7 @@ const fetchDraftPages = async (
       updatedAt: timeSince(page.updated_at),
     }));
 
-    res.send({
+    res.json({
       results: formattedPages,
     });
   } catch (e) {
@@ -120,7 +125,7 @@ const deleteDraftPages = async (
     const { ids } = req.body;
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).send({ message: "Invalid ids array" });
+      return res.status(400).json({ message: "Invalid ids array" });
     }
 
     // Build a parameterized query for safe deletion
@@ -132,7 +137,7 @@ const deleteDraftPages = async (
 
     await DB.query(query, [...ids, userId, PAGE_STATUS.draftId]);
 
-    res.send({ message: "success" });
+    res.json({ message: "success" });
   } catch (e) {
     next(e);
   }
@@ -149,7 +154,7 @@ const deletePublishedPages = async (
     const { ids } = req.body;
 
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).send({ message: "Invalid ids array" });
+      return res.status(400).json({ message: "Invalid ids array" });
     }
 
     const placeholders = ids.map((_, i) => `$${i + 1}`).join(",");
@@ -160,7 +165,7 @@ const deletePublishedPages = async (
 
     await DB.query(query, [...ids, userId, PAGE_STATUS.publishedId]);
 
-    res.send({ message: "success" });
+    res.json({ message: "success" });
   } catch (e) {
     next(e);
   }
