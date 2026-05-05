@@ -59,12 +59,12 @@ const CollectionModal = (props: IProps) => {
     )) as any;
 
     // Add the page in the newly created collection
-    togglePageInCL(response.collection.id);
+    togglePageInCL(response.collection.id, name);
   };
 
   // Send the request to server to either remove the page from selected collection
   // or add it to that collection
-  const togglePageInCL = async (clId: string) => {
+  const togglePageInCL = async (clId: string, clName: string) => {
     setStatus("loading");
     const response = (await request.post(
       `/collection/add-remove/${clId}/${props.pageId}`,
@@ -76,15 +76,9 @@ const CollectionModal = (props: IProps) => {
 
     // Show a right message to user based on server response
     if (response.selected)
-      alert(
-        `Page successfully added to ${response.clName} collection.`,
-        "success"
-      );
+      alert(`Page successfully added to "${clName}" collection.`, "success");
     else
-      alert(
-        `Page successfully removed from ${response.clName} collection.`,
-        "success"
-      );
+      alert(`Page successfully removed from "${clName}" collection.`, "success");
 
     // Fetch collections again
     fetchCollections();
@@ -178,7 +172,7 @@ const CollectionModal = (props: IProps) => {
               className={`selectable-item ${
                 cl.selected ? "selectable-item--selected" : ""
               }`}
-              onClick={() => togglePageInCL(cl.id)}
+              onClick={() => togglePageInCL(cl.id, cl.name)}
               key={cl.id}
             >
               {cl.name} <span />
