@@ -32,16 +32,14 @@ const UploadPhoto = (props: IProps) => {
   const onUploadClick = async () => {
     setStatus("loading");
 
-    // Prepare the form data to be sent to server
-    let formData = new FormData();
     // @ts-ignore
-    const file = document.querySelector("#file-input").files[0];
-    formData.append("file", file);
+    const file: File = document.querySelector("#file-input").files[0];
+    const qs = `?filename=${encodeURIComponent(file.name)}`;
 
     try {
-      await request.post(props.url, formData, {
+      await request.post(props.url + qs, file, {
         auth: true,
-        contentType: "multipart/form-data",
+        contentType: "application/octet-stream",
       });
 
       props.onClose();

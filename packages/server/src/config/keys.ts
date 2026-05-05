@@ -1,6 +1,9 @@
 import prod from "./prod.js";
 import dev from "./dev.js";
 
+export const AWS_REGION = process.env.AWS_REGION || "us-east-2";
+export const S3_BUCKET = process.env.S3_BUCKET || "pagser-238476";
+
 interface IObject {
   [key: string]: string;
 }

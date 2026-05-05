@@ -1,394 +1,212 @@
 /**
- * This file includes all the routes that deal with file uploading.
- *
- * All routes use Busboy to upload the files USING STREAMS. We do not save any files
- * whatsoever to the server hard disk.
+ * All file upload routes. Images are buffered, processed with sharp, and streamed to S3.
+ * Attach files are streamed directly to S3 without buffering.
+ * No multipart parsing — clients send raw binary bodies.
  */
 
 import { Request, Response, NextFunction } from "express";
-import { v2 as cloudinary } from "cloudinary";
-import fs from "node:fs/promises";
-import path from "node:path";
-import { pipeline, PassThrough, Transform } from "node:stream";
+import sharp from "sharp";
+import { Transform, PassThrough } from "node:stream";
 import {
   S3Client,
+  DeleteObjectCommand,
   CreateBucketCommand,
   HeadBucketCommand,
 } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
-import busboy from "busboy";
-import { fileTypeFromBuffer, fileTypeFromStream } from "file-type";
 import crypto from "crypto";
-import sendEmail from "../services/mailgun.js";
-import { tokenForUser, handleServerError, cleanHTML } from "../../lib/util.js";
 import { DB } from "../../database/index.js";
-import {
-  IPage,
-  IPageType,
-  IPageStatus,
-  PAGE_STATUS,
-  PAGE_TYPE,
-  IAttachFile,
-  ITag,
-} from "../../database/types.js";
-import keys from "../../config/keys.js";
+import { IPage, IAttachFile } from "../../database/types.js";
+import { AWS_REGION, S3_BUCKET } from "../../config/keys.js";
 
-// Configurations for AWS S3
-const BUCKET_NAME = "pagser";
-const IAM_USER_KEY = keys.AWSAccessKey;
-const IAM_USER_SECRET = keys.AWSSecretAccessKey;
 
-const s3Client = new S3Client({
-  credentials: {
-    accessKeyId: IAM_USER_KEY,
-    secretAccessKey: IAM_USER_SECRET,
-  },
-});
+const s3Client = new S3Client({ region: AWS_REGION });
 
-// Configure cloudinary
-cloudinary.config({
-  cloud_name: "dxlsmrixd",
-  api_key: keys.cloudinary_api_key,
-  api_secret: keys.cloudinary_api_secret,
-});
+function isAllowedImageType(chunk: Uint8Array): boolean {
+  const isJpeg = chunk[0] === 0xff && chunk[1] === 0xd8 && chunk[2] === 0xff;
+  const isPng = chunk[0] === 0x89 && chunk[1] === 0x50 && chunk[2] === 0x4e && chunk[3] === 0x47;
+  return isJpeg || isPng;
+}
 
-// Upload a page thumbnail for a page, either published or draft
-const uploadPagePhoto = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const pageId = req.params.id;
-  const MAX_FILE_SIZE = 8 * 1024 * 1024; // file size in bytes
-  const ALLOWED_FILE_TYPES = ["image/png", "image/jpeg", "image/jpg"];
+// Buffers req body, validates size and magic bytes, returns raw image buffer
+function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const chunks: Uint8Array[] = [];
+    let size = 0;
+    let checkedMagic = false;
 
-  const bb = busboy({
-    headers: req.headers,
-  });
-
-  let size = 0;
-  let hasCheckedFileType = false;
-  let cropData;
-  let cloudinaryRImgStream;
-  let cloudinaryCroppedImgStream;
-
-  // Grab the existing photo keys from database
-  const page = await DB.find<IPage>(
-    "SELECT photo_key, cropped_photo_key FROM pages WHERE id = $1",
-    [pageId]
-  );
-
-  const perv_photo_key = page.photo_key;
-  const perv_cropped_photo_key = page.cropped_photo_key;
-
-  // We're going to get this before the file event, because client is sending this first
-  bb.on("field", (name, val, info) => {
-    // Grab the crop data
-    if (name === "cropData") {
-      cropData = JSON.parse(val);
-
-      // Write stream for cloudinary, regular image (no cropping)
-      cloudinaryRImgStream = cloudinary.uploader.upload_stream(
-        {
-          timeout: 60000,
-          folder: "images/pages/",
-          transformation: [{ width: 1200, crop: "scale" }],
-        },
-        async (error, response) => {
-          if (error) return next(error);
-
-          // save the image that was just uploaded to the database
-          if (response) {
-            try {
-              // Update the database with the new photo key and url
-              await DB.update<IPage>(
-                "pages",
-                {
-                  photo_url: response.secure_url,
-                  photo_key: response.public_id,
-                },
-                "id = $3",
-                [pageId]
-              );
-
-              res.send({
-                message: "image-uploaded",
-                image: response.secure_url,
-              });
-            } catch (e) {
-              next(e);
-            }
-          }
+    req.on("data", (chunk: Uint8Array) => {
+      size += chunk.length;
+      if (size > maxBytes) {
+        req.destroy();
+        return reject({ customError: `Maximum file size is: ${maxBytes / (1024 * 1024)}MB`, status: 400 });
+      }
+      if (!checkedMagic) {
+        if (!isAllowedImageType(chunk)) {
+          req.destroy();
+          return reject({ customError: "Only JPEG and PNG files are allowed.", status: 400 });
         }
-      );
-
-      // Write stream for cloudinary, cropped image
-      cloudinaryCroppedImgStream = cloudinary.uploader.upload_stream(
-        {
-          timeout: 60000,
-          folder: "images/pages/",
-          transformation: [
-            {
-              width: Math.round(Number(cropData.width)),
-              height: Math.round(Number(cropData.height)),
-              x: Math.round(Number(cropData.x)),
-              y: Math.round(Number(cropData.y)),
-              crop: "crop",
-            },
-            { width: 400, height: 225, crop: "scale" },
-          ],
-        },
-        async (error, response) => {
-          if (error) return next(error);
-
-          // save the image that was just uploaded to the database
-          if (response) {
-            try {
-              await DB.update<IPage>(
-                "pages",
-                {
-                  cropped_photo_url: response.secure_url,
-                  cropped_photo_key: response.public_id,
-                },
-                "id = $3",
-                [pageId]
-              );
-            } catch (e) {
-              next(e);
-            }
-          }
-        }
-      );
-    }
-  });
-
-  // Receiving files
-  bb.on("file", (name, file, info) => {
-    const { mimeType } = info;
-
-    cloudinaryRImgStream.on("drain", () => {
-      file.resume();
+        checkedMagic = true;
+      }
+      chunks.push(chunk);
     });
-
-    cloudinaryCroppedImgStream.on("drain", () => {
-      file.resume();
-    });
-
-    file.on("data", async (data) => {
-      // Check file size
-      size += data.length;
-      if (size > MAX_FILE_SIZE) {
-        file.destroy();
-        cloudinaryRImgStream.destroy();
-        cloudinaryCroppedImgStream.destroy();
-
-        return bb.emit(
-          "error",
-          new Error(`Maximum file size is: ${MAX_FILE_SIZE / (1024 * 1024)}MB`)
-        );
-      }
-
-      // Checking file type, only for the first buffer
-      if (!hasCheckedFileType) {
-        const fileType = await fileTypeFromBuffer(data);
-
-        if (
-          (fileType && ALLOWED_FILE_TYPES.indexOf(fileType.mime) === -1) ||
-          ALLOWED_FILE_TYPES.indexOf(mimeType) === -1
-        ) {
-          file.destroy();
-          cloudinaryRImgStream.destroy();
-          cloudinaryCroppedImgStream.destroy();
-
-          return bb.emit(
-            "error",
-            new Error(
-              `Only these file types are allowed: ${ALLOWED_FILE_TYPES}`
-            )
-          );
-        }
-
-        hasCheckedFileType = true;
-      }
-
-      if (!cloudinaryRImgStream.write(data)) {
-        file.pause();
-      }
-
-      if (!cloudinaryCroppedImgStream.write(data)) {
-        file.pause();
-      }
-    });
-
-    file.on("close", async () => {
-      // Remove the previous photos from cloudinary
-      try {
-        perv_photo_key && (await cloudinary.uploader.destroy(perv_photo_key));
-        perv_cropped_photo_key &&
-          (await cloudinary.uploader.destroy(perv_cropped_photo_key));
-      } catch (e) {
-        next(e);
-      }
-
-      cloudinaryRImgStream.end();
-      cloudinaryCroppedImgStream.end();
-    });
+    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("error", reject);
   });
+}
 
-  // Handle all errors relating to file upload
-  bb.on("error", (err: Error) => {
-    req.unpipe(bb);
-    bb.removeAllListeners();
-    if (!cloudinaryRImgStream.destroyed) cloudinaryRImgStream.destroy();
-    if (!cloudinaryCroppedImgStream.destroyed)
-      cloudinaryCroppedImgStream.destroy();
-    return next({ customError: err.message, status: 400 });
+async function deleteFromS3(key: string) {
+  await s3Client.send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: key }));
+}
+
+async function uploadBufferToS3(key: string, body: Buffer, contentType = "image/jpeg") {
+  const upload = new Upload({
+    client: s3Client,
+    params: { Bucket: S3_BUCKET, Key: key, Body: body, ContentType: contentType },
   });
+  await upload.done();
+  return `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
+}
 
-  req.pipe(bb);
-};
+// Upload a page thumbnail — creates a full-size (1200px wide) and cropped (400x225) variant
+const uploadPagePhoto = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const pageId = req.params.id;
+    const MAX_FILE_SIZE = 8 * 1024 * 1024;
 
-// Upload an attach file for a page
-const uploadPageAttachFile = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const pageId = req.params.id;
-  const MAX_FILE_SIZE = 10 * 1024 * 1024; // file size in bytes
+    const x = Math.round(Number(req.query.x));
+    const y = Math.round(Number(req.query.y));
+    const width = Math.round(Number(req.query.width));
+    const height = Math.round(Number(req.query.height));
 
-  const bb = busboy({
-    headers: req.headers,
-  });
-
-  bb.on("file", async (name, file, info) => {
-    const { filename, mimeType } = info;
-
-    // Validate file name length
-    if (filename.length > 100) {
-      file.destroy();
-      return bb.emit(
-        "error",
-        new Error(`File name should be less that 100 characters.`)
-      );
-    }
-
-    // Grab the list of existing attach files for the page
-    const currentAttachFiles = await DB.findMany<IAttachFile>(
-      `SELECT * from attach_files WHERE page_id = $1`,
+    const page = await DB.find<IPage>(
+      "SELECT photo_key, cropped_photo_key FROM pages WHERE id = $1",
       [pageId]
     );
 
-    // Validate if there are less than 5 attach files for the page
+    const buffer = await readImageBody(req, MAX_FILE_SIZE);
+
+    const [originalBuf, croppedBuf] = await Promise.all([
+      sharp(buffer)
+        .resize(1200, null, { withoutEnlargement: true })
+        .jpeg({ quality: 85 })
+        .toBuffer(),
+      sharp(buffer)
+        .extract({ left: x, top: y, width, height })
+        .resize(400, 225)
+        .jpeg({ quality: 85 })
+        .toBuffer(),
+    ]);
+
+    const originalKey = `images/pages/${crypto.randomUUID()}.jpg`;
+    const croppedKey = `images/pages/${crypto.randomUUID()}.jpg`;
+
+    const [originalUrl, croppedUrl] = await Promise.all([
+      uploadBufferToS3(originalKey, originalBuf),
+      uploadBufferToS3(croppedKey, croppedBuf),
+    ]);
+
+    await DB.update<IPage>(
+      "pages",
+      {
+        photo_url: originalUrl,
+        photo_key: originalKey,
+        cropped_photo_url: croppedUrl,
+        cropped_photo_key: croppedKey,
+      },
+      "id = $5",
+      [pageId]
+    );
+
+    // Delete old photos from S3 after DB is updated
+    await Promise.all([
+      page?.photo_key ? deleteFromS3(page.photo_key).catch(() => {}) : Promise.resolve(),
+      page?.cropped_photo_key ? deleteFromS3(page.cropped_photo_key).catch(() => {}) : Promise.resolve(),
+    ]);
+
+    res.send({ message: "image-uploaded", image: originalUrl });
+  } catch (e: any) {
+    if (e.customError) return next(e);
+    next(e);
+  }
+};
+
+// Upload an attach file for a page — streamed directly to S3, no transformation
+const uploadPageAttachFile = async (req: Request, res: Response, next: NextFunction) => {
+  const pageId = req.params.id;
+  const MAX_FILE_SIZE = 10 * 1024 * 1024;
+  const filename = decodeURIComponent(String(req.query.filename || ""));
+
+  if (!filename || filename.length > 100) {
+    return next({ customError: "File name is missing or exceeds 100 characters.", status: 400 });
+  }
+
+  try {
+    const currentAttachFiles = await DB.findMany<IAttachFile>(
+      `SELECT * FROM attach_files WHERE page_id = $1`,
+      [pageId]
+    );
+
     if (currentAttachFiles.length >= 5) {
-      file.destroy();
-      return bb.emit(
-        "error",
-        new Error(`You can only upload up to 5 files for each page.`)
-      );
+      return next({ customError: "You can only upload up to 5 files for each page.", status: 400 });
     }
 
-    // Validate if the file name is not duplicated
-    const uploadedFileInDatabase = currentAttachFiles.filter((item) => {
-      return item.name === filename;
+    if (currentAttachFiles.some((f) => f.name === filename)) {
+      return next({ customError: "You have already uploaded a file with this name for the page.", status: 400 });
+    }
+  } catch (e) {
+    return next(e);
+  }
+
+  try {
+    await s3Client.send(new HeadBucketCommand({ Bucket: S3_BUCKET }));
+  } catch {
+    await s3Client.send(new CreateBucketCommand({ Bucket: S3_BUCKET }));
+  }
+
+  const key = `${pageId}/${filename}`;
+  const pass = new PassThrough();
+
+  const upload = new Upload({
+    client: s3Client,
+    params: { Bucket: S3_BUCKET, Key: key, Body: pass },
+  });
+
+  let bytesRead = 0;
+  let failed = false;
+
+  req.pipe(
+    new Transform({
+      transform(chunk, _enc, callback) {
+        bytesRead += chunk.length;
+        if (bytesRead > MAX_FILE_SIZE) {
+          failed = true;
+          pass.destroy();
+          return callback(new Error(`Maximum file size is: ${MAX_FILE_SIZE / (1024 * 1024)}MB`));
+        }
+        callback(null, chunk);
+      },
+    })
+  ).pipe(pass);
+
+  try {
+    await upload.done();
+    const url = `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
+
+    await DB.insert<IAttachFile>("attach_files", {
+      page_id: Number(pageId),
+      key,
+      url,
+      name: filename,
     });
-    if (uploadedFileInDatabase.length > 0) {
-      file.destroy();
-      return bb.emit(
-        "error",
-        new Error(
-          `You have already uploaded a file with this name for the page.`
-        )
-      );
+
+    res.send({ message: "file uploaded" });
+  } catch (e: any) {
+    if (failed) {
+      return next({ customError: `Maximum file size is: ${MAX_FILE_SIZE / (1024 * 1024)}MB`, status: 400 });
     }
-
-    function upload(client: S3Client) {
-      let pass = new PassThrough();
-
-      // Check if bucket exists, create if not
-      (async () => {
-        try {
-          try {
-            await client.send(new HeadBucketCommand({ Bucket: BUCKET_NAME }));
-          } catch (err) {
-            await client.send(
-              new CreateBucketCommand({ Bucket: BUCKET_NAME })
-            );
-          }
-
-          // Upload the file to S3
-          const key = `${pageId}/${filename}`;
-          const upload = new Upload({
-            client,
-            params: {
-              Bucket: BUCKET_NAME,
-              Key: key,
-              Body: pass,
-            },
-          });
-
-          const result = await upload.done();
-
-          // If upload was successful, update the database
-          await DB.insert<IAttachFile>("attach_files", {
-            page_id: Number(pageId),
-            key: result.Key,
-            url: result.Location,
-            name: filename,
-          });
-
-          res.send({ message: "file uploaded" });
-        } catch (err) {
-          if (err.message === "FILE_SIZE_EXCEEDED") {
-            return next({
-              customError: `Maximum file size is: ${
-                MAX_FILE_SIZE / (1024 * 1024)
-              }MB`,
-              status: 400,
-            });
-          } else {
-            return next(err);
-          }
-        }
-      })();
-
-      return pass;
-    }
-
-    if (!file.destroyed) {
-      let bytesRead = 0;
-      pipeline(
-        file,
-        // A transform stream that checks the file size
-        new Transform({
-          transform(chunk, encoding, callback) {
-            bytesRead += chunk.length;
-            if (bytesRead > MAX_FILE_SIZE) {
-              // return an error and close the pipeline
-              callback(new Error("FILE_SIZE_EXCEEDED"));
-            } else {
-              callback(null, chunk);
-            }
-          },
-        }),
-        upload(s3Client),
-        (err) => {
-          if (err) {
-            upload(s3Client).destroy();
-          }
-        }
-      );
-    }
-  });
-
-  // Handle all errors relating to file upload
-  bb.on("error", (err: Error) => {
-    req.unpipe(bb);
-    // bb.removeAllListeners();
-    return next({ customError: err.message, status: 400 });
-  });
-
-  req.pipe(bb);
+    next(e);
+  }
 };
 
 const uploader = {

@@ -55,24 +55,18 @@ const UploadPhoto = (props: IProps) => {
   const onUploadClick = async () => {
     setStatus("loading");
 
-    // Prepare the form data to be sent to server
-    let formData = new FormData();
-    formData.set(
-      "cropData",
-      `{ "x": "${cropData.x}", "y": "${cropData.y}", "width": "${cropData.width}", "height": "${cropData.height}" }`
-    );
     // @ts-ignore
-    formData.append("img", document.querySelector("#image-input").files[0]);
+    const file: File = document.querySelector("#image-input").files[0];
+    const qs = `?x=${Math.round(cropData.x)}&y=${Math.round(cropData.y)}&width=${Math.round(cropData.width)}&height=${Math.round(cropData.height)}`;
 
     try {
-      const response = (await request.put(props.url, formData, {
+      const response = (await request.put(props.url + qs, file, {
         auth: true,
-        contentType: "multipart/form-data",
+        contentType: "application/octet-stream",
       })) as any;
       // @ts-ignore
       document.querySelector("#reset-btn").click();
       props.onClose();
-      // Call the success function so that the parent component will get notified
       props.success(response.image);
       alert("Photo was uploaded successfully.", "success");
       setStatus("clean");

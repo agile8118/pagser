@@ -1,16 +1,44 @@
 import { Request, Response, NextFunction } from "express";
-import { v2 as cloudinary } from "cloudinary";
-import busboy from "busboy";
-import { fileTypeFromBuffer } from "file-type";
+import sharp from "sharp";
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { Upload } from "@aws-sdk/lib-storage";
+import crypto from "crypto";
 import { DB } from "../../database/index.js";
 import { ICollection } from "../../database/types.js";
-import keys from "../../config/keys.js";
+import { AWS_REGION, S3_BUCKET } from "../../config/keys.js";
+const s3Client = new S3Client({ region: AWS_REGION });
 
-cloudinary.config({
-  cloud_name: "dxlsmrixd",
-  api_key: keys.cloudinary_api_key,
-  api_secret: keys.cloudinary_api_secret,
-});
+function isAllowedImageType(chunk: Uint8Array): boolean {
+  const isJpeg = chunk[0] === 0xff && chunk[1] === 0xd8 && chunk[2] === 0xff;
+  const isPng = chunk[0] === 0x89 && chunk[1] === 0x50 && chunk[2] === 0x4e && chunk[3] === 0x47;
+  return isJpeg || isPng;
+}
+
+function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const chunks: Uint8Array[] = [];
+    let size = 0;
+    let checkedMagic = false;
+
+    req.on("data", (chunk: Uint8Array) => {
+      size += chunk.length;
+      if (size > maxBytes) {
+        req.destroy();
+        return reject({ customError: `Maximum file size is: ${maxBytes / (1024 * 1024)}MB`, status: 400 });
+      }
+      if (!checkedMagic) {
+        if (!isAllowedImageType(chunk)) {
+          req.destroy();
+          return reject({ customError: "Only JPEG and PNG files are allowed.", status: 400 });
+        }
+        checkedMagic = true;
+      }
+      chunks.push(chunk);
+    });
+    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("error", reject);
+  });
+}
 
 // Create a new collection
 const create = async (req: Request, res: Response, next: NextFunction) => {
@@ -597,109 +625,59 @@ const fetchCreatedFAP = async (
 
 // Upload collection cover photo
 const uploadPhoto = async (req: Request, res: Response, next: NextFunction) => {
-  const collectionId = req.params.id;
-  const userId = req.user.id;
+  try {
+    const collectionId = req.params.id;
+    const userId = req.user.id;
+    const MAX_FILE_SIZE = 8 * 1024 * 1024;
 
-  const collection = await DB.find<ICollection>(
-    `SELECT user_id, photo_key FROM collections WHERE id = $1`,
-    [collectionId]
-  );
+    const collection = await DB.find<ICollection>(
+      `SELECT user_id, photo_key FROM collections WHERE id = $1`,
+      [collectionId]
+    );
 
-  if (!collection || collection.user_id !== parseInt(userId)) {
-    return res.status(403).send({ message: "Unauthorized" });
-  }
-
-  const prevPhotoKey = collection.photo_key;
-  const MAX_FILE_SIZE = 8 * 1024 * 1024;
-  const ALLOWED_FILE_TYPES = ["image/png", "image/jpeg", "image/jpg"];
-
-  const bb = busboy({ headers: req.headers });
-
-  let size = 0;
-  let hasCheckedFileType = false;
-
-  const cloudinaryStream = cloudinary.uploader.upload_stream(
-    {
-      timeout: 60000,
-      folder: "images/collections/",
-      transformation: [{ width: 800, crop: "scale" }],
-    },
-    async (error, response) => {
-      if (error) return next(error);
-      if (response) {
-        try {
-          await DB.update<ICollection>(
-            "collections",
-            {
-              photo_url: response.secure_url,
-              photo_key: response.public_id,
-            },
-            "id = $3",
-            [collectionId]
-          );
-          res.send({ message: "image-uploaded", image: response.secure_url });
-        } catch (e) {
-          next(e);
-        }
-      }
+    if (!collection || collection.user_id !== parseInt(userId)) {
+      return res.status(403).send({ message: "Unauthorized" });
     }
-  );
 
-  bb.on("file", (name, file, info) => {
-    const { mimeType } = info;
+    const prevKey = collection.photo_key;
 
-    cloudinaryStream.on("drain", () => {
-      file.resume();
+    const x = Math.round(Number(req.query.x));
+    const y = Math.round(Number(req.query.y));
+    const width = Math.round(Number(req.query.width));
+    const height = Math.round(Number(req.query.height));
+
+    const buffer = await readImageBody(req, MAX_FILE_SIZE);
+
+    const processed = await sharp(buffer)
+      .extract({ left: x, top: y, width, height })
+      .resize(800)
+      .jpeg({ quality: 85 })
+      .toBuffer();
+
+    const key = `images/collections/${crypto.randomUUID()}.jpg`;
+    const upload = new Upload({
+      client: s3Client,
+      params: { Bucket: S3_BUCKET, Key: key, Body: processed, ContentType: "image/jpeg" },
     });
+    await upload.done();
+    const url = `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
 
-    file.on("data", async (data) => {
-      size += data.length;
-      if (size > MAX_FILE_SIZE) {
-        file.destroy();
-        cloudinaryStream.destroy();
-        return bb.emit(
-          "error",
-          new Error(`Maximum file size is: ${MAX_FILE_SIZE / (1024 * 1024)}MB`)
-        );
-      }
+    await DB.update<ICollection>(
+      "collections",
+      { photo_url: url, photo_key: key },
+      "id = $3",
+      [collectionId]
+    );
 
-      if (!hasCheckedFileType) {
-        const fileType = await fileTypeFromBuffer(data);
-        if (
-          (fileType && !ALLOWED_FILE_TYPES.includes(fileType.mime)) ||
-          !ALLOWED_FILE_TYPES.includes(mimeType)
-        ) {
-          file.destroy();
-          cloudinaryStream.destroy();
-          return bb.emit(
-            "error",
-            new Error(`Only these file types are allowed: ${ALLOWED_FILE_TYPES}`)
-          );
-        }
-        hasCheckedFileType = true;
-      }
+    if (prevKey) {
+      await s3Client.send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: prevKey })).catch(() => {});
+    }
 
-      if (!cloudinaryStream.write(data)) {
-        file.pause();
-      }
-    });
-
-    file.on("close", async () => {
-      try {
-        if (prevPhotoKey) await cloudinary.uploader.destroy(prevPhotoKey);
-      } catch (_) {}
-      cloudinaryStream.end();
-    });
-  });
-
-  bb.on("error", (err: Error) => {
-    req.unpipe(bb);
-    bb.removeAllListeners();
-    if (!cloudinaryStream.destroyed) cloudinaryStream.destroy();
-    return next({ customError: err.message, status: 400 });
-  });
-
-  req.pipe(bb);
+    res.send({ message: "image-uploaded", image: url });
+  } catch (e: any) {
+    if (e.customError) return next(e);
+    next(e);
+  }
 };
 
 const controller = {

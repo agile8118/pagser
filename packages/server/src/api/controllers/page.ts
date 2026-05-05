@@ -6,7 +6,6 @@ import {
   GetObjectCommand,
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
-import { v2 as cloudinary } from "cloudinary";
 import { util, validate } from "@pagser/common";
 import sendEmail from "../services/mailgun.js";
 import { tokenForUser, handleServerError, cleanHTML, timeSince } from "../../lib/util.js";
@@ -20,28 +19,10 @@ import {
   IAttachFile,
   ITag,
 } from "../../database/types.js";
-import keys from "../../config/keys.js";
+import keys, { AWS_REGION, S3_BUCKET } from "../../config/keys.js";
 
-// Configurations for AWS S3
-// S3 here will only be used to get & delete files
-const BUCKET_NAME = "pagser";
-const IAM_USER_KEY = keys.AWSAccessKey;
-const IAM_USER_SECRET = keys.AWSSecretAccessKey;
+const s3Client = new S3Client({ region: AWS_REGION });
 
-const s3Client = new S3Client({
-  credentials: {
-    accessKeyId: IAM_USER_KEY,
-    secretAccessKey: IAM_USER_SECRET,
-  },
-});
-
-// Configure cloudinary
-// Cloudinary here will only be used to modify the images already there e.g. deleting
-cloudinary.config({
-  cloud_name: "dxlsmrixd",
-  api_key: keys.cloudinary_api_key,
-  api_secret: keys.cloudinary_api_secret,
-});
 
 // Create a new draft page
 const newDraftPage = async (
@@ -296,10 +277,11 @@ const removePagePhoto = async (
 
     if (!page) return next({ customError: "page was not found", status: 404 });
 
-    // Remove photos from cloudinary
-    page.photo_key && (await cloudinary.uploader.destroy(page.photo_key));
-    page.cropped_photo_key &&
-      (await cloudinary.uploader.destroy(page.cropped_photo_key));
+    // Remove photos from S3
+    await Promise.all([
+      page.photo_key ? s3Client.send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: page.photo_key })).catch(() => {}) : Promise.resolve(),
+      page.cropped_photo_key ? s3Client.send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: page.cropped_photo_key })).catch(() => {}) : Promise.resolve(),
+    ]);
 
     // Remove photo urls from database
     await DB.update<IPage>(
@@ -355,7 +337,7 @@ const getAttachFile = async (
     res.attachment(key);
     const response = await s3Client.send(
       new GetObjectCommand({
-        Bucket: BUCKET_NAME,
+        Bucket: S3_BUCKET,
         Key: key,
       }),
     );
@@ -384,7 +366,7 @@ const deleteAttachFile = async (
     // Delete the file from the S3 bucket
     await s3Client.send(
       new DeleteObjectCommand({
-        Bucket: BUCKET_NAME,
+        Bucket: S3_BUCKET,
         Key: `${pageId}/${result.name}`,
       }),
     );
@@ -1005,13 +987,11 @@ const deletePage = async (req: Request, res: Response, next: NextFunction) => {
       return res.status(403).send({ message: "Unauthorized" });
     }
 
-    // Delete Cloudinary photos
-    if (page.photo_key) {
-      await cloudinary.uploader.destroy(page.photo_key);
-    }
-    if (page.cropped_photo_key) {
-      await cloudinary.uploader.destroy(page.cropped_photo_key);
-    }
+    // Delete photos from S3
+    await Promise.all([
+      page.photo_key ? s3Client.send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: page.photo_key })).catch(() => {}) : Promise.resolve(),
+      page.cropped_photo_key ? s3Client.send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: page.cropped_photo_key })).catch(() => {}) : Promise.resolve(),
+    ]);
 
     // Delete page (cascade will handle comments, ratings, read_later, history, etc.)
     await DB.delete(`pages`, `id = $1`, [pageId]);

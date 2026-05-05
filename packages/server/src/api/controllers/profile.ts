@@ -1,16 +1,45 @@
 import { Request, Response, NextFunction } from "express";
-import { v2 as cloudinary } from "cloudinary";
-import busboy from "busboy";
-import { fileTypeFromBuffer } from "file-type";
+import sharp from "sharp";
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { Upload } from "@aws-sdk/lib-storage";
+import crypto from "crypto";
 import { DB } from "../../database/index.js";
 import { IUser } from "../../database/types.js";
-import keys from "../../config/keys.js";
+import { AWS_REGION, S3_BUCKET } from "../../config/keys.js";
 
-cloudinary.config({
-  cloud_name: "dxlsmrixd",
-  api_key: keys.cloudinary_api_key,
-  api_secret: keys.cloudinary_api_secret,
-});
+const s3Client = new S3Client({ region: AWS_REGION });
+
+function isAllowedImageType(chunk: Uint8Array): boolean {
+  const isJpeg = chunk[0] === 0xff && chunk[1] === 0xd8 && chunk[2] === 0xff;
+  const isPng = chunk[0] === 0x89 && chunk[1] === 0x50 && chunk[2] === 0x4e && chunk[3] === 0x47;
+  return isJpeg || isPng;
+}
+
+function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const chunks: Uint8Array[] = [];
+    let size = 0;
+    let checkedMagic = false;
+
+    req.on("data", (chunk: Uint8Array) => {
+      size += chunk.length;
+      if (size > maxBytes) {
+        req.destroy();
+        return reject({ customError: `Maximum file size is: ${maxBytes / (1024 * 1024)}MB`, status: 400 });
+      }
+      if (!checkedMagic) {
+        if (!isAllowedImageType(chunk)) {
+          req.destroy();
+          return reject({ customError: "Only JPEG and PNG files are allowed.", status: 400 });
+        }
+        checkedMagic = true;
+      }
+      chunks.push(chunk);
+    });
+    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("error", reject);
+  });
+}
 
 // Fetch user's profile data
 const fetchUserData = async (
@@ -108,100 +137,50 @@ const uploadUserImage = async (
   res: Response,
   next: NextFunction
 ) => {
-  const userId = req.user.id;
-  const MAX_FILE_SIZE = 8 * 1024 * 1024;
-  const ALLOWED_FILE_TYPES = ["image/png", "image/jpeg", "image/jpg"];
+  try {
+    const userId = req.user.id;
+    const MAX_FILE_SIZE = 8 * 1024 * 1024;
 
-  const user = await DB.find<IUser>(
-    `SELECT photo_key FROM users WHERE id = $1`,
-    [userId]
-  );
-  const prevPhotoKey = user?.photo_key;
+    const user = await DB.find<IUser>(`SELECT photo_key FROM users WHERE id = $1`, [userId]);
+    const prevKey = user?.photo_key;
 
-  const bb = busboy({ headers: req.headers });
+    const x = Math.round(Number(req.query.x));
+    const y = Math.round(Number(req.query.y));
+    const width = Math.round(Number(req.query.width));
+    const height = Math.round(Number(req.query.height));
 
-  let size = 0;
-  let hasCheckedFileType = false;
+    const buffer = await readImageBody(req, MAX_FILE_SIZE);
 
-  const cloudinaryStream = cloudinary.uploader.upload_stream(
-    {
-      timeout: 60000,
-      folder: "images/users/",
-      transformation: [{ width: 400, crop: "scale" }],
-    },
-    async (error, response) => {
-      if (error) return next(error);
-      if (response) {
-        try {
-          await DB.update<IUser>(
-            "users",
-            { photo_url: response.secure_url, photo_key: response.public_id },
-            "id = $3",
-            [userId]
-          );
-          res.send({ message: "image-uploaded", image: response.secure_url });
-        } catch (e) {
-          next(e);
-        }
-      }
+    const processed = await sharp(buffer)
+      .extract({ left: x, top: y, width, height })
+      .resize(400, 400)
+      .jpeg({ quality: 85 })
+      .toBuffer();
+
+    const key = `images/users/${crypto.randomUUID()}.jpg`;
+    const upload = new Upload({
+      client: s3Client,
+      params: { Bucket: S3_BUCKET, Key: key, Body: processed, ContentType: "image/jpeg" },
+    });
+    await upload.done();
+    const url = `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
+
+    await DB.update<IUser>(
+      "users",
+      { photo_url: url, photo_key: key },
+      "id = $3",
+      [userId]
+    );
+
+    if (prevKey) {
+      await s3Client.send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: prevKey })).catch(() => {});
     }
-  );
 
-  bb.on("file", (name, file, info) => {
-    const { mimeType } = info;
-
-    cloudinaryStream.on("drain", () => {
-      file.resume();
-    });
-
-    file.on("data", async (data) => {
-      size += data.length;
-      if (size > MAX_FILE_SIZE) {
-        file.destroy();
-        cloudinaryStream.destroy();
-        return bb.emit(
-          "error",
-          new Error(`Maximum file size is: ${MAX_FILE_SIZE / (1024 * 1024)}MB`)
-        );
-      }
-
-      if (!hasCheckedFileType) {
-        const fileType = await fileTypeFromBuffer(data);
-        if (
-          (fileType && !ALLOWED_FILE_TYPES.includes(fileType.mime)) ||
-          !ALLOWED_FILE_TYPES.includes(mimeType)
-        ) {
-          file.destroy();
-          cloudinaryStream.destroy();
-          return bb.emit(
-            "error",
-            new Error(`Only these file types are allowed: ${ALLOWED_FILE_TYPES}`)
-          );
-        }
-        hasCheckedFileType = true;
-      }
-
-      if (!cloudinaryStream.write(data)) {
-        file.pause();
-      }
-    });
-
-    file.on("close", async () => {
-      try {
-        if (prevPhotoKey) await cloudinary.uploader.destroy(prevPhotoKey);
-      } catch (_) {}
-      cloudinaryStream.end();
-    });
-  });
-
-  bb.on("error", (err: Error) => {
-    req.unpipe(bb);
-    bb.removeAllListeners();
-    if (!cloudinaryStream.destroyed) cloudinaryStream.destroy();
-    return next({ customError: err.message, status: 400 });
-  });
-
-  req.pipe(bb);
+    res.send({ message: "image-uploaded", image: url });
+  } catch (e: any) {
+    if (e.customError) return next(e);
+    next(e);
+  }
 };
 
 const controller = {
