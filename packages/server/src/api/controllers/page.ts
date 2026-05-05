@@ -7,7 +7,6 @@ import {
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { util, validate } from "@pagser/common";
-import sendEmail from "../services/mailgun.js";
 import { tokenForUser, handleServerError, cleanHTML, timeSince } from "../../lib/util.js";
 import { DB } from "../../database/index.js";
 import {

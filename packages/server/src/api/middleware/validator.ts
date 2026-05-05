@@ -99,7 +99,8 @@ const emailAvailability = async (
 ) => {
   try {
     const result = await DB.find(
-      `SELECT email FROM users WHERE email='${email}'`
+      `SELECT email FROM users WHERE email = $1`,
+      [req.body.email]
     );
 
     if (!result) {

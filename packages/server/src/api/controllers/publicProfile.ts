@@ -26,7 +26,7 @@ const fetchPages = async (req: Request, res: Response, next: NextFunction) => {
       FROM pages
       JOIN users ON pages.user_id = users.id
       JOIN page_types ON pages.type_id = page_types.id
-      WHERE users.username = $1 AND pages.status_id = $2
+      WHERE users.username = $1 AND pages.status_id = $2 AND page_types.type = 'public'
       ORDER BY pages.created_at DESC
       `,
       [username, PAGE_STATUS.publishedId]

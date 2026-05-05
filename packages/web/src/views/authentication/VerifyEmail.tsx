@@ -85,7 +85,7 @@ const VerifyEmail = (props: IProps) => {
         username: props.username,
         password: props.password,
         email: props.email,
-        code: Number(code),
+        userEmailVerificationCode: Number(code),
       })
       .then((response) => {
         localStorage.setItem("token", response.data.token);
@@ -125,7 +125,7 @@ const VerifyEmail = (props: IProps) => {
         setLoadingChangeEmail(false);
       })
       .catch((error) => {
-        if (error.response.data.error === "email is in use") {
+        if (error.response.data.message === "email is in use") {
           setAlertMessage(
             `${changedEmail} is already in use, please login with this email or choose another one.`
           );

@@ -89,19 +89,19 @@ const Register = () => {
 
     if (fieldName === "username") {
       axios
-        .post(`/api/username-availability`, {
-          username: value,
-        })
+        .post(`/api/username-availability`, { username: value })
         .then((respond) => {
           if (respond.data.message === "ok") {
-            // util.inputOK("username");
             setUsernameError("");
             setUsernameIsOK(true);
-          } else if (respond.data.message === "taken") {
-            setUsernameIsOK(false);
-            setUsernameError(
-              `${value} is already taken, please choose another one.`
-            );
+          }
+        })
+        .catch((error) => {
+          setUsernameIsOK(false);
+          if (error.response?.status === 422) {
+            setUsernameError(`${value} is already taken, please choose another one.`);
+          } else {
+            setUsernameError("Please choose a valid username.");
           }
         });
 
@@ -227,7 +227,7 @@ const Register = () => {
         })
         .catch((error) => {
           setLoading(false);
-          if (error.response.data.error === "email is in use") {
+          if (error.response.data.message === "email is in use") {
             setAlertMessage(
               "This email is already in use, you can login or reset your password in the login tab."
             );

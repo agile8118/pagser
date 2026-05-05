@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
-import sendEmail from "../services/mailgun.js";
+import sendEmail from "../services/email.js";
 import { tokenForUser, handleServerError } from "../../lib/util.js";
 import { DB } from "../../database/index.js";
 import { IUser } from "../../database/types.js";
@@ -9,7 +9,7 @@ import keys from "../../config/keys.js";
 
 // Sends a message to client to indicate that the username is available
 const usernameAvailability = (req: Request, res: Response) => {
-  res.status(200).send({ message: "username is available" });
+  res.status(200).send({ message: "ok" });
 };
 
 // Send a code to the user email address to verify that user owns the email
