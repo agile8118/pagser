@@ -69,6 +69,7 @@ export default (app: Cpeak) => {
   );
 
   app.route("post", "/api/login", validator.loginCredentials, logTheUserIn, Authentication.login);
+  app.route("delete", "/api/auth", Authentication.logout);
 
   app.route(
     "post",

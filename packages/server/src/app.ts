@@ -4,6 +4,7 @@ import cpeak, {
   swagger,
   auth,
   cookieParser,
+  cors,
 } from "cpeak";
 import type {
   Cpeak,
@@ -12,7 +13,6 @@ import type {
 } from "cpeak";
 import ejs from "ejs";
 import swaggerUiDist from "swagger-ui-dist";
-import cors from "cors";
 import compression from "compression";
 import path from "path";
 import YAML from "yamljs";
@@ -64,7 +64,7 @@ export function createApp(opts: AppOptions = {}): Cpeak {
   app.beforeEach(parseJSON());
 
   if (enableCors) {
-    app.beforeEach(cors({ origin: "https://pagser.com/" }));
+    app.beforeEach(cors({ origin: "https://pagser.com" }));
   }
 
   // For rendering EJS templates
@@ -103,7 +103,7 @@ export function createApp(opts: AppOptions = {}): Cpeak {
         );
         return row ? { userId: row.user_id, expiresAt: row.expires_at } : null;
       },
-      deleteToken: async (tokenId) => {
+      revokeToken: async (tokenId) => {
         await DB.delete("tokens", "id = $1", [tokenId]);
       },
     }),

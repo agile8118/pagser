@@ -116,6 +116,15 @@
     });
   }
 
+  async function handleLogout() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      await fetch('/api/auth', { method: 'DELETE', headers: { authorization: token } });
+      localStorage.removeItem('token');
+    }
+    window.location = '/';
+  }
+
   function sidenavTogglerClicked(e) {
     if (
       document.querySelector("#js--sidenav").classList.contains("sidenav--open")

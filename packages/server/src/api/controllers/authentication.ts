@@ -134,11 +134,18 @@ const getAuth = async (req: Request, res: Response) => {
   }
 };
 
+const logout = async (req: Request, res: Response) => {
+  const token = req.headers["authorization"] as string | undefined;
+  if (token) await req.logout(token);
+  res.status(200).json({ message: "logged out" });
+};
+
 const controller = {
   sendCode,
   usernameAvailability,
   register,
   login,
+  logout,
   forgotPassword,
   resetPassword,
   getAuth,

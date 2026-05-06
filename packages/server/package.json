@@ -19,9 +19,16 @@
     "test:coverage": "DB_DATABASE=pagser_test NODE_ENV=test c8 mocha"
   },
   "c8": {
-    "include": ["src/api/**/*.ts"],
-    "exclude": ["**/*.d.ts"],
-    "reporter": ["text", "html"],
+    "include": [
+      "src/api/**/*.ts"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "reporter": [
+      "text",
+      "html"
+    ],
     "all": true
   },
   "dependencies": {
@@ -30,8 +37,7 @@
     "@aws-sdk/lib-storage": "^3.1041.0",
     "@pagser/common": "1.0.0",
     "compression": "^1.7.4",
-    "cors": "^2.8.5",
-    "cpeak": "^2.5.0",
+    "cpeak": "^2.6.0",
     "ejs": "^3.1.9",
     "pg": "^8.20.0",
     "sanitize-html": "^2.7.1",
