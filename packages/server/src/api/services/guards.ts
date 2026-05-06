@@ -1,24 +1,19 @@
-import type {
-  CpeakRequest as Request,
-  CpeakResponse as Response,
-  Next as NextFunction,
-  RouteMiddleware,
-} from "cpeak";
+import type { RouteMiddleware } from "cpeak";
 import { DB } from "../../database/index.js";
 import type { IUser } from "../../database/types.js";
 
 export const logTheUserIn: RouteMiddleware = async (req, res, next) => {
   const { email, password } = req.body ?? {};
-  if (!email || !password) return res.status(401).json({ message: "Unauthorized." });
+  if (!email || !password) throw { status: 401, message: "Unauthorized." };
 
   const user = await DB.find<IUser>(
     "SELECT id, username, password FROM users WHERE email = $1",
     [email],
   );
-  if (!user) return res.status(401).json({ message: "Unauthorized." });
+  if (!user) throw { status: 401, message: "Unauthorized." };
 
   const token = await req.login({ password, hashedPassword: user.password, userId: String(user.id) });
-  if (!token) return res.status(401).json({ message: "Unauthorized." });
+  if (!token) throw { status: 401, message: "Unauthorized." };
 
   req.user = { id: String(user.id), username: user.username };
   req._token = token;
@@ -27,10 +22,10 @@ export const logTheUserIn: RouteMiddleware = async (req, res, next) => {
 
 export const requireAuth: RouteMiddleware = async (req, res, next) => {
   const token = req.headers["authorization"] as string | undefined;
-  if (!token) return res.status(401).json({ message: "Unauthorized." });
+  if (!token) throw { status: 401, message: "Unauthorized." };
 
   const result = await req.verifyToken(token);
-  if (!result) return res.status(401).json({ message: "Unauthorized." });
+  if (!result) throw { status: 401, message: "Unauthorized." };
 
   req.user = { id: result.userId };
   next();

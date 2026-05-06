@@ -1,7 +1,4 @@
-// import { Request, Response, NextFunction } from "express";
-
 import type {
-  Cpeak,
   CpeakRequest as Request,
   CpeakResponse as Response,
   Next as NextFunction,
@@ -11,8 +8,6 @@ import { validate } from "@pagser/common";
 import { DB } from "../../database/index.js";
 import { IUser, PAGE_STATUS, PAGE_TYPE } from "../../database/types.js";
 
-import { handleServerError } from "../../lib/util.js";
-
 // --- Validators for ids --- //
 const isId = (req: Request, res: Response, next: NextFunction) => {
   const id = req.params.id;
@@ -20,7 +15,7 @@ const isId = (req: Request, res: Response, next: NextFunction) => {
   if (vl.default.isNumeric(id)) {
     next();
   } else {
-    return res.status(400).json({ message: "id error" });
+    throw { status: 400, message: "id error" };
   }
 };
 
@@ -30,7 +25,7 @@ const isBodyUserId = (req: Request, res: Response, next: NextFunction) => {
   if (id != null && vl.default.isNumeric(String(id))) {
     next();
   } else {
-    return res.status(400).json({ message: "id error" });
+    throw { status: 400, message: "id error" };
   }
 };
 
@@ -45,7 +40,7 @@ const name = (req: Request, res: Response, next: NextFunction) => {
   ) {
     next();
   } else {
-    return res.status(400).json({ message: "name error" });
+    throw { status: 400, message: "name error" };
   }
 };
 
@@ -58,7 +53,7 @@ const username = (req: Request, res: Response, next: NextFunction) => {
     !validate.len(username, 5, 15) ||
     !validate.isUsername(username)
   ) {
-    return res.status(400).json({ message: "username error" });
+    throw { status: 400, message: "username error" };
   }
 
   next();
@@ -72,21 +67,14 @@ const usernameAvailability = async (
 ) => {
   const username = req.body.username;
 
-  // check to see that the username is not taken
-  try {
-    const result = await DB.find(
-      `SELECT username FROM users WHERE username = $1`,
-      [username],
-    );
+  const result = await DB.find(
+    `SELECT username FROM users WHERE username = $1`,
+    [username],
+  );
 
-    if (!result) {
-      next();
-    } else {
-      return res.status(422).json({ message: "username is in use" });
-    }
-  } catch (e) {
-    handleServerError(e, res);
-  }
+  if (result) throw { status: 422, message: "username is in use" };
+
+  next();
 };
 
 // Validate the user email
@@ -94,7 +82,7 @@ const email = async (req: Request, res: Response, next: NextFunction) => {
   const email = req.body.email;
 
   if (validate.isEmpty(email) || !vl.default.isEmail(email))
-    return res.status(400).json({ message: "email error" });
+    throw { status: 400, message: "email error" };
 
   next();
 };
@@ -105,25 +93,19 @@ const emailAvailability = async (
   res: Response,
   next: NextFunction,
 ) => {
-  try {
-    const result = await DB.find(`SELECT email FROM users WHERE email = $1`, [
-      req.body.email,
-    ]);
+  const result = await DB.find(`SELECT email FROM users WHERE email = $1`, [
+    req.body.email,
+  ]);
 
-    if (!result) {
-      next();
-    } else {
-      return res.status(422).json({ message: "email is in use" });
-    }
-  } catch (e) {
-    handleServerError(e, res);
-  }
+  if (result) throw { status: 422, message: "email is in use" };
+
+  next();
 };
 
 // Validate login credentials are present in the body
 const loginCredentials = (req: Request, res: Response, next: NextFunction) => {
   if (!req.body?.email || !req.body?.password) {
-    return res.status(400).json({ message: "email and password are required" });
+    throw { status: 400, message: "email and password are required" };
   }
   next();
 };
@@ -140,7 +122,7 @@ const password = (req: Request, res: Response, next: NextFunction) => {
   ) {
     next();
   } else {
-    return res.status(400).json({ message: "password error" });
+    throw { status: 400, message: "password error" };
   }
 };
 
@@ -153,21 +135,17 @@ const userEmailVerificationCode = async (
   const userEmailVerificationCode = req.body.userEmailVerificationCode;
   const email = req.body.email;
 
-  try {
-    const row = await DB.find<{ code: number }>(
-      "SELECT code FROM email_codes WHERE email = $1 AND expires_at > NOW()",
-      [email],
-    );
+  const row = await DB.find<{ code: number }>(
+    "SELECT code FROM email_codes WHERE email = $1 AND expires_at > NOW()",
+    [email],
+  );
 
-    if (!row || row.code !== Number(userEmailVerificationCode)) {
-      return res.status(400).json({ message: "invalid code" });
-    }
-
-    await DB.delete("email_codes", "email = $1", [email]);
-    next();
-  } catch (e) {
-    handleServerError(e, res);
+  if (!row || row.code !== Number(userEmailVerificationCode)) {
+    throw { status: 400, message: "invalid code" };
   }
+
+  await DB.delete("email_codes", "email = $1", [email]);
+  next();
 };
 
 // Verify the token that was sent to the user's email address for resetting their password
@@ -184,17 +162,19 @@ const passwordResetToken = async (
     [userId],
   );
 
-  if (!user) return res.status(400).json({ message: "invalid link" });
+  if (!user) throw { status: 400, message: "invalid link" };
 
   const tokenDate = new Date(user.token_date);
 
   if (Date.now() - tokenDate.getTime() > 600000) {
-    return res.status(400).json({ message: "link expired" });
-  } else if (token === user.token_code) {
-    return next();
+    throw { status: 400, message: "link expired" };
   }
 
-  return res.status(400).json({ message: "invalid link" });
+  if (token !== user.token_code) {
+    throw { status: 400, message: "invalid link" };
+  }
+
+  next();
 };
 
 // --- Validators for page creation --- //
@@ -209,51 +189,40 @@ const isStage = (req: Request, res: Response, next: NextFunction) => {
   ) {
     next();
   } else {
-    return res.status(400).json({ message: "stage error" });
+    throw { status: 400, message: "stage error" };
   }
 };
 
 // Validate page type
 const pageType = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const type = req.body.page.type;
+  const type = req.body?.page?.type;
 
-    if (type === "public" || type === "private") {
-      next();
-    } else {
-      throw new Error("");
-    }
-  } catch (e) {
-    return res.status(400).json({ message: "page type error" });
+  if (type !== "public" && type !== "private") {
+    throw { status: 400, message: "page type error" };
   }
+
+  next();
 };
 
 /** @todo: use for edit page */
 // Validate page contents (title, brief description, targets, body)
 const pageContents = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    if (req.params.stage !== "page-contents") return next();
+  if (req.params.stage !== "page-contents") return next();
 
-    const type = req.body.page.type;
+  const type = req.body?.page?.type;
+  const contents = req.body?.page?.contents;
 
-    const title = req.body.page.contents.title;
-    const targets = req.body.page.contents.targets;
-    const briefDes = req.body.page.contents.briefDes;
-    const body = req.body.page.contents.body;
-
-    if (
-      !validate.page(type).title(title) &&
-      !validate.page(type).targets(targets) &&
-      !validate.page(type).briefDes(briefDes) &&
-      validate.len(body, 0, 200000) // ten times more than textContent max length in front end
-    ) {
-      next();
-    } else {
-      throw new Error("");
-    }
-  } catch (e) {
-    return res.status(400).json({ message: "page contents error" });
+  if (
+    !contents ||
+    validate.page(type).title(contents.title) ||
+    validate.page(type).targets(contents.targets) ||
+    validate.page(type).briefDes(contents.briefDes) ||
+    !validate.len(contents.body, 0, 200000)
+  ) {
+    throw { status: 400, message: "page contents error" };
   }
+
+  next();
 };
 
 /** @todo: use for edit page */
@@ -263,50 +232,47 @@ const pageConfigurations = (
   res: Response,
   next: NextFunction,
 ) => {
-  try {
-    if (req.params.stage !== "final-step") return next();
+  if (req.params.stage !== "final-step") return next();
 
-    const type = req.body.page.type;
+  const type = req.body?.page?.type;
+  const configurations = req.body?.page?.configurations;
 
-    const anonymously = req.body.page.configurations.title;
-    const comments = req.body.page.configurations.targets;
-    const rating = req.body.page.configurations.briefDes;
-    const links = req.body.page.configurations.links; // could be undefined
-
-    const linksCondition =
-      type === "public" ? typeof links === "boolean" : true;
-
-    if (
-      typeof anonymously === "boolean" &&
-      typeof comments === "boolean" &&
-      typeof rating === "boolean" &&
-      linksCondition
-    ) {
-      next();
-    } else {
-      throw new Error("");
-    }
-  } catch (e) {
-    return res.status(400).json({ message: "page configurations error" });
+  if (!configurations) {
+    throw { status: 400, message: "page configurations error" };
   }
+
+  const anonymously = configurations.title;
+  const comments = configurations.targets;
+  const rating = configurations.briefDes;
+  const links = configurations.links; // could be undefined
+
+  const linksCondition =
+    type === "public" ? typeof links === "boolean" : true;
+
+  if (
+    typeof anonymously !== "boolean" ||
+    typeof comments !== "boolean" ||
+    typeof rating !== "boolean" ||
+    !linksCondition
+  ) {
+    throw { status: 400, message: "page configurations error" };
+  }
+
+  next();
 };
 
 /** @todo: use for edit page */
 // Validate the page tags for public pages
 const publicPageTags = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    if (req.params.stage !== "final-step") return next();
+  if (req.params.stage !== "final-step") return next();
 
-    const tags = req.body.page.tags;
+  const tags = req.body?.page?.tags;
 
-    if (!validate.page("public").tags(tags)) {
-      next();
-    } else {
-      throw new Error("");
-    }
-  } catch (e) {
-    return res.status(400).json({ message: "page tags error" });
+  if (validate.page("public").tags(tags)) {
+    throw { status: 400, message: "page tags error" };
   }
+
+  next();
 };
 
 /** @todo: use for edit page */
@@ -316,25 +282,21 @@ const privatePageUrl = async (
   res: Response,
   next: NextFunction,
 ) => {
-  try {
-    if (req.params.stage !== "final-step") return next();
+  if (req.params.stage !== "final-step") return next();
 
-    const url = req.body.page.url;
-    const userId = req.user.id;
+  const url = req.body?.page?.url;
+  const userId = req.user.id;
 
-    const usedUrls = await DB.findMany<string>(
-      `SELECT url from pages WHERE user_id = $1 AND status_id = $2 AND type_id = $3`,
-      [userId, PAGE_STATUS.publishedId, PAGE_TYPE.privateId],
-    );
+  const usedUrls = await DB.findMany<string>(
+    `SELECT url from pages WHERE user_id = $1 AND status_id = $2 AND type_id = $3`,
+    [userId, PAGE_STATUS.publishedId, PAGE_TYPE.privateId],
+  );
 
-    if (!validate.page("private").url(url, usedUrls)) {
-      next();
-    } else {
-      throw new Error("");
-    }
-  } catch (e) {
-    return res.status(400).json({ message: "page url error" });
+  if (validate.page("private").url(url, usedUrls)) {
+    throw { status: 400, message: "page url error" };
   }
+
+  next();
 };
 
 const validator = {

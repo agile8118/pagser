@@ -1,4 +1,10 @@
-import cpeak, { serveStatic, parseJSON, swagger, auth, cookieParser } from "cpeak";
+import cpeak, {
+  serveStatic,
+  parseJSON,
+  swagger,
+  auth,
+  cookieParser,
+} from "cpeak";
 import type {
   Cpeak,
   CpeakRequest as Request,
@@ -84,7 +90,11 @@ export function createApp(opts: AppOptions = {}): Cpeak {
     auth({
       secret: keys.tokenSecret as string,
       saveToken: async (tokenId, userId, expiresAt) => {
-        await DB.insert("tokens", { id: tokenId, user_id: userId, expires_at: expiresAt });
+        await DB.insert("tokens", {
+          id: tokenId,
+          user_id: userId,
+          expires_at: expiresAt,
+        });
       },
       findToken: async (tokenId) => {
         const row = await DB.find<{ user_id: string; expires_at: Date }>(
@@ -139,11 +149,13 @@ export function createApp(opts: AppOptions = {}): Cpeak {
 
   // Error handler
   app.handleErr((error: any, req: any, res: any) => {
-    if (error.customError) {
-      res.status(error.status).send(error.customError);
+    if (error && error.status) {
+      res.status(error.status).json({ message: error.message });
     } else {
       log(error, "error");
-      res.status(500).json({ error: "Internal server error." });
+      res.status(500).json({
+        message: "Sorry, something unexpected happened on our side.",
+      });
     }
   });
 

@@ -1,19 +1,4 @@
-// import { Response } from "express";
-
-import type {
-  Cpeak,
-  CpeakRequest as Request,
-  CpeakResponse as Response,
-  Next as NextFunction,
-} from "cpeak";
 import sanitizeHtml from "sanitize-html";
-import log from "./log.js";
-
-// Handle unexpected errors (500 errors)
-export const handleServerError = (error: any, res: Response) => {
-  log(error, "error");
-  return res.status(500).json({ message: "Internal server error." });
-};
 
 export const timeSince = (date: string | Date): string => {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);

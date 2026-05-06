@@ -1,10 +1,6 @@
-// import { Request, Response, NextFunction } from "express";
-
 import type {
-  Cpeak,
   CpeakRequest as Request,
   CpeakResponse as Response,
-  Next as NextFunction,
 } from "cpeak";
 import sharp from "sharp";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
@@ -37,16 +33,16 @@ function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
       if (size > maxBytes) {
         req.destroy();
         return reject({
-          customError: `Maximum file size is: ${maxBytes / (1024 * 1024)}MB`,
           status: 400,
+          message: `Maximum file size is: ${maxBytes / (1024 * 1024)}MB`,
         });
       }
       if (!checkedMagic) {
         if (!isAllowedImageType(chunk)) {
           req.destroy();
           return reject({
-            customError: "Only JPEG and PNG files are allowed.",
             status: 400,
+            message: "Only JPEG and PNG files are allowed.",
           });
         }
         checkedMagic = true;
@@ -59,155 +55,127 @@ function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
 }
 
 // Fetch user's profile data
-const fetchUserData = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const userId = req.user.id;
+const fetchUserData = async (req: Request, res: Response) => {
+  const userId = req.user.id;
 
-    const user = await DB.find<IUser>(
-      `SELECT id, name, username, email, biography, headline,
-              links_website, links_facebook, links_youtube, links_twitter, links_linkedin,
-              photo_key, photo_url, verified, created_at
-       FROM users WHERE id = $1`,
-      [userId],
-    );
+  const user = await DB.find<IUser>(
+    `SELECT id, name, username, email, biography, headline,
+            links_website, links_facebook, links_youtube, links_twitter, links_linkedin,
+            photo_key, photo_url, verified, created_at
+     FROM users WHERE id = $1`,
+    [userId],
+  );
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+  if (!user) throw { status: 404, message: "User not found" };
 
-    res.json({
-      user: {
-        ...user,
-        links: {
-          website: user.links_website || "",
-          facebook: user.links_facebook || "",
-          youtube: user.links_youtube || "",
-          twitter: user.links_twitter || "",
-          linkedin: user.links_linkedin || "",
-        },
+  res.json({
+    user: {
+      ...user,
+      links: {
+        website: user.links_website || "",
+        facebook: user.links_facebook || "",
+        youtube: user.links_youtube || "",
+        twitter: user.links_twitter || "",
+        linkedin: user.links_linkedin || "",
       },
-    });
-  } catch (e) {
-    next(e);
-  }
+    },
+  });
 };
 
 // Update user's profile data
-const updateUserData = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const userId = req.user.id;
-    const { name, headline, biography, links } = req.body;
+const updateUserData = async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const { name, headline, biography, links } = req.body;
 
-    await DB.update(
-      `users`,
-      {
-        name,
-        headline,
-        biography,
-        links_website: links?.website,
-        links_facebook: links?.facebook,
-        links_youtube: links?.youtube,
-        links_twitter: links?.twitter,
-        links_linkedin: links?.linkedin,
+  await DB.update(
+    `users`,
+    {
+      name,
+      headline,
+      biography,
+      links_website: links?.website,
+      links_facebook: links?.facebook,
+      links_youtube: links?.youtube,
+      links_twitter: links?.twitter,
+      links_linkedin: links?.linkedin,
+    },
+    `id = $9`,
+    [userId],
+  );
+
+  const user = await DB.find<IUser>(
+    `SELECT id, name, username, email, biography, headline,
+            links_website, links_facebook, links_youtube, links_twitter, links_linkedin,
+            photo_key, photo_url, verified, created_at
+     FROM users WHERE id = $1`,
+    [userId],
+  );
+
+  res.json({
+    user: {
+      ...user,
+      links: {
+        website: user?.links_website || "",
+        facebook: user?.links_facebook || "",
+        youtube: user?.links_youtube || "",
+        twitter: user?.links_twitter || "",
+        linkedin: user?.links_linkedin || "",
       },
-      `id = $9`,
-      [userId],
-    );
-
-    // Re-fetch and return updated data
-    const user = await DB.find<IUser>(
-      `SELECT id, name, username, email, biography, headline,
-              links_website, links_facebook, links_youtube, links_twitter, links_linkedin,
-              photo_key, photo_url, verified, created_at
-       FROM users WHERE id = $1`,
-      [userId],
-    );
-
-    res.json({
-      user: {
-        ...user,
-        links: {
-          website: user?.links_website || "",
-          facebook: user?.links_facebook || "",
-          youtube: user?.links_youtube || "",
-          twitter: user?.links_twitter || "",
-          linkedin: user?.links_linkedin || "",
-        },
-      },
-    });
-  } catch (e) {
-    next(e);
-  }
+    },
+  });
 };
 
 // Upload user's profile photo
-const uploadUserImage = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const userId = req.user.id;
-    const MAX_FILE_SIZE = 8 * 1024 * 1024;
+const uploadUserImage = async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const MAX_FILE_SIZE = 8 * 1024 * 1024;
 
-    const user = await DB.find<IUser>(
-      `SELECT photo_key FROM users WHERE id = $1`,
-      [userId],
-    );
-    const prevKey = user?.photo_key;
+  const user = await DB.find<IUser>(
+    `SELECT photo_key FROM users WHERE id = $1`,
+    [userId],
+  );
+  const prevKey = user?.photo_key;
 
-    const x = Math.round(Number(req.query.x));
-    const y = Math.round(Number(req.query.y));
-    const width = Math.round(Number(req.query.width));
-    const height = Math.round(Number(req.query.height));
+  const x = Math.round(Number(req.query.x));
+  const y = Math.round(Number(req.query.y));
+  const width = Math.round(Number(req.query.width));
+  const height = Math.round(Number(req.query.height));
 
-    const buffer = await readImageBody(req, MAX_FILE_SIZE);
+  const buffer = await readImageBody(req, MAX_FILE_SIZE);
 
-    const processed = await sharp(buffer)
-      .extract({ left: x, top: y, width, height })
-      .resize(400, 400)
-      .jpeg({ quality: 85 })
-      .toBuffer();
+  const processed = await sharp(buffer)
+    .extract({ left: x, top: y, width, height })
+    .resize(400, 400)
+    .jpeg({ quality: 85 })
+    .toBuffer();
 
-    const key = `images/users/${crypto.randomUUID()}.jpg`;
-    const upload = new Upload({
-      client: s3Client,
-      params: {
-        Bucket: S3_BUCKET,
-        Key: key,
-        Body: processed,
-        ContentType: "image/jpeg",
-      },
-    });
-    await upload.done();
-    const url = `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
+  const key = `images/users/${crypto.randomUUID()}.jpg`;
+  const upload = new Upload({
+    client: s3Client,
+    params: {
+      Bucket: S3_BUCKET,
+      Key: key,
+      Body: processed,
+      ContentType: "image/jpeg",
+    },
+  });
+  await upload.done();
+  const url = `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
 
-    await DB.update<IUser>(
-      "users",
-      { photo_url: url, photo_key: key },
-      "id = $3",
-      [userId],
-    );
+  await DB.update<IUser>(
+    "users",
+    { photo_url: url, photo_key: key },
+    "id = $3",
+    [userId],
+  );
 
-    if (prevKey) {
-      await s3Client
-        .send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: prevKey }))
-        .catch(() => {});
-    }
-
-    res.json({ message: "image-uploaded", image: url });
-  } catch (e: any) {
-    if (e.customError) return next(e);
-    next(e);
+  if (prevKey) {
+    await s3Client
+      .send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: prevKey }))
+      .catch(() => {});
   }
+
+  res.json({ message: "image-uploaded", image: url });
 };
 
 const controller = {

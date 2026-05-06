@@ -15,24 +15,20 @@ const checkPageOwnership = async (
   const userId = req.user.id;
 
   if (!pageId || !/^\d+$/.test(pageId)) {
-    return res.status(400).json({ message: "id error" });
+    throw { status: 400, message: "id error" };
   }
 
-  try {
-    const page = await DB.find<{ user_id: number }>(
-      "SELECT user_id FROM pages WHERE id = $1",
-      [pageId],
-    );
+  const page = await DB.find<{ user_id: number }>(
+    "SELECT user_id FROM pages WHERE id = $1",
+    [pageId],
+  );
 
-    if (!page) return res.status(404).json({ message: "Page not found" });
-    if (String(page.user_id) !== String(userId)) {
-      return res.status(403).json({ message: "Unauthorized" });
-    }
-
-    next();
-  } catch (e) {
-    next(e);
+  if (!page) throw { status: 404, message: "Page not found" };
+  if (String(page.user_id) !== String(userId)) {
+    throw { status: 403, message: "Unauthorized" };
   }
+
+  next();
 };
 
 const authorization = {

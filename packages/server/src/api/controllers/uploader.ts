@@ -4,13 +4,9 @@
  * No multipart parsing — clients send raw binary bodies.
  */
 
-// import { Request, Response, NextFunction } from "express";
-
 import type {
-  Cpeak,
   CpeakRequest as Request,
   CpeakResponse as Response,
-  Next as NextFunction,
 } from "cpeak";
 import sharp from "sharp";
 import { Transform, PassThrough } from "node:stream";
@@ -50,16 +46,16 @@ function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
       if (size > maxBytes) {
         req.destroy();
         return reject({
-          customError: `Maximum file size is: ${maxBytes / (1024 * 1024)}MB`,
           status: 400,
+          message: `Maximum file size is: ${maxBytes / (1024 * 1024)}MB`,
         });
       }
       if (!checkedMagic) {
         if (!isAllowedImageType(chunk)) {
           req.destroy();
           return reject({
-            customError: "Only JPEG and PNG files are allowed.",
             status: 400,
+            message: "Only JPEG and PNG files are allowed.",
           });
         }
         checkedMagic = true;
@@ -94,115 +90,97 @@ async function uploadBufferToS3(
 }
 
 // Upload a page thumbnail — creates a full-size (1200px wide) and cropped (400x225) variant
-const uploadPagePhoto = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const pageId = req.params.id;
-    const MAX_FILE_SIZE = 8 * 1024 * 1024;
+const uploadPagePhoto = async (req: Request, res: Response) => {
+  const pageId = req.params.id;
+  const MAX_FILE_SIZE = 8 * 1024 * 1024;
 
-    const x = Math.round(Number(req.query.x));
-    const y = Math.round(Number(req.query.y));
-    const width = Math.round(Number(req.query.width));
-    const height = Math.round(Number(req.query.height));
+  const x = Math.round(Number(req.query.x));
+  const y = Math.round(Number(req.query.y));
+  const width = Math.round(Number(req.query.width));
+  const height = Math.round(Number(req.query.height));
 
-    const page = await DB.find<IPage>(
-      "SELECT photo_key, cropped_photo_key FROM pages WHERE id = $1",
-      [pageId],
-    );
+  const page = await DB.find<IPage>(
+    "SELECT photo_key, cropped_photo_key FROM pages WHERE id = $1",
+    [pageId],
+  );
 
-    const buffer = await readImageBody(req, MAX_FILE_SIZE);
+  const buffer = await readImageBody(req, MAX_FILE_SIZE);
 
-    const [originalBuf, croppedBuf] = await Promise.all([
-      sharp(buffer)
-        .resize(1200, null, { withoutEnlargement: true })
-        .jpeg({ quality: 85 })
-        .toBuffer(),
-      sharp(buffer)
-        .extract({ left: x, top: y, width, height })
-        .resize(400, 225)
-        .jpeg({ quality: 85 })
-        .toBuffer(),
-    ]);
+  const [originalBuf, croppedBuf] = await Promise.all([
+    sharp(buffer)
+      .resize(1200, null, { withoutEnlargement: true })
+      .jpeg({ quality: 85 })
+      .toBuffer(),
+    sharp(buffer)
+      .extract({ left: x, top: y, width, height })
+      .resize(400, 225)
+      .jpeg({ quality: 85 })
+      .toBuffer(),
+  ]);
 
-    const originalKey = `images/pages/${crypto.randomUUID()}.jpg`;
-    const croppedKey = `images/pages/${crypto.randomUUID()}.jpg`;
+  const originalKey = `images/pages/${crypto.randomUUID()}.jpg`;
+  const croppedKey = `images/pages/${crypto.randomUUID()}.jpg`;
 
-    const [originalUrl, croppedUrl] = await Promise.all([
-      uploadBufferToS3(originalKey, originalBuf),
-      uploadBufferToS3(croppedKey, croppedBuf),
-    ]);
+  const [originalUrl, croppedUrl] = await Promise.all([
+    uploadBufferToS3(originalKey, originalBuf),
+    uploadBufferToS3(croppedKey, croppedBuf),
+  ]);
 
-    await DB.update<IPage>(
-      "pages",
-      {
-        photo_url: originalUrl,
-        photo_key: originalKey,
-        cropped_photo_url: croppedUrl,
-        cropped_photo_key: croppedKey,
-      },
-      "id = $5",
-      [pageId],
-    );
+  await DB.update<IPage>(
+    "pages",
+    {
+      photo_url: originalUrl,
+      photo_key: originalKey,
+      cropped_photo_url: croppedUrl,
+      cropped_photo_key: croppedKey,
+    },
+    "id = $5",
+    [pageId],
+  );
 
-    // Delete old photos from S3 after DB is updated
-    await Promise.all([
-      page?.photo_key
-        ? deleteFromS3(page.photo_key).catch(() => {})
-        : Promise.resolve(),
-      page?.cropped_photo_key
-        ? deleteFromS3(page.cropped_photo_key).catch(() => {})
-        : Promise.resolve(),
-    ]);
+  // Delete old photos from S3 after DB is updated
+  await Promise.all([
+    page?.photo_key
+      ? deleteFromS3(page.photo_key).catch(() => {})
+      : Promise.resolve(),
+    page?.cropped_photo_key
+      ? deleteFromS3(page.cropped_photo_key).catch(() => {})
+      : Promise.resolve(),
+  ]);
 
-    res.json({ message: "image-uploaded", image: originalUrl });
-  } catch (e: any) {
-    if (e.customError) return next(e);
-    next(e);
-  }
+  res.json({ message: "image-uploaded", image: originalUrl });
 };
 
 // Upload an attach file for a page — streamed directly to S3, no transformation
-const uploadPageAttachFile = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const uploadPageAttachFile = async (req: Request, res: Response) => {
   const pageId = req.params.id;
   const MAX_FILE_SIZE = 10 * 1024 * 1024;
   const filename = decodeURIComponent(String(req.query.filename || ""));
 
   if (!filename || filename.length > 100) {
-    return next({
-      customError: "File name is missing or exceeds 100 characters.",
+    throw {
       status: 400,
-    });
+      message: "File name is missing or exceeds 100 characters.",
+    };
   }
 
-  try {
-    const currentAttachFiles = await DB.findMany<IAttachFile>(
-      `SELECT * FROM attach_files WHERE page_id = $1`,
-      [pageId],
-    );
+  const currentAttachFiles = await DB.findMany<IAttachFile>(
+    `SELECT * FROM attach_files WHERE page_id = $1`,
+    [pageId],
+  );
 
-    if (currentAttachFiles.length >= 5) {
-      return next({
-        customError: "You can only upload up to 5 files for each page.",
-        status: 400,
-      });
-    }
+  if (currentAttachFiles.length >= 5) {
+    throw {
+      status: 400,
+      message: "You can only upload up to 5 files for each page.",
+    };
+  }
 
-    if (currentAttachFiles.some((f) => f.name === filename)) {
-      return next({
-        customError:
-          "You have already uploaded a file with this name for the page.",
-        status: 400,
-      });
-    }
-  } catch (e) {
-    return next(e);
+  if (currentAttachFiles.some((f) => f.name === filename)) {
+    throw {
+      status: 400,
+      message: "You have already uploaded a file with this name for the page.",
+    };
   }
 
   try {
@@ -244,25 +222,26 @@ const uploadPageAttachFile = async (
 
   try {
     await upload.done();
-    const url = `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
-
-    await DB.insert<IAttachFile>("attach_files", {
-      page_id: Number(pageId),
-      key,
-      url,
-      name: filename,
-    });
-
-    res.json({ message: "file uploaded" });
-  } catch (e: any) {
+  } catch (e) {
     if (failed) {
-      return next({
-        customError: `Maximum file size is: ${MAX_FILE_SIZE / (1024 * 1024)}MB`,
+      throw {
         status: 400,
-      });
+        message: `Maximum file size is: ${MAX_FILE_SIZE / (1024 * 1024)}MB`,
+      };
     }
-    next(e);
+    throw e;
   }
+
+  const url = `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
+
+  await DB.insert<IAttachFile>("attach_files", {
+    page_id: Number(pageId),
+    key,
+    url,
+    name: filename,
+  });
+
+  res.json({ message: "file uploaded" });
 };
 
 const uploader = {

@@ -1,8 +1,6 @@
 import type {
-  Cpeak,
   CpeakRequest as Request,
   CpeakResponse as Response,
-  Next as NextFunction,
 } from "cpeak";
 import { DB } from "../../database/index.js";
 
