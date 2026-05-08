@@ -167,6 +167,7 @@ const FinalStepPrivate = (props: IProps) => {
               </span>
             </div>
             <button
+              data-testid="toggle-comments"
               className="btn-i btn-i-blue"
               onClick={() => onSwitchClicked("comments")}
             >
@@ -191,6 +192,7 @@ const FinalStepPrivate = (props: IProps) => {
               </span>
             </div>
             <button
+              data-testid="toggle-rating"
               className="btn-i btn-i-blue"
               onClick={() => onSwitchClicked("rating")}
             >
@@ -215,6 +217,7 @@ const FinalStepPrivate = (props: IProps) => {
               </span>
             </div>
             <button
+              data-testid="toggle-anonymously"
               className="btn-i btn-i-blue"
               onClick={() => onSwitchClicked("anonymously")}
             >
@@ -234,6 +237,7 @@ const FinalStepPrivate = (props: IProps) => {
         <div className="form-group">
           <Input
             id="url"
+            testId="config-url"
             label="URL"
             placeholder="Choose a URL for your page."
             type="text"
@@ -264,6 +268,7 @@ const FinalStepPrivate = (props: IProps) => {
       {/* Publish button */}
       <div className="u-flex-text-center">
         <Button
+          testId="final-step-publish"
           onClick={() => {
             onSubmitButtonClicked();
           }}

@@ -12,6 +12,7 @@ const sendEmail = async (
   html: string,
   from = FROM_NOREPLY
 ) => {
+  if (process.env.NODE_ENV === "test") return;
   await ses.send(
     new SendEmailCommand({
       Source: from,

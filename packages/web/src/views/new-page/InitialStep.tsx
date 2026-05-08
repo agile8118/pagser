@@ -128,6 +128,7 @@ const InitialStep = () => {
         </div>
         <div className="u-flex-text-center">
           <Button
+            testId="initial-step-next"
             onClick={() => {
               onNextButtonClicked();
             }}

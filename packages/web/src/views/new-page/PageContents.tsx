@@ -456,6 +456,7 @@ const PageContents = () => {
             {/* Next button */}
             <div className="u-flex-text-center">
               <Button
+                testId="page-contents-next"
                 onClick={() => {
                   onNextButtonClicked();
                 }}

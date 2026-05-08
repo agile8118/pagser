@@ -257,6 +257,7 @@ const Register = () => {
         </p>
         <div className="margin-top-1-5 u-flex-text-center">
           <Button
+            testId="register-submit"
             color="blue"
             size="big"
             rounded={true}
@@ -318,6 +319,7 @@ const Register = () => {
             >
               <div className="form-group" id="name">
                 <Input
+                  testId="register-name"
                   type="text"
                   onBlur={(value) => {
                     onInputFocusOut(value, "name");
@@ -334,6 +336,7 @@ const Register = () => {
 
               <div className="form-group" id="username">
                 <Input
+                  testId="register-username"
                   type="text"
                   onBlur={(value) => {
                     onInputFocusOut(value, "username");
@@ -350,6 +353,7 @@ const Register = () => {
 
               <div className="form-group" id="email">
                 <Input
+                  testId="register-email"
                   type="email"
                   onBlur={(value) => {
                     onInputFocusOut(value, "email");
@@ -366,6 +370,7 @@ const Register = () => {
 
               <div className="form-group" id="password">
                 <Input
+                  testId="register-password"
                   type="password"
                   onBlur={(value) => {
                     onInputFocusOut(value, "password");
@@ -382,6 +387,7 @@ const Register = () => {
 
               <div className="form-group" id="">
                 <Input
+                  testId="register-confirm-password"
                   type="password"
                   onBlur={(value) => {
                     onInputFocusOut(value, "confirmPassword");

@@ -186,6 +186,7 @@ const PageThumbnail = () => {
         {/* Next button */}
         <div className="u-flex-text-center">
           <Button
+            testId="page-thumbnail-next"
             onClick={() => {
               onNextButtonClicked();
             }}

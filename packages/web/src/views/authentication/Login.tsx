@@ -93,6 +93,7 @@ const Login = () => {
       <div>
         <div className="form__group u-flex-text-center">
           <Button
+            testId="login-submit"
             type="submit"
             rounded={true}
             outlined={true}
@@ -195,6 +196,7 @@ const Login = () => {
           >
             <div className="form-group">
               <Input
+                testId="login-email"
                 type="text"
                 onChange={(value) => {
                   setEmail(value);
@@ -206,6 +208,7 @@ const Login = () => {
             </div>
             <div className="form-group">
               <Input
+                testId="login-password"
                 type="password"
                 onChange={(value) => {
                   setPassword(value);

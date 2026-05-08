@@ -23,6 +23,7 @@ interface Props {
   maxLength?: number;
   lined?: boolean;
   innerInputLabel?: string;
+  testId?: string;
 }
 
 const Input = (props: Props) => {
@@ -117,6 +118,7 @@ const Input = (props: Props) => {
             ref={input}
             className="form-text__input"
             id={props.id}
+            data-testid={props.testId}
             disabled={props.disabled}
             value={
               props.type === "number" && value

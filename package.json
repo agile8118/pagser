@@ -1,6 +1,7 @@
 {
   "name": "pagser",
   "private": true,
+  "type": "module",
   "workspaces": [
     "packages/*"
   ],
@@ -9,5 +10,12 @@
   "repository": "git@github.com:agile8118/pagser.git",
   "author": "Joseph Heidari <agile.8272@gmail.com>",
   "license": "MIT",
-  "devDependencies": {}
+  "scripts": {
+    "test:e2e": "yarn workspace @pagser/web build && playwright test",
+    "test:e2e:headed": "yarn workspace @pagser/web build && playwright test --headed",
+    "playwright": "playwright"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1"
+  }
 }

@@ -350,8 +350,9 @@ const VerifyEmail = (props: IProps) => {
           }}
         >
           <div className="form__group">
-            <div className="input-digits">
+            <div className="input-digits" data-testid="verify-digits">
               <input
+                data-testid="verify-digit-0"
                 type="tel"
                 autoFocus
                 value={firstDigit}
@@ -366,6 +367,7 @@ const VerifyEmail = (props: IProps) => {
                 maxLength={1}
               />
               <input
+                data-testid="verify-digit-1"
                 type="tel"
                 value={secondDigit}
                 ref={secondDigitRef}
@@ -379,6 +381,7 @@ const VerifyEmail = (props: IProps) => {
                 maxLength={1}
               />
               <input
+                data-testid="verify-digit-2"
                 type="tel"
                 value={thirdDigit}
                 ref={thirdDigitRef}
@@ -392,6 +395,7 @@ const VerifyEmail = (props: IProps) => {
                 maxLength={1}
               />
               <input
+                data-testid="verify-digit-3"
                 type="tel"
                 value={fourthDigit}
                 ref={fourthDigitRef}
@@ -405,6 +409,7 @@ const VerifyEmail = (props: IProps) => {
                 maxLength={1}
               />
               <input
+                data-testid="verify-digit-4"
                 type="tel"
                 value={fifthDigit}
                 ref={fifthDigitRef}

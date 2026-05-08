@@ -398,4 +398,5 @@ export default (app: Cpeak) => {
     requireAuth,
     Page.fetchEditPageData,
   );
+
 };

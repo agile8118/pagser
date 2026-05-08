@@ -28,3 +28,7 @@ packages/server/public/scripts/
 # test coverage
 coverage/
 .nyc_output/
+
+# Playwright
+/test-results/
+/playwright-report/

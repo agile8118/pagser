@@ -16,6 +16,7 @@ import swaggerUiDist from "swagger-ui-dist";
 import path from "path";
 import YAML from "yamljs";
 import apiRouter from "./api/router.js";
+import testRouter from "./api/testRouter.js";
 import templatesRouter from "./templates/router.js";
 import log from "./lib/log.js";
 import keys from "./config/keys.js";
@@ -138,6 +139,9 @@ export function createApp(opts: AppOptions = {}): Cpeak {
   app.route("get", "/", (req: Request, res: Response) => {
     res.sendFile(path.join(publicPath, "./index.html"), "text/html");
   });
+
+  // Test-only routes (registered before apiRouter to beat the wildcard routes)
+  if (process.env.NODE_ENV === "test") testRouter(app);
 
   // API routes
   apiRouter(app);

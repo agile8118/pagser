@@ -217,7 +217,7 @@ export const fetchPrivatePage = (): AppThunk => async (dispatch) => {
     );
     dispatch(setAttachFiles(response.page.attachFiles));
     // From the userSlice
-    dispatch(setUserId(response.viewer.id));
+    dispatch(setUserId(response.viewer.id || ""));
     dispatch(setUserStatus(response.viewer.status));
     dispatch(setUserSubscribed(response.viewer.subscribed || false));
     dispatch(setUserReadLater(response.viewer.readLater || false));

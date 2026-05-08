@@ -192,6 +192,7 @@ const AttachFiles = () => {
         {/* Next button */}
         <div className="u-flex-text-center">
           <Button
+            testId="attach-files-next"
             onClick={() => {
               onNextButtonClicked();
             }}

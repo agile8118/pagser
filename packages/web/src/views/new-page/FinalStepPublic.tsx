@@ -192,6 +192,7 @@ const FinalStepPublic = (props: IProps) => {
               </span>
             </div>
             <button
+              data-testid="toggle-comments"
               className="btn-i btn-i-blue"
               onClick={() => onSwitchClicked("comments")}
             >
@@ -216,6 +217,7 @@ const FinalStepPublic = (props: IProps) => {
               </span>
             </div>
             <button
+              data-testid="toggle-rating"
               className="btn-i btn-i-blue"
               onClick={() => onSwitchClicked("rating")}
             >
@@ -240,6 +242,7 @@ const FinalStepPublic = (props: IProps) => {
               </span>
             </div>
             <button
+              data-testid="toggle-links"
               className="btn-i btn-i-blue"
               onClick={() => onSwitchClicked("links")}
             >
@@ -264,6 +267,7 @@ const FinalStepPublic = (props: IProps) => {
               </span>
             </div>
             <button
+              data-testid="toggle-anonymously"
               className="btn-i btn-i-blue"
               onClick={() => onSwitchClicked("anonymously")}
             >
@@ -316,6 +320,7 @@ const FinalStepPublic = (props: IProps) => {
       {/* Publish button */}
       <div className="u-flex-text-center">
         <Button
+          testId="final-step-publish"
           onClick={() => {
             onPublishButtonClicked();
           }}

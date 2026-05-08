@@ -39,7 +39,7 @@ const Private = () => {
       return <Comments />;
     } else {
       return (
-        <p className="normal-paragraph disabled-message-comments center-content">
+        <p data-testid="comments-disabled" className="normal-paragraph disabled-message-comments center-content">
           Comments are disabled for this page.
         </p>
       );
@@ -51,7 +51,7 @@ const Private = () => {
       return <Ratings />;
     } else {
       return (
-        <p className="normal-paragraph disabled-message">
+        <p data-testid="ratings-disabled" className="normal-paragraph disabled-message">
           Ratings are disabled for this page.
         </p>
       );
@@ -63,7 +63,7 @@ const Private = () => {
       return <Author />;
     } else {
       return (
-        <p className="normal-paragraph disabled-message">
+        <p data-testid="author-anonymous" className="normal-paragraph disabled-message">
           This page has been created anonymously.
         </p>
       );

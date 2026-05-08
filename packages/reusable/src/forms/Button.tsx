@@ -15,6 +15,7 @@ interface componentProps {
   type?: "submit" | "button";
   onClick?: () => void;
   disabled?: boolean;
+  testId?: string;
 }
 
 const Button = (props: componentProps) => {
@@ -95,6 +96,7 @@ const Button = (props: componentProps) => {
   return (
     <button
       id={props.id}
+      data-testid={props.testId}
       style={props.style}
       onClick={props.onClick}
       className={className}
