@@ -13,7 +13,6 @@ import type {
 } from "cpeak";
 import ejs from "ejs";
 import swaggerUiDist from "swagger-ui-dist";
-import compression from "compression";
 import path from "path";
 import YAML from "yamljs";
 import apiRouter from "./api/router.js";
@@ -43,7 +42,7 @@ export function createApp(opts: AppOptions = {}): Cpeak {
     enableSwagger = !isTest,
   } = opts;
 
-  const app = cpeak();
+  const app = cpeak({ compression: true });
 
   if (enableSwagger) {
     const swaggerDocument = YAML.load(
@@ -83,8 +82,6 @@ export function createApp(opts: AppOptions = {}): Cpeak {
     };
     next();
   });
-
-  app.beforeEach(compression() as any);
 
   app.beforeEach(
     auth({
