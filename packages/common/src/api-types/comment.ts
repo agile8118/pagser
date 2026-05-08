@@ -14,7 +14,7 @@ export namespace CommentAPI {
     viewer: "owner" | "spectator";
     readByPageOwner: boolean;
     lovedByPageOwner: boolean;
-    inReplyTo: number | null;
+    inReplyTo: string | null;
   }
 
   export interface ReplyItem {

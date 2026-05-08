@@ -20,6 +20,11 @@ const Collection = (props: IProps) => {
       ? `${props.pageNum} pages`
       : `${props.pageNum || 0} page`;
 
+  const name =
+    props.name.length > 25 ? props.name.substring(0, 25) + "..." : props.name;
+  const desc =
+    props.desc.length > 35 ? props.desc.substring(0, 35) + "..." : props.desc;
+
   const content = (
     <React.Fragment>
       <div className="collection-thumbnail__photo">
@@ -42,8 +47,8 @@ const Collection = (props: IProps) => {
         </div>
       </div>
       <div className="collection-thumbnail__details">
-        <div className="collection-thumbnail__name">{props.name}</div>
-        <div className="collection-thumbnail__desc">{props.desc}</div>
+        <div className="collection-thumbnail__name">{name}</div>
+        <div className="collection-thumbnail__desc">{desc}</div>
         <div className="collection-thumbnail__author">{props.author}</div>
       </div>
     </React.Fragment>

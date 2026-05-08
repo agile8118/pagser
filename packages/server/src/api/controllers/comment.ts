@@ -69,7 +69,7 @@ const addComment = async (req: Request, res: Response) => {
       viewer: "owner",
       readByPageOwner: false,
       lovedByPageOwner: false,
-      inReplyTo: parentId ? parseInt(parentId) : null,
+      inReplyTo: parentId,
     },
     inReplyTo: parentId,
   };
@@ -115,7 +115,7 @@ const fetchComments = async (req: Request, res: Response) => {
     [pageId],
   );
 
-  const formattedComments = (comments || []).map((c: any) => ({
+  const formattedComments = (comments || []).map((c: any): CommentAPI.CommentItem => ({
     id: String(c.id),
     text: c.text,
     author: {
@@ -171,7 +171,7 @@ const fetchReplies = async (req: Request, res: Response) => {
     [commentId],
   );
 
-  const formattedReplies = (replies || []).map((r: any) => ({
+  const formattedReplies = (replies || []).map((r: any): CommentAPI.ReplyItem => ({
     id: String(r.id),
     text: r.text,
     author: {

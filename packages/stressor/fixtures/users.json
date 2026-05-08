@@ -1,0 +1,702 @@
+[
+  {
+    "name": "Alice Thornton",
+    "username": "alicethornton",
+    "email": "alice@pagser.local",
+    "headline": "Senior Software Engineer @ Vercel",
+    "biography": "Full-stack developer with 8 years of experience building scalable web applications. I write about TypeScript, distributed systems, and the craft of software engineering.",
+    "links": {
+      "website": "https://alicethornton.dev",
+      "twitter": "alicethornton",
+      "linkedin": "in/alicethornton",
+      "youtube": "@alicethornton",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Marcus Webb",
+    "username": "marcuswebb",
+    "email": "marcus@pagser.local",
+    "headline": "Product Designer & Design Systems Lead",
+    "biography": "I design things that people actually use. Currently leading design systems at a Series B startup. Occasional speaker at design conferences. I believe great UX is invisible.",
+    "links": {
+      "website": "https://marcuswebb.design",
+      "twitter": "marcuswebb",
+      "linkedin": "in/marcuswebb",
+      "youtube": "",
+      "facebook": "marcuswebb"
+    }
+  },
+  {
+    "name": "Priya Nair",
+    "username": "priyanair",
+    "email": "priya@pagser.local",
+    "headline": "ML Engineer | Making AI practical",
+    "biography": "Machine learning engineer focused on deploying models at scale. Previously at Google Brain. Writing about the gap between ML research and production reality.",
+    "links": {
+      "website": "https://priyanair.ai",
+      "twitter": "priyanair",
+      "linkedin": "in/priyanair",
+      "youtube": "@priyanair",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Jordan Cole",
+    "username": "jordancole",
+    "email": "jordan@pagser.local",
+    "headline": "Indie Hacker | Bootstrapped 3 SaaS products",
+    "biography": "I left my corporate job 4 years ago to build software products independently. Currently running three SaaS products with $40k MRR. Writing honestly about the journey.",
+    "links": {
+      "website": "https://jordancole.co",
+      "twitter": "jordancole",
+      "linkedin": "",
+      "youtube": "@jordancole",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Sophie Laurent",
+    "username": "sophielaurent",
+    "email": "sophie@pagser.local",
+    "headline": "DevOps Engineer @ Cloudflare",
+    "biography": "Infrastructure and reliability engineering. I've spent 6 years making systems not fall over. Kubernetes, Terraform, and observability are my daily tools.",
+    "links": {
+      "website": "https://sophielaurent.io",
+      "twitter": "sophielaurent",
+      "linkedin": "in/sophielaurent",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Rafael Costa",
+    "username": "rafaelcosta",
+    "email": "rafael@pagser.local",
+    "headline": "Startup Founder | Building in public",
+    "biography": "Second-time founder. My first startup failed spectacularly. The second one is growing. Writing about everything I wish I'd known before starting. Based in S\u00e3o Paulo.",
+    "links": {
+      "website": "https://rafaelcosta.com.br",
+      "twitter": "rafaelcosta",
+      "linkedin": "in/rafaelcosta",
+      "youtube": "@rafaelcosta",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Hannah Park",
+    "username": "hannahpark",
+    "email": "hannah@pagser.local",
+    "headline": "Frontend Engineer | React & Web Performance",
+    "biography": "I obsess over page load times and Core Web Vitals. React core contributor. Writing about frontend performance, accessibility, and the never-ending CSS wars.",
+    "links": {
+      "website": "https://hannahpark.dev",
+      "twitter": "hannahpark",
+      "linkedin": "in/hannahpark",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Dmitri Volkov",
+    "username": "dmitrivolkov",
+    "email": "dmitri@pagser.local",
+    "headline": "Security Researcher | Bug bounty hunter",
+    "biography": "Full-time security researcher and part-time bug bounty hunter. Found vulnerabilities in Fortune 500 companies. Writing about offensive security, CTFs, and responsible disclosure.",
+    "links": {
+      "website": "https://dmitrivolkov.sec",
+      "twitter": "dmitrivolkov",
+      "linkedin": "in/dmitrivolkov",
+      "youtube": "@dmitrivolkov",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Camille Dubois",
+    "username": "camilledubois",
+    "email": "camille@pagser.local",
+    "headline": "Engineering Manager @ Stripe",
+    "biography": "Managing engineering teams for 6 years. I think deeply about team dynamics, technical roadmaps, and how to grow engineers who don't want to become managers.",
+    "links": {
+      "website": "https://camilledubois.fr",
+      "twitter": "camilledubois",
+      "linkedin": "in/camilledubois",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Omar Shaikh",
+    "username": "omarshaikh",
+    "email": "omar@pagser.local",
+    "headline": "Backend Engineer | Go & Distributed Systems",
+    "biography": "Writing Go since 2016. I build event-driven systems and get unreasonably excited about consensus algorithms. Previously at Uber, now at a small fintech.",
+    "links": {
+      "website": "https://omarshaikh.dev",
+      "twitter": "omarshaikh",
+      "linkedin": "in/omarshaikh",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Yuki Tanaka",
+    "username": "yukitanaka",
+    "email": "yuki@pagser.local",
+    "headline": "Game Developer | Unity & Unreal Engine",
+    "biography": "Independent game developer making narrative-driven games. I write about game design theory, the economics of indie gaming, and surviving the Steam algorithm.",
+    "links": {
+      "website": "https://yukitanaka.games",
+      "twitter": "yukitanaka",
+      "linkedin": "",
+      "youtube": "@yukitanaka",
+      "facebook": "yukitanaka"
+    }
+  },
+  {
+    "name": "Leila Hassan",
+    "username": "leilahassan",
+    "email": "leila@pagser.local",
+    "headline": "Data Engineer | Building data platforms",
+    "biography": "Data engineer who has built pipelines processing billions of events daily. Apache Spark, dbt, and modern data stack are my playground. Writing about data engineering at scale.",
+    "links": {
+      "website": "https://leilahassan.io",
+      "twitter": "leilahassan",
+      "linkedin": "in/leilahassan",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Ben Fletcher",
+    "username": "benfletcher",
+    "email": "ben@pagser.local",
+    "headline": "Technical Writer | Making docs people love",
+    "biography": "I spent 7 years as a software engineer before realizing I was better at explaining things than building them. Now I write technical documentation and developer guides full time.",
+    "links": {
+      "website": "https://benfletcher.io",
+      "twitter": "benfletcher",
+      "linkedin": "in/benfletcher",
+      "youtube": "@benfletcher",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Natasha Ivanova",
+    "username": "natashaivanova",
+    "email": "natasha@pagser.local",
+    "headline": "Blockchain Engineer | DeFi protocols",
+    "biography": "Building decentralized finance protocols since 2018. Survived two crypto winters. Writing about Solidity, protocol design, and the surprisingly human problem of decentralization.",
+    "links": {
+      "website": "https://natashaivanova.dev",
+      "twitter": "natashaivanova",
+      "linkedin": "in/natashaivanova",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Chris Morgan",
+    "username": "chrismorgan",
+    "email": "chris@pagser.local",
+    "headline": "SRE @ Netflix | Chaos Engineering",
+    "biography": "Site reliability engineer who deliberately breaks production systems for fun (and profit). Netflix chaos engineering team. Writing about failure modes, runbooks, and learning from incidents.",
+    "links": {
+      "website": "https://chrismorgan.sre",
+      "twitter": "chrismorgan",
+      "linkedin": "in/chrismorgan",
+      "youtube": "@chrismorgan",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Aisha Williams",
+    "username": "aishawilliams",
+    "email": "aisha@pagser.local",
+    "headline": "iOS Engineer | Accessibility champion",
+    "biography": "Senior iOS engineer with a focus on making apps accessible to everyone. VoiceOver expert. Writing about Swift, UIKit, SwiftUI, and why accessibility is good product design, not charity.",
+    "links": {
+      "website": "https://aishawilliams.dev",
+      "twitter": "aishawilliams",
+      "linkedin": "in/aishawilliams",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Lucas Muller",
+    "username": "lucasmuller",
+    "email": "lucas@pagser.local",
+    "headline": "Open Source Maintainer | Rust enthusiast",
+    "biography": "Maintainer of three popular Rust crates. I work on systems programming and spend my evenings making Rust accessible to developers coming from other languages.",
+    "links": {
+      "website": "https://lucasmuller.rs",
+      "twitter": "lucasmuller",
+      "linkedin": "in/lucasmuller",
+      "youtube": "@lucasmuller",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Grace Kim",
+    "username": "gracekim",
+    "email": "grace@pagser.local",
+    "headline": "Growth Engineer | Experimentation at scale",
+    "biography": "Growth engineering at a B2C company with 50M users. I run experiments, measure what actually matters, and write about the intersection of statistics, product, and engineering.",
+    "links": {
+      "website": "https://gracekim.io",
+      "twitter": "gracekim",
+      "linkedin": "in/gracekim",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Thomas Andersen",
+    "username": "thomasandersen",
+    "email": "thomas@pagser.local",
+    "headline": "Platform Engineer | Internal developer tooling",
+    "biography": "I build the tools that engineers use to build products. Platform engineering, developer experience, and internal tooling. Based in Copenhagen. Obsessed with reducing toil.",
+    "links": {
+      "website": "https://thomasandersen.dk",
+      "twitter": "thomasandersen",
+      "linkedin": "in/thomasandersen",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Maya Patel",
+    "username": "mayapatel",
+    "email": "maya@pagser.local",
+    "headline": "AI Product Manager | LLM applications",
+    "biography": "Product manager specializing in AI-powered products. Previously an ML engineer. I bridge the gap between what models can do and what users actually need.",
+    "links": {
+      "website": "https://mayapatel.pm",
+      "twitter": "mayapatel",
+      "linkedin": "in/mayapatel",
+      "youtube": "@mayapatel",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Diego Ramirez",
+    "username": "diegoramirez",
+    "email": "diego@pagser.local",
+    "headline": "Staff Engineer @ Shopify",
+    "biography": "Staff engineer at Shopify working on checkout infrastructure. Ruby on Rails veteran turned distributed systems enthusiast. Writing about scaling, mentoring, and the staff engineer role.",
+    "links": {
+      "website": "https://diegoramirez.dev",
+      "twitter": "diegoramirez",
+      "linkedin": "in/diegoramirez",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Zoe Chen",
+    "username": "zoechen",
+    "email": "zoe@pagser.local",
+    "headline": "Developer Advocate @ AWS",
+    "biography": "Developer advocate helping engineers get the most out of cloud infrastructure. Former backend engineer. I write tutorials, give talks, and genuinely enjoy answering questions on forums.",
+    "links": {
+      "website": "https://zoechen.cloud",
+      "twitter": "zoechen",
+      "linkedin": "in/zoechen",
+      "youtube": "@zoechen",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Patrick Brennan",
+    "username": "patrickbrennan",
+    "email": "patrick@pagser.local",
+    "headline": "CTO @ Early-stage startup | First principles thinker",
+    "biography": "Third-time CTO at a seed-stage startup. I've made every technical mistake in the book and I'm still making new ones. Writing about engineering leadership and building teams from zero.",
+    "links": {
+      "website": "https://patrickbrennan.io",
+      "twitter": "patrickbrennan",
+      "linkedin": "in/patrickbrennan",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Fatima Al Rashid",
+    "username": "fatimaalrashid",
+    "email": "fatima@pagser.local",
+    "headline": "Embedded Systems Engineer | Real-time software",
+    "biography": "Writing C for microcontrollers since before it was fashionable. I work on real-time operating systems and firmware for industrial hardware. Writing about the hardware-software boundary.",
+    "links": {
+      "website": "https://fatimaalrashid.dev",
+      "twitter": "fatimaalrashid",
+      "linkedin": "in/fatimaalrashid",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Sam Torres",
+    "username": "samtorres",
+    "email": "sam@pagser.local",
+    "headline": "Full Stack Engineer | Building for creators",
+    "biography": "I build tools for content creators and indie publishers. Founder of a small studio that ships one product per year. Writing about product development, creator economy, and sustainable building.",
+    "links": {
+      "website": "https://samtorres.studio",
+      "twitter": "samtorres",
+      "linkedin": "in/samtorres",
+      "youtube": "@samtorres",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Elena Popescu",
+    "username": "elenapopescu",
+    "email": "elena@pagser.local",
+    "headline": "Database Engineer | PostgreSQL internals",
+    "biography": "PostgreSQL contributor and database performance consultant. I've optimized queries for billion-row tables and I know where all the EXPLAIN ANALYZE bodies are buried.",
+    "links": {
+      "website": "https://elenapopescu.db",
+      "twitter": "elenapopescu",
+      "linkedin": "in/elenapopescu",
+      "youtube": "@elenapopescu",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Noah Jackson",
+    "username": "noahjackson",
+    "email": "noah@pagser.local",
+    "headline": "Android Engineer | Kotlin multi-platform",
+    "biography": "Senior Android engineer working on Kotlin multiplatform projects. Previously worked on the Android team at Spotify. Writing about mobile architecture, performance, and Kotlin idioms.",
+    "links": {
+      "website": "https://noahjackson.dev",
+      "twitter": "noahjackson",
+      "linkedin": "in/noahjackson",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Clara Santos",
+    "username": "clarasantos",
+    "email": "clara@pagser.local",
+    "headline": "UX Researcher | Human-centered everything",
+    "biography": "10 years of user research across fintech, healthtech, and consumer apps. I interview users for a living and help product teams understand what people actually want versus what they say they want.",
+    "links": {
+      "website": "https://clarasantos.ux",
+      "twitter": "clarasantos",
+      "linkedin": "in/clarasantos",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "James Li",
+    "username": "jamesli",
+    "email": "james@pagser.local",
+    "headline": "API Design Engineer | REST & GraphQL",
+    "biography": "I design APIs for a living and I have opinions about it. REST, GraphQL, gRPC \u2014 I've built and maintained all three at scale. Writing about API design principles and developer experience.",
+    "links": {
+      "website": "https://jamesli.api",
+      "twitter": "jamesli",
+      "linkedin": "in/jamesli",
+      "youtube": "@jamesli",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Ingrid Berg",
+    "username": "ingridberg",
+    "email": "ingrid@pagser.local",
+    "headline": "Climate Tech Engineer | Sustainability data",
+    "biography": "Software engineer in the climate tech space, building tools to measure and reduce carbon emissions. Previously at a Big 4 consulting firm. Now working on things that matter.",
+    "links": {
+      "website": "https://ingridberg.no",
+      "twitter": "ingridberg",
+      "linkedin": "in/ingridberg",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Kevin Walsh",
+    "username": "kevinwalsh",
+    "email": "kevin@pagser.local",
+    "headline": "Engineering Coach | Helping devs level up",
+    "biography": "Former engineering manager turned independent coach. I work 1:1 with senior engineers who want to move into staff or leadership roles. Writing about career ladders and the stuff nobody teaches you.",
+    "links": {
+      "website": "https://kevinwalsh.coach",
+      "twitter": "kevinwalsh",
+      "linkedin": "in/kevinwalsh",
+      "youtube": "@kevinwalsh",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Ana Oliveira",
+    "username": "anaoliveira",
+    "email": "ana@pagser.local",
+    "headline": "Compiler Engineer | Programming language design",
+    "biography": "I write compilers for fun and profit. LLVM contributor. Interested in type systems, language semantics, and making developers more productive through better tooling.",
+    "links": {
+      "website": "https://anaoliveira.pl",
+      "twitter": "anaoliveira",
+      "linkedin": "in/anaoliveira",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Felix Wagner",
+    "username": "felixwagner",
+    "email": "felix@pagser.local",
+    "headline": "Web3 Engineer | Smart contract auditor",
+    "biography": "Smart contract security auditor and DeFi developer. I've audited protocols with $500M+ TVL and found bugs that mattered. Writing about Solidity security patterns and audit methodology.",
+    "links": {
+      "website": "https://felixwagner.eth",
+      "twitter": "felixwagner",
+      "linkedin": "",
+      "youtube": "@felixwagner",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Mia Johnson",
+    "username": "miajohnson",
+    "email": "mia@pagser.local",
+    "headline": "Head of Engineering | EdTech startup",
+    "biography": "Building educational technology for underserved communities. Former teacher turned engineer. Leading an engineering team of 12 building products that have reached 2M students.",
+    "links": {
+      "website": "https://miajohnson.edu",
+      "twitter": "miajohnson",
+      "linkedin": "in/miajohnson",
+      "youtube": "@miajohnson",
+      "facebook": "miajohnson"
+    }
+  },
+  {
+    "name": "Carlos Mendez",
+    "username": "carlosmendez",
+    "email": "carlos@pagser.local",
+    "headline": "Robotics Engineer | ROS2 & autonomous systems",
+    "biography": "Building robots that navigate the real world. ROS2 contributor. Working on autonomous delivery robots in urban environments. Writing about the surprisingly hard problems in robotics.",
+    "links": {
+      "website": "https://carlosmendez.robotics",
+      "twitter": "carlosmendez",
+      "linkedin": "in/carlosmendez",
+      "youtube": "@carlosmendez",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Fiona Clarke",
+    "username": "fionaclarke",
+    "email": "fiona@pagser.local",
+    "headline": "Fintech Engineer | Payments infrastructure",
+    "biography": "Building payment systems that move real money reliably. 8 years in fintech. I care deeply about correctness, auditability, and the edge cases that only happen in production.",
+    "links": {
+      "website": "https://fionaclarke.io",
+      "twitter": "fionaclarke",
+      "linkedin": "in/fionaclarke",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Kai Nakamura",
+    "username": "kainakamura",
+    "email": "kai@pagser.local",
+    "headline": "AR/VR Engineer | Spatial computing",
+    "biography": "Building experiences for spatial computing platforms. Previously at Apple working on Vision Pro. Writing about the technical challenges of AR, VR, and the ambiguous future of spatial interfaces.",
+    "links": {
+      "website": "https://kainakamura.xr",
+      "twitter": "kainakamura",
+      "linkedin": "in/kainakamura",
+      "youtube": "@kainakamura",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Isabel Ferreira",
+    "username": "isabelferreira",
+    "email": "isabel@pagser.local",
+    "headline": "Staff Engineer @ LinkedIn | Search & recommendations",
+    "biography": "Working on search infrastructure and recommendation systems at LinkedIn. PhD in information retrieval. Writing about large-scale ML systems, information retrieval, and what recommendation engines actually optimize for.",
+    "links": {
+      "website": "https://isabelferreira.ai",
+      "twitter": "isabelferreira",
+      "linkedin": "in/isabelferreira",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Aaron Brooks",
+    "username": "aaronbrooks",
+    "email": "aaron@pagser.local",
+    "headline": "Network Engineer | BGP & large-scale infrastructure",
+    "biography": "Network engineer at a Tier 1 ISP. I've peered with hundreds of ASes and debugged routing issues affecting millions of users. Writing about BGP, network architecture, and the physical internet.",
+    "links": {
+      "website": "https://aaronbrooks.net",
+      "twitter": "aaronbrooks",
+      "linkedin": "in/aaronbrooks",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Layla Ahmed",
+    "username": "laylaahmed",
+    "email": "layla@pagser.local",
+    "headline": "Healthcare Technologist | FHIR & interoperability",
+    "biography": "Building healthcare interoperability systems that help doctors get the right information at the right time. FHIR expert. Working at the intersection of health policy and software engineering.",
+    "links": {
+      "website": "https://laylaahmed.health",
+      "twitter": "laylaahmed",
+      "linkedin": "in/laylaahmed",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Ryan Murphy",
+    "username": "ryanmurphy",
+    "email": "ryan@pagser.local",
+    "headline": "Freelance Developer | React & Node specialist",
+    "biography": "Independent developer specializing in React and Node.js. 9 years of freelancing. I've shipped projects for startups and Fortune 500s. Writing about running a sustainable freelance practice.",
+    "links": {
+      "website": "https://ryanmurphy.dev",
+      "twitter": "ryanmurphy",
+      "linkedin": "in/ryanmurphy",
+      "youtube": "@ryanmurphy",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Vera Sokolova",
+    "username": "verasokolova",
+    "email": "vera@pagser.local",
+    "headline": "DevRel Engineer | Community building",
+    "biography": "Developer relations engineer building communities around open source projects. I've grown developer communities from 0 to 50k members. Writing about DevRel strategy, metrics, and the job nobody fully understands.",
+    "links": {
+      "website": "https://verasokolova.community",
+      "twitter": "verasokolova",
+      "linkedin": "in/verasokolova",
+      "youtube": "@verasokolova",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Nathan Ellis",
+    "username": "nathanellis",
+    "email": "nathan@pagser.local",
+    "headline": "Principal Engineer | Cloud architecture",
+    "biography": "Principal engineer with 15 years of experience designing cloud architectures. AWS Certified Solutions Architect Professional. Writing about cloud patterns, multi-tenancy, and the decisions that haunt you at 3am.",
+    "links": {
+      "website": "https://nathanellis.cloud",
+      "twitter": "nathanellis",
+      "linkedin": "in/nathanellis",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Yara Hassan",
+    "username": "yarahassan",
+    "email": "yara@pagser.local",
+    "headline": "Bioinformatics Engineer | Genomics data pipelines",
+    "biography": "Software engineer working on genomics data processing pipelines. PhD in bioinformatics. Writing about the intersection of software engineering and life sciences.",
+    "links": {
+      "website": "https://yarahassan.bio",
+      "twitter": "yarahassan",
+      "linkedin": "in/yarahassan",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Ethan Price",
+    "username": "ethanprice",
+    "email": "ethan@pagser.local",
+    "headline": "Game Backend Engineer | MMO infrastructure",
+    "biography": "Backend engineer for multiplayer games. I've kept MMOs running for 500k concurrent players. Writing about low-latency networking, game server architecture, and the chaos of live service games.",
+    "links": {
+      "website": "https://ethanprice.games",
+      "twitter": "ethanprice",
+      "linkedin": "in/ethanprice",
+      "youtube": "@ethanprice",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Nina Schneider",
+    "username": "ninaschneider",
+    "email": "nina@pagser.local",
+    "headline": "Engineering Productivity | Build systems at scale",
+    "biography": "I work on the tools and infrastructure that make large engineering organizations move faster. Build systems, CI/CD pipelines, and developer experience at monorepo scale.",
+    "links": {
+      "website": "https://ninaschneider.dev",
+      "twitter": "ninaschneider",
+      "linkedin": "in/ninaschneider",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Oscar Martinez",
+    "username": "oscarmartinez",
+    "email": "oscar@pagser.local",
+    "headline": "Audio Engineer turned Software Developer",
+    "biography": "Spent 10 years as a professional audio engineer before learning to code. Now building audio processing software. Writing about DSP, audio APIs, and what music production taught me about software.",
+    "links": {
+      "website": "https://oscarmartinez.audio",
+      "twitter": "oscarmartinez",
+      "linkedin": "in/oscarmartinez",
+      "youtube": "@oscarmartinez",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Lily Thompson",
+    "username": "lilythompson",
+    "email": "lily@pagser.local",
+    "headline": "Tech Lead | E-commerce platform engineering",
+    "biography": "Tech lead at a mid-size e-commerce company managing a platform that processes 50k orders a day. Writing about the unsexy but critical work of keeping a commerce platform running.",
+    "links": {
+      "website": "https://lilythompson.io",
+      "twitter": "lilythompson",
+      "linkedin": "in/lilythompson",
+      "youtube": "",
+      "facebook": "lilythompson"
+    }
+  },
+  {
+    "name": "Ahmed Khalil",
+    "username": "ahmedkhalil",
+    "email": "ahmed@pagser.local",
+    "headline": "Cybersecurity Engineer | Zero trust architecture",
+    "biography": "Building zero trust security architectures for enterprise clients. 12 years in information security. Writing about practical security engineering, threat modeling, and the politics of getting organizations to care about security.",
+    "links": {
+      "website": "https://ahmedkhalil.sec",
+      "twitter": "ahmedkhalil",
+      "linkedin": "in/ahmedkhalil",
+      "youtube": "",
+      "facebook": ""
+    }
+  },
+  {
+    "name": "Maya Okonkwo",
+    "username": "mayaokonkwo",
+    "email": "mayaokonkwo@pagser.local",
+    "headline": "Staff Engineer | Distributed systems and reliability",
+    "biography": "Staff engineer focused on distributed systems reliability. Previously at two unicorns before they went public. Writing about on-call culture, incident retrospectives, and what it actually takes to build systems that stay up.",
+    "links": {
+      "website": "https://mayaokonkwo.dev",
+      "twitter": "mayaokonkwo",
+      "linkedin": "in/mayaokonkwo",
+      "youtube": "@mayaokonkwo",
+      "facebook": ""
+    }
+  }
+]

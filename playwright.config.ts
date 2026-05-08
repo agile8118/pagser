@@ -18,6 +18,7 @@ export default defineConfig({
       DB_DATABASE: "pagser_test",
       NODE_ENV: "test",
       PORT: "3082",
+      SKIP_EMAIL: "true",
     },
     timeout: 30_000,
   },

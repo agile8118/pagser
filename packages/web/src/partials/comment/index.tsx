@@ -43,7 +43,7 @@ const Comment = (props: IProps) => {
     typeof props.replies === "number" ? props.replies : props.replies.length;
 
   // Button to either show or hide the replies
-  const showHideRepliesBtn = !props.showReplies ? (
+  const showHideRepliesBtn = (!props.showReplies && props.highlightedReplies.length === 0) ? (
     <a
       href="javascript:void(0)"
       className="btn btn-text comment__view-replies"

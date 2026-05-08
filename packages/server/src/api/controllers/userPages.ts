@@ -50,11 +50,7 @@ const fetchPublishedPages = async (req: Request, res: Response) => {
     url: page.url,
     type: page.type,
     contents: page.contents,
-    photo: page.cropped_photo_url
-      ? {
-          secure_url: page.cropped_photo_url,
-        }
-      : null,
+    photo_url: page.cropped_photo_url || null,
     author: {
       username: page.username,
     },

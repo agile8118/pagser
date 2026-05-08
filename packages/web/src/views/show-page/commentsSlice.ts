@@ -22,7 +22,7 @@ export interface IReply {
   likes: number;
   status: TStatus;
   toName?: string;
-  inReplyTo: string | number | null;
+  inReplyTo: string | null;
   inReplyToUser?: string;
 }
 
@@ -241,6 +241,8 @@ export const fetchComments = (): AppThunk => async (dispatch, getState) => {
   const pageId = getState().page.id;
   const commentsLength = getState().comments.list.length;
   const portion = commentsLength / 10 + 1;
+
+  dispatch(setLoading(true));
 
   const response = await request.get<CommentAPI.FetchCommentsResponse>(
     `/comments/${pageId}?portion=${portion}`,

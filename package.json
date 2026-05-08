@@ -13,7 +13,10 @@
   "scripts": {
     "test:e2e": "yarn workspace @pagser/web build && playwright test",
     "test:e2e:headed": "yarn workspace @pagser/web build && playwright test --headed",
-    "playwright": "playwright"
+    "playwright": "playwright",
+    "seed:master": "yarn workspace @pagser/stressor seed",
+    "seed:e2e": "yarn workspace @pagser/stressor seed:e2e",
+    "seed:db": "yarn workspace @pagser/stressor seed:db"
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1"

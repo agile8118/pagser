@@ -97,7 +97,7 @@ const VerifyEmail = (props: IProps) => {
         const errorMsg = error.response?.data?.message;
         if (errorMsg === ApiMessages.INVALID_CODE) {
           setAlertMessage(
-            "The code is invalid. Please enter the exact code we sent to your email. You can resend the code if needed."
+            "The code is invalid. Please enter the exact code we sent to your email. You can resend the code if needed.",
           );
         } else {
           setAlertMessage("Something went wrong, please try again.");
@@ -128,7 +128,7 @@ const VerifyEmail = (props: IProps) => {
       .catch((error) => {
         if (error.response.data.message === ApiMessages.EMAIL_IN_USE) {
           setAlertMessage(
-            "This email is already in use. Please log in with this email or choose another one."
+            "This email is already in use. Please log in with this email or choose another one.",
           );
           setAlertType("error");
           setChangeEmailMdl(false);
@@ -332,7 +332,7 @@ const VerifyEmail = (props: IProps) => {
       <div className="auth">
         <h3 className="heading-tertiary">Verify your email address</h3>
         <p className="small-copy">
-          {props.email} - The last step is to enter the 5 digits code we have
+          {props.email} - The last step is to enter the 5-digit code we have
           just sent to your email to verify your email address.
         </p>
         <Alert

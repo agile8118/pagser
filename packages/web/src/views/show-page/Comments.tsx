@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useEffect } from "react";
+import React, { ReactElement, useState, useEffect, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loadingModal, alert, util } from "@pagser/common";
 import { ConfirmModal, Button, Loading, Textarea } from "@pagser/reusable";
@@ -36,49 +36,38 @@ const Comments = () => {
   const [confirmationModalCommentId, setConfirmationModalCommentId] =
     useState(""); // id of the comment to be deleted
 
+  const loadingRef = useRef(loading);
+  const commentsLengthRef = useRef(comments.length);
+  const totalCountRef = useRef(totalCount);
+
+  useEffect(() => { loadingRef.current = loading; }, [loading]);
+  useEffect(() => { commentsLengthRef.current = comments.length; }, [comments.length]);
+  useEffect(() => { totalCountRef.current = totalCount; }, [totalCount]);
+
   useEffect(() => {
     if (!pageLoading) {
       dispatch(fetchComments());
     }
   }, [pageLoading]);
 
-  useEffect(() => {
-    document.addEventListener("scroll", trackScrolling);
-  }, [comments.length]);
-
-  // @TODO: WHY?!
-  useEffect(() => {
-    fetchComments();
-  }, [pageId]);
-
-  useEffect(() => {
-    return () => {
-      document.removeEventListener("scroll", trackScrolling);
-    };
-  }, []);
-
-  const trackScrolling = () => {
+  const trackScrolling = useCallback(() => {
     const wrappedElement = document.getElementById("comments2") as HTMLElement;
-
     if (
       util.isBottom(wrappedElement) &&
-      comments.length > 1 &&
-      comments.length % 10 === 0
+      !loadingRef.current &&
+      commentsLengthRef.current < totalCountRef.current
     ) {
       dispatch(fetchComments());
-      document.removeEventListener("scroll", trackScrolling);
     }
-  };
+  }, [dispatch]);
+
+  useEffect(() => {
+    document.addEventListener("scroll", trackScrolling);
+    return () => document.removeEventListener("scroll", trackScrolling);
+  }, [trackScrolling]);
 
   // Render the list of comments
   const renderComments = () => {
-    if (comments.length === 0)
-      return (
-        <div className="no-comment-message margin-top-2">
-          <p>No comments yet. Be the first to comment on this page!</p>
-        </div>
-      );
-
     if (comments.length > 0)
       return comments.map((comment) => {
         return (
@@ -189,7 +178,13 @@ const Comments = () => {
             </h2>
             {!loading && renderAddComment()}
 
-            {!loading && renderComments()}
+            {!loading && comments.length === 0 && (
+              <div className="no-comment-message margin-top-2">
+                <p>No comments yet. Be the first to comment on this page!</p>
+              </div>
+            )}
+
+            {renderComments()}
 
             {loading && (
               <div className="center-content">

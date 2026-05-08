@@ -6,7 +6,7 @@ export namespace UserPagesAPI {
     url: string;
     type: "public" | "private";
     contents: PageContents;
-    photo: { secure_url: string; } | null;
+    photo_url: string | null;
     author: { username: string; };
   }
 
