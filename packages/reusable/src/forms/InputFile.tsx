@@ -56,7 +56,7 @@ const InputFile = ({
 
           if (!fileSize || !fileName || !fileType) {
             alert(
-              "Sorry, something unexpected happened. Please try again or contact our support.",
+              "Something unexpected happened. Please try again or contact support.",
               "error"
             );
             return;

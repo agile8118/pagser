@@ -75,7 +75,7 @@ const Comments = () => {
     if (comments.length === 0)
       return (
         <div className="no-comment-message margin-top-2">
-          <p>No comment yet. Be the first one to comment on this page!</p>
+          <p>No comments yet. Be the first to comment on this page!</p>
         </div>
       );
 
@@ -112,8 +112,8 @@ const Comments = () => {
           <label className="form__label">Add a new comment</label>
 
           <p className="normal-paragraph">
-            Please <a href="/login">login</a> if you want to add your comment
-            for this page or reply to others.
+            Please <a href="/login">log in</a> if you want to comment on this
+            page or reply to others.
           </p>
         </div>
       );
@@ -175,8 +175,8 @@ const Comments = () => {
         }}
       >
         <p>
-          Are you sure that you want to delete your comment? All the other
-          replies associated with this comment will also get removed.
+          Are you sure you want to delete this comment? All replies to it will
+          also be removed.
           <br />
           You <strong>cannot undo</strong> this action.
         </p>

@@ -3,6 +3,7 @@ import request from "supertest";
 
 import app from "../src/app.js";
 import { DB } from "../src/database/index.js";
+import { CommentAPI } from "@pagser/common";
 import { createUser } from "./helpers/auth.js";
 import {
   makeComment,
@@ -27,16 +28,17 @@ describe("Comment", () => {
         .set("authorization", u.token)
         .send({ text: "  hello world  " });
       assert.equal(res.status, 201);
-      assert.equal(res.body.comment.text, "hello world"); // trimmed
-      assert.equal(res.body.comment.author.username, u.username);
-      assert.equal(res.body.comment.viewer, "owner");
-      assert.equal(res.body.comment.likes, 0);
-      assert.equal(res.body.comment.inReplyTo, null);
-      assert.equal(res.body.inReplyTo, null);
+      const body = res.body as CommentAPI.AddCommentResponse;
+      assert.equal(body.comment.text, "hello world"); // trimmed
+      assert.equal(body.comment.author.username, u.username);
+      assert.equal(body.comment.viewer, "owner");
+      assert.equal(body.comment.likes, 0);
+      assert.equal(body.comment.inReplyTo, null);
+      assert.equal(body.inReplyTo, null);
 
       const row = await DB.find<{ text: string }>(
         "SELECT text FROM comments WHERE id = $1",
-        [res.body.comment.id],
+        [body.comment.id],
       );
       assert.equal(row?.text, "hello world");
     });
@@ -59,8 +61,9 @@ describe("Comment", () => {
         .set("authorization", u.token)
         .send({ text: "a reply", inReplyTo: parent.id });
       assert.equal(res.status, 201);
-      assert.equal(res.body.comment.inReplyTo, String(parent.id));
-      assert.equal(res.body.inReplyTo, String(parent.id));
+      const body = res.body as CommentAPI.AddCommentResponse;
+      assert.equal(String(body.comment.inReplyTo), String(parent.id));
+      assert.equal(body.inReplyTo, String(parent.id));
     });
 
     it("validation: 400 when text is empty", async () => {
@@ -113,10 +116,11 @@ describe("Comment", () => {
 
       const res = await request(app).get(`/api/comments/${page.id}`);
       assert.equal(res.status, 200);
-      assert.equal(res.body.comments.length, 2);
-      assert.equal(res.body.comments[0].text, "second");
-      assert.equal(res.body.comments[1].text, "first");
-      assert.equal(res.body.length, 2); // total count
+      const body = res.body as CommentAPI.FetchCommentsResponse;
+      assert.equal(body.comments.length, 2);
+      assert.equal(body.comments[0].text, "second");
+      assert.equal(body.comments[1].text, "first");
+      assert.equal(body.length, 2); // total count
     });
 
     it("excludes replies (only top-level)", async () => {
@@ -139,9 +143,10 @@ describe("Comment", () => {
       });
 
       const res = await request(app).get(`/api/comments/${page.id}`);
-      assert.equal(res.body.comments.length, 1);
-      assert.equal(res.body.comments[0].text, "top");
-      assert.equal(res.body.comments[0].replies, 1); // reply count
+      const body = res.body as CommentAPI.FetchCommentsResponse;
+      assert.equal(body.comments.length, 1);
+      assert.equal(body.comments[0].text, "top");
+      assert.equal(body.comments[0].replies, 1); // reply count
     });
 
     it("pagination: portion=2 returns next 10", async () => {
@@ -162,8 +167,9 @@ describe("Comment", () => {
       const res = await request(app).get(
         `/api/comments/${page.id}?portion=2`,
       );
-      assert.equal(res.body.comments.length, 2);
-      assert.equal(res.body.length, 12);
+      const body = res.body as CommentAPI.FetchCommentsResponse;
+      assert.equal(body.comments.length, 2);
+      assert.equal(body.length, 12);
     });
 
     it("viewer: shows 'owner' for own comments when authenticated", async () => {
@@ -179,7 +185,8 @@ describe("Comment", () => {
       const res = await request(app)
         .get(`/api/comments/${page.id}`)
         .set("authorization", u.token);
-      assert.equal(res.body.comments[0].viewer, "owner");
+      const body = res.body as CommentAPI.FetchCommentsResponse;
+      assert.equal(body.comments[0].viewer, "owner");
     });
 
     it("viewer: shows 'spectator' when anonymous", async () => {
@@ -196,7 +203,8 @@ describe("Comment", () => {
       });
 
       const res = await request(app).get(`/api/comments/${page.id}`);
-      assert.equal(res.body.comments[0].viewer, "spectator");
+      const body = res.body as CommentAPI.FetchCommentsResponse;
+      assert.equal(body.comments[0].viewer, "spectator");
     });
 
     it("like_count reflects ratings", async () => {
@@ -215,7 +223,8 @@ describe("Comment", () => {
       await makeRating({ userId: liker.id, commentId: c.id, liked: true });
 
       const res = await request(app).get(`/api/comments/${page.id}`);
-      assert.equal(res.body.comments[0].likes, 1);
+      const body = res.body as CommentAPI.FetchCommentsResponse;
+      assert.equal(body.comments[0].likes, 1);
     });
   });
 
@@ -250,10 +259,11 @@ describe("Comment", () => {
         `/api/comment/${parent.id}/replies`,
       );
       assert.equal(res.status, 200);
-      assert.equal(res.body.replies.length, 2);
-      assert.equal(res.body.replies[0].text, "first reply");
-      assert.equal(res.body.replies[1].text, "second reply");
-      assert.equal(String(res.body.commentId), String(parent.id));
+      const body = res.body as CommentAPI.FetchRepliesResponse;
+      assert.equal(body.replies.length, 2);
+      assert.equal(body.replies[0].text, "first reply");
+      assert.equal(body.replies[1].text, "second reply");
+      assert.equal(String(body.commentId), String(parent.id));
     });
 
     it("empty array when no replies", async () => {
@@ -269,7 +279,8 @@ describe("Comment", () => {
       });
 
       const res = await request(app).get(`/api/comment/${c.id}/replies`);
-      assert.deepEqual(res.body.replies, []);
+      const emptyBody = res.body as CommentAPI.FetchRepliesResponse;
+      assert.deepEqual(emptyBody.replies, []);
     });
   });
 
@@ -294,7 +305,8 @@ describe("Comment", () => {
         .set("authorization", u.token)
         .send({ text: "new text" });
       assert.equal(res.status, 200);
-      assert.equal(res.body.newComment, "new text");
+      const body = res.body as CommentAPI.UpdateCommentResponse;
+      assert.equal(body.newComment, "new text");
 
       const row = await DB.find<{ text: string; edited: boolean }>(
         "SELECT text, edited FROM comments WHERE id = $1",
@@ -385,7 +397,8 @@ describe("Comment", () => {
         .delete(`/api/comment/${parent.id}`)
         .set("authorization", u.token);
       assert.equal(res.status, 200);
-      assert.equal(String(res.body.commentId), String(parent.id));
+      const body = res.body as CommentAPI.DeleteCommentResponse;
+      assert.equal(String(body.commentId), String(parent.id));
 
       const remaining = await DB.findMany(
         "SELECT id FROM comments WHERE page_id = $1",
@@ -452,10 +465,11 @@ describe("Comment", () => {
         .get("/api/comments/history")
         .set("authorization", u.token);
       assert.equal(res.status, 200);
-      assert.equal(res.body.comments.length, 2);
-      assert.equal(res.body.comments[0].text, "newer");
-      assert.equal(res.body.comments[0].page.url, "c-hist");
-      assert.equal(res.body.comments[0].page.author.username, author.username);
+      const body = res.body as CommentAPI.CommentsHistoryResponse;
+      assert.equal(body.comments.length, 2);
+      assert.equal(body.comments[0].text, "newer");
+      assert.equal(body.comments[0].page.url, "c-hist");
+      assert.equal(body.comments[0].page.author.username, author.username);
     });
 
     it("reply.name = 'yourself' when user replied to their own comment", async () => {
@@ -482,8 +496,9 @@ describe("Comment", () => {
         .get("/api/comments/history")
         .set("authorization", u.token);
       // Reply is newest; reply.name should be "yourself"
-      const reply = res.body.comments.find(
-        (c: any) => c.text === "self-reply",
+      const histBody = res.body as CommentAPI.CommentsHistoryResponse;
+      const reply = histBody.comments.find(
+        (c) => c.text === "self-reply",
       );
       assert.equal(reply.reply.name, "yourself");
     });
@@ -493,7 +508,8 @@ describe("Comment", () => {
       const res = await request(app)
         .get("/api/comments/history")
         .set("authorization", u.token);
-      assert.deepEqual(res.body.comments, []);
+      const emptyBody = res.body as CommentAPI.CommentsHistoryResponse;
+      assert.deepEqual(emptyBody.comments, []);
     });
 
     it("error: 401 when no token", async () => {

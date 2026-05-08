@@ -3,6 +3,7 @@ import type {
   CpeakResponse as Response,
 } from "cpeak";
 import { DB } from "../../database/index.js";
+import { AnalyticsAPI } from "@pagser/common";
 
 // Track page view
 const trackView = async (req: Request, res: Response) => {
@@ -14,7 +15,8 @@ const trackView = async (req: Request, res: Response) => {
 
   // Check if view started at least 10 seconds ago
   if (viewStartTime && Date.now() - viewStartTime < 10000) {
-    return res.json({ message: "View too recent" });
+    const early: AnalyticsAPI.TrackViewResponse = { message: "View too recent" };
+    return res.json(early);
   }
 
   if (userId) {
@@ -59,7 +61,8 @@ const trackView = async (req: Request, res: Response) => {
     }
   }
 
-  res.json({ message: "success" });
+  const body: AnalyticsAPI.TrackViewResponse = { message: "success" };
+  res.json(body);
 };
 
 const controller = {

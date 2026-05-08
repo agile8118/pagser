@@ -22,10 +22,10 @@ const Pages = () => {
         </div>
       );
 
-    if (pages === null)
+    if (pages === null || pages.length === 0)
       return (
         <div className="center-content">
-          <div className="a-14">User doesn't have any public page.</div>
+          <div className="a-14">This user doesn't have any public pages.</div>
         </div>
       );
 

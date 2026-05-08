@@ -4,6 +4,7 @@ import type {
   Next as NextFunction,
 } from "cpeak";
 
+import { ApiMessages } from "@pagser/common";
 import { DB } from "../../database/index.js";
 
 const checkPageOwnership = async (
@@ -15,7 +16,7 @@ const checkPageOwnership = async (
   const userId = req.user.id;
 
   if (!pageId || !/^\d+$/.test(pageId)) {
-    throw { status: 400, message: "id error" };
+    throw { status: 400, message: ApiMessages.INVALID_ID };
   }
 
   const page = await DB.find<{ user_id: number }>(

@@ -4,6 +4,7 @@ import type {
 } from "cpeak";
 import { DB } from "../../database/index.js";
 import { PAGE_TYPE } from "../../database/types.js";
+import { RatingAPI } from "@pagser/common";
 
 // Rate a page (like/dislike toggle)
 const ratePage = async (req: Request, res: Response) => {
@@ -52,10 +53,11 @@ const ratePage = async (req: Request, res: Response) => {
     [pageId],
   );
 
-  res.json({
+  const body: RatingAPI.RatePageResponse = {
     likes: parseInt(likes?.count || "0"),
     dislikes: parseInt(dislikes?.count || "0"),
-  });
+  };
+  res.json(body);
 };
 
 // Rate a comment (like only)
@@ -100,7 +102,8 @@ const rateComment = async (req: Request, res: Response) => {
     [commentId],
   );
 
-  res.json({ likes: parseInt(likes?.count || "0") });
+  const body: RatingAPI.RateCommentResponse = { likes: parseInt(likes?.count || "0") };
+  res.json(body);
 };
 
 // Fetch pages liked by the current user
@@ -154,10 +157,8 @@ const fetchLikedPages = async (req: Request, res: Response) => {
     },
   }));
 
-  res.json({
-    results: formattedPages,
-    filterBy,
-  });
+  const body: RatingAPI.FetchLikedPagesResponse = { results: formattedPages, filterBy };
+  res.json(body);
 };
 
 // Remove pages from the liked-pages list (bulk unlike)
@@ -177,7 +178,8 @@ const removeLikedPages = async (req: Request, res: Response) => {
 
   await DB.query(query, [...ids, userId]);
 
-  res.json({ message: "success" });
+  const body: RatingAPI.RemoveLikedPagesResponse = { message: "success" };
+  res.json(body);
 };
 
 const controller = {

@@ -3,6 +3,7 @@ import request from "supertest";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import app from "../src/app.js";
 import { DB } from "../src/database/index.js";
+import { ApiMessages, CollectionAPI } from "@pagser/common";
 import { createUser } from "./helpers/auth.js";
 import {
   makeCollection,
@@ -23,11 +24,12 @@ describe("Collection", () => {
         .send({ name: "My Collection", description: "Some desc" });
 
       assert.equal(res.status, 201);
-      assert.equal(res.body.collection.name, "My Collection");
+      const body = res.body as CollectionAPI.CreateResponse;
+      assert.equal(body.collection.name, "My Collection");
 
       const row = await DB.find<{ user_id: number; name: string }>(
         `SELECT user_id, name FROM collections WHERE id = $1`,
-        [res.body.collection.id],
+        [body.collection.id],
       );
       assert.equal(row?.name, "My Collection");
       assert.equal(String(row?.user_id), u.id);
@@ -44,9 +46,10 @@ describe("Collection", () => {
         .set("authorization", u.token);
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.collection.name, "Mine");
-      assert.equal(res.body.viewer, "owner");
-      assert.equal(res.body.btn, "share");
+      const body = res.body as CollectionAPI.FetchOneResponse;
+      assert.equal(body.collection.name, "Mine");
+      assert.equal(body.viewer, "owner");
+      assert.equal(body.btn, "share");
     });
   });
 
@@ -66,7 +69,8 @@ describe("Collection", () => {
         .send();
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.selected, true);
+      const body = res.body as CollectionAPI.AddRemovePageResponse;
+      assert.equal(body.selected, true);
 
       const row = await DB.find(
         `SELECT id FROM collection_pages WHERE collection_id = $1 AND page_id = $2`,
@@ -88,7 +92,8 @@ describe("Collection", () => {
         .send();
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.status, "added");
+      const body = res.body as CollectionAPI.ToggleLibraryResponse;
+      assert.equal(body.status, "added");
 
       const row = await DB.find(
         `SELECT id FROM user_saved_collections WHERE user_id = $1 AND collection_id = $2`,
@@ -109,7 +114,8 @@ describe("Collection", () => {
         .send();
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.sharing, true);
+      const body = res.body as CollectionAPI.SharingResponse;
+      assert.equal(body.sharing, true);
 
       const row = await DB.find<{ shared: boolean }>(
         `SELECT shared FROM collections WHERE id = $1`,
@@ -203,7 +209,8 @@ describe("Collection", () => {
         .set("authorization", u.token);
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.createdCollections.length, 2);
+      const body = res.body as CollectionAPI.FetchCreatedResponse;
+      assert.equal(body.createdCollections.length, 2);
     });
   });
 
@@ -224,8 +231,9 @@ describe("Collection", () => {
         .set("authorization", u.token);
 
       assert.equal(res.status, 200);
+      const fapBody = res.body as CollectionAPI.FetchCreatedFAPResponse;
       const byName = Object.fromEntries(
-        res.body.collections.map((c: any) => [c.name, c.selected]),
+        fapBody.collections.map((c) => [c.name, c.selected]),
       );
       assert.equal(byName.In, true);
       assert.equal(byName.Out, false);
@@ -249,10 +257,11 @@ describe("Collection", () => {
         .set("authorization", me.token);
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.createdCollections.length, 1);
-      assert.equal(String(res.body.createdCollections[0].id), String(mine.id));
-      assert.equal(res.body.savedCollections.length, 1);
-      assert.equal(res.body.savedCollections[0].name, "Theirs");
+      const body = res.body as CollectionAPI.FetchCreatedAndSavedResponse;
+      assert.equal(body.createdCollections.length, 1);
+      assert.equal(String(body.createdCollections[0].id), String(mine.id));
+      assert.equal(body.savedCollections.length, 1);
+      assert.equal(body.savedCollections[0].name, "Theirs");
     });
   });
 
@@ -272,8 +281,9 @@ describe("Collection", () => {
         .set("authorization", me.token);
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.savedCollections.length, 1);
-      assert.equal(res.body.savedCollections[0].user.username, owner.username);
+      const body = res.body as CollectionAPI.FetchSavedResponse;
+      assert.equal(body.savedCollections.length, 1);
+      assert.equal(body.savedCollections[0].user.username, owner.username);
     });
   });
 
@@ -296,8 +306,9 @@ describe("Collection", () => {
       );
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.collections.length, 1);
-      assert.equal(res.body.collections[0].name, "Public coll");
+      const body = res.body as CollectionAPI.FetchSharedResponse;
+      assert.equal(body.collections.length, 1);
+      assert.equal(body.collections[0].name, "Public coll");
     });
   });
 
@@ -313,7 +324,8 @@ describe("Collection", () => {
         .send(tinyJpeg());
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.message, "image-uploaded");
+      const body = res.body as CollectionAPI.UploadPhotoResponse;
+      assert.equal(body.message, ApiMessages.IMAGE_UPLOADED);
 
       const puts = s3Mock.commandCalls(PutObjectCommand);
       assert.ok(puts.length >= 1);

@@ -190,7 +190,7 @@ const ReadLater = () => {
         }}
       >
         <p>
-          Are you sure that you want to remove the selected page
+          Are you sure you want to remove the selected page
           {selectedPages.length > 1 ? "s" : ""} from your read later list?{" "}
           <br /> You have selected {selectedPages.length} page
           {selectedPages.length > 1 ? "s" : ""} and you cannot undo the action.

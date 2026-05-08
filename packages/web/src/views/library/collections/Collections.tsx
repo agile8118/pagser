@@ -7,7 +7,7 @@ import {
   Button,
   Loading,
 } from "@pagser/reusable";
-import { alert, request, loadingModal } from "@pagser/common";
+import { alert, request, loadingModal, CollectionAPI } from "@pagser/common";
 import Collection from "../../../partials/CollectionThumbnail";
 import { useDispatch } from "react-redux";
 import { setSection } from "../side-nav/sideNavSlice";
@@ -16,7 +16,7 @@ interface ICollection {
   id: number;
   name: string;
   photo_secure_url: string | null;
-  description: string;
+  description: string | null;
   user?: { name: string; username: string };
   pages_count: number;
 }
@@ -55,7 +55,7 @@ const Collections = () => {
         }
       );
       loadingModal();
-      alert("Your collection created successfully.", "success");
+      alert("Your collection was created successfully.", "success");
 
       fetchCollections("created", "date-created");
     } catch (e) {}
@@ -83,12 +83,12 @@ const Collections = () => {
     }
 
     try {
-      const response = (await request.get(
+      const response = await request.get<CollectionAPI.FetchCreatedAndSavedResponse>(
         `/collections/${kind}?sortBy=${sortBy}`,
         {
           auth: true,
         }
-      )) as any;
+      );
 
       switch (kind) {
         case "created-saved":
@@ -132,7 +132,7 @@ const Collections = () => {
             id={String(cl.id)}
             name={cl.name}
             img={cl.photo_secure_url || ""}
-            desc={cl.description}
+            desc={cl.description || ""}
             pageNum={cl.pages_count}
             author={cl.user?.name || ""}
             onClick={() => {

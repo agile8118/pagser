@@ -21,6 +21,7 @@ import crypto from "crypto";
 import { DB } from "../../database/index.js";
 import { IPage, IAttachFile } from "../../database/types.js";
 import { AWS_REGION, S3_BUCKET } from "../../config/keys.js";
+import { UploaderAPI } from "@pagser/common";
 
 const s3Client = new S3Client({ region: AWS_REGION });
 
@@ -47,7 +48,7 @@ function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
         req.destroy();
         return reject({
           status: 400,
-          message: `Maximum file size is: ${maxBytes / (1024 * 1024)}MB`,
+          message: `Maximum file size is ${maxBytes / (1024 * 1024)} MB.`,
         });
       }
       if (!checkedMagic) {
@@ -148,7 +149,8 @@ const uploadPagePhoto = async (req: Request, res: Response) => {
       : Promise.resolve(),
   ]);
 
-  res.json({ message: "image-uploaded", image: originalUrl });
+  const body: UploaderAPI.UploadPagePhotoResponse = { message: "image-uploaded", image: originalUrl };
+  res.json(body);
 };
 
 // Upload an attach file for a page — streamed directly to S3, no transformation
@@ -210,7 +212,7 @@ const uploadPageAttachFile = async (req: Request, res: Response) => {
             pass.destroy();
             return callback(
               new Error(
-                `Maximum file size is: ${MAX_FILE_SIZE / (1024 * 1024)}MB`,
+                `Maximum file size is ${MAX_FILE_SIZE / (1024 * 1024)} MB.`,
               ),
             );
           }
@@ -226,7 +228,7 @@ const uploadPageAttachFile = async (req: Request, res: Response) => {
     if (failed) {
       throw {
         status: 400,
-        message: `Maximum file size is: ${MAX_FILE_SIZE / (1024 * 1024)}MB`,
+        message: `Maximum file size is ${MAX_FILE_SIZE / (1024 * 1024)} MB.`,
       };
     }
     throw e;
@@ -241,7 +243,8 @@ const uploadPageAttachFile = async (req: Request, res: Response) => {
     name: filename,
   });
 
-  res.json({ message: "file uploaded" });
+  const body: UploaderAPI.UploadAttachFileResponse = { message: "file uploaded" };
+  res.json(body);
 };
 
 const uploader = {

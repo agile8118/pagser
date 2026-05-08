@@ -86,9 +86,9 @@ const LikedPages = () => {
       }
 
       if (filterBy === "private") {
-        return <p className="a-13">You haven't liked any private page yet. </p>;
+        return <p className="a-13">You haven't liked any private page yet.</p>;
       }
-      return <p className="a-13">Your haven't liked any page yet.</p>;
+      return <p className="a-13">You haven't liked any page yet.</p>;
     }
   };
 

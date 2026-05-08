@@ -1,4 +1,4 @@
-export type TType = "success" | "error" | "normall";
+export type TType = "success" | "error" | "normal";
 
 interface componentProps {
   message?: string;
@@ -18,8 +18,8 @@ export const Alert = (props: componentProps) => {
       className = "alert alert--error";
     }
 
-    if (props.type === "normall") {
-      className = "alert alert--normall";
+    if (props.type === "normal") {
+      className = "alert alert--normal";
     }
 
     if (props.additionalClasses) {

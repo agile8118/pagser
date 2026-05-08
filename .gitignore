@@ -14,6 +14,10 @@ logs/
 .mcp.json
 CLAUDE.md
 
+packages/server/public/style.comp.css.map
+packages/server/public/style.css
+packages/server/public/style.css.map
+
 # production
 /build
 build/

@@ -3,6 +3,7 @@ import request from "supertest";
 
 import app from "../src/app.js";
 import { DB } from "../src/database/index.js";
+import { ApiMessages, HistoryAPI } from "@pagser/common";
 import { createUser } from "./helpers/auth.js";
 import {
   makeHistoryEntry,
@@ -35,10 +36,11 @@ describe("History", () => {
         .get("/api/history")
         .set("authorization", viewer.token);
       assert.equal(res.status, 200);
-      assert.equal(res.body.results.length, 2);
-      assert.equal(res.body.results[0].url, "h2");
-      assert.equal(res.body.results[1].url, "h1");
-      assert.equal(res.body.filterBy, "all");
+      const body = res.body as HistoryAPI.FetchHistoryResponse;
+      assert.equal(body.results.length, 2);
+      assert.equal(body.results[0].url, "h2");
+      assert.equal(body.results[1].url, "h1");
+      assert.equal(body.filterBy, "all");
     });
 
     it("filter: filterBy=public excludes private pages", async () => {
@@ -60,9 +62,10 @@ describe("History", () => {
       const res = await request(app)
         .get("/api/history?filterBy=public")
         .set("authorization", viewer.token);
-      assert.equal(res.body.results.length, 1);
-      assert.equal(res.body.results[0].type, "public");
-      assert.equal(res.body.filterBy, "public");
+      const filterBody = res.body as HistoryAPI.FetchHistoryResponse;
+      assert.equal(filterBody.results.length, 1);
+      assert.equal(filterBody.results[0].type, "public");
+      assert.equal(filterBody.filterBy, "public");
     });
 
     it("isolation: user only sees their own history", async () => {
@@ -79,7 +82,8 @@ describe("History", () => {
       const res = await request(app)
         .get("/api/history")
         .set("authorization", b.token);
-      assert.deepEqual(res.body.results, []);
+      const isoBody = res.body as HistoryAPI.FetchHistoryResponse;
+      assert.deepEqual(isoBody.results, []);
     });
 
     it("error: 401 when no token", async () => {
@@ -111,7 +115,7 @@ describe("History", () => {
         .set("authorization", viewer.token)
         .send({ ids: [p1.id] });
       assert.equal(res.status, 200);
-      assert.equal(res.body.message, "success");
+      assert.equal(res.body.message, ApiMessages.SUCCESS);
 
       const remaining = await DB.findMany<{ page_id: number }>(
         "SELECT page_id FROM history WHERE user_id = $1",

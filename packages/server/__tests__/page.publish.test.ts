@@ -2,6 +2,7 @@ import { strict as assert } from "node:assert";
 import request from "supertest";
 import app from "../src/app.js";
 import { DB } from "../src/database/index.js";
+import { PagesAPI } from "@pagser/common";
 import { PAGE_STATUS, PAGE_TYPE } from "../src/database/types.js";
 import { createUser } from "./helpers/auth.js";
 import { makeDraftPage, makeTag } from "./helpers/factories/index.js";
@@ -22,8 +23,9 @@ describe("Page publish", () => {
         .send();
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.username, u.username);
-      assert.match(res.body.url, /hello-world/i);
+      const body = res.body as PagesAPI.PublishPageResponse;
+      assert.equal(body.username, u.username);
+      assert.match(body.url, /hello-world/i);
 
       const row = await DB.find<{ status_id: number; url: string }>(
         `SELECT status_id, url FROM pages WHERE id = $1`,
@@ -49,7 +51,8 @@ describe("Page publish", () => {
         .send();
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.url, "my-private-page");
+      const body = res.body as PagesAPI.PublishPageResponse;
+      assert.equal(body.url, "my-private-page");
 
       const row = await DB.find<{ status_id: number; url: string }>(
         `SELECT status_id, url FROM pages WHERE id = $1`,

@@ -5,6 +5,7 @@ import type {
 import { DB } from "../../database/index.js";
 import { PAGE_TYPE } from "../../database/types.js";
 import { timeSince } from "../../lib/util.js";
+import { HistoryAPI } from "@pagser/common";
 
 // Fetch user's reading history
 const fetch = async (req: Request, res: Response) => {
@@ -58,10 +59,8 @@ const fetch = async (req: Request, res: Response) => {
     dateVisited: timeSince(page.date_visited),
   }));
 
-  res.json({
-    results: formattedPages,
-    filterBy,
-  });
+  const body: HistoryAPI.FetchHistoryResponse = { results: formattedPages, filterBy };
+  res.json(body);
 };
 
 // Remove pages from user's reading history
@@ -81,7 +80,8 @@ const remove = async (req: Request, res: Response) => {
 
   await DB.query(query, [...ids, userId]);
 
-  res.json({ message: "success" });
+  const body: HistoryAPI.RemoveHistoryResponse = { message: "success" };
+  res.json(body);
 };
 
 const controller = {

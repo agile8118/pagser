@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { validate, util } from "@pagser/common";
+import { validate, util, ApiMessages } from "@pagser/common";
 import { Input, Button } from "@pagser/reusable";
 
 const ForgotPassword = () => {
@@ -63,7 +63,7 @@ const ForgotPassword = () => {
 
       if (!validate.isHardPassword(value) && !validate.isEmpty(value)) {
         setPasswordError(
-          "Password should contain a capital letter, letters and numbers."
+          "Password must contain an uppercase letter, a lowercase letter, and a number."
         );
         confirmPasswordReset();
       }
@@ -88,7 +88,7 @@ const ForgotPassword = () => {
       setConfirmPassword(value);
 
       if (password !== value) {
-        setConfirmPasswordError("Passwords do not match up.");
+        setConfirmPasswordError("Passwords do not match.");
       }
 
       if (!validate.isEmpty(confirmPassword) && password === value) {
@@ -112,16 +112,16 @@ const ForgotPassword = () => {
       })
       .catch((error) => {
         setLoading(false);
-        if (error.response.data.error === "invalid link") {
+        if (error.response.data.message === ApiMessages.INVALID_LINK) {
           setStatus("error");
           setMessage(
-            "The link you've clicked on is not valid, make sure that you open the exact link we've sent to your email."
+            "The link is invalid. Please make sure you are using the exact link we sent to your email."
           );
         }
-        if (error.response.data.error === "link expired") {
+        if (error.response.data.message === ApiMessages.LINK_EXPIRED) {
           setStatus("error");
           setMessage(
-            "The link you've clicked on has expired. Please request for a password reset once again."
+            "The link has expired. Please request a password reset."
           );
         }
       });
@@ -137,8 +137,8 @@ const ForgotPassword = () => {
       <div className="auth">
         <h3 className="heading-tertiary">Create a new password</h3>
         <p className="small-copy">
-          After resetting your password, you will prompted to login with your
-          new password.
+          After resetting your password, you will be prompted to log in with
+          your new password.
         </p>
         <form
           method="post"

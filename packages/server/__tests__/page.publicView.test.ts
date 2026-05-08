@@ -1,6 +1,7 @@
 import { strict as assert } from "node:assert";
 import request from "supertest";
 import app from "../src/app.js";
+import { PagesAPI } from "@pagser/common";
 import { createUser } from "./helpers/auth.js";
 import { makePublishedPage } from "./helpers/factories/index.js";
 
@@ -18,9 +19,10 @@ describe("Page public view", () => {
 
       const res = await request(app).get("/api/public-pages/intro-to-pagser");
       assert.equal(res.status, 200);
-      assert.equal(res.body.page.contents.title, "Intro to Pagser");
-      assert.equal(res.body.page.author.username, author.username);
-      assert.equal(res.body.viewer.status, "spectator");
+      const body = res.body as PagesAPI.FetchPublicPageResponse;
+      assert.equal(body.page.contents.title, "Intro to Pagser");
+      assert.equal(body.page.author.username, author.username);
+      assert.equal(body.viewer.status, "spectator");
     });
 
     it("404 when the URL does not exist", async () => {

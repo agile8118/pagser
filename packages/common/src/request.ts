@@ -23,12 +23,12 @@ class Request {
         alert(message, "error");
       }
     } else {
-      if (alertMsg) alert("Sorry, an unexpected error has happened.", "error");
+      if (alertMsg) alert("An unexpected error occurred.", "error");
     }
   }
 
-  post(url: string, params: any, options?: optionsLayout) {
-    return new Promise<{ data: {} }>((resolve, reject) => {
+  post<T = unknown>(url: string, params: any, options?: optionsLayout): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
       const config: any = {};
 
       if (options?.auth) {
@@ -62,8 +62,8 @@ class Request {
     });
   }
 
-  get(url: string, options?: optionsLayout) {
-    return new Promise<{ data: {} }>((resolve, reject) => {
+  get<T = unknown>(url: string, options?: optionsLayout): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
       const config: any = {};
 
       if (options && options.auth) {
@@ -93,8 +93,8 @@ class Request {
     });
   }
 
-  put(url: string, params: any, options?: optionsLayout) {
-    return new Promise<{ data: {} }>((resolve, reject) => {
+  put<T = unknown>(url: string, params: any, options?: optionsLayout): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
       const config: any = {};
 
       if (options?.auth) {
@@ -128,8 +128,8 @@ class Request {
     });
   }
 
-  patch(url: string, params: any, options?: optionsLayout) {
-    return new Promise<{ data: {} }>((resolve, reject) => {
+  patch<T = unknown>(url: string, params: any, options?: optionsLayout): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
       const config: any = {};
 
       if (options?.auth) {
@@ -163,8 +163,8 @@ class Request {
     });
   }
 
-  delete(url: string, options?: optionsLayout) {
-    return new Promise<{ data: {} }>((resolve, reject) => {
+  delete<T = unknown>(url: string, options?: optionsLayout): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
       const config: any = {};
 
       if (options && options.auth) {

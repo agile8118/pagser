@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Loading, Input, Button, Textarea } from "@pagser/reusable";
-import { alert, validate, request } from "@pagser/common";
+import { alert, validate, request, ProfileAPI } from "@pagser/common";
 import Photo from "./Photo";
 
 const Info = () => {
@@ -27,7 +27,7 @@ const Info = () => {
 
     (async () => {
       try {
-        const response = (await request.get(`/profile`, { auth: true })) as any;
+        const response = await request.get<ProfileAPI.GetProfileResponse>(`/profile`, { auth: true });
         const user = response.user;
 
         setName(user.name || "");
@@ -55,7 +55,7 @@ const Info = () => {
     }
 
     if (!validate.isAlpha(name) && !validate.isEmpty(name)) {
-      setNameError("Your name should contains only letters.");
+      setNameError("Your name should contain only letters.");
     }
 
     if (!validate.len(name, 3, 30) && !validate.isEmpty(name)) {
@@ -113,7 +113,7 @@ const Info = () => {
     setLoadingSaving(true);
 
     try {
-      const response = (await request.patch(
+      await request.patch<ProfileAPI.UpdateProfileResponse>(
         `/profile`,
         {
           name,
@@ -122,7 +122,7 @@ const Info = () => {
           links: { website, twitter, linkedin, youtube, facebook },
         },
         { auth: true }
-      )) as any;
+      );
 
       alert("Your profile was updated successfully.", "success");
     } catch (e) {}

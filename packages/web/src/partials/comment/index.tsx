@@ -90,7 +90,7 @@ const Comment = (props: IProps) => {
               likes={comment.likes}
               viewer={comment.viewer}
               inReplyToUser={comment.inReplyToUser}
-              toName={comment.toName}
+              toName={comment.toName || ""}
             />
           );
         })}
@@ -111,7 +111,7 @@ const Comment = (props: IProps) => {
               likes={comment.likes}
               viewer={comment.viewer}
               inReplyToUser={comment.inReplyToUser}
-              toName={comment.toName}
+              toName={comment.toName || ""}
             />
           );
         })}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { ApiMessages } from "@pagser/common";
 import {
   Alert,
   Modal,
@@ -94,9 +95,9 @@ const VerifyEmail = (props: IProps) => {
       .catch((error) => {
         setLoading(false);
         const errorMsg = error.response?.data?.message;
-        if (Array.isArray(errorMsg) ? errorMsg[0]?.includes("code") : errorMsg?.includes?.("code")) {
+        if (errorMsg === ApiMessages.INVALID_CODE) {
           setAlertMessage(
-            "The code is invalid, make sure that you put the exact code we've sent to your email. You may want to resend the code."
+            "The code is invalid. Please enter the exact code we sent to your email. You can resend the code if needed."
           );
         } else {
           setAlertMessage("Something went wrong, please try again.");
@@ -125,9 +126,9 @@ const VerifyEmail = (props: IProps) => {
         setLoadingChangeEmail(false);
       })
       .catch((error) => {
-        if (error.response.data.message === "email is in use") {
+        if (error.response.data.message === ApiMessages.EMAIL_IN_USE) {
           setAlertMessage(
-            `${changedEmail} is already in use, please login with this email or choose another one.`
+            "This email is already in use. Please log in with this email or choose another one."
           );
           setAlertType("error");
           setChangeEmailMdl(false);

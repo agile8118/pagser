@@ -200,7 +200,7 @@ validate.page = (type: "public" | "private") => {
         const minLen = 1;
 
         if (title.length < minLen) {
-          return "Title cannot be be blank.";
+          return "Title cannot be blank.";
         }
 
         if (title.length > 50) {

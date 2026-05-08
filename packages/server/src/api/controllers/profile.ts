@@ -9,6 +9,7 @@ import crypto from "crypto";
 import { DB } from "../../database/index.js";
 import { IUser } from "../../database/types.js";
 import { AWS_REGION, S3_BUCKET } from "../../config/keys.js";
+import { ProfileAPI } from "@pagser/common";
 
 const s3Client = new S3Client({ region: AWS_REGION });
 
@@ -34,7 +35,7 @@ function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
         req.destroy();
         return reject({
           status: 400,
-          message: `Maximum file size is: ${maxBytes / (1024 * 1024)}MB`,
+          message: `Maximum file size is ${maxBytes / (1024 * 1024)} MB.`,
         });
       }
       if (!checkedMagic) {
@@ -68,7 +69,7 @@ const fetchUserData = async (req: Request, res: Response) => {
 
   if (!user) throw { status: 404, message: "User not found" };
 
-  res.json({
+  const body: ProfileAPI.GetProfileResponse = {
     user: {
       ...user,
       links: {
@@ -79,7 +80,8 @@ const fetchUserData = async (req: Request, res: Response) => {
         linkedin: user.links_linkedin || "",
       },
     },
-  });
+  };
+  res.json(body);
 };
 
 // Update user's profile data
@@ -111,7 +113,7 @@ const updateUserData = async (req: Request, res: Response) => {
     [userId],
   );
 
-  res.json({
+  const body: ProfileAPI.UpdateProfileResponse = {
     user: {
       ...user,
       links: {
@@ -122,7 +124,8 @@ const updateUserData = async (req: Request, res: Response) => {
         linkedin: user?.links_linkedin || "",
       },
     },
-  });
+  };
+  res.json(body);
 };
 
 // Upload user's profile photo
@@ -175,7 +178,8 @@ const uploadUserImage = async (req: Request, res: Response) => {
       .catch(() => {});
   }
 
-  res.json({ message: "image-uploaded", image: url });
+  const body: ProfileAPI.UploadProfilePhotoResponse = { message: "image-uploaded", image: url };
+  res.json(body);
 };
 
 const controller = {

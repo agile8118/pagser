@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { UploadPhoto } from "@pagser/reusable";
-import { request, USER_PLACEHOLDER_IMAGE } from "@pagser/common";
+import { request, USER_PLACEHOLDER_IMAGE, ProfileAPI } from "@pagser/common";
 
 const Photo = () => {
   const [photo, setPhoto] = useState(USER_PLACEHOLDER_IMAGE);
@@ -16,7 +16,7 @@ const Photo = () => {
       _isMounted = true;
       try {
         // Get the user photo from server
-        const response = (await request.get(`/profile`, { auth: true })) as any;
+        const response = await request.get<ProfileAPI.GetProfileResponse>(`/profile`, { auth: true });
 
         const user = response.user;
         if (_isMounted) {

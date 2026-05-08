@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { request, alert } from "@pagser/common";
+import { request, alert, SettingsAPI } from "@pagser/common";
 import { Loading, Input, Button } from "@pagser/reusable";
 
 const Email = () => {
@@ -10,9 +10,9 @@ const Email = () => {
     (async () => {
       setLoading(true);
       try {
-        const response = (await request.get(`/settings/email`, {
+        const response = await request.get<SettingsAPI.GetEmailResponse>(`/settings/email`, {
           auth: true,
-        })) as any;
+        });
         setEmail(response.email);
       } catch (e: any) {
         if (e.status === 401) {
@@ -64,7 +64,7 @@ const Email = () => {
           outlined={true}
           color="blue"
           onClick={() => {
-            alert("Sorry this part is still under development.");
+            alert("This section is still under development.");
           }}
           type="submit"
         >

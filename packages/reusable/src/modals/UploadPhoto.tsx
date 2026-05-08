@@ -57,7 +57,8 @@ const UploadPhoto = (props: IProps) => {
 
     // @ts-ignore
     const file: File = document.querySelector("#image-input").files[0];
-    const qs = `?x=${Math.round(cropData.x)}&y=${Math.round(cropData.y)}&width=${Math.round(cropData.width)}&height=${Math.round(cropData.height)}`;
+    const separator = props.url.includes("?") ? "&" : "?";
+    const qs = `${separator}x=${Math.round(cropData.x)}&y=${Math.round(cropData.y)}&width=${Math.round(cropData.width)}&height=${Math.round(cropData.height)}`;
 
     try {
       const response = (await request.put(props.url + qs, file, {

@@ -8,7 +8,7 @@ import {
   Textarea,
   Loading,
 } from "@pagser/reusable";
-import { loadingModal, alert, request, COLLECTION_PLACEHOLDER_IMAGE } from "@pagser/common";
+import { loadingModal, alert, request, CollectionAPI, COLLECTION_PLACEHOLDER_IMAGE } from "@pagser/common";
 
 const CollectionShow = () => {
   const [infoStatus, setInfoStatus] = useState<"normal" | "editing">("normal");
@@ -46,9 +46,9 @@ const CollectionShow = () => {
   const fetchCollectionData = async (id: string) => {
     setLoading(true);
     try {
-      const response = (await request.get(`/collection/${id}`, {
+      const response = await request.get<CollectionAPI.FetchOneResponse>(`/collection/${id}`, {
         auth: true,
-      })) as any;
+      });
 
       document.title = `${response.collection.name || ""} | Pagser`;
 
@@ -56,14 +56,14 @@ const CollectionShow = () => {
       setViewer(response.viewer);
       setId(String(response.collection.id));
       setName(response.collection.name);
-      setDesc(response.collection.description);
+      setDesc(response.collection.description || "");
       setPhoto(response.collection.photo.secure_url);
       setAuthor(response.collection.user.name);
       setPages(response.collection.pages);
     } catch (e: any) {
       if (e.status === 403) {
         navigate("/u/collections");
-        alert("Sorry you are not authorized to view that collection.", "error");
+        alert("You are not authorized to view this collection.", "error");
       }
     }
     setLoading(false);
@@ -74,13 +74,13 @@ const CollectionShow = () => {
   const toggleInLibrary = async () => {
     loadingModal("Loading...");
     try {
-      const response = (await request.post(
+      const response = await request.post<CollectionAPI.ToggleLibraryResponse>(
         `/collection/toggle-library/${id}`,
         {},
         {
           auth: true,
         }
-      )) as any;
+      );
 
       if (response.status === "removed") {
         setBtn("save");
@@ -107,13 +107,13 @@ const CollectionShow = () => {
     loadingModal("Loading...");
 
     try {
-      const response = (await request.post(
+      const response = await request.post<CollectionAPI.SharingResponse>(
         `/collection/sharing/${id}`,
         {},
         {
           auth: true,
         }
-      )) as any;
+      );
 
       if (response.sharing) {
         setBtn("stop-sharing");
@@ -123,7 +123,7 @@ const CollectionShow = () => {
       if (!response.sharing) {
         setBtn("share");
         setConfCLStopSharingMdl(false);
-        alert("The collection has stopped from being shared.", "success");
+        alert("The collection is no longer shared.", "success");
       }
     } catch (e) {}
 
@@ -153,7 +153,7 @@ const CollectionShow = () => {
     loadingModal();
   };
 
-  // Send the request to delete collection adn then redirect
+  // Send a request to delete the collection and redirect
   const deleteCollection = async () => {
     loadingModal("Loading...");
     try {
@@ -172,13 +172,13 @@ const CollectionShow = () => {
     loadingModal("Loading...");
 
     try {
-      (await request.put(
+      await request.put(
         `/collection/remove-pages/${id}`,
         { pageIds: selectedPages },
         {
           auth: true,
         }
-      )) as any;
+      );
 
       loadingModal();
       alert("Page(s) removed from your collection successfully.", "success");
@@ -192,7 +192,7 @@ const CollectionShow = () => {
       setPagesStatus("normal");
     } catch (e) {
       loadingModal();
-      alert("Sorry an error occurred please try again.", "error");
+      alert("An error occurred. Please try again.", "error");
     }
   };
 
@@ -417,7 +417,7 @@ const CollectionShow = () => {
           setConfCLDeletionMdl(false);
         }}
       >
-        <p>Are you sure that you want to delete your collection? </p>
+        <p>Are you sure you want to delete your collection?</p>
 
         {pages.length > 0 && (
           <p>
@@ -447,7 +447,7 @@ const CollectionShow = () => {
           setConfCLStopSharingMdl(false);
         }}
       >
-        <p>Are you sure that you want to make your collection private? </p>
+        <p>Are you sure you want to make your collection private?</p>
 
         <p>
           If you stop the collection from being shared, all the people that have
@@ -468,8 +468,8 @@ const CollectionShow = () => {
         }}
       >
         <p>
-          Are you sure that you want to remove the selected page(s) from your
-          collection?{" "}
+          Are you sure you want to remove the selected page(s) from your
+          collection?
         </p>
 
         <p>You cannot undo this action.</p>

@@ -46,7 +46,7 @@ const Password = () => {
 
       if (!validate.isHardPassword(value) && !validate.isEmpty(value)) {
         setPasswordError(
-          "Password should contain a capital letter, letters and numbers."
+          "Password must contain an uppercase letter, a lowercase letter, and a number."
         );
         confirmPasswordReset();
         setButtonDisabled(true);
@@ -72,7 +72,7 @@ const Password = () => {
       setConfirmPassword(value);
 
       if (password !== value) {
-        setConfirmPasswordError("Passwords do not match up.");
+        setConfirmPasswordError("Passwords do not match.");
         setButtonDisabled(true);
       }
 

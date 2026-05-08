@@ -2,6 +2,7 @@ import { strict as assert } from "node:assert";
 import request from "supertest";
 import app from "../src/app.js";
 import { DB } from "../src/database/index.js";
+import { ApiMessages } from "@pagser/common";
 import { createUser } from "./helpers/auth.js";
 
 describe("smoke: rig is wired up", () => {
@@ -11,7 +12,7 @@ describe("smoke: rig is wired up", () => {
       .post("/api/username-availability")
       .send({ username: "freshname" });
     assert.equal(res.status, 200);
-    assert.equal(res.body.message, "ok");
+    assert.equal(res.body.message, ApiMessages.USERNAME_AVAILABLE);
   });
 
   it("the test database is reachable and truncated", async () => {

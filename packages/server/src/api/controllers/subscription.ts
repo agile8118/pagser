@@ -3,6 +3,7 @@ import type {
   CpeakResponse as Response,
 } from "cpeak";
 import { DB } from "../../database/index.js";
+import { SubscriptionAPI } from "@pagser/common";
 
 // Toggle subscription to an author
 const toggle = async (req: Request, res: Response) => {
@@ -36,10 +37,11 @@ const toggle = async (req: Request, res: Response) => {
     [authorId],
   );
 
-  res.json({
+  const body: SubscriptionAPI.ToggleResponse = {
     subscribed: !existing,
     subNum: parseInt(subCount?.count || "0"),
-  });
+  };
+  res.json(body);
 };
 
 // Fetch user's subscriptions
@@ -63,7 +65,8 @@ const fetchSubscriptions = async (req: Request, res: Response) => {
     [subscriberId],
   );
 
-  res.json({ subs });
+  const body: SubscriptionAPI.FetchSubscriptionsResponse = { subs };
+  res.json(body);
 };
 
 const controller = {

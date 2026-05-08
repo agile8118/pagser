@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ReactElement, useReducer } from "react";
 import TinyMCE from "react-tinymce";
 import { useNavigate } from "react-router-dom";
-import { validate, util, request, loadingModal, alert } from "@pagser/common";
+import { validate, util, request, loadingModal, alert, PagesAPI } from "@pagser/common";
 import { Loading, Button, Input, Textarea } from "@pagser/reusable";
 import ProgressBar from "./ProgressBar";
 import { TType } from "./InitialStep";
@@ -31,10 +31,10 @@ const PageContents = () => {
       const pageId = util.getParameterByName("id", window.location.href);
       try {
         // Get the current page data from server and set those data in inputs
-        const response = (await request.get(
+        const response = await request.get<PagesAPI.FetchDraftPageContentsResponse>(
           `/new-page/page-contents/${pageId}`,
           { auth: true },
-        )) as any;
+        );
 
         // This is logged correctly!
         console.log(response.page.type);
@@ -486,7 +486,7 @@ const PageContents = () => {
         <h3>A note about saving:</h3>
         <p>
           We <strong>automatically save</strong> what you write and all the
-          other changes you do, your page is saved as a draft until you decide
+          other changes you do. Your page is saved as a draft until you decide
           to publish it, which you can do in the last step.
         </p>
         <p>

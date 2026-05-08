@@ -2,6 +2,7 @@ import { strict as assert } from "node:assert";
 import request from "supertest";
 import app from "../src/app.js";
 import { DB } from "../src/database/index.js";
+import { PagesAPI } from "@pagser/common";
 import { createUser } from "./helpers/auth.js";
 import { makePublishedPage } from "./helpers/factories/index.js";
 
@@ -21,8 +22,9 @@ describe("Page edit", () => {
         .set("authorization", u.token);
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.page.title, "Editable");
-      assert.equal(res.body.page.type, "public");
+      const body = res.body as PagesAPI.FetchEditPageResponse;
+      assert.equal(body.page.title, "Editable");
+      assert.equal(body.page.type, "public");
     });
   });
 
@@ -55,7 +57,8 @@ describe("Page edit", () => {
         });
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.username, u.username);
+      const body = res.body as PagesAPI.UpdatePageResponse;
+      assert.equal(body.username, u.username);
 
       const row = await DB.find<{ title: string; brief_description: string }>(
         `SELECT title, brief_description FROM pages WHERE id = $1`,
@@ -81,8 +84,9 @@ describe("Page edit", () => {
         .set("authorization", u.token);
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.page.title, "Secret");
-      assert.equal(res.body.page.type, "private");
+      const body = res.body as PagesAPI.FetchEditPageResponse;
+      assert.equal(body.page.title, "Secret");
+      assert.equal(body.page.type, "private");
     });
   });
 });

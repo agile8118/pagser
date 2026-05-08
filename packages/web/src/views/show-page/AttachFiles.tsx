@@ -83,13 +83,13 @@ const AttachFiles = () => {
               setUploadAttachFilesModalOpen(true);
             }}
           >
-            <i className="fa fa-upload button__icon-left" /> Add an Attach File
+            <i className="fa fa-upload button__icon-left" /> Add a File
           </Button>
 
           <UploadAttachFile
             open={uploadAttachFilesModalOpen}
-            header="Add an Attach File"
-            text="You can upload maximum of 5 files 10MB each for every page."
+            header="Add a File"
+            text="You can upload a maximum of 5 files, 10 MB each, per page."
             size={10000000}
             url={`/pages/${pageId}/attach-files`}
             success={() => {
@@ -127,8 +127,8 @@ const AttachFiles = () => {
         onCancel={() => setConfirmModalOpen(false)}
       >
         <p>
-          Are you sure that you want to delete this attach file{" "}
-          <strong>'{confirmModalFileName}'</strong>? Action cannot be undone.
+          Are you sure you want to delete the file{" "}
+          <strong>'{confirmModalFileName}'</strong>? This cannot be undone.
         </p>
       </ConfirmModal>
 
@@ -136,8 +136,8 @@ const AttachFiles = () => {
       {renderButton()}
       {attachFiles.length === 5 && status === "owner" && (
         <em>
-          You can only have 5 attach files for each page, if you want to upload
-          a new one remove one of the attach files first.
+          You can only have 5 files per page. To upload a new one, remove an
+          existing file first.
         </em>
       )}
     </div>

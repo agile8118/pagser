@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "sass src/main.scss ../server/public/styles.css --watch",
+    "dev": "sass src/main.scss ../server/public/style.css --watch",
     "compile:sass": "sass src/main.scss ../server/public/style.comp.css",
     "concat:css": "concat -o ../server/public/style.concat.css ../server/public/style.comp.css",
     "prefix:css": "postcss --use autoprefixer -b \"last 10 versions\" ../server/public/style.concat.css -o ../server/public/style.prefix.css",

@@ -9,6 +9,7 @@ import crypto from "crypto";
 import { DB } from "../../database/index.js";
 import { ICollection } from "../../database/types.js";
 import { AWS_REGION, S3_BUCKET } from "../../config/keys.js";
+import { CollectionAPI } from "@pagser/common";
 const s3Client = new S3Client({ region: AWS_REGION });
 
 function isAllowedImageType(chunk: Uint8Array): boolean {
@@ -33,7 +34,7 @@ function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
         req.destroy();
         return reject({
           status: 400,
-          message: `Maximum file size is: ${maxBytes / (1024 * 1024)}MB`,
+          message: `Maximum file size is ${maxBytes / (1024 * 1024)} MB.`,
         });
       }
       if (!checkedMagic) {
@@ -68,10 +69,8 @@ const create = async (req: Request, res: Response) => {
     user_id: parseInt(userId),
   });
 
-  res.status(201).json({
-    message: "Collection created successfully",
-    collection,
-  });
+  const body: CollectionAPI.CreateResponse = { message: "Collection created successfully", collection };
+  res.status(201).json(body);
 };
 
 // Fetch one collection
@@ -155,7 +154,7 @@ const fetchOne = async (req: Request, res: Response) => {
     btn = saved ? "remove" : "save";
   }
 
-  res.json({
+  const body: CollectionAPI.FetchOneResponse = {
     collection: {
       id: String(collection.id),
       name: collection.name,
@@ -169,7 +168,8 @@ const fetchOne = async (req: Request, res: Response) => {
     pages: formattedPages,
     viewer: viewerStatus,
     btn,
-  });
+  };
+  res.json(body);
 };
 
 // Add or remove page from collection
@@ -198,7 +198,8 @@ const addRemovePage = async (req: Request, res: Response) => {
       `collection_id = $1 AND page_id = $2`,
       [collectionId, pageId],
     );
-    res.json({ message: "success", selected: false, clName: "fa-bookmark" });
+    const off: CollectionAPI.AddRemovePageResponse = { message: "success", selected: false, clName: "fa-bookmark" };
+    res.json(off);
   } else {
     const maxOrder = await DB.find<{ max_index: number | null }>(
       `SELECT MAX(order_index) as max_index FROM collection_pages WHERE collection_id = $1`,
@@ -213,11 +214,8 @@ const addRemovePage = async (req: Request, res: Response) => {
       order_index: nextOrder,
     });
 
-    res.json({
-      message: "success",
-      selected: true,
-      clName: "fa-bookmark-fill",
-    });
+    const on: CollectionAPI.AddRemovePageResponse = { message: "success", selected: true, clName: "fa-bookmark-fill" };
+    res.json(on);
   }
 };
 
@@ -237,13 +235,15 @@ const toggleLibrary = async (req: Request, res: Response) => {
       `user_id = $1 AND collection_id = $2`,
       [userId, collectionId],
     );
-    res.json({ message: "success", status: "removed" });
+    const removed: CollectionAPI.ToggleLibraryResponse = { message: "success", status: "removed" };
+    res.json(removed);
   } else {
     await DB.insert(`user_saved_collections`, {
       user_id: parseInt(userId),
       collection_id: parseInt(collectionId),
     });
-    res.json({ message: "success", status: "added" });
+    const added: CollectionAPI.ToggleLibraryResponse = { message: "success", status: "added" };
+    res.json(added);
   }
 };
 
@@ -267,7 +267,8 @@ const sharing = async (req: Request, res: Response) => {
     collectionId,
   ]);
 
-  res.json({ message: "success", sharing: newShared });
+  const body: CollectionAPI.SharingResponse = { message: "success", sharing: newShared };
+  res.json(body);
 };
 
 // Update collection info
@@ -289,7 +290,8 @@ const updateInfo = async (req: Request, res: Response) => {
     collectionId,
   ]);
 
-  res.json({ message: "updated" });
+  const body: CollectionAPI.UpdateInfoResponse = { message: "updated" };
+  res.json(body);
 };
 
 // Remove pages from collection
@@ -319,7 +321,8 @@ const removePages = async (req: Request, res: Response) => {
 
   await DB.query(query, [...pageIds, collectionId]);
 
-  res.json({ message: "success" });
+  const body: CollectionAPI.RemovePagesResponse = { message: "success" };
+  res.json(body);
 };
 
 // Delete collection
@@ -338,7 +341,8 @@ const deleteCollection = async (req: Request, res: Response) => {
 
   await DB.delete(`collections`, `id = $1`, [collectionId]);
 
-  res.json({ message: "success" });
+  const body: CollectionAPI.DeleteCollectionResponse = { message: "success" };
+  res.json(body);
 };
 
 // Fetch created collections
@@ -363,10 +367,8 @@ const fetchCreated = async (req: Request, res: Response) => {
 
   const collections = await DB.findMany<any>(query, [userId]);
 
-  res.json({
-    createdCollections: collections,
-    sortBy,
-  });
+  const body: CollectionAPI.FetchCreatedResponse = { createdCollections: collections, sortBy };
+  res.json(body);
 };
 
 // Fetch created and saved collections
@@ -407,7 +409,7 @@ const fetchCreatedAndSaved = async (req: Request, res: Response) => {
     [userId],
   );
 
-  res.json({
+  const body: CollectionAPI.FetchCreatedAndSavedResponse = {
     createdCollections,
     savedCollections: savedCollections.map((col: any) => ({
       id: col.id,
@@ -415,12 +417,10 @@ const fetchCreatedAndSaved = async (req: Request, res: Response) => {
       description: col.description,
       photo_secure_url: col.photo_secure_url,
       pages_count: col.pages_count,
-      user: {
-        name: col.user_name,
-        username: col.username,
-      },
+      user: { name: col.user_name, username: col.username },
     })),
-  });
+  };
+  res.json(body);
 };
 
 // Fetch saved (shared) collections
@@ -448,19 +448,17 @@ const fetchSaved = async (req: Request, res: Response) => {
     [userId],
   );
 
-  res.json({
+  const body: CollectionAPI.FetchSavedResponse = {
     savedCollections: collections.map((col: any) => ({
       id: col.id,
       name: col.name,
       description: col.description,
       photo_secure_url: col.photo_secure_url,
       pages_count: col.pages_count,
-      user: {
-        name: col.user_name,
-        username: col.username,
-      },
+      user: { name: col.user_name, username: col.username },
     })),
-  });
+  };
+  res.json(body);
 };
 
 // Fetch shared collections for a public user
@@ -493,7 +491,8 @@ const fetchShared = async (req: Request, res: Response) => {
     user: { username: col.username },
   }));
 
-  res.json({ collections: formattedCollections });
+  const body: CollectionAPI.FetchSharedResponse = { collections: formattedCollections };
+  res.json(body);
 };
 
 // Fetch collections a page belongs to (for "Add to Collection" modal)
@@ -515,13 +514,10 @@ const fetchCreatedFAP = async (req: Request, res: Response) => {
     [pageId, userId],
   );
 
-  res.json({
-    collections: collections.map((col: any) => ({
-      id: col.id,
-      name: col.name,
-      selected: col.selected,
-    })),
-  });
+  const body: CollectionAPI.FetchCreatedFAPResponse = {
+    collections: collections.map((col: any) => ({ id: col.id, name: col.name, selected: col.selected })),
+  };
+  res.json(body);
 };
 
 // Upload collection cover photo
@@ -580,7 +576,8 @@ const uploadPhoto = async (req: Request, res: Response) => {
       .catch(() => {});
   }
 
-  res.json({ message: "image-uploaded", image: url });
+  const body: CollectionAPI.UploadPhotoResponse = { message: "image-uploaded", image: url };
+  res.json(body);
 };
 
 const controller = {

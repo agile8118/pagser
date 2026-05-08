@@ -8,7 +8,7 @@ import {
   GetObjectCommand,
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
-import { util, validate } from "@pagser/common";
+import { util, validate, PagesAPI } from "@pagser/common";
 import { cleanHTML, timeSince } from "../../lib/util.js";
 import { DB } from "../../database/index.js";
 import {
@@ -49,7 +49,8 @@ const newDraftPage = async (req: Request, res: Response) => {
     user_id: parseInt(req.user.id),
   });
 
-  res.status(201).json({ id: newPage.id, message: "created" });
+  const body: PagesAPI.NewDraftPageResponse = { id: newPage.id, message: "created" };
+  res.status(201).json(body);
 };
 
 // Get the info of a draft page
@@ -68,13 +69,14 @@ const fetchDraftPageData = async (req: Request, res: Response) => {
 
     if (!page) throw { status: 404, message: "Page not found" };
 
-    res.json({ type: page.type });
+    const r: PagesAPI.FetchDraftInitialStepResponse = { type: page.type };
+    res.json(r);
     return;
   }
 
   // Grabbing page contents
   if (stage === "page-contents") {
-    const page = await DB.find<IPage>(
+    const page = await DB.find<any>(
       `SELECT pages.id, page_types.type as type, title, brief_description, targets, body
         FROM pages
         JOIN page_types ON pages.type_id = page_types.id WHERE pages.id = $1`,
@@ -83,20 +85,22 @@ const fetchDraftPageData = async (req: Request, res: Response) => {
 
     if (!page) throw { status: 404, message: "Page not found" };
 
-    res.json({ page });
+    const r: PagesAPI.FetchDraftPageContentsResponse = { page };
+    res.json(r);
     return;
   }
 
   // Grabbing page thumbnail photo
   if (stage === "page-thumbnail") {
-    const page = await DB.find<IPage>(
+    const page = await DB.find<any>(
       "SELECT id, cropped_photo_key, cropped_photo_url, photo_key, photo_url FROM pages WHERE id = $1",
       [pageId],
     );
 
     if (!page) throw { status: 404, message: "Page not found" };
 
-    res.json({ page });
+    const r: PagesAPI.FetchDraftPageThumbnailResponse = { page };
+    res.json(r);
     return;
   }
 
@@ -129,7 +133,8 @@ const fetchDraftPageData = async (req: Request, res: Response) => {
       [pageId],
     );
 
-    res.json({ page, urls, tags });
+    const r: PagesAPI.FetchDraftFinalStepResponse = { page, urls, tags };
+    res.json(r);
   }
 };
 
@@ -155,7 +160,8 @@ const updateDraftPageData = async (req: Request, res: Response) => {
       await DB.update<IPage>("pages", { type_id: pageType.id }, "id = $2", [
         pageId,
       ]);
-      res.status(200).json({ id: result.id, message: "updated" });
+      const r: PagesAPI.UpdateDraftPageResponse = { id: result.id, message: "updated" };
+      res.status(200).json(r);
       return;
     }
     case "page-contents": {
@@ -171,7 +177,8 @@ const updateDraftPageData = async (req: Request, res: Response) => {
         [pageId],
       );
 
-      res.status(200).json({ id: pageId, message: "updated" });
+      const rc: PagesAPI.UpdateDraftPageResponse = { id: pageId, message: "updated" };
+      res.status(200).json(rc);
       return;
     }
     case "final-step": {
@@ -198,7 +205,8 @@ const updateDraftPageData = async (req: Request, res: Response) => {
       await DB.update<IPage>("pages", updateFields, `id = $${paramCount}`, [
         pageId,
       ]);
-      res.status(200).json({ id: pageId, message: "updated" });
+      const rf: PagesAPI.UpdateDraftPageResponse = { id: pageId, message: "updated" };
+      res.status(200).json(rf);
       return;
     }
     default:
@@ -254,7 +262,8 @@ const removePagePhoto = async (req: Request, res: Response) => {
     [pageId],
   );
 
-  res.json({ message: "photo removed" });
+  const body: PagesAPI.RemovePagePhotoResponse = { message: "photo removed" };
+  res.json(body);
 };
 
 // Get a list of attach file for a page
@@ -266,7 +275,8 @@ const getAttachFiles = async (req: Request, res: Response) => {
     [pageId],
   );
 
-  res.json({ attachFiles });
+  const body: PagesAPI.GetAttachFilesResponse = { attachFiles };
+  res.json(body);
 };
 
 // Download only one attach file for a page
@@ -303,7 +313,8 @@ const deleteAttachFile = async (req: Request, res: Response) => {
     }),
   );
 
-  res.json({ message: "file deleted" });
+  const body: PagesAPI.DeleteAttachFileResponse = { message: "file deleted" };
+  res.json(body);
 };
 
 // Fetch published pages for the current user
@@ -433,7 +444,8 @@ const publish = async (req: Request, res: Response) => {
   // )
   //   throw { status: 400, message: "error with contents" };
 
-  res.status(200).json(resObj);
+  const body: PagesAPI.PublishPageResponse = resObj;
+  res.status(200).json(body);
 };
 
 // Fetch public page data (for public page viewing)
@@ -535,7 +547,7 @@ const fetchPublicPageData = async (req: Request, res: Response) => {
     }
   }
 
-  res.json({
+  const body: PagesAPI.FetchPublicPageResponse = {
     page: {
       id: page.id,
       contents: {
@@ -559,7 +571,8 @@ const fetchPublicPageData = async (req: Request, res: Response) => {
       },
     },
     viewer,
-  });
+  };
+  res.json(body);
 };
 
 // Fetch private page data (for private page viewing)
@@ -611,10 +624,6 @@ const fetchPrivatePageData = async (req: Request, res: Response) => {
 
   if (!page) throw { status: 404, message: "Page not found" };
 
-  if (page.user_id !== parseInt(userId || "0")) {
-    throw { status: 403, message: "Unauthorized" };
-  }
-
   const subCount = await DB.find<{ count: string }>(
     `SELECT COUNT(*) as count FROM subscriptions WHERE author_id = $1`,
     [page.user_id],
@@ -635,28 +644,35 @@ const fetchPrivatePageData = async (req: Request, res: Response) => {
     [page.id],
   );
 
-  let viewer = { status: "owner", id: userId };
+  const isOwner = userId && page.user_id === parseInt(userId);
+  let viewer: PagesAPI.Viewer = isOwner
+    ? { status: "owner", id: userId }
+    : userId
+    ? { status: "authenticated", id: userId }
+    : { status: "spectator", id: undefined };
 
-  const existing = await DB.find<any>(
-    `SELECT id FROM history WHERE user_id = $1 AND page_id = $2`,
-    [userId, page.id],
-  );
-
-  if (existing) {
-    await DB.update(
-      `history`,
-      { updated_at: new Date() },
-      `user_id = $2 AND page_id = $3`,
+  if (userId) {
+    const existing = await DB.find<any>(
+      `SELECT id FROM history WHERE user_id = $1 AND page_id = $2`,
       [userId, page.id],
     );
-  } else {
-    await DB.insert(`history`, {
-      user_id: parseInt(userId),
-      page_id: page.id,
-    });
+
+    if (existing) {
+      await DB.update(
+        `history`,
+        { updated_at: new Date() },
+        `user_id = $2 AND page_id = $3`,
+        [userId, page.id],
+      );
+    } else {
+      await DB.insert(`history`, {
+        user_id: parseInt(userId),
+        page_id: page.id,
+      });
+    }
   }
 
-  res.json({
+  const body: PagesAPI.FetchPrivatePageResponse = {
     page: {
       id: page.id,
       contents: {
@@ -686,7 +702,8 @@ const fetchPrivatePageData = async (req: Request, res: Response) => {
       },
     },
     viewer,
-  });
+  };
+  res.json(body);
 };
 
 // Fetch page data for editing
@@ -759,13 +776,8 @@ const fetchEditPageData = async (req: Request, res: Response) => {
     usedUrls = urlResults.map((p: any) => p.url).filter(Boolean);
   }
 
-  res.json({
-    page: {
-      ...page,
-      tags,
-    },
-    usedUrls,
-  });
+  const body: PagesAPI.FetchEditPageResponse = { page: { ...page, tags }, usedUrls };
+  res.json(body);
 };
 
 // Update published page
@@ -835,11 +847,8 @@ const updatePage = async (req: Request, res: Response) => {
 
   const finalUrl = updateData.url ?? page.current_url;
 
-  res.json({
-    url: finalUrl,
-    type: page.type,
-    username: user?.username,
-  });
+  const body: PagesAPI.UpdatePageResponse = { url: finalUrl, type: page.type, username: user?.username };
+  res.json(body);
 };
 
 // Delete a published page
@@ -881,7 +890,8 @@ const deletePage = async (req: Request, res: Response) => {
 
   await DB.delete(`pages`, `id = $1`, [pageId]);
 
-  res.json({ message: "success" });
+  const body: PagesAPI.DeletePageResponse = { message: "success" };
+  res.json(body);
 };
 
 const controller = {

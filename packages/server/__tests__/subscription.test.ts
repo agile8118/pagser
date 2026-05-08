@@ -3,6 +3,7 @@ import request from "supertest";
 
 import app from "../src/app.js";
 import { DB } from "../src/database/index.js";
+import { SubscriptionAPI } from "@pagser/common";
 import { createUser } from "./helpers/auth.js";
 import { makeSubscription } from "./helpers/factories/index.js";
 
@@ -17,8 +18,9 @@ describe("Subscription", () => {
         .set("authorization", subscriber.token)
         .send();
       assert.equal(res.status, 200);
-      assert.equal(res.body.subscribed, true);
-      assert.equal(res.body.subNum, 1);
+      const body = res.body as SubscriptionAPI.ToggleResponse;
+      assert.equal(body.subscribed, true);
+      assert.equal(body.subNum, 1);
 
       const row = await DB.find<{ id: number }>(
         "SELECT id FROM subscriptions WHERE subscriber_id = $1 AND author_id = $2",
@@ -40,8 +42,9 @@ describe("Subscription", () => {
         .set("authorization", subscriber.token)
         .send();
       assert.equal(res.status, 200);
-      assert.equal(res.body.subscribed, false);
-      assert.equal(res.body.subNum, 0);
+      const body = res.body as SubscriptionAPI.ToggleResponse;
+      assert.equal(body.subscribed, false);
+      assert.equal(body.subNum, 0);
 
       const row = await DB.find(
         "SELECT id FROM subscriptions WHERE subscriber_id = $1 AND author_id = $2",
@@ -60,7 +63,8 @@ describe("Subscription", () => {
         .post(`/api/subscription/${author.id}`)
         .set("authorization", b.token)
         .send();
-      assert.equal(res.body.subNum, 2);
+      const body = res.body as SubscriptionAPI.ToggleResponse;
+      assert.equal(body.subNum, 2);
     });
 
     it("edge: 400 cannot subscribe to yourself", async () => {
@@ -95,12 +99,13 @@ describe("Subscription", () => {
         .get("/api/subscriptions")
         .set("authorization", subscriber.token);
       assert.equal(res.status, 200);
-      assert.equal(res.body.subs.length, 2);
+      const body = res.body as SubscriptionAPI.FetchSubscriptionsResponse;
+      assert.equal(body.subs.length, 2);
       // newest-first order: b was inserted last → at index 0
-      assert.equal(res.body.subs[0].username, "bobbb");
-      assert.equal(res.body.subs[1].username, "alicee");
-      assert.ok("name" in res.body.subs[0]);
-      assert.ok("photo_url" in res.body.subs[0]);
+      assert.equal(body.subs[0].username, "bobbb");
+      assert.equal(body.subs[1].username, "alicee");
+      assert.ok("name" in body.subs[0]);
+      assert.ok("photo_url" in body.subs[0]);
     });
 
     it("empty list when no subscriptions", async () => {
@@ -109,7 +114,8 @@ describe("Subscription", () => {
         .get("/api/subscriptions")
         .set("authorization", u.token);
       assert.equal(res.status, 200);
-      assert.deepEqual(res.body.subs, []);
+      const body = res.body as SubscriptionAPI.FetchSubscriptionsResponse;
+      assert.deepEqual(body.subs, []);
     });
 
     it("error: 401 when no token", async () => {

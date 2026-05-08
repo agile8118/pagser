@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Alert, Button, Input, TAlertType } from "@pagser/reusable";
-import { validate } from "@pagser/common";
+import { validate, ApiMessages } from "@pagser/common";
 import VerifyEmail from "./VerifyEmail";
 
 const Register = () => {
@@ -91,7 +91,7 @@ const Register = () => {
       axios
         .post(`/api/username-availability`, { username: value })
         .then((respond) => {
-          if (respond.data.message === "ok") {
+          if (respond.data.message === ApiMessages.USERNAME_AVAILABLE) {
             setUsernameError("");
             setUsernameIsOK(true);
           }
@@ -99,7 +99,7 @@ const Register = () => {
         .catch((error) => {
           setUsernameIsOK(false);
           if (error.response?.status === 422) {
-            setUsernameError(`${value} is already taken, please choose another one.`);
+            setUsernameError(`${value} is already taken. Please choose another username.`);
           } else {
             setUsernameError("Please choose a valid username.");
           }
@@ -113,14 +113,14 @@ const Register = () => {
       if (!validate.len(value, 5, 15) && !validate.isEmpty(value)) {
         setUsernameIsOK(false);
         setUsernameError(
-          "Please choose a username name between 5 and 15 characters."
+          "Please choose a username between 5 and 15 characters."
         );
       }
 
       if (!validate.isUsername(value) && !validate.isEmpty(value)) {
         setUsernameIsOK(false);
         setUsernameError(
-          "Please choose a username that contains only letters, numbers and underscore."
+          "Please choose a username that contains only letters, numbers, and underscores."
         );
       }
     }
@@ -161,7 +161,7 @@ const Register = () => {
 
       if (!validate.isHardPassword(value) && !validate.isEmpty(value)) {
         setPasswordError(
-          "Password should at least contain a capital and a small letter, and a number."
+          "Password must contain an uppercase letter, a lowercase letter, and a number."
         );
         confirmPasswordReset();
       }
@@ -186,7 +186,7 @@ const Register = () => {
       setConfirmPassword(value);
 
       if (password !== value) {
-        setConfirmPasswordError("Passwords do not match up.");
+        setConfirmPasswordError("Passwords do not match.");
       }
 
       if (!validate.isEmpty(confirmPassword) && password === value) {
@@ -227,9 +227,9 @@ const Register = () => {
         })
         .catch((error) => {
           setLoading(false);
-          if (error.response.data.message === "email is in use") {
+          if (error.response.data.message === ApiMessages.EMAIL_IN_USE) {
             setAlertMessage(
-              "This email is already in use, you can login or reset your password in the login tab."
+              "This email is already in use. You can log in or reset your password in the login tab."
             );
             setAlertType("error");
           } else {
@@ -299,8 +299,8 @@ const Register = () => {
           <div className="auth__content">
             <h3 className="heading-tertiary">Create your account</h3>
             <p className="small-copy">
-              By creating an account you will be able to create pages, favorite
-              pages, comment on other pages and more.
+              By creating an account you will be able to create pages, save
+              favourite pages, comment on other pages, and more.
             </p>
             <Alert
               message={alertMessage as string}

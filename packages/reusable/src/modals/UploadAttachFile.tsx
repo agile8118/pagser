@@ -34,7 +34,8 @@ const UploadPhoto = (props: IProps) => {
 
     // @ts-ignore
     const file: File = document.querySelector("#file-input").files[0];
-    const qs = `?filename=${encodeURIComponent(file.name)}`;
+    const separator = props.url.includes("?") ? "&" : "?";
+    const qs = `${separator}filename=${encodeURIComponent(file.name)}`;
 
     try {
       await request.post(props.url + qs, file, {
@@ -47,7 +48,7 @@ const UploadPhoto = (props: IProps) => {
       props.success();
       reset();
     } catch (e: any) {
-      let msg = "There was an error with uploading your photo.";
+      let msg = "There was an error uploading your file.";
       if (e.message) msg = e.message;
 
       alert(msg, "error");

@@ -61,7 +61,7 @@ const Published = () => {
         );
       });
     } else {
-      return <p className="a-13">You don't have any draft page.</p>;
+      return <p className="a-13">You don't have any draft pages.</p>;
     }
   };
 
@@ -114,7 +114,7 @@ const Published = () => {
         }}
       >
         <p>
-          Are you sure that you want to delete the selected draft page
+          Are you sure you want to delete the selected draft page
           {selectedPages.length > 1 ? "s " : ""}
           ? <br /> You have selected {selectedPages.length} draft page
           {selectedPages.length > 1 ? "s " : ""} and you cannot undo the action.

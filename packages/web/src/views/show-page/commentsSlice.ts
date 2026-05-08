@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk, RootState } from "./store";
-import { alert, request, util, loadingModal } from "@pagser/common";
+import { alert, request, util, loadingModal, CommentAPI, RatingAPI } from "@pagser/common";
 
 export type TStatus = "add-reply" | "edit" | "normal";
 
@@ -21,9 +21,9 @@ export interface IReply {
   date: string;
   likes: number;
   status: TStatus;
-  toName: string;
-  inReplyTo: string; // id
-  inReplyToUser?: string; // user name
+  toName?: string;
+  inReplyTo: string | number | null;
+  inReplyToUser?: string;
 }
 
 interface IComment {
@@ -36,7 +36,7 @@ interface IComment {
   status: TStatus;
   replies: IReply[] | number;
   showReplies: boolean;
-  highlightedReplies: IReply[]; // will be used to show the recently added comment
+  highlightedReplies: IReply[];
 }
 
 interface CommentsState {
@@ -242,12 +242,12 @@ export const fetchComments = (): AppThunk => async (dispatch, getState) => {
   const commentsLength = getState().comments.list.length;
   const portion = commentsLength / 10 + 1;
 
-  const response = (await request.get(
+  const response = await request.get<CommentAPI.FetchCommentsResponse>(
     `/comments/${pageId}?portion=${portion}`,
     {
       auth: true,
     }
-  )) as any;
+  );
 
   if (commentsLength) {
     dispatch(addComments(response.comments));
@@ -270,13 +270,13 @@ export const addComment =
     loadingModal("Adding your comment...");
 
     try {
-      const response = (await request.post(
+      const response = await request.post<CommentAPI.AddCommentResponse>(
         `/comment/${getState().page.id}`,
         { text: comment, inReplyTo, inReplyToCommentReply },
         {
           auth: true,
         }
-      )) as any;
+      );
 
       if (response.inReplyTo) {
         dispatch(setNewReply(response.comment));
@@ -296,7 +296,7 @@ export const addComment =
         alert("Your comment was added successfully.", "success");
       }
     } catch (e) {
-      alert("Sorry an unknown error occurred.", "error");
+      alert("An unknown error occurred.", "error");
     }
 
     loadingModal();
@@ -306,9 +306,9 @@ export const addComment =
 export const fetchReplies =
   (id: string): AppThunk =>
   async (dispatch, getState) => {
-    const response = (await request.get(`/comment/${id}/replies`, {
+    const response = await request.get<CommentAPI.FetchRepliesResponse>(`/comment/${id}/replies`, {
       auth: true,
-    })) as any;
+    });
 
     dispatch(
       setFetchedReplies({
@@ -322,9 +322,9 @@ export const fetchReplies =
 export const likeComment =
   (commentId: string, inReplyTo?: string): AppThunk =>
   async (dispatch, getState) => {
-    const response = (await request.patch(`/rate/comment/${commentId}`, null, {
+    const response = await request.patch<RatingAPI.RateCommentResponse>(`/rate/comment/${commentId}`, null, {
       auth: true,
-    })) as any;
+    });
 
     dispatch(setLikes({ likes: response.likes, inReplyTo, commentId }));
   };
@@ -334,19 +334,19 @@ export const editComment =
   (commentId: string, newComment: string): AppThunk =>
   async (dispatch, getState) => {
     loadingModal("Updating your comment...");
-    const response = (await request.put(
+    const response = await request.put<CommentAPI.UpdateCommentResponse>(
       `/comment/${commentId}`,
       { text: newComment },
       {
         auth: true,
       }
-    )) as any;
+    );
 
     dispatch(
       setEditedComment({
         newComment: response.newComment,
         commentId: response.commentId,
-        inReplyTo: response.inReplyTo,
+        inReplyTo: response.inReplyTo != null ? String(response.inReplyTo) : "",
       })
     );
 
@@ -361,16 +361,16 @@ export const deleteComment =
   async (dispatch, getState) => {
     loadingModal("Deleting your comment...");
 
-    const response = (await request.delete(`/comment/${commentId}`, {
+    const response = await request.delete<CommentAPI.DeleteCommentResponse>(`/comment/${commentId}`, {
       auth: true,
-    })) as any;
+    });
 
     loadingModal();
 
     // If the comment deleted was a reply comment
     if (typeof response.parent !== "boolean" && response.parent) {
       // Fetch replies of that comment again
-      dispatch(fetchReplies(response.parent));
+      dispatch(fetchReplies(String(response.parent)));
     } else {
       // In this case the comment that was deleted is a main comment, so we remove
       // it entirely from the store along with all of its replies

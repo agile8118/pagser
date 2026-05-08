@@ -3,6 +3,7 @@ import request from "supertest";
 import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import app from "../src/app.js";
 import { DB } from "../src/database/index.js";
+import { ApiMessages } from "@pagser/common";
 import { createUser } from "./helpers/auth.js";
 import { makePublishedPage } from "./helpers/factories/index.js";
 import { s3Mock } from "./helpers/aws-mocks.js";
@@ -25,7 +26,7 @@ describe("Page photo", () => {
         .send(tinyJpeg());
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.message, "image-uploaded");
+      assert.equal(res.body.message, ApiMessages.IMAGE_UPLOADED);
 
       const puts = s3Mock.commandCalls(PutObjectCommand);
       assert.ok(puts.length >= 2, `expected ≥2 S3 puts, got ${puts.length}`);

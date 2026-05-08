@@ -2,6 +2,7 @@ import { strict as assert } from "node:assert";
 import request from "supertest";
 import app from "../src/app.js";
 import { DB } from "../src/database/index.js";
+import { SettingsAPI } from "@pagser/common";
 import { createUser, login } from "./helpers/auth.js";
 
 describe("Settings", () => {
@@ -12,7 +13,8 @@ describe("Settings", () => {
         .get("/api/settings/email")
         .set("authorization", u.token);
       assert.equal(res.status, 200);
-      assert.equal(res.body.email, u.email);
+      const body = res.body as SettingsAPI.GetEmailResponse;
+      assert.equal(body.email, u.email);
     });
   });
 

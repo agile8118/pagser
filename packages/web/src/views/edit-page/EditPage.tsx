@@ -1,27 +1,12 @@
 import React, { useState, useEffect } from "react";
 import TinyMCE from "react-tinymce";
-import { util, request, loadingModal, alert, tagsInput, validate } from "@pagser/common";
+import { util, request, loadingModal, alert, tagsInput, validate, PagesAPI } from "@pagser/common";
 import { Loading, Button, Input, Textarea } from "@pagser/reusable";
 
 type TPageType = "public" | "private";
 
-interface IPageData {
-  id: number;
-  type: TPageType;
-  title: string;
-  brief_description: string;
-  targets: string;
-  body: string;
-  url: string;
-  anonymously: boolean;
-  comments_disabled: boolean;
-  ratings_disabled: boolean;
-  links_disabled: boolean;
-  tags: string[];
-}
-
 const EditPage = () => {
-  const [page, setPage] = useState<IPageData | null>(null);
+  const [page, setPage] = useState<PagesAPI.EditPageData | null>(null);
   const [usedUrls, setUsedUrls] = useState<string[]>([]);
   const [loadError, setLoadError] = useState(false);
 
@@ -68,8 +53,8 @@ const EditPage = () => {
           apiUrl = `/${username}/${urlSlug}/edit`;
         }
 
-        const response = (await request.get(apiUrl, { auth: true })) as any;
-        const p: IPageData = response.page;
+        const response = await request.get<PagesAPI.FetchEditPageResponse>(apiUrl, { auth: true });
+        const p = response.page;
 
         setPage(p);
         setTitle(p.title || "");
@@ -222,7 +207,7 @@ const EditPage = () => {
     loadingModal("Saving...");
 
     try {
-      const response = (await request.put(
+      const response = await request.put<PagesAPI.UpdatePageResponse>(
         `/pages/${page.id}`,
         {
           page: {
@@ -242,7 +227,7 @@ const EditPage = () => {
           },
         },
         { auth: true }
-      )) as any;
+      );
 
       loadingModal();
 

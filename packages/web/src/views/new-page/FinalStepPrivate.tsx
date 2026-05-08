@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Loading, Button, ConfirmModal, Input } from "@pagser/reusable";
-import { util, request, loadingModal, alert, validate } from "@pagser/common";
+import { util, request, loadingModal, alert, validate, PagesAPI } from "@pagser/common";
 import { useNavigate } from "react-router-dom";
 
 interface IProps {
@@ -104,9 +104,9 @@ const FinalStepPrivate = (props: IProps) => {
     updatePage(async () => {
       const pageId = util.getParameterByName("id", window.location.href);
       try {
-        const response = (await request.post(`/new-page/${pageId}`, null, {
+        const response = await request.post<PagesAPI.PublishPageResponse>(`/new-page/${pageId}`, null, {
           auth: true,
-        })) as any;
+        });
 
         navigate(
           `/new-page/message?type=private&status=success&url=${response.url}&username=${response.username}`
@@ -163,9 +163,7 @@ const FinalStepPrivate = (props: IProps) => {
                 ?
               </a>
               <span className="tooltip__text">
-                lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor
-                sit amet, consectetur adiplorem ipsum dolor sit amet,
-                consectetur adip
+                When disabled, visitors cannot leave comments on your page.
               </span>
             </div>
             <button
@@ -189,9 +187,7 @@ const FinalStepPrivate = (props: IProps) => {
                 ?
               </a>
               <span className="tooltip__text">
-                lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor
-                sit amet, consectetur adiplorem ipsum dolor sit amet,
-                consectetur adip
+                When disabled, visitors cannot like or rate your page.
               </span>
             </div>
             <button
@@ -215,9 +211,7 @@ const FinalStepPrivate = (props: IProps) => {
                 ?
               </a>
               <span className="tooltip__text">
-                lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor
-                sit amet, consectetur adiplorem ipsum dolor sit amet,
-                consectetur adip
+                When enabled, your name will not appear on the page. It will be posted anonymously.
               </span>
             </div>
             <button
@@ -260,9 +254,8 @@ const FinalStepPrivate = (props: IProps) => {
           <div className="url__note">
             <strong>Important note about URL:</strong>
             <p>
-              This URL will be for your page, please copy this because the only
-              way other persons can view this page is to have this URL. <br />{" "}
-              You should share this URL in order for others to view it.
+              Share this URL with anyone you want to give access to. It is the
+              only way others can find and view this page.
             </p>
           </div>
         </div>

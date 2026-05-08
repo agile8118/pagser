@@ -31,17 +31,17 @@ const Login = () => {
     switch (redirectedFrom) {
       case "new-page":
         setAlertMessage(
-          "Please login in order to be able to create a new page."
+          "Please log in to create a new page."
         );
-        setAlertType("normall");
+        setAlertType("normal");
         break;
       case "admin":
-        setAlertMessage("Please login to access the admin area.");
-        setAlertType("normall");
+        setAlertMessage("Please log in to access the admin area.");
+        setAlertType("normal");
         break;
       case "access":
-        setAlertMessage("Please login to proceed.");
-        setAlertType("normall");
+        setAlertMessage("Please log in to proceed.");
+        setAlertType("normal");
         break;
     }
   }, []);
@@ -62,7 +62,7 @@ const Login = () => {
         setLoadingForgotPassword(false);
       })
       .catch((error) => {
-        setAlertMessage(`No one with the email ${email} was founded.`);
+        setAlertMessage(`No account with the email ${email} was found.`);
         setAlertType("error");
         setForgotPassMdl(false);
         setLoadingForgotPassword(false);

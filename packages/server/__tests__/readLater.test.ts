@@ -3,6 +3,7 @@ import request from "supertest";
 
 import app from "../src/app.js";
 import { DB } from "../src/database/index.js";
+import { ApiMessages, ReadLaterAPI } from "@pagser/common";
 import { createUser } from "./helpers/auth.js";
 import {
   makePublishedPage,
@@ -26,7 +27,8 @@ describe("ReadLater", () => {
         .set("authorization", u.token)
         .send();
       assert.equal(res.status, 200);
-      assert.equal(res.body.readLater, true);
+      const body = res.body as ReadLaterAPI.ToggleResponse;
+      assert.equal(body.readLater, true);
 
       const row = await DB.find(
         "SELECT id FROM read_later WHERE user_id = $1 AND page_id = $2",
@@ -49,7 +51,8 @@ describe("ReadLater", () => {
         .patch(`/api/read-later/${page.id}`)
         .set("authorization", u.token)
         .send();
-      assert.equal(res.body.readLater, false);
+      const body = res.body as ReadLaterAPI.ToggleResponse;
+      assert.equal(body.readLater, false);
 
       const row = await DB.find(
         "SELECT id FROM read_later WHERE user_id = $1 AND page_id = $2",
@@ -87,7 +90,7 @@ describe("ReadLater", () => {
         .set("authorization", u.token)
         .send({ ids: [p1.id] });
       assert.equal(res.status, 200);
-      assert.equal(res.body.message, "success");
+      assert.equal(res.body.message, ApiMessages.SUCCESS);
 
       const remaining = await DB.findMany<{ page_id: number }>(
         "SELECT page_id FROM read_later WHERE user_id = $1",
@@ -154,10 +157,11 @@ describe("ReadLater", () => {
         .get("/api/read-later")
         .set("authorization", u.token);
       assert.equal(res.status, 200);
-      assert.equal(res.body.pages.length, 1);
-      assert.equal(res.body.pages[0].url, "rl-fetch");
-      assert.equal(res.body.filterBy, "all");
-      assert.equal(res.body.sortBy, "date-added-asc");
+      const body = res.body as ReadLaterAPI.FetchResponse;
+      assert.equal(body.pages.length, 1);
+      assert.equal(body.pages[0].url, "rl-fetch");
+      assert.equal(body.filterBy, "all");
+      assert.equal(body.sortBy, "date-added-asc");
     });
 
     it("filter: filterBy=private excludes public pages", async () => {
@@ -179,8 +183,9 @@ describe("ReadLater", () => {
       const res = await request(app)
         .get("/api/read-later?filterBy=private")
         .set("authorization", u.token);
-      assert.equal(res.body.pages.length, 1);
-      assert.equal(res.body.pages[0].type, "private");
+      const filterBody = res.body as ReadLaterAPI.FetchResponse;
+      assert.equal(filterBody.pages.length, 1);
+      assert.equal(filterBody.pages[0].type, "private");
     });
 
     it("error: 401 when no token", async () => {

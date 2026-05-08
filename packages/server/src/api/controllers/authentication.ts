@@ -6,11 +6,13 @@ import crypto from "crypto";
 import sendEmail from "../services/email.js";
 import { DB } from "../../database/index.js";
 import { IUser } from "../../database/types.js";
+import { ApiMessages, AuthAPI } from "@pagser/common";
 import keys from "../../config/keys.js";
 
 // Sends a message to client to indicate that the username is available
 const usernameAvailability = (req: Request, res: Response) => {
-  res.status(200).json({ message: "ok" });
+  const body: AuthAPI.UsernameAvailabilityResponse = { message: ApiMessages.USERNAME_AVAILABLE };
+  res.status(200).json(body);
 };
 
 // Send a code to the user email address to verify that user owns the email
@@ -33,7 +35,8 @@ const sendCode = async (req: Request, res: Response) => {
     expires_at: new Date(Date.now() + 10 * 60 * 1000),
   });
   await sendEmail(email, "Verify your email address", html);
-  res.status(200).json({ message: "code sent" });
+  const body: AuthAPI.SendCodeResponse = { message: ApiMessages.CODE_SENT };
+  res.status(200).json(body);
 };
 
 // Registers a user and sends back a token
@@ -57,12 +60,16 @@ const register = async (req: Request, res: Response) => {
 
   // issue a token for the newly registered user
   const token = await req.login({ password, hashedPassword: hash, userId: String(user.id) });
-  res.status(201).json({ token });
+  const body: AuthAPI.RegisterResponse = { token };
+  res.status(201).json(body);
 };
 
 // Logs a user in and gives them a token
 const login = async (req: Request, res: Response) => {
-  if (req.user && req._token) res.json({ token: req._token });
+  if (req.user && req._token) {
+    const body: AuthAPI.LoginResponse = { token: req._token };
+    res.json(body);
+  }
 };
 
 // Sends an email to user's email address for them to use to reset their password
@@ -73,7 +80,7 @@ const forgotPassword = async (req: Request, res: Response) => {
     `SELECT id FROM users WHERE email = '${email}'`,
   );
 
-  if (!user) throw { status: 404, message: "no email found" };
+  if (!user) throw { status: 404, message: ApiMessages.NO_EMAIL_FOUND };
 
   const code = crypto.randomBytes(18).toString("hex");
   const link = `${keys.domain}/forgot-password?t=${code}&i=${user.id}`;
@@ -85,7 +92,7 @@ const forgotPassword = async (req: Request, res: Response) => {
     <em>Link is valid for just 10 minutes.</em>
   </div>
   <div style="text-align:center;margin-top: 20px;font-size: 12px;color: #555;">
-    If you didn't request for a password reset, feel free to ignore this email.
+    If you didn't request a password reset, feel free to ignore this email.
   </div>`;
 
   await DB.update(
@@ -95,7 +102,8 @@ const forgotPassword = async (req: Request, res: Response) => {
   );
 
   await sendEmail(email, "Reset your password", html);
-  res.status(200).json({ message: "code was sent" });
+  const body: AuthAPI.ForgotPasswordResponse = { message: ApiMessages.RESET_LINK_SENT };
+  res.status(200).json(body);
 };
 
 // Using the token that waws sent in their email address, reset their password and update the database
@@ -117,7 +125,8 @@ const resetPassword = async (req: Request, res: Response) => {
   // update user password
   await DB.update("users", { password: hash }, `id = $2`, [userId]);
 
-  res.status(200).json({ message: "password updated" });
+  const body: AuthAPI.ResetPasswordResponse = { message: ApiMessages.PASSWORD_UPDATED };
+  res.status(200).json(body);
 };
 
 // Return the id and photo of the user if authenticated
@@ -128,7 +137,8 @@ const getAuth = async (req: Request, res: Response) => {
       [req.user.id],
     );
 
-    res.status(200).json({ user: { id: user.id, photo: user.photo_url } });
+    const body: AuthAPI.GetAuthResponse = { user: { id: user.id, photo: user.photo_url } };
+    res.status(200).json(body);
   } else {
     res.status(400).json({});
   }
@@ -137,7 +147,8 @@ const getAuth = async (req: Request, res: Response) => {
 const logout = async (req: Request, res: Response) => {
   const token = req.headers["authorization"] as string | undefined;
   if (token) await req.logout(token);
-  res.status(200).json({ message: "logged out" });
+  const body: AuthAPI.LogoutResponse = { message: ApiMessages.LOGGED_OUT };
+  res.status(200).json(body);
 };
 
 const controller = {

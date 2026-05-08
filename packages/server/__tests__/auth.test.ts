@@ -4,6 +4,7 @@ import { SendEmailCommand } from "@aws-sdk/client-ses";
 
 import app from "../src/app.js";
 import { DB } from "../src/database/index.js";
+import { ApiMessages, AuthAPI } from "@pagser/common";
 import {
   createUser,
   login,
@@ -33,7 +34,7 @@ describe("Authentication", () => {
         .post("/api/username-availability")
         .send({ username: "freshuser" });
       assert.equal(res.status, 200);
-      assert.equal(res.body.message, "ok");
+      assert.equal(res.body.message, ApiMessages.USERNAME_AVAILABLE);
     });
 
     it("validation: 400 when username is empty", async () => {
@@ -41,7 +42,7 @@ describe("Authentication", () => {
         .post("/api/username-availability")
         .send({ username: "" });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "username error");
+      assert.equal(res.body.message, ApiMessages.INVALID_USERNAME);
     });
 
     it("validation: 400 when username is too short (<5 chars)", async () => {
@@ -49,7 +50,7 @@ describe("Authentication", () => {
         .post("/api/username-availability")
         .send({ username: "abcd" });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "username error");
+      assert.equal(res.body.message, ApiMessages.INVALID_USERNAME);
     });
 
     it("validation: 400 when username is too long (>15 chars)", async () => {
@@ -57,7 +58,7 @@ describe("Authentication", () => {
         .post("/api/username-availability")
         .send({ username: "a".repeat(16) });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "username error");
+      assert.equal(res.body.message, ApiMessages.INVALID_USERNAME);
     });
 
     it("validation: 400 when username has invalid chars (space)", async () => {
@@ -65,7 +66,7 @@ describe("Authentication", () => {
         .post("/api/username-availability")
         .send({ username: "no spaces" });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "username error");
+      assert.equal(res.body.message, ApiMessages.INVALID_USERNAME);
     });
 
     it("availability: 422 when username already in use", async () => {
@@ -74,7 +75,7 @@ describe("Authentication", () => {
         .post("/api/username-availability")
         .send({ username: "taken1" });
       assert.equal(res.status, 422);
-      assert.equal(res.body.message, "username is in use");
+      assert.equal(res.body.message, ApiMessages.USERNAME_IN_USE);
     });
   });
 
@@ -84,7 +85,7 @@ describe("Authentication", () => {
       const body = validBody();
       const res = await request(app).post("/api/send-code").send(body);
       assert.equal(res.status, 200);
-      assert.equal(res.body.message, "code sent");
+      assert.equal(res.body.message, ApiMessages.CODE_SENT);
 
       const calls = sesMock.commandCalls(SendEmailCommand);
       assert.equal(calls.length, 1);
@@ -102,7 +103,7 @@ describe("Authentication", () => {
         .post("/api/send-code")
         .send({ ...validBody(), name: "" });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "name error");
+      assert.equal(res.body.message, ApiMessages.INVALID_NAME);
     });
 
     it("validation: 400 when name has digits", async () => {
@@ -110,7 +111,7 @@ describe("Authentication", () => {
         .post("/api/send-code")
         .send({ ...validBody(), name: "Joe7" });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "name error");
+      assert.equal(res.body.message, ApiMessages.INVALID_NAME);
     });
 
     it("validation: 400 when name is too short (<3)", async () => {
@@ -118,7 +119,7 @@ describe("Authentication", () => {
         .post("/api/send-code")
         .send({ ...validBody(), name: "Jo" });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "name error");
+      assert.equal(res.body.message, ApiMessages.INVALID_NAME);
     });
 
     it("validation: 400 when email is malformed", async () => {
@@ -126,7 +127,7 @@ describe("Authentication", () => {
         .post("/api/send-code")
         .send({ ...validBody(), email: "not-an-email" });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "email error");
+      assert.equal(res.body.message, ApiMessages.INVALID_EMAIL);
     });
 
     it("availability: 422 when email is already in use", async () => {
@@ -135,7 +136,7 @@ describe("Authentication", () => {
         .post("/api/send-code")
         .send({ ...validBody(), email: existing.email });
       assert.equal(res.status, 422);
-      assert.equal(res.body.message, "email is in use");
+      assert.equal(res.body.message, ApiMessages.EMAIL_IN_USE);
     });
 
     it("validation: 400 when password is too short (<8)", async () => {
@@ -143,7 +144,7 @@ describe("Authentication", () => {
         .post("/api/send-code")
         .send({ ...validBody(), password: "Aa1!aa" });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "password error");
+      assert.equal(res.body.message, ApiMessages.INVALID_PASSWORD);
     });
 
     it("validation: 400 when password lacks uppercase (not hard)", async () => {
@@ -151,7 +152,7 @@ describe("Authentication", () => {
         .post("/api/send-code")
         .send({ ...validBody(), password: "aa1!aaaa" });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "password error");
+      assert.equal(res.body.message, ApiMessages.INVALID_PASSWORD);
     });
 
     it("validation: 400 when password equals username", async () => {
@@ -160,7 +161,7 @@ describe("Authentication", () => {
         .post("/api/send-code")
         .send({ ...validBody(), username: same, password: same });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "password error");
+      assert.equal(res.body.message, ApiMessages.INVALID_PASSWORD);
     });
 
     it("availability: 422 when username is already taken", async () => {
@@ -169,7 +170,7 @@ describe("Authentication", () => {
         .post("/api/send-code")
         .send({ ...validBody(), username: "snd1user" });
       assert.equal(res.status, 422);
-      assert.equal(res.body.message, "username is in use");
+      assert.equal(res.body.message, ApiMessages.USERNAME_IN_USE);
     });
 
     it("error: 500 when SES rejects the email", async () => {
@@ -213,7 +214,7 @@ describe("Authentication", () => {
         .post("/api/register")
         .send({ ...body, userEmailVerificationCode: wrongCode });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "invalid code");
+      assert.equal(res.body.message, ApiMessages.INVALID_CODE);
     });
 
     it("success: 201 when a different agent uses a valid code (codes are DB-scoped, not session-scoped)", async () => {
@@ -242,7 +243,7 @@ describe("Authentication", () => {
         .post("/api/register")
         .send({ ...body, userEmailVerificationCode: code });
       assert.equal(res.status, 422);
-      assert.equal(res.body.message, "email is in use");
+      assert.equal(res.body.message, ApiMessages.EMAIL_IN_USE);
     });
   });
 
@@ -254,7 +255,8 @@ describe("Authentication", () => {
         .post("/api/login")
         .send({ email: u.email, password: u.password });
       assert.equal(res.status, 200);
-      assert.ok(res.body.token);
+      const body = res.body as AuthAPI.LoginResponse;
+      assert.ok(body.token);
     });
 
     it("error: 401 when password is wrong", async () => {
@@ -287,7 +289,7 @@ describe("Authentication", () => {
         .post("/api/forgot-password")
         .send({ email: u.email });
       assert.equal(res.status, 200);
-      assert.equal(res.body.message, "code was sent");
+      assert.equal(res.body.message, ApiMessages.RESET_LINK_SENT);
 
       const row = await DB.find<{ token_code: string; token_date: string }>(
         `SELECT token_code, token_date FROM users WHERE id = $1`,
@@ -308,7 +310,7 @@ describe("Authentication", () => {
         .post("/api/forgot-password")
         .send({ email: "ghost@test.local" });
       assert.equal(res.status, 404);
-      assert.equal(res.body.message, "no email found");
+      assert.equal(res.body.message, ApiMessages.NO_EMAIL_FOUND);
     });
 
     it("validation: 400 when email is malformed", async () => {
@@ -316,7 +318,7 @@ describe("Authentication", () => {
         .post("/api/forgot-password")
         .send({ email: "not-an-email" });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "email error");
+      assert.equal(res.body.message, ApiMessages.INVALID_EMAIL);
     });
   });
 
@@ -343,7 +345,7 @@ describe("Authentication", () => {
         .patch("/api/reset-password")
         .send({ user_id: u.id, password: newPassword, token: code });
       assert.equal(res.status, 200);
-      assert.equal(res.body.message, "password updated");
+      assert.equal(res.body.message, ApiMessages.PASSWORD_UPDATED);
 
       // login with new password works
       const token = await login(u.email, newPassword);
@@ -355,7 +357,7 @@ describe("Authentication", () => {
         .patch("/api/reset-password")
         .send({ user_id: "abc", password: "Newpw1!aaaa", token: "x" });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "id error");
+      assert.equal(res.body.message, ApiMessages.INVALID_ID);
     });
 
     it("validation: 400 when password is too weak", async () => {
@@ -365,7 +367,7 @@ describe("Authentication", () => {
         .patch("/api/reset-password")
         .send({ user_id: u.id, password: "weak", token: code });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "password error");
+      assert.equal(res.body.message, ApiMessages.INVALID_PASSWORD);
     });
 
     it("error: 400 invalid link when user does not exist", async () => {
@@ -373,7 +375,7 @@ describe("Authentication", () => {
         .patch("/api/reset-password")
         .send({ user_id: "999999", password: "Newpw1!aaaa", token: "anything" });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "invalid link");
+      assert.equal(res.body.message, ApiMessages.INVALID_LINK);
     });
 
     it("error: 400 invalid link when token does not match", async () => {
@@ -383,7 +385,7 @@ describe("Authentication", () => {
         .patch("/api/reset-password")
         .send({ user_id: u.id, password: "Newpw1!aaaa", token: "wrong-token" });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "invalid link");
+      assert.equal(res.body.message, ApiMessages.INVALID_LINK);
     });
 
     it("edge: 400 link expired when token is older than 10 minutes", async () => {
@@ -393,7 +395,7 @@ describe("Authentication", () => {
         .patch("/api/reset-password")
         .send({ user_id: u.id, password: "Newpw1!aaaa", token: code });
       assert.equal(res.status, 400);
-      assert.equal(res.body.message, "link expired");
+      assert.equal(res.body.message, ApiMessages.LINK_EXPIRED);
     });
   });
 
@@ -407,8 +409,9 @@ describe("Authentication", () => {
         .set("authorization", token)
         .send();
       assert.equal(res.status, 200);
-      assert.equal(String(res.body.user.id), u.id);
-      assert.ok("photo" in res.body.user);
+      const body = res.body as AuthAPI.GetAuthResponse;
+      assert.equal(String(body.user.id), u.id);
+      assert.ok("photo" in body.user);
     });
 
     it("error: 401 when no token is provided", async () => {

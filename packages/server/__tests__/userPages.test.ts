@@ -3,6 +3,7 @@ import request from "supertest";
 
 import app from "../src/app.js";
 import { DB } from "../src/database/index.js";
+import { ApiMessages, UserPagesAPI } from "@pagser/common";
 import { createUser } from "./helpers/auth.js";
 import {
   makeDraftPage,
@@ -41,9 +42,10 @@ describe("UserPages", () => {
         .get("/api/user-pages/published")
         .set("authorization", u.token);
       assert.equal(res.status, 200);
-      assert.equal(res.body.results.length, 2);
-      assert.equal(res.body.results[0].url, "up-2");
-      assert.equal(res.body.results[1].url, "up-1");
+      const body = res.body as UserPagesAPI.FetchPublishedPagesResponse;
+      assert.equal(body.results.length, 2);
+      assert.equal(body.results[0].url, "up-2");
+      assert.equal(body.results[1].url, "up-1");
     });
 
     it("filter: filterBy=private excludes public pages", async () => {
@@ -62,9 +64,10 @@ describe("UserPages", () => {
       const res = await request(app)
         .get("/api/user-pages/published?filterBy=private")
         .set("authorization", u.token);
-      assert.equal(res.body.results.length, 1);
-      assert.equal(res.body.results[0].type, "private");
-      assert.equal(res.body.filterBy, "private");
+      const filterBody = res.body as UserPagesAPI.FetchPublishedPagesResponse;
+      assert.equal(filterBody.results.length, 1);
+      assert.equal(filterBody.results[0].type, "private");
+      assert.equal(filterBody.filterBy, "private");
     });
 
     it("error: 401 when no token", async () => {
@@ -88,7 +91,7 @@ describe("UserPages", () => {
         .set("authorization", u.token)
         .send({ ids: [p.id] });
       assert.equal(res.status, 200);
-      assert.equal(res.body.message, "success");
+      assert.equal(res.body.message, ApiMessages.SUCCESS);
 
       const row = await DB.find("SELECT id FROM pages WHERE id = $1", [p.id]);
       assert.equal(row, null);
@@ -165,8 +168,9 @@ describe("UserPages", () => {
         .get("/api/user-pages/draft")
         .set("authorization", u.token);
       assert.equal(res.status, 200);
-      assert.equal(res.body.results.length, 2);
-      assert.equal(res.body.results[0].contents.title, "Draft Two");
+      const body = res.body as UserPagesAPI.FetchDraftPagesResponse;
+      assert.equal(body.results.length, 2);
+      assert.equal(body.results[0].contents.title, "Draft Two");
     });
 
     it("filter: drafts without title are NOT returned", async () => {
@@ -177,7 +181,8 @@ describe("UserPages", () => {
       const res = await request(app)
         .get("/api/user-pages/draft")
         .set("authorization", u.token);
-      assert.deepEqual(res.body.results, []);
+      const noTitleBody = res.body as UserPagesAPI.FetchDraftPagesResponse;
+      assert.deepEqual(noTitleBody.results, []);
     });
 
     it("isolation: only the caller's drafts", async () => {
@@ -191,7 +196,8 @@ describe("UserPages", () => {
       const res = await request(app)
         .get("/api/user-pages/draft")
         .set("authorization", b.token);
-      assert.deepEqual(res.body.results, []);
+      const isoBody = res.body as UserPagesAPI.FetchDraftPagesResponse;
+      assert.deepEqual(isoBody.results, []);
     });
 
     it("error: 401 when no token", async () => {

@@ -2,6 +2,7 @@ import { strict as assert } from "node:assert";
 import request from "supertest";
 import app from "../src/app.js";
 import { DB } from "../src/database/index.js";
+import { PagesAPI } from "@pagser/common";
 import { PAGE_STATUS, PAGE_TYPE } from "../src/database/types.js";
 import { createUser } from "./helpers/auth.js";
 import { makeDraftPage } from "./helpers/factories/index.js";
@@ -16,12 +17,13 @@ describe("Page draft", () => {
         .send({ page: { type: "public" } });
 
       assert.equal(res.status, 201);
-      assert.equal(res.body.message, "created");
-      assert.ok(res.body.id);
+      const body = res.body as PagesAPI.NewDraftPageResponse;
+      assert.equal(body.message, "created");
+      assert.ok(body.id);
 
       const row = await DB.find<{ status_id: number; type_id: number }>(
         `SELECT status_id, type_id FROM pages WHERE id = $1`,
-        [res.body.id],
+        [body.id],
       );
       assert.equal(row?.status_id, PAGE_STATUS.draftId);
       assert.equal(row?.type_id, PAGE_TYPE.publicId);
@@ -46,8 +48,9 @@ describe("Page draft", () => {
         .set("authorization", u.token);
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.page.title, "Draft title");
-      assert.equal(res.body.page.brief_description, "Brief des");
+      const body = res.body as PagesAPI.FetchDraftPageContentsResponse;
+      assert.equal(body.page.title, "Draft title");
+      assert.equal(body.page.brief_description, "Brief des");
     });
   });
 
@@ -72,7 +75,8 @@ describe("Page draft", () => {
         });
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.message, "updated");
+      const body = res.body as PagesAPI.UpdateDraftPageResponse;
+      assert.equal(body.message, "updated");
 
       const row = await DB.find<{ title: string; brief_description: string }>(
         `SELECT title, brief_description FROM pages WHERE id = $1`,

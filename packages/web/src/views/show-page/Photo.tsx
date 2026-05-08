@@ -45,8 +45,7 @@ const Photo = () => {
           {/* Confirm modal for photo page removal */}
           <ConfirmModal
             header="Remove your page photo"
-            message="Are you really sure that you want to delete your page photo?
-                  This cannot be undone."
+            message="Are you sure you want to delete your page photo? This cannot be undone."
             open={confirmModalOpen}
             onConfirm={() => {
               dispatch(deletePhoto());

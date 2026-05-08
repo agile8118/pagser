@@ -3,6 +3,7 @@ import type {
   CpeakResponse as Response,
 } from "cpeak";
 import { DB } from "../../database/index.js";
+import { SettingsAPI } from "@pagser/common";
 
 // Fetch user's email
 const fetchUserEmail = async (req: Request, res: Response) => {
@@ -15,7 +16,8 @@ const fetchUserEmail = async (req: Request, res: Response) => {
 
   if (!user) throw { status: 404, message: "User not found" };
 
-  res.json({ email: user.email });
+  const body: SettingsAPI.GetEmailResponse = { email: user.email };
+  res.json(body);
 };
 
 // Update user's email
@@ -32,7 +34,8 @@ const updateUserEmail = async (req: Request, res: Response) => {
 
   await DB.update(`users`, { email }, `id = $2`, [userId]);
 
-  res.json({ message: "Email updated successfully" });
+  const body: SettingsAPI.UpdateEmailResponse = { message: "Email updated successfully" };
+  res.json(body);
 };
 
 // Update user's password
@@ -44,7 +47,8 @@ const updateUserPassword = async (req: Request, res: Response) => {
 
   await DB.update(`users`, { password: hashedPassword }, `id = $2`, [userId]);
 
-  res.json({ message: "Password updated successfully" });
+  const body: SettingsAPI.UpdatePasswordResponse = { message: "Password updated successfully" };
+  res.json(body);
 };
 
 const controller = {

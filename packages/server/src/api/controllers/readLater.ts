@@ -5,6 +5,7 @@ import type {
 import { DB } from "../../database/index.js";
 import { PAGE_TYPE } from "../../database/types.js";
 import { timeSince } from "../../lib/util.js";
+import { ReadLaterAPI } from "@pagser/common";
 
 // Toggle page in/out of read-later list
 const toggle = async (req: Request, res: Response) => {
@@ -21,13 +22,15 @@ const toggle = async (req: Request, res: Response) => {
       userId,
       pageId,
     ]);
-    res.json({ readLater: false });
+    const off: ReadLaterAPI.ToggleResponse = { readLater: false };
+    res.json(off);
   } else {
     await DB.insert(`read_later`, {
       user_id: parseInt(userId),
       page_id: parseInt(pageId),
     });
-    res.json({ readLater: true });
+    const on: ReadLaterAPI.ToggleResponse = { readLater: true };
+    res.json(on);
   }
 };
 
@@ -48,7 +51,8 @@ const remove = async (req: Request, res: Response) => {
 
   await DB.query(query, [...ids, userId]);
 
-  res.json({ message: "success" });
+  const body: ReadLaterAPI.RemoveResponse = { message: "success" };
+  res.json(body);
 };
 
 // Fetch user's read-later list
@@ -113,11 +117,8 @@ const fetch = async (req: Request, res: Response) => {
     dateVisited: timeSince(page.date_published),
   }));
 
-  res.json({
-    pages: formattedPages,
-    sortBy,
-    filterBy,
-  });
+  const body: ReadLaterAPI.FetchResponse = { pages: formattedPages, sortBy, filterBy };
+  res.json(body);
 };
 
 const controller = {

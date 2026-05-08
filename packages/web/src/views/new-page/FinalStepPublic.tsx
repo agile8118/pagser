@@ -7,6 +7,7 @@ import {
   alert,
   tagsInput,
   validate,
+  PagesAPI,
 } from "@pagser/common";
 import { useNavigate } from "react-router-dom";
 
@@ -141,9 +142,9 @@ const FinalStepPublic = (props: IProps) => {
     updatePage(async () => {
       const pageId = util.getParameterByName("id", window.location.href);
       try {
-        const response = (await request.post(`/new-page/${pageId}`, null, {
+        const response = await request.post<PagesAPI.PublishPageResponse>(`/new-page/${pageId}`, null, {
           auth: true,
-        })) as any;
+        });
 
         navigate(
           `/new-page/message?type=public&status=success&url=${response.url}`
@@ -187,9 +188,7 @@ const FinalStepPublic = (props: IProps) => {
                 ?
               </a>
               <span className="tooltip__text">
-                lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor
-                sit amet, consectetur adiplorem ipsum dolor sit amet,
-                consectetur adip
+                When disabled, visitors cannot leave comments on your page.
               </span>
             </div>
             <button
@@ -213,9 +212,7 @@ const FinalStepPublic = (props: IProps) => {
                 ?
               </a>
               <span className="tooltip__text">
-                lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor
-                sit amet, consectetur adiplorem ipsum dolor sit amet,
-                consectetur adip
+                When disabled, visitors cannot like or rate your page.
               </span>
             </div>
             <button
@@ -239,9 +236,7 @@ const FinalStepPublic = (props: IProps) => {
                 ?
               </a>
               <span className="tooltip__text">
-                lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor
-                sit amet, consectetur adiplorem ipsum dolor sit amet,
-                consectetur adip
+                When enabled, related pages and tags will not be shown at the bottom of your page.
               </span>
             </div>
             <button
@@ -265,9 +260,7 @@ const FinalStepPublic = (props: IProps) => {
                 ?
               </a>
               <span className="tooltip__text">
-                lorem ipsum dolor sit amet, consectetur adiplorem ipsum dolor
-                sit amet, consectetur adiplorem ipsum dolor sit amet,
-                consectetur adip
+                When enabled, your name will not appear on the page. It will be posted anonymously.
               </span>
             </div>
             <button

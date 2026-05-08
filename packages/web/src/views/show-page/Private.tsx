@@ -114,8 +114,8 @@ const Private = () => {
       "Page Not Found | Pagser";
     return (
       <h3 className="a-1 center-content">
-        Sorry but no page with this URL was found. <br /> Maybe the author has
-        deleted this page.
+        Sorry, no page with this URL was found. <br /> The author may have
+        deleted it.
       </h3>
     );
   }

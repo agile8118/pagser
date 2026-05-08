@@ -12,14 +12,14 @@ const Message = () => {
     return (
       <div>
         <div className="middle-box middle-box--success margin-bottom-1">
-          You have successfully published your public page, you can view that
-          from the link below. Other users can like, dislike or comment on your
-          page if you haven't disabled them and we will send you notifications
-          about them. You can view all the public and private pages you've
-          created in{" "}
+          You have successfully published your public page. You can view it
+          using the link below. Other users can like, dislike, and comment on
+          your page if those features are enabled, and you will receive
+          notifications about their activity. You can view all the public and
+          private pages you've created in{" "}
           <strong>
             <a className="white-link" href="/u/pages">
-              pages section.
+              the pages section.
             </a>
           </strong>
         </div>
@@ -36,15 +36,18 @@ const Message = () => {
     return (
       <div>
         <div className="middle-box middle-box--success margin-bottom-1">
-          You have successfully created your private page, you can view that
-          from the link below. To share this page with the persons you want, you
-          should share the link of your page with them (link below). You can
-          view all the public and private pages you've created in{" "}
+          You have successfully created your private page. You can view it using
+          the link below. You can view all the public and private pages you've
+          created in{" "}
           <strong>
             <a className="white-link" href="/u/pages">
-              pages section.
+              the pages section.
             </a>
           </strong>
+          To share this page with others, send them the link shown below:
+          <div className="middle-box__displayed-link">
+            {window.location.host}/{username}/{url}
+          </div>
         </div>
         <div className="center-content middle-box--link">
           <a className="blue-link" href={`/${username}/${url}`}>
@@ -74,10 +77,9 @@ const Message = () => {
   return (
     <div>
       <div className="middle-box middle-box--error margin-bottom-1">
-        Sorry something went wrong because of us! We will review what happened
-        as soon as possible and let you know what was the issue. In the
-        meanwhile please create your page again from scratch or view your draft
-        pages via the links below. We apologize for the inconvenience.
+        Sorry, something went wrong on our end. We will look into it as soon as
+        possible. In the meantime, please create your page again or view your
+        draft pages using the links below. We apologize for the inconvenience.
       </div>
       <div className="center-content middle-box--link">
         <a className="blue-link" href={`/new-page/initial-step`}>

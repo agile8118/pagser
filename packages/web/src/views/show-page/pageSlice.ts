@@ -1,4 +1,4 @@
-import { alert, request, util, loadingModal } from "@pagser/common";
+import { alert, request, util, loadingModal, PagesAPI, ReadLaterAPI, SubscriptionAPI } from "@pagser/common";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { AppThunk, RootState } from "./store";
@@ -142,21 +142,21 @@ export const {
 // Fetch the data needed for a public page
 export const fetchPublicPage = (): AppThunk => async (dispatch) => {
   try {
-    const response = (await request.get(
+    const response = await request.get<PagesAPI.FetchPublicPageResponse>(
       `/public-pages/${window.location.pathname.split("/")[2]}`,
       {
         auth: true,
       }
-    )) as any;
+    );
 
     dispatch(setLoading(false));
     dispatch(setId(response.page.id));
     dispatch(setContents(response.page.contents));
-    dispatch(setPhotoUrl(response.page.photoUrl));
+    dispatch(setPhotoUrl(response.page.photoUrl || ""));
     dispatch(
       setAuthor({
         id: response.page.author.id,
-        photoUrl: response.page.author.photoUrl,
+        photoUrl: response.page.author.photoUrl || "",
         biography: response.page.author.biography,
         username: response.page.author.username,
         name: response.page.author.name || response.page.author.username,
@@ -172,7 +172,7 @@ export const fetchPublicPage = (): AppThunk => async (dispatch) => {
     );
     dispatch(setAttachFiles(response.page.attachFiles));
     // From the userSlice
-    dispatch(setUserId(response.viewer.id));
+    dispatch(setUserId(response.viewer.id || ""));
     dispatch(setUserStatus(response.viewer.status));
     dispatch(setUserSubscribed(response.viewer.subscribed || false));
     dispatch(setUserReadLater(response.viewer.readLater || false));
@@ -184,24 +184,24 @@ export const fetchPublicPage = (): AppThunk => async (dispatch) => {
 // Fetch the data needed for a private page
 export const fetchPrivatePage = (): AppThunk => async (dispatch) => {
   try {
-    const response = (await request.get(
+    const response = await request.get<PagesAPI.FetchPrivatePageResponse>(
       `/${window.location.pathname.split("/")[1]}/${
         window.location.pathname.split("/")[2]
       }`,
       {
         auth: true,
       }
-    )) as any;
+    );
 
     dispatch(setLoading(false));
     dispatch(setId(response.page.id));
     dispatch(setContents(response.page.contents));
     dispatch(setConfigurations(response.page.configurations));
-    dispatch(setPhotoUrl(response.page.photoUrl));
+    dispatch(setPhotoUrl(response.page.photoUrl || ""));
     dispatch(
       setAuthor({
         id: response.page.author.id,
-        photoUrl: response.page.author.photoUrl,
+        photoUrl: response.page.author.photoUrl || "",
         biography: response.page.author.biography,
         username: response.page.author.username,
         name: response.page.author.name || response.page.author.username,
@@ -235,9 +235,9 @@ export const toggleReadLater =
     try {
       loadingModal("Loading...");
 
-      const response = (await request.patch(`/read-later/${id}`, null, {
+      const response = await request.patch<ReadLaterAPI.ToggleResponse>(`/read-later/${id}`, null, {
         auth: true,
-      })) as any;
+      });
 
       loadingModal();
 
@@ -264,9 +264,9 @@ export const deletePhoto = (): AppThunk => async (dispatch, getState) => {
   try {
     loadingModal("Removing the photo...");
 
-    (await request.delete(`/pages/${id}/photo`, {
+    await request.delete(`/pages/${id}/photo`, {
       auth: true,
-    })) as any;
+    });
 
     loadingModal();
     alert("Photo successfully removed from your page.", "success");
@@ -274,7 +274,7 @@ export const deletePhoto = (): AppThunk => async (dispatch, getState) => {
     dispatch(setPhotoUrl(""));
   } catch (e: any) {
     loadingModal();
-    alert("Sorry, there was problem with removing the photo.", "error");
+    alert("There was a problem removing the photo.", "error");
   }
 };
 
@@ -284,9 +284,9 @@ export const fetchAttachFiles =
   async (dispatch, getState) => {
     const { id } = getState().page;
     try {
-      const response = (await request.get(`/pages/${id}/attach-files`, {
+      const response = await request.get<PagesAPI.GetAttachFilesResponse>(`/pages/${id}/attach-files`, {
         auth: true,
-      })) as any;
+      });
 
       loadingModal();
       alert(message, "success");
@@ -299,9 +299,9 @@ export const fetchAttachFiles =
 // Send a request to server to either subscribe to or unsubscribe from the author
 export const subscribe = (): AppThunk => async (dispatch, getState) => {
   const authorId = getState().page.author.id;
-  const response = (await request.post(`/subscription/${authorId}`, null, {
+  const response = await request.post<SubscriptionAPI.ToggleResponse>(`/subscription/${authorId}`, null, {
     auth: true,
-  })) as any;
+  });
 
   response.subNum;
 

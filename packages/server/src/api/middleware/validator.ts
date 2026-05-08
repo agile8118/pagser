@@ -4,7 +4,7 @@ import type {
   Next as NextFunction,
 } from "cpeak";
 import vl from "validator";
-import { validate } from "@pagser/common";
+import { validate, ApiMessages } from "@pagser/common";
 import { DB } from "../../database/index.js";
 import { IUser, PAGE_STATUS, PAGE_TYPE } from "../../database/types.js";
 
@@ -15,7 +15,7 @@ const isId = (req: Request, res: Response, next: NextFunction) => {
   if (vl.default.isNumeric(id)) {
     next();
   } else {
-    throw { status: 400, message: "id error" };
+    throw { status: 400, message: ApiMessages.INVALID_ID };
   }
 };
 
@@ -25,7 +25,7 @@ const isBodyUserId = (req: Request, res: Response, next: NextFunction) => {
   if (id != null && vl.default.isNumeric(String(id))) {
     next();
   } else {
-    throw { status: 400, message: "id error" };
+    throw { status: 400, message: ApiMessages.INVALID_ID };
   }
 };
 
@@ -40,7 +40,7 @@ const name = (req: Request, res: Response, next: NextFunction) => {
   ) {
     next();
   } else {
-    throw { status: 400, message: "name error" };
+    throw { status: 400, message: ApiMessages.INVALID_NAME };
   }
 };
 
@@ -53,7 +53,7 @@ const username = (req: Request, res: Response, next: NextFunction) => {
     !validate.len(username, 5, 15) ||
     !validate.isUsername(username)
   ) {
-    throw { status: 400, message: "username error" };
+    throw { status: 400, message: ApiMessages.INVALID_USERNAME };
   }
 
   next();
@@ -72,7 +72,7 @@ const usernameAvailability = async (
     [username],
   );
 
-  if (result) throw { status: 422, message: "username is in use" };
+  if (result) throw { status: 422, message: ApiMessages.USERNAME_IN_USE };
 
   next();
 };
@@ -82,7 +82,7 @@ const email = async (req: Request, res: Response, next: NextFunction) => {
   const email = req.body.email;
 
   if (validate.isEmpty(email) || !vl.default.isEmail(email))
-    throw { status: 400, message: "email error" };
+    throw { status: 400, message: ApiMessages.INVALID_EMAIL };
 
   next();
 };
@@ -97,7 +97,7 @@ const emailAvailability = async (
     req.body.email,
   ]);
 
-  if (result) throw { status: 422, message: "email is in use" };
+  if (result) throw { status: 422, message: ApiMessages.EMAIL_IN_USE };
 
   next();
 };
@@ -105,7 +105,7 @@ const emailAvailability = async (
 // Validate login credentials are present in the body
 const loginCredentials = (req: Request, res: Response, next: NextFunction) => {
   if (!req.body?.email || !req.body?.password) {
-    throw { status: 400, message: "email and password are required" };
+    throw { status: 400, message: ApiMessages.CREDENTIALS_REQUIRED };
   }
   next();
 };
@@ -122,7 +122,7 @@ const password = (req: Request, res: Response, next: NextFunction) => {
   ) {
     next();
   } else {
-    throw { status: 400, message: "password error" };
+    throw { status: 400, message: ApiMessages.INVALID_PASSWORD };
   }
 };
 
@@ -141,7 +141,7 @@ const userEmailVerificationCode = async (
   );
 
   if (!row || row.code !== Number(userEmailVerificationCode)) {
-    throw { status: 400, message: "invalid code" };
+    throw { status: 400, message: ApiMessages.INVALID_CODE };
   }
 
   await DB.delete("email_codes", "email = $1", [email]);
@@ -162,16 +162,16 @@ const passwordResetToken = async (
     [userId],
   );
 
-  if (!user) throw { status: 400, message: "invalid link" };
+  if (!user) throw { status: 400, message: ApiMessages.INVALID_LINK };
 
   const tokenDate = new Date(user.token_date);
 
   if (Date.now() - tokenDate.getTime() > 600000) {
-    throw { status: 400, message: "link expired" };
+    throw { status: 400, message: ApiMessages.LINK_EXPIRED };
   }
 
   if (token !== user.token_code) {
-    throw { status: 400, message: "invalid link" };
+    throw { status: 400, message: ApiMessages.INVALID_LINK };
   }
 
   next();
@@ -189,7 +189,7 @@ const isStage = (req: Request, res: Response, next: NextFunction) => {
   ) {
     next();
   } else {
-    throw { status: 400, message: "stage error" };
+    throw { status: 400, message: ApiMessages.INVALID_PAGE_STAGE };
   }
 };
 
@@ -198,7 +198,7 @@ const pageType = (req: Request, res: Response, next: NextFunction) => {
   const type = req.body?.page?.type;
 
   if (type !== "public" && type !== "private") {
-    throw { status: 400, message: "page type error" };
+    throw { status: 400, message: ApiMessages.INVALID_PAGE_TYPE };
   }
 
   next();
@@ -219,7 +219,7 @@ const pageContents = (req: Request, res: Response, next: NextFunction) => {
     validate.page(type).briefDes(contents.briefDes) ||
     !validate.len(contents.body, 0, 200000)
   ) {
-    throw { status: 400, message: "page contents error" };
+    throw { status: 400, message: ApiMessages.INVALID_PAGE_CONTENTS };
   }
 
   next();
@@ -238,7 +238,7 @@ const pageConfigurations = (
   const configurations = req.body?.page?.configurations;
 
   if (!configurations) {
-    throw { status: 400, message: "page configurations error" };
+    throw { status: 400, message: ApiMessages.INVALID_PAGE_CONFIG };
   }
 
   const anonymously = configurations.title;
@@ -255,7 +255,7 @@ const pageConfigurations = (
     typeof rating !== "boolean" ||
     !linksCondition
   ) {
-    throw { status: 400, message: "page configurations error" };
+    throw { status: 400, message: ApiMessages.INVALID_PAGE_CONFIG };
   }
 
   next();
@@ -269,7 +269,7 @@ const publicPageTags = (req: Request, res: Response, next: NextFunction) => {
   const tags = req.body?.page?.tags;
 
   if (validate.page("public").tags(tags)) {
-    throw { status: 400, message: "page tags error" };
+    throw { status: 400, message: ApiMessages.INVALID_PAGE_TAGS };
   }
 
   next();
@@ -293,7 +293,7 @@ const privatePageUrl = async (
   );
 
   if (validate.page("private").url(url, usedUrls)) {
-    throw { status: 400, message: "page url error" };
+    throw { status: 400, message: ApiMessages.INVALID_PAGE_URL };
   }
 
   next();

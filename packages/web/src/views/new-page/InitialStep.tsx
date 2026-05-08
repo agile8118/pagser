@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { util, request } from "@pagser/common";
+import { util, request, PagesAPI } from "@pagser/common";
 import { Loading, Button } from "@pagser/reusable";
 import ProgressBar from "./ProgressBar";
 
@@ -19,12 +19,13 @@ const InitialStep = () => {
       const pageId = util.getParameterByName("id", window.location.href);
       try {
         if (pageId) {
-          const response = (await request.get(
-            `/new-page/initial-step/${pageId}`,
-            {
-              auth: true,
-            }
-          )) as any;
+          const response =
+            await request.get<PagesAPI.FetchDraftInitialStepResponse>(
+              `/new-page/initial-step/${pageId}`,
+              {
+                auth: true,
+              },
+            );
           setType(response.type);
         }
         setLoading(false);
@@ -48,18 +49,18 @@ const InitialStep = () => {
       // Page is already there, so just update it
       let response;
       if (pageId) {
-        response = (await request.patch(
+        response = await request.patch<PagesAPI.UpdateDraftPageResponse>(
           `/new-page/initial-step/${pageId}`,
           { page: { type } },
-          { auth: true }
-        )) as any;
+          { auth: true },
+        );
       } else {
         // Create a new page
-        response = (await request.post(
+        response = await request.post<PagesAPI.NewDraftPageResponse>(
           `/new-page`,
           { page: { type } },
-          { auth: true }
-        )) as any;
+          { auth: true },
+        );
       }
 
       navigate(`/new-page/page-contents?id=${response.id}`);
@@ -97,10 +98,10 @@ const InitialStep = () => {
             <div className="control__indicator" />
           </label>
           <div className="page-new__types__details">
-            Choose this one if you want your page to be visible to everyone,
-            your page can be founded by search engines if you supply it with
-            good content. Public pages will be shown in your public profile
-            unless you create it anonymously.
+            Choose this if you want your page visible to everyone. Public pages
+            can be found by search engines if you provide quality content. They
+            will appear on your public profile unless you create them
+            anonymously.
           </div>
           <label className="control control--radio font-weight-400">
             Private
@@ -116,13 +117,12 @@ const InitialStep = () => {
             <div className="control__indicator" />
           </label>
           <div className="page-new__types__details">
-            Choose this if you want your page to be visible by only a specific
-            kind of persons, such as your friends, workmates, students ,etc. You
-            can restrict to only certain people to be able to view it. Your
-            private pages will not been shown on your public profile.{" "}
+            Choose this if you want your page visible only to specific people,
+            such as friends, colleagues, or students. Private pages won't appear
+            on your public profile.{" "}
             <strong>
-              The only way for others to find the page is by the URL that you
-              will give them.
+              The only way for others to find your page is if they have your
+              page's URL.
             </strong>
           </div>
         </div>

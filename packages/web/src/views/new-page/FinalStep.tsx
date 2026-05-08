@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { util, request } from "@pagser/common";
+import { util, request, PagesAPI } from "@pagser/common";
 import { useNavigate } from "react-router-dom";
 import { Loading } from "@pagser/reusable";
 import ProgressBar from "./ProgressBar";
@@ -23,7 +23,7 @@ const FinalStep = () => {
   useEffect(() => {
     (async () => {
       try {
-        const response = (await request.get(
+        const response = await request.get<PagesAPI.FetchDraftFinalStepResponse>(
           `/new-page/final-step/${util.getParameterByName(
             "id",
             window.location.href,
@@ -31,7 +31,7 @@ const FinalStep = () => {
           {
             auth: true,
           },
-        )) as any;
+        );
 
         console.log(response);
         setType(response.page.type);
@@ -56,7 +56,7 @@ const FinalStep = () => {
         setTags(tagsStr);
         setUsername(response.page.user_username);
         setUrl(response.page.url || null);
-        setUsedUrls(response.urls);
+        setUsedUrls(response.urls.map((u) => u.url ?? "").filter(Boolean) as string[]);
       } catch (error: any) {
         if (error.status === 401) {
           window.location.href = "/login?redirected=new-page";

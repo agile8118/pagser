@@ -39,7 +39,7 @@ const Author = () => {
     <>
       <ConfirmModal
         header={`Unsubscribe from ${author.username}?`}
-        message="Are you sure that you want to unsubscribe from this author?"
+        message="Are you sure you want to unsubscribe from this author?"
         open={confirmationModalOpen}
         onConfirm={() => {
           setConfirmationModalOpen(false);

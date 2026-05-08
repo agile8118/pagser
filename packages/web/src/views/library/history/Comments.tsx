@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { util, request } from "@pagser/common";
+import { util, request, CommentAPI } from "@pagser/common";
 import { Loading } from "@pagser/reusable";
 import Header from "./Header";
 
@@ -8,11 +8,11 @@ interface IComment {
   text: string;
   date: string;
   reply: {
-    name: string;
-    username: string;
+    name: string | null;
+    username: string | null;
   };
   page: {
-    type: "public" | "private";
+    type: string;
     title: string;
     url: string;
     author: {
@@ -28,9 +28,9 @@ const Comments = () => {
   // Sends a request to server to fetch the list of comments user has written
   const fetchComments = async () => {
     setLoading(true);
-    const response = (await request.get(`/comments/history`, {
+    const response = await request.get<CommentAPI.CommentsHistoryResponse>(`/comments/history`, {
       auth: true,
-    })) as any;
+    });
 
     setComments(response.comments);
     setLoading(false);
@@ -54,7 +54,7 @@ const Comments = () => {
                 href={util.pageUrl(
                   c.page.url,
                   c.page.author.username,
-                  c.page.type
+                  c.page.type as "public" | "private"
                 )}
                 target="_blank"
               >
@@ -83,7 +83,7 @@ const Comments = () => {
                 href={util.pageUrl(
                   c.page.url,
                   c.page.author.username,
-                  c.page.type
+                  c.page.type as "public" | "private"
                 )}
                 target="_blank"
               >
@@ -107,7 +107,7 @@ const Comments = () => {
                 href={util.pageUrl(
                   c.page.url,
                   c.page.author.username,
-                  c.page.type
+                  c.page.type as "public" | "private"
                 )}
                 className="btn-i comment-brief__go"
               >

@@ -3,6 +3,7 @@ import request from "supertest";
 
 import app from "../src/app.js";
 import { DB } from "../src/database/index.js";
+import { ApiMessages, AnalyticsAPI } from "@pagser/common";
 import { createUser } from "./helpers/auth.js";
 import { makePublishedPage } from "./helpers/factories/index.js";
 
@@ -18,7 +19,8 @@ describe("Analytics", () => {
 
       const res = await request(app).post(`/api/views/${page.id}`).send();
       assert.equal(res.status, 200);
-      assert.equal(res.body.message, "success");
+      const body = res.body as AnalyticsAPI.TrackViewResponse;
+      assert.equal(body.message, ApiMessages.SUCCESS);
 
       const rows = await DB.findMany(
         "SELECT user_id, ip FROM views WHERE page_id = $1",
@@ -83,7 +85,8 @@ describe("Analytics", () => {
       await agent.get(`/api/public-pages/${page.url}`);
       const res = await agent.post(`/api/views/${page.id}`).send();
       assert.equal(res.status, 200);
-      assert.equal(res.body.message, "View too recent");
+      const recentBody = res.body as AnalyticsAPI.TrackViewResponse;
+      assert.equal(recentBody.message, "View too recent");
 
       // No view row should have been recorded since the page was just opened
       const rows = await DB.findMany(

@@ -3,6 +3,7 @@ import request from "supertest";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import app from "../src/app.js";
 import { DB } from "../src/database/index.js";
+import { ApiMessages, PagesAPI, UploaderAPI } from "@pagser/common";
 import { createUser } from "./helpers/auth.js";
 import {
   makeAttachFile,
@@ -24,8 +25,9 @@ describe("Page attach files", () => {
 
       const res = await request(app).get(`/api/pages/${page.id}/attach-files`);
       assert.equal(res.status, 200);
-      assert.equal(res.body.attachFiles.length, 2);
-      const names = res.body.attachFiles.map((f: any) => f.name).sort();
+      const body = res.body as PagesAPI.GetAttachFilesResponse;
+      assert.equal(body.attachFiles.length, 2);
+      const names = body.attachFiles.map((f) => f.name).sort();
       assert.deepEqual(names, ["doc.pdf", "img.png"]);
     });
   });
@@ -48,7 +50,8 @@ describe("Page attach files", () => {
         .send(Buffer.from("hello world"));
 
       assert.equal(res.status, 200);
-      assert.equal(res.body.message, "file uploaded");
+      const body = res.body as UploaderAPI.UploadAttachFileResponse;
+      assert.equal(body.message, ApiMessages.FILE_UPLOADED);
       assert.ok(s3PutCalls().length >= 1, "expected at least one S3 put");
 
       const row = await DB.find<{ name: string; key: string }>(

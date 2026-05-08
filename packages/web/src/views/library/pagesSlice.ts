@@ -1,4 +1,4 @@
-import { alert, request, util, loadingModal } from "@pagser/common";
+import { alert, request, util, loadingModal, PublicProfileAPI, UserPagesAPI, HistoryAPI, ReadLaterAPI, RatingAPI } from "@pagser/common";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { AppThunk, RootState } from "./store";
@@ -24,6 +24,13 @@ export type TKind =
   | "liked-pages"
   | "user-pages/published"
   | "user-pages/draft";
+
+interface FetchPagesResponse {
+  results?: IPage[];
+  pages?: IPage[];
+  filterBy?: TFilterBy;
+  sortBy?: TSortBy;
+}
 
 interface PagesState {
   loading: boolean;
@@ -88,15 +95,15 @@ export const fetchPages =
         ? `/users/${window.location.pathname.split("/")[2]}/pages`
         : `/${kind}?sortBy=${sortBy}&filterBy=${filterBy}`;
 
-    const response = (await request.get(url, {
+    const response = await request.get<FetchPagesResponse>(url, {
       auth: true,
-    })) as any;
+    });
 
     /** @todo: make it so that we always use data.pages */
-    dispatch(setList(response.results || response.pages));
+    dispatch(setList(response.results || response.pages || []));
 
-    if (filterBy) dispatch(setFilterBy(response.filterBy));
-    if (sortBy) dispatch(setSortBy(response.sortBy));
+    if (filterBy && response.filterBy) dispatch(setFilterBy(response.filterBy));
+    if (sortBy && response.sortBy) dispatch(setSortBy(response.sortBy));
 
     dispatch(setLoading(false));
   };

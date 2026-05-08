@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import SubscriptionThumbnail from "./SubscriptionThumbnail";
-import { loadingModal, alert, request } from "@pagser/common";
+import { loadingModal, alert, request, SubscriptionAPI } from "@pagser/common";
 import { Loading } from "@pagser/reusable";
 
 interface ISubscription {
   id: string;
   name: string;
   username: string;
-  headline: string;
-  photo_url: string;
+  headline: string | null;
+  photo_url: string | null;
 }
 
 const Subscriptions = () => {
@@ -20,9 +20,9 @@ const Subscriptions = () => {
       document.title = "Subscriptions | Pagser";
 
       setLoading(true);
-      const response = (await request.get(`/subscriptions`, {
+      const response = await request.get<SubscriptionAPI.FetchSubscriptionsResponse>(`/subscriptions`, {
         auth: true,
-      })) as any;
+      });
 
       setSubscriptions(response.subs);
 
@@ -40,8 +40,8 @@ const Subscriptions = () => {
           key={item.id}
           name={item.name}
           username={item.username}
-          headline={item.headline}
-          image={item.photo_url}
+          headline={item.headline || ""}
+          image={item.photo_url || ""}
         />
       );
     });

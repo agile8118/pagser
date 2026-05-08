@@ -73,8 +73,7 @@ const Actions = (props: IProps) => {
             }}
           >
             <p className="margin-bottom-08">
-              Are you sure that you want to delete your page? All of the
-              comments and likes will be deleted.
+              Are you sure you want to delete your page? Comments and likes will also be deleted.
             </p>
 
             <form
@@ -86,7 +85,7 @@ const Actions = (props: IProps) => {
               <div className="margin-bottom-08">
                 <Input
                   type="text"
-                  placeholder="Type in your page title to confirm to delete it"
+                  placeholder="Type the page title to confirm deletion"
                   onChange={(value) => {
                     setTitleTyped(value);
                   }}
@@ -173,7 +172,7 @@ const Actions = (props: IProps) => {
             if (status === "spectator") {
               console.log("DSd");
 
-              alert("Please login to be able to add pages to collections.");
+              alert("Please log in to add pages to collections.");
             } else {
               setAddToCollectionModal(true);
             }

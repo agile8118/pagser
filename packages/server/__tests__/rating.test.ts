@@ -3,6 +3,7 @@ import request from "supertest";
 
 import app from "../src/app.js";
 import { DB } from "../src/database/index.js";
+import { RatingAPI } from "@pagser/common";
 import { createUser } from "./helpers/auth.js";
 import {
   makeComment,
@@ -27,8 +28,9 @@ describe("Rating", () => {
         .set("authorization", u.token)
         .send({ rate: "like" });
       assert.equal(res.status, 200);
-      assert.equal(res.body.likes, 1);
-      assert.equal(res.body.dislikes, 0);
+      const body = res.body as RatingAPI.RatePageResponse;
+      assert.equal(body.likes, 1);
+      assert.equal(body.dislikes, 0);
 
       const row = await DB.find<{ liked: boolean }>(
         "SELECT liked FROM ratings WHERE user_id = $1 AND page_id = $2",
@@ -51,7 +53,8 @@ describe("Rating", () => {
         .patch(`/api/rate/page/${page.id}`)
         .set("authorization", u.token)
         .send({ rate: "like" });
-      assert.equal(res.body.likes, 0);
+      const toggleBody = res.body as RatingAPI.RatePageResponse;
+      assert.equal(toggleBody.likes, 0);
 
       const row = await DB.find(
         "SELECT id FROM ratings WHERE user_id = $1 AND page_id = $2",
@@ -74,8 +77,9 @@ describe("Rating", () => {
         .patch(`/api/rate/page/${page.id}`)
         .set("authorization", u.token)
         .send({ rate: "dislike" });
-      assert.equal(res.body.likes, 0);
-      assert.equal(res.body.dislikes, 1);
+      const flipBody = res.body as RatingAPI.RatePageResponse;
+      assert.equal(flipBody.likes, 0);
+      assert.equal(flipBody.dislikes, 1);
 
       const row = await DB.find<{ liked: boolean }>(
         "SELECT liked FROM ratings WHERE user_id = $1 AND page_id = $2",
@@ -99,8 +103,9 @@ describe("Rating", () => {
         .patch(`/api/rate/page/${page.id}`)
         .set("authorization", b.token)
         .send({ rate: "dislike" });
-      assert.equal(res.body.likes, 1);
-      assert.equal(res.body.dislikes, 1);
+      const multiBody = res.body as RatingAPI.RatePageResponse;
+      assert.equal(multiBody.likes, 1);
+      assert.equal(multiBody.dislikes, 1);
     });
 
     it("validation: 400 when rate is not like/dislike", async () => {
@@ -142,7 +147,8 @@ describe("Rating", () => {
         .set("authorization", u.token)
         .send();
       assert.equal(res.status, 200);
-      assert.equal(res.body.likes, 1);
+      const commentBody = res.body as RatingAPI.RateCommentResponse;
+      assert.equal(commentBody.likes, 1);
     });
 
     it("toggle: second like unlikes (removes rating)", async () => {
@@ -163,7 +169,8 @@ describe("Rating", () => {
         .patch(`/api/rate/comment/${comment.id}`)
         .set("authorization", u.token)
         .send();
-      assert.equal(res.body.likes, 0);
+      const toggleCommentBody = res.body as RatingAPI.RateCommentResponse;
+      assert.equal(toggleCommentBody.likes, 0);
     });
 
     it("flip: pre-existing dislike flips to like", async () => {
@@ -184,7 +191,8 @@ describe("Rating", () => {
         .patch(`/api/rate/comment/${comment.id}`)
         .set("authorization", u.token)
         .send();
-      assert.equal(res.body.likes, 1);
+      const flipCommentBody = res.body as RatingAPI.RateCommentResponse;
+      assert.equal(flipCommentBody.likes, 1);
 
       const row = await DB.find<{ liked: boolean }>(
         "SELECT liked FROM ratings WHERE user_id = $1 AND comment_id = $2",
@@ -221,9 +229,10 @@ describe("Rating", () => {
         .get("/api/liked-pages")
         .set("authorization", u.token);
       assert.equal(res.status, 200);
-      assert.equal(res.body.results.length, 1);
-      assert.equal(res.body.results[0].url, "liked-1");
-      assert.equal(res.body.filterBy, "all");
+      const body = res.body as RatingAPI.FetchLikedPagesResponse;
+      assert.equal(body.results.length, 1);
+      assert.equal(body.results[0].url, "liked-1");
+      assert.equal(body.filterBy, "all");
     });
 
     it("filter: filterBy=public excludes private", async () => {
@@ -245,8 +254,9 @@ describe("Rating", () => {
       const res = await request(app)
         .get("/api/liked-pages?filterBy=public")
         .set("authorization", u.token);
-      assert.equal(res.body.results.length, 1);
-      assert.equal(res.body.results[0].type, "public");
+      const filterBody = res.body as RatingAPI.FetchLikedPagesResponse;
+      assert.equal(filterBody.results.length, 1);
+      assert.equal(filterBody.results[0].type, "public");
     });
 
     it("error: 401 when no token", async () => {

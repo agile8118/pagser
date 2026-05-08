@@ -5,7 +5,7 @@ import type {
 import { DB } from "../../database/index.js";
 import { IComment } from "../../database/types.js";
 import { timeSince } from "../../lib/util.js";
-import { USER_PLACEHOLDER_IMAGE } from "@pagser/common";
+import { USER_PLACEHOLDER_IMAGE, CommentAPI } from "@pagser/common";
 
 // Add a comment to a page
 const addComment = async (req: Request, res: Response) => {
@@ -50,7 +50,7 @@ const addComment = async (req: Request, res: Response) => {
     ? String(fullComment.in_reply_to)
     : null;
 
-  res.status(201).json({
+  const body: CommentAPI.AddCommentResponse = {
     comment: {
       id: String(fullComment.id),
       text: fullComment.text,
@@ -67,10 +67,13 @@ const addComment = async (req: Request, res: Response) => {
       showReplies: false,
       highlightedReplies: [],
       viewer: "owner",
-      inReplyTo: parentId,
+      readByPageOwner: false,
+      lovedByPageOwner: false,
+      inReplyTo: parentId ? parseInt(parentId) : null,
     },
     inReplyTo: parentId,
-  });
+  };
+  res.status(201).json(body);
 };
 
 // Fetch comments for a page (with pagination)
@@ -127,18 +130,18 @@ const fetchComments = async (req: Request, res: Response) => {
     status: "normal",
     showReplies: false,
     highlightedReplies: [],
-    viewer:
-      userId && String(userId) === String(c.user_id) ? "owner" : "spectator",
+    viewer: (userId && String(userId) === String(c.user_id) ? "owner" : "spectator") as "owner" | "spectator",
     readByPageOwner: c.read_by_page_owner,
     lovedByPageOwner: c.loved_by_page_owner,
     inReplyTo: c.in_reply_to,
   }));
 
-  res.json({
+  const body: CommentAPI.FetchCommentsResponse = {
     comments: formattedComments,
     userId,
     length: parseInt(totalCount?.count || "0"),
-  });
+  };
+  res.json(body);
 };
 
 // Fetch replies to a comment
@@ -180,8 +183,7 @@ const fetchReplies = async (req: Request, res: Response) => {
     date: timeSince(r.created_at),
     likes: parseInt(r.like_count || "0"),
     status: "normal",
-    viewer:
-      userId && String(userId) === String(r.user_id) ? "owner" : "spectator",
+    viewer: (userId && String(userId) === String(r.user_id) ? "owner" : "spectator") as "owner" | "spectator",
     toName: "",
     inReplyTo: String(commentId),
     inReplyToCommentReply: r.in_reply_to_comment_reply,
@@ -189,7 +191,8 @@ const fetchReplies = async (req: Request, res: Response) => {
     lovedByPageOwner: r.loved_by_page_owner,
   }));
 
-  res.json({ replies: formattedReplies, commentId });
+  const body: CommentAPI.FetchRepliesResponse = { replies: formattedReplies, commentId: String(commentId) };
+  res.json(body);
 };
 
 // Update a comment
@@ -230,11 +233,12 @@ const updateComment = async (req: Request, res: Response) => {
     [commentId],
   );
 
-  res.json({
+  const body: CommentAPI.UpdateCommentResponse = {
     commentId,
     newComment: updatedComment.text,
     inReplyTo: updatedComment.in_reply_to,
-  });
+  };
+  res.json(body);
 };
 
 // Delete a comment
@@ -255,10 +259,11 @@ const deleteComment = async (req: Request, res: Response) => {
   await DB.delete(`comments`, `in_reply_to = $1`, [commentId]);
   await DB.delete(`comments`, `id = $1`, [commentId]);
 
-  res.json({
+  const body: CommentAPI.DeleteCommentResponse = {
     commentId,
     parent: comment.in_reply_to,
-  });
+  };
+  res.json(body);
 };
 
 // Fetch comment history for the logged-in user
@@ -321,7 +326,8 @@ const commentsHistory = async (req: Request, res: Response) => {
     };
   });
 
-  res.json({ comments });
+  const body: CommentAPI.CommentsHistoryResponse = { comments };
+  res.json(body);
 };
 
 const controller = {

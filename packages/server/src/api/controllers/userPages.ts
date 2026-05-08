@@ -5,6 +5,7 @@ import type {
 import { DB } from "../../database/index.js";
 import { PAGE_STATUS, PAGE_TYPE } from "../../database/types.js";
 import { timeSince } from "../../lib/util.js";
+import { UserPagesAPI } from "@pagser/common";
 
 // Fetch published pages for the current user
 const fetchPublishedPages = async (req: Request, res: Response) => {
@@ -59,10 +60,8 @@ const fetchPublishedPages = async (req: Request, res: Response) => {
     },
   }));
 
-  res.json({
-    results: formattedPages,
-    filterBy,
-  });
+  const body: UserPagesAPI.FetchPublishedPagesResponse = { results: formattedPages, filterBy };
+  res.json(body);
 };
 
 // Fetch draft pages for the current user
@@ -88,9 +87,8 @@ const fetchDraftPages = async (req: Request, res: Response) => {
     updatedAt: timeSince(page.updated_at),
   }));
 
-  res.json({
-    results: formattedPages,
-  });
+  const body: UserPagesAPI.FetchDraftPagesResponse = { results: formattedPages };
+  res.json(body);
 };
 
 // Delete draft pages for the current user
@@ -110,7 +108,8 @@ const deleteDraftPages = async (req: Request, res: Response) => {
 
   await DB.query(query, [...ids, userId, PAGE_STATUS.draftId]);
 
-  res.json({ message: "success" });
+  const bodyDraft: UserPagesAPI.DeleteDraftPagesResponse = { message: "success" };
+  res.json(bodyDraft);
 };
 
 // Delete published pages for the current user (bulk)
@@ -130,7 +129,8 @@ const deletePublishedPages = async (req: Request, res: Response) => {
 
   await DB.query(query, [...ids, userId, PAGE_STATUS.publishedId]);
 
-  res.json({ message: "success" });
+  const bodyPublished: UserPagesAPI.DeletePublishedPagesResponse = { message: "success" };
+  res.json(bodyPublished);
 };
 
 const controller = {

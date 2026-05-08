@@ -388,7 +388,7 @@ export default (app: Cpeak) => {
   app.route(
     "get",
     "/api/:username/:url",
-    requireAuth,
+    optionalAuth,
     Page.fetchPrivatePageData,
   );
 

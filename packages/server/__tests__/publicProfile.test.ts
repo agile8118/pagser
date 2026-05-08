@@ -2,6 +2,7 @@ import { strict as assert } from "node:assert";
 import request from "supertest";
 
 import app from "../src/app.js";
+import { PublicProfileAPI } from "@pagser/common";
 import { createUser } from "./helpers/auth.js";
 import {
   makeCollection,
@@ -41,24 +42,27 @@ describe("PublicProfile", () => {
 
       const res = await request(app).get(`/api/users/${u.username}/pages`);
       assert.equal(res.status, 200);
-      assert.equal(res.body.pages.length, 2);
-      assert.equal(res.body.pages[0].url, "second-page");
-      assert.equal(res.body.pages[1].url, "first-page");
-      assert.equal(res.body.pages[0].author.username, u.username);
-      assert.equal(res.body.pages[0].type, "public");
+      const body = res.body as PublicProfileAPI.FetchPagesResponse;
+      assert.equal(body.pages.length, 2);
+      assert.equal(body.pages[0].url, "second-page");
+      assert.equal(body.pages[1].url, "first-page");
+      assert.equal(body.pages[0].author.username, u.username);
+      assert.equal(body.pages[0].type, "public");
     });
 
     it("empty array when user has no public published pages", async () => {
       const u = await createUser({ username: "empty1" });
       const res = await request(app).get(`/api/users/${u.username}/pages`);
       assert.equal(res.status, 200);
-      assert.deepEqual(res.body.pages, []);
+      const emptyBody = res.body as PublicProfileAPI.FetchPagesResponse;
+      assert.deepEqual(emptyBody.pages, []);
     });
 
     it("empty array for unknown username", async () => {
       const res = await request(app).get("/api/users/ghostuser/pages");
       assert.equal(res.status, 200);
-      assert.deepEqual(res.body.pages, []);
+      const ghostBody = res.body as PublicProfileAPI.FetchPagesResponse;
+      assert.deepEqual(ghostBody.pages, []);
     });
   });
 
@@ -90,10 +94,11 @@ describe("PublicProfile", () => {
         `/api/users/${u.username}/collections`,
       );
       assert.equal(res.status, 200);
-      assert.equal(res.body.collections.length, 1);
-      assert.equal(res.body.collections[0].name, "Shared");
-      assert.equal(res.body.collections[0].pageCount, 1);
-      assert.equal(res.body.collections[0].user.username, u.username);
+      const body = res.body as PublicProfileAPI.FetchCollectionsResponse;
+      assert.equal(body.collections.length, 1);
+      assert.equal(body.collections[0].name, "Shared");
+      assert.equal(body.collections[0].pageCount, 1);
+      assert.equal(body.collections[0].user.username, u.username);
     });
 
     it("empty array when user has no shared collections", async () => {
@@ -102,7 +107,8 @@ describe("PublicProfile", () => {
         `/api/users/${u.username}/collections`,
       );
       assert.equal(res.status, 200);
-      assert.deepEqual(res.body.collections, []);
+      const emptyBody = res.body as PublicProfileAPI.FetchCollectionsResponse;
+      assert.deepEqual(emptyBody.collections, []);
     });
   });
 });

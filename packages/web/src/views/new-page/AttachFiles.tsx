@@ -6,12 +6,12 @@ import {
   ConfirmModal,
   UploadAttachFile,
 } from "@pagser/reusable";
-import { util, request, loadingModal, alert } from "@pagser/common";
+import { util, request, loadingModal, alert, PagesAPI } from "@pagser/common";
 import ProgressBar from "./ProgressBar";
 
 interface IFile {
   name: string;
-  id: string;
+  id: number;
 }
 
 const AttachFiles = () => {
@@ -32,7 +32,7 @@ const AttachFiles = () => {
   const fetchFiles = async (msg?: string) => {
     try {
       setLoading(true);
-      const response = (await request.get(
+      const response = await request.get<PagesAPI.GetAttachFilesResponse>(
         `/pages/${util.getParameterByName(
           "id",
           window.location.href
@@ -40,7 +40,7 @@ const AttachFiles = () => {
         {
           auth: true,
         }
-      )) as any;
+      );
 
       setFiles(response.attachFiles);
       setLoading(false);
@@ -73,7 +73,7 @@ const AttachFiles = () => {
               // This will prevent the file from starting to get downloaded
               e.preventDefault();
               setConfirmationMdl(true);
-              setConfirmationMdlDataId(file.id);
+              setConfirmationMdlDataId(String(file.id));
             }}
           >
             <i className="fa fa-times" aria-hidden="true" />
@@ -123,12 +123,11 @@ const AttachFiles = () => {
 
         {/* Stage title */}
         <div className="center-content">
-          <h3 className="heading-tertiary">Add Attach Files</h3>
+          <h3 className="heading-tertiary">Attach Files</h3>
         </div>
 
         <p className="a-18">
-          Add attach files for your page in pretty much any format that you
-          want:
+          Attach files to your page in any format:
         </p>
 
         <Button
@@ -139,13 +138,13 @@ const AttachFiles = () => {
             setUploadAttachFileMdl(true);
           }}
         >
-          <i className="fa fa-upload button__icon-left" /> Add an Attach File
+          <i className="fa fa-upload button__icon-left" /> Attach a File
         </Button>
 
         <ConfirmModal
           header="Remove the attach file"
           open={confirmationMdl}
-          message="Are you sure that you want to remove this attach file?"
+          message="Are you sure you want to remove this attach file?"
           onConfirm={async () => {
             setConfirmationMdl(false);
             loadingModal("Deleting the attach file...");
@@ -167,7 +166,7 @@ const AttachFiles = () => {
 
         <UploadAttachFile
           open={uploadAttachFileMdl}
-          header="Add an Attach File"
+          header="Attach a File"
           text="You can upload maximum of 5 files 10MB each for every page."
           size={10000000}
           url={`/pages/${util.getParameterByName(
@@ -186,8 +185,8 @@ const AttachFiles = () => {
 
         <p className="a-18 italic">
           {files.length
-            ? "You can always add/remove attach files after you published your page."
-            : "You can always add/remove attach files after you published your page, you can also skip this for now and do it after you published your page."}
+            ? "You can always add/remove attach files after you publish your page."
+            : "You can always add/remove attach files after you publish your page. You can also skip this for now and do it later."}
         </p>
 
         {/* Next button */}

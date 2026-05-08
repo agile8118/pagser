@@ -151,7 +151,7 @@ export function createApp(opts: AppOptions = {}): Cpeak {
     } else {
       log(error, "error");
       res.status(500).json({
-        message: "Sorry, something unexpected happened on our side.",
+        message: "Something went wrong on our end. Please try again.",
       });
     }
   });

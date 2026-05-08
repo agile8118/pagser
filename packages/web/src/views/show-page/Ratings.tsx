@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loadingModal, alert, request } from "@pagser/common";
+import { loadingModal, alert, request, RatingAPI } from "@pagser/common";
 import {
   selectLoading,
   selectId,
@@ -19,11 +19,11 @@ const Ratings = () => {
     loadingModal("Loading...");
 
     try {
-      const response = (await request.patch(
+      const response = await request.patch<RatingAPI.RatePageResponse>(
         `/rate/page/${pageId}`,
         { rate: action },
         { auth: true }
-      )) as any;
+      );
 
       dispatch(setRatings(response));
     } catch (e: any) {

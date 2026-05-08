@@ -5,6 +5,7 @@ import type {
 import { DB } from "../../database/index.js";
 import { PAGE_STATUS } from "../../database/types.js";
 import { timeSince } from "../../lib/util.js";
+import { PublicProfileAPI } from "@pagser/common";
 
 // Fetch published pages for a public user profile
 const fetchPages = async (req: Request, res: Response) => {
@@ -50,7 +51,8 @@ const fetchPages = async (req: Request, res: Response) => {
     contents: page.contents,
   }));
 
-  res.json({ pages: formattedPages });
+  const body: PublicProfileAPI.FetchPagesResponse = { pages: formattedPages };
+  res.json(body);
 };
 
 // Fetch shared collections for a public user profile
@@ -85,7 +87,8 @@ const fetchCollections = async (req: Request, res: Response) => {
     },
   }));
 
-  res.json({ collections: formattedCollections });
+  const body: PublicProfileAPI.FetchCollectionsResponse = { collections: formattedCollections };
+  res.json(body);
 };
 
 const controller = {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { util, request, loadingModal, alert } from "@pagser/common";
+import { util, request, loadingModal, alert, PagesAPI } from "@pagser/common";
 import { Loading, Button, ConfirmModal, UploadPhoto } from "@pagser/reusable";
 import ProgressBar from "./ProgressBar";
 
@@ -17,15 +17,15 @@ const PageThumbnail = () => {
     (async () => {
       try {
         setLoading(true);
-        const response = (await request.get(
+        const response = await request.get<PagesAPI.FetchDraftPageThumbnailResponse>(
           `/new-page/page-thumbnail/${util.getParameterByName(
             "id",
             window.location.href
           )}`,
           { auth: true }
-        )) as any;
+        );
 
-        setPhoto(response?.page?.photo_url);
+        setPhoto(response?.page?.photo_url || "");
         setLoading(false);
       } catch (e: any) {
         if (e.status === 401) {
@@ -140,8 +140,8 @@ const PageThumbnail = () => {
 
         <p className="a-18 italic">
           {photo
-            ? "You can always change or remove your page photo after you published your page."
-            : "You can always upload a new photo after you published your page, you can also skip uploading a photo for now and do it after publishing the page."}
+            ? "You can always change or remove your page photo after you publish your page."
+            : "You can always upload a new photo after you publish your page. You can also skip this for now and do it later."}
         </p>
 
         {/* Upload photo modal */}
@@ -152,9 +152,7 @@ const PageThumbnail = () => {
           }}
           header="Upload Page Photo"
           text="Upload a stunning photo to set as the featured image of your page:"
-          cropMsg="Choose an area to be shown as for the page thumbnail, this won't
-                crop your image, this is just the area that will be shown as the
-                thumbnail."
+          cropMsg="Choose the area to display as your page thumbnail. This will not crop your image, it is just the area shown in previews."
           inputLabelName="Choose a photo"
           url={`/pages/${util.getParameterByName(
             "id",
@@ -173,8 +171,7 @@ const PageThumbnail = () => {
         {photo && (
           <ConfirmModal
             header="Remove your page photo"
-            message="Are you sure that you want to delete your page photo?
-                  This cannot be undo."
+            message="Are you sure you want to delete your page photo? This cannot be undone."
             open={confirmationMdl}
             onConfirm={() => {
               deletePagePhoto();
@@ -209,11 +206,11 @@ const PageThumbnail = () => {
       <div className="page-new">{renderContents()}</div>
 
       <div className="page-new__note-box">
-        <h3>Why it's important to choose a thumbnail for your page?</h3>
+        <h3>Why is it important to choose a thumbnail for your page?</h3>
         <p>
-          A good page thumbnail will help to increase your page views and let
-          other users distinguish your page more and make it more recognizable
-          if they add it to their collections or other places.
+          A good thumbnail helps increase your page views and makes your page
+          more recognizable when others browse collections or discover it
+          elsewhere.
         </p>
         <p>
           <strong>
