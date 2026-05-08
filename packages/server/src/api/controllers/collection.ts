@@ -161,7 +161,7 @@ const fetchOne = async (req: Request, res: Response) => {
       description: collection.description,
       photo: collection.photo_secure_url
         ? { secure_url: collection.photo_secure_url }
-        : { secure_url: "" },
+        : null,
       user: { name: collection.user_name, username: collection.username },
       pages: formattedPages,
     },

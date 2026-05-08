@@ -77,7 +77,8 @@ const forgotPassword = async (req: Request, res: Response) => {
   const email = req.body.email;
 
   const user = await DB.find<any>(
-    `SELECT id FROM users WHERE email = '${email}'`,
+    `SELECT id FROM users WHERE email = $1`,
+    [email],
   );
 
   if (!user) throw { status: 404, message: ApiMessages.NO_EMAIL_FOUND };
@@ -98,7 +99,8 @@ const forgotPassword = async (req: Request, res: Response) => {
   await DB.update(
     "users",
     { token_code: code, token_date: new Date() },
-    `email = '${email}'`,
+    `email = $3`,
+    [email],
   );
 
   await sendEmail(email, "Reset your password", html);
@@ -137,7 +139,8 @@ const getAuth = async (req: Request, res: Response) => {
       [req.user.id],
     );
 
-    const body: AuthAPI.GetAuthResponse = { user: { id: user.id, photo: user.photo_url } };
+    if (!user) throw { status: 401, message: "Unauthorized." };
+    const body: AuthAPI.GetAuthResponse = { user: { id: user.id, photo: user.photo_url ?? null } };
     res.status(200).json(body);
   } else {
     res.status(400).json({});

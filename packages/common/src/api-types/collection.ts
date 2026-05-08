@@ -38,7 +38,7 @@ export namespace CollectionAPI {
   export interface FetchOneResponse {
     collection: {
       id: string; name: string; description: string | null;
-      photo: { secure_url: string; };
+      photo: { secure_url: string; } | null;
       user: { name: string; username: string; };
       pages: CollectionPageItem[];
     };

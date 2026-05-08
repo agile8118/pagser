@@ -57,7 +57,7 @@ const CollectionShow = () => {
       setId(String(response.collection.id));
       setName(response.collection.name);
       setDesc(response.collection.description || "");
-      setPhoto(response.collection.photo.secure_url);
+      setPhoto(response.collection.photo?.secure_url || "");
       setAuthor(response.collection.user.name);
       setPages(response.collection.pages);
     } catch (e: any) {

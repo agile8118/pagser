@@ -82,9 +82,9 @@ const Pages = () => {
               image={item.photo_url || undefined}
               target="_blank"
               url={item.url}
-              type={item.type}
+              type={item.type!}
               label={item.dateVisited}
-              authorUsername={item.author.username}
+              authorUsername={item.author?.username}
               onClick={() => {
                 if (status === "editing") dispatch(selectPage(item.id));
               }}

@@ -21,10 +21,10 @@ const addComment = async (req: Request, res: Response) => {
     text: text.trim(),
     page_id: parseInt(pageId),
     user_id: parseInt(userId),
-    in_reply_to: inReplyTo ? parseInt(inReplyTo) : null,
+    in_reply_to: inReplyTo ? parseInt(inReplyTo) : undefined,
     in_reply_to_comment_reply: inReplyToCommentReply
       ? parseInt(inReplyToCommentReply)
-      : null,
+      : undefined,
   });
 
   const fullComment = await DB.find<any>(
@@ -261,7 +261,7 @@ const deleteComment = async (req: Request, res: Response) => {
 
   const body: CommentAPI.DeleteCommentResponse = {
     commentId,
-    parent: comment.in_reply_to,
+    parent: comment.in_reply_to ?? null,
   };
   res.json(body);
 };

@@ -29,8 +29,7 @@ const Pages = () => {
         </div>
       );
 
-    /** @todo: fix the any type */
-    return pages.map((item: any) => {
+    return pages.map((item) => {
       return (
         <div
           className="col-lg-1-of-5 col-md-1-of-5 col-sm-1-of-3 col-xs-1-of-2 col-xxs-1-of-1"
@@ -41,7 +40,7 @@ const Pages = () => {
             id={item.id}
             briefDes={item.contents?.briefDes}
             title={item.contents?.title}
-            image={item.photo?.secure_url}
+            image={item.photo_url || undefined}
             target="_blank"
             url={item.url}
             type="public"

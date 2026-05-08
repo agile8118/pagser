@@ -125,9 +125,10 @@ test("seed database with 50 users and 250 pages", async ({ request }) => {
 
     manifest.users.push({ username: userData.username, email: userData.email, token });
 
-    // 5. Create 5 pages for this user
-    for (let pi = 0; pi < 5; pi++) {
-      const globalPageIndex = ui * 5 + pi;
+    // 5. Create 10–15 pages for this user
+    const pageCount = 10 + Math.floor(Math.random() * 6);
+    for (let pi = 0; pi < pageCount; pi++) {
+      const globalPageIndex = ui * 10 + pi;
       const config = CONFIGS[globalPageIndex % CONFIGS.length];
       const template = pageTemplates[globalPageIndex % pageTemplates.length];
 

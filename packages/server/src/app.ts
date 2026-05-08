@@ -75,7 +75,7 @@ export function createApp(opts: AppOptions = {}): Cpeak {
   };
 
   app.beforeEach((req, res, next) => {
-    res.render = async (view, data) => {
+    res.render = async (view: string, data?: Record<string, unknown>) => {
       const filePath = path.join(path.resolve(), "./views", view + ".ejs");
       const html = await ejs.renderFile(filePath, { ...locals, ...data });
       res.setHeader("Content-Type", "text/html");

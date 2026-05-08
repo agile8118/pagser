@@ -11,6 +11,7 @@
   "scripts": {
     "seed": "tsx ./src/database/seed.ts",
     "start": "node ./dist/index.js",
+    "prebuild": "yarn workspace @pagser/common build",
     "build": "tsc -p .",
     "dev": "tsx watch ./src/index.ts",
     "test": "DB_DATABASE=pagser_test NODE_ENV=test mocha",

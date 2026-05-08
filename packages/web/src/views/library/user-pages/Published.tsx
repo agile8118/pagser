@@ -64,7 +64,7 @@ const Published = () => {
               image={item.photo_url || undefined}
               target="_blank"
               url={item.url}
-              type={item.type}
+              type={item.type!}
               authorUsername={item.author?.username}
             />
           </div>

@@ -113,15 +113,17 @@ const updateUserData = async (req: Request, res: Response) => {
     [userId],
   );
 
+  if (!user) throw { status: 404, message: "User not found." };
+
   const body: ProfileAPI.UpdateProfileResponse = {
     user: {
       ...user,
       links: {
-        website: user?.links_website || "",
-        facebook: user?.links_facebook || "",
-        youtube: user?.links_youtube || "",
-        twitter: user?.links_twitter || "",
-        linkedin: user?.links_linkedin || "",
+        website: user.links_website || "",
+        facebook: user.links_facebook || "",
+        youtube: user.links_youtube || "",
+        twitter: user.links_twitter || "",
+        linkedin: user.links_linkedin || "",
       },
     },
   };

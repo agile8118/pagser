@@ -41,6 +41,9 @@ const newDraftPage = async (req: Request, res: Response) => {
     [STATUS],
   );
 
+  if (!pageType) throw { status: 400, message: "Invalid page type." };
+  if (!pageStatus) throw { status: 500, message: "Page status not found." };
+
   // create a page as a draft page
   const newPage = await DB.insert<IPage>("pages", {
     type_id: pageType.id,
@@ -156,6 +159,9 @@ const updateDraftPageData = async (req: Request, res: Response) => {
         `SELECT id FROM pages WHERE id = $1`,
         [pageId],
       );
+
+      if (!result) throw { status: 404, message: "Page not found." };
+      if (!pageType) throw { status: 400, message: "Invalid page type." };
 
       await DB.update<IPage>("pages", { type_id: pageType.id }, "id = $2", [
         pageId,
@@ -306,6 +312,8 @@ const deleteAttachFile = async (req: Request, res: Response) => {
     fileId,
   ]);
 
+  if (!result) throw { status: 404, message: "Attach file not found." };
+
   await s3Client.send(
     new DeleteObjectCommand({
       Bucket: S3_BUCKET,
@@ -315,60 +323,6 @@ const deleteAttachFile = async (req: Request, res: Response) => {
 
   const body: PagesAPI.DeleteAttachFileResponse = { message: "file deleted" };
   res.json(body);
-};
-
-// Fetch published pages for the current user
-const fetchPublishedPages = async (req: Request, res: Response) => {
-  const userId = req.user.id;
-  const filterBy = (req.query.filterBy || "all") as string;
-
-  let query = `
-    SELECT
-      pages.id,
-      pages.url,
-      page_types.type,
-      pages.user_id,
-      pages.cropped_photo_url,
-      json_build_object(
-        'title', pages.title,
-        'briefDes', pages.brief_description
-      ) as contents,
-      users.username as "authorUsername"
-    FROM pages
-    JOIN users ON pages.user_id = users.id
-    JOIN page_types ON pages.type_id = page_types.id
-    WHERE pages.user_id = $1 AND pages.status_id = $2
-  `;
-
-  const queryParams: any[] = [userId, PAGE_STATUS.publishedId];
-
-  if (filterBy === "public") {
-    query += ` AND pages.type_id = $3`;
-    queryParams.push(PAGE_TYPE.publicId);
-  } else if (filterBy === "private") {
-    query += ` AND pages.type_id = $3`;
-    queryParams.push(PAGE_TYPE.privateId);
-  }
-
-  query += ` ORDER BY pages.updated_at DESC`;
-
-  const pages = await DB.findMany<any>(query, queryParams);
-
-  const formattedPages = (pages || []).map((page: any) => ({
-    id: page.id,
-    url: page.url,
-    type: page.type,
-    contents: page.contents,
-    photo_url: page.cropped_photo_url || null,
-    author: {
-      username: page.authorUsername,
-    },
-  }));
-
-  res.json({
-    results: formattedPages,
-    filterBy,
-  });
 };
 
 // Publish a draft page
@@ -444,6 +398,7 @@ const publish = async (req: Request, res: Response) => {
   // )
   //   throw { status: 400, message: "error with contents" };
 
+  if (!resObj) throw { status: 400, message: "Invalid page type." };
   const body: PagesAPI.PublishPageResponse = resObj;
   res.status(200).json(body);
 };
@@ -903,7 +858,6 @@ const controller = {
   getAttachFiles,
   deleteAttachFile,
   publish,
-  fetchPublishedPages,
   fetchPublicPageData,
   fetchPrivatePageData,
   fetchEditPageData,

@@ -9,23 +9,23 @@ import { timeSince } from "../lib/util.js";
 import { PAGE_TYPE } from "../database/types.js";
 
 export default (app: Cpeak) => {
-  app.route("get", "/home", (req, res) => {
+  app.route("get", "/home", (req: Request, res: Response) => {
     res.render("main");
   });
 
-  app.route("get", "/feed/*", (req, res) => {
+  app.route("get", "/feed/*", (req: Request, res: Response) => {
     res.render("main");
   });
 
-  app.route("get", "/u/*", (req, res) => {
+  app.route("get", "/u/*", (req: Request, res: Response) => {
     res.render("main");
   });
 
-  app.route("get", "/collection/:id", (req, res) => {
+  app.route("get", "/collection/:id", (req: Request, res: Response) => {
     res.render("main");
   });
 
-  const renderPublicProfile = async (req: any, res: any) => {
+  const renderPublicProfile = async (req: Request, res: Response) => {
     try {
       const user = await DB.find<any>(
         `SELECT name, username, headline, biography, photo_url,
@@ -54,32 +54,32 @@ export default (app: Cpeak) => {
   app.route("get", "/users/:username/*", renderPublicProfile);
   app.route("get", "/users/:username", renderPublicProfile);
 
-  app.route("get", "/login", (req, res) => {
+  app.route("get", "/login", (req: Request, res: Response) => {
     res.render("auth");
   });
 
-  app.route("get", "/register", (req, res) => {
+  app.route("get", "/register", (req: Request, res: Response) => {
     res.render("auth");
   });
 
-  app.route("get", "/forgot-password", (req, res) => {
+  app.route("get", "/forgot-password", (req: Request, res: Response) => {
     res.render("auth");
   });
 
-  app.route("get", "/verify-email", (req, res) => {
+  app.route("get", "/verify-email", (req: Request, res: Response) => {
     res.render("auth");
   });
 
-  app.route("get", "/new-page/*", (req, res) => {
+  app.route("get", "/new-page/*", (req: Request, res: Response) => {
     res.render("new-page");
   });
 
-  app.route("get", "/new-page", (req, res) => {
+  app.route("get", "/new-page", (req: Request, res: Response) => {
     res.render("new-page");
   });
 
   // render a public page
-  app.route("get", "/public-pages/:url", async (req, res) => {
+  app.route("get", "/public-pages/:url", async (req: Request, res: Response) => {
     try {
       const url = req.params.url;
 
@@ -122,40 +122,40 @@ export default (app: Cpeak) => {
     }
   });
 
-  app.route("get", "/public-pages/:url/edit", (req, res) => {
+  app.route("get", "/public-pages/:url/edit", (req: Request, res: Response) => {
     res.render("edit-page");
   });
 
-  app.route("get", "/settings", (req, res) => {
+  app.route("get", "/settings", (req: Request, res: Response) => {
     res.render("profile");
   });
 
-  app.route("get", "/profile", (req, res) => {
+  app.route("get", "/profile", (req: Request, res: Response) => {
     res.render("profile");
   });
 
   // render a private page
-  app.route("get", "/:username/:url", (req, res) => {
+  app.route("get", "/:username/:url", (req: Request, res: Response) => {
     res.render("show-page/private");
   });
 
-  app.route("get", "/:username/:url/edit", (req, res) => {
+  app.route("get", "/:username/:url/edit", (req: Request, res: Response) => {
     res.render("edit-page");
   });
 
-  app.route("get", "/admin/pages/*", (req, res) => {
+  app.route("get", "/admin/pages/*", (req: Request, res: Response) => {
     res.render("admin");
   });
 
-  app.route("get", "/privacy-policy", (req, res) => {
+  app.route("get", "/privacy-policy", (req: Request, res: Response) => {
     res.render("privacy-policy");
   });
 
-  app.route("get", "/terms-of-use", (req, res) => {
+  app.route("get", "/terms-of-use", (req: Request, res: Response) => {
     res.render("terms-of-use");
   });
 
-  // app.route("get", "*", (req, res) => {
+  // app.route("get", "*", (req: Request, res: Response) => {
   //   res.json({ message: "Page Not Found!" });
   // });
 };

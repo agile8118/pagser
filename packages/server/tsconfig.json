@@ -3,7 +3,7 @@
     "target": "ES2022",
     "lib": ["ES2022"],
     "module": "NodeNext",
-    "strict": false,
+    "strict": true,
 
     "declaration": true,
     "declarationMap": false,

@@ -162,7 +162,7 @@ const passwordResetToken = async (
     [userId],
   );
 
-  if (!user) throw { status: 400, message: ApiMessages.INVALID_LINK };
+  if (!user || !user.token_date) throw { status: 400, message: ApiMessages.INVALID_LINK };
 
   const tokenDate = new Date(user.token_date);
 

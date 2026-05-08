@@ -3,7 +3,7 @@ export namespace PublicProfileAPI {
     id: string; type: "public"; url: string;
     author: { username: string; };
     date: string;
-    photo: { secure_url: string; } | null;
+    photo_url: string | null;
     contents: { title: string; briefDes: string; };
   }
 

@@ -4,4 +4,7 @@ export namespace UploaderAPI {
 
   // POST /api/pages/:id/attach-files
   export interface UploadAttachFileResponse { message: string; }
+
+  // POST /api/pages/:id/body-image
+  export interface UploadBodyImageResponse { url: string; }
 }

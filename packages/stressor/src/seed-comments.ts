@@ -279,6 +279,179 @@ async function updatePhotos(
   console.log(`  ${pageIds.length} page thumbnails updated.`);
 }
 
+const COLLECTION_TEMPLATES = [
+  { name: "Engineering Fundamentals",   description: "Core concepts every software engineer should have solid opinions about — databases, networking, testing, and system design." },
+  { name: "Career and Growth",          description: "Honest writing about navigating a tech career — promotions, pivots, burnout, and what nobody tells you at the start." },
+  { name: "Productivity and Deep Work", description: "Systems, tools, and mindset shifts that actually hold up after the honeymoon period wears off." },
+  { name: "Building in Public",         description: "Founders and indie hackers sharing the real numbers, real mistakes, and real timelines." },
+  { name: "Leadership and Management",  description: "What it means to lead a technical team — hiring, feedback, roadmaps, and the conversations everyone avoids." },
+  { name: "Architecture and Scale",     description: "How systems evolve from a single server to something that handles millions of requests." },
+  { name: "Security and Privacy",       description: "Practical security engineering, threat modeling, and making the case for security in organisations." },
+  { name: "DevOps and Reliability",     description: "CI/CD pipelines, on-call culture, incident management, and keeping things running." },
+  { name: "Learning and Writing",       description: "How to learn faster, retain more, communicate clearly, and build habits that compound." },
+  { name: "Frontend and UX",            description: "React, performance, accessibility, and the craft of building interfaces that respect people." },
+  { name: "Open Source Insights",       description: "Lessons from maintaining and contributing to open source projects large and small." },
+  { name: "AI and Machine Learning",    description: "Practical ML engineering, model deployment, and the gap between research and production." },
+  { name: "Side Projects",              description: "People shipping things on evenings and weekends — the wins, the pivots, and the abandoned repos." },
+  { name: "Business and Strategy",      description: "How technology decisions connect to business outcomes, and vice versa." },
+  { name: "Remote Work",                description: "Distributed teams, async communication, and the culture of working from wherever." },
+  { name: "Data and Analytics",         description: "Data pipelines, warehouses, dashboards, and the politics of data-driven decisions." },
+  { name: "Mobile Development",         description: "iOS, Android, and cross-platform development — the quirks, the tooling, and the releases." },
+  { name: "Testing Culture",            description: "Unit tests, integration tests, E2E — when to write them, when to skip them, when to delete them." },
+  { name: "Personal Essays",            description: "Reflections on technology, career, and life that don't fit neatly into a tutorial." },
+  { name: "Tools and Workflows",        description: "The editors, CLIs, and habits that shape how engineers actually spend their days." },
+  { name: "Cloud and Infrastructure",   description: "AWS, GCP, Azure — and the opinions people have formed after paying their bills." },
+  { name: "Community and Culture",      description: "Tech conferences, online communities, and the human side of the industry." },
+  { name: "Health and Sustainability",  description: "Ergonomics, burnout prevention, and staying functional for the long haul." },
+  { name: "Databases Deep Dive",        description: "PostgreSQL, Redis, Cassandra — internals, trade-offs, and war stories from production." },
+  { name: "Emerging Technologies",      description: "WebAssembly, edge computing, new runtimes — early signals worth paying attention to." },
+  { name: "Code Review Culture",        description: "How teams give and receive feedback on code — what works, what doesn't, and why." },
+  { name: "Interviews and Hiring",      description: "Technical interviews from both sides of the table — and better alternatives." },
+  { name: "APIs and Integrations",      description: "REST, GraphQL, webhooks — designing and consuming interfaces that don't make people angry." },
+  { name: "Startup Life",               description: "Equity, runway, pivots, and the emotional reality of building a company." },
+  { name: "Documentation",              description: "Why good docs are rare, how to write them, and how to make a team care about them." },
+];
+
+async function seedCollections(userIds: number[], pageIds: number[]): Promise<void> {
+  const pageFiles = listImages(path.join(SEED_IMAGES_BASE, "pages"));
+  const fallback = "/images/pages/placeholder.png";
+
+  console.log(`\nSeeding collections for ${userIds.length} users…`);
+
+  for (let ui = 0; ui < userIds.length; ui++) {
+    const userId = userIds[ui];
+    const count = 15 + Math.floor(Math.random() * 16); // 15–30
+
+    // Shuffle templates so each user gets a different order
+    const templates = [...COLLECTION_TEMPLATES].sort(() => Math.random() - 0.5).slice(0, count);
+
+    for (let ci = 0; ci < templates.length; ci++) {
+      const tmpl = templates[ci];
+      const shared = Math.random() < 0.4; // ~40% shared
+      const photoUrl = pageFiles.length > 0
+        ? `/seed-images/pages/${pageFiles[(ui * 30 + ci) % pageFiles.length]}`
+        : fallback;
+
+      const res = await pool.query<{ id: number }>(
+        `INSERT INTO collections (name, description, user_id, photo_url, photo_key, shared)
+         VALUES ($1, $2, $3, $4, NULL, $5) RETURNING id`,
+        [tmpl.name, tmpl.description, userId, photoUrl, shared],
+      );
+      const colId = res.rows[0].id;
+
+      const pageCount = 8 + Math.floor(Math.random() * 23); // 8–30
+      const shuffled = [...pageIds].sort(() => Math.random() - 0.5).slice(0, pageCount);
+      for (let pi = 0; pi < shuffled.length; pi++) {
+        await pool.query(
+          `INSERT INTO collection_pages (collection_id, page_id, order_index) VALUES ($1, $2, $3)`,
+          [colId, shuffled[pi], pi + 1],
+        );
+      }
+    }
+
+    process.stdout.write(`\r  ${ui + 1}/${userIds.length} users done…`);
+  }
+  console.log();
+}
+
+async function seedSubscriptions(userIds: number[]): Promise<void> {
+  console.log(`\nSeeding subscriptions (each user follows at least 20)…`);
+  const rows: Array<[number, number]> = [];
+
+  for (const userId of userIds) {
+    const others = userIds.filter((id) => id !== userId);
+    const count = 20 + Math.floor(Math.random() * (others.length - 20 + 1));
+    const targets = [...others].sort(() => Math.random() - 0.5).slice(0, count);
+    for (const authorId of targets) {
+      rows.push([userId, authorId]);
+    }
+  }
+
+  // Bulk insert in batches of 1000
+  for (let i = 0; i < rows.length; i += 1000) {
+    const batch = rows.slice(i, i + 1000);
+    const placeholders = batch.map((_, idx) => `($${idx * 2 + 1}, $${idx * 2 + 2})`).join(", ");
+    const values = batch.flat();
+    await pool.query(
+      `INSERT INTO subscriptions (subscriber_id, author_id) VALUES ${placeholders} ON CONFLICT DO NOTHING`,
+      values,
+    );
+  }
+  console.log(`  ${rows.length.toLocaleString()} subscription rows inserted.`);
+}
+
+async function seedHistory(userIds: number[], pageIds: number[]): Promise<void> {
+  console.log(`\nSeeding read history (1–50 pages per user)…`);
+  const rows: Array<[number, number, Date]> = [];
+
+  for (const userId of userIds) {
+    const count = 1 + Math.floor(Math.random() * 50);
+    const pages = [...pageIds].sort(() => Math.random() - 0.5).slice(0, count);
+    for (const pageId of pages) {
+      rows.push([userId, pageId, randDate()]);
+    }
+  }
+
+  for (let i = 0; i < rows.length; i += 1000) {
+    const batch = rows.slice(i, i + 1000);
+    const placeholders = batch.map((_, idx) => `($${idx * 3 + 1}, $${idx * 3 + 2}, $${idx * 3 + 3}, $${idx * 3 + 3})`).join(", ");
+    const values = batch.flatMap(([u, p, d]) => [u, p, d]);
+    await pool.query(
+      `INSERT INTO history (user_id, page_id, created_at, updated_at) VALUES ${placeholders} ON CONFLICT DO NOTHING`,
+      values,
+    );
+  }
+  console.log(`  ${rows.length.toLocaleString()} history rows inserted.`);
+}
+
+async function seedRatings(userIds: number[], pageIds: number[]): Promise<void> {
+  console.log(`\nSeeding page likes (10–30 per user)…`);
+  const rows: Array<[number, number]> = [];
+
+  for (const userId of userIds) {
+    const count = 10 + Math.floor(Math.random() * 21);
+    const pages = [...pageIds].sort(() => Math.random() - 0.5).slice(0, count);
+    for (const pageId of pages) {
+      rows.push([userId, pageId]);
+    }
+  }
+
+  for (let i = 0; i < rows.length; i += 1000) {
+    const batch = rows.slice(i, i + 1000);
+    const placeholders = batch.map((_, idx) => `($${idx * 2 + 1}, $${idx * 2 + 2}, TRUE)`).join(", ");
+    const values = batch.flat();
+    await pool.query(
+      `INSERT INTO ratings (user_id, page_id, liked) VALUES ${placeholders} ON CONFLICT DO NOTHING`,
+      values,
+    );
+  }
+  console.log(`  ${rows.length.toLocaleString()} likes inserted.`);
+}
+
+async function seedReadLater(userIds: number[], pageIds: number[]): Promise<void> {
+  console.log(`\nSeeding read later (1–50 pages per user)…`);
+  const rows: Array<[number, number]> = [];
+
+  for (const userId of userIds) {
+    const count = 1 + Math.floor(Math.random() * 50);
+    const pages = [...pageIds].sort(() => Math.random() - 0.5).slice(0, count);
+    for (const pageId of pages) {
+      rows.push([userId, pageId]);
+    }
+  }
+
+  for (let i = 0; i < rows.length; i += 1000) {
+    const batch = rows.slice(i, i + 1000);
+    const placeholders = batch.map((_, idx) => `($${idx * 2 + 1}, $${idx * 2 + 2})`).join(", ");
+    const values = batch.flat();
+    await pool.query(
+      `INSERT INTO read_later (user_id, page_id) VALUES ${placeholders} ON CONFLICT DO NOTHING`,
+      values,
+    );
+  }
+  console.log(`  ${rows.length.toLocaleString()} read-later rows inserted.`);
+}
+
 async function main(): Promise<void> {
   // Verify manifest exists (phase 1 must have run first)
   if (!fs.existsSync(MANIFEST_PATH)) {
@@ -311,6 +484,11 @@ async function main(): Promise<void> {
 
   await seedComments(userIds, pageIds);
   await updatePhotos(userIds, pageIds);
+  await seedCollections(userIds, pageIds);
+  await seedSubscriptions(userIds);
+  await seedHistory(userIds, pageIds);
+  await seedReadLater(userIds, pageIds);
+  await seedRatings(userIds, pageIds);
 
   await pool.end();
   console.log("\nSeed complete.");

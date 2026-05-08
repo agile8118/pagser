@@ -43,11 +43,7 @@ const fetchPages = async (req: Request, res: Response) => {
       username: page.username,
     },
     date: timeSince(page.created_at),
-    photo: page.cropped_photo_url
-      ? {
-          secure_url: page.cropped_photo_url,
-        }
-      : null,
+    photo_url: page.cropped_photo_url || null,
     contents: page.contents,
   }));
 

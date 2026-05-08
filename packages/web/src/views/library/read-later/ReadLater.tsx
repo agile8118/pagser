@@ -113,8 +113,8 @@ const ReadLater = () => {
               image={item.photo_url || undefined}
               target="_blank"
               url={item.url}
-              type={item.type}
-              authorUsername={item.author.username}
+              type={item.type!}
+              authorUsername={item.author?.username}
               onClick={() => {
                 if (status === "editing") selectPage(item.id);
               }}

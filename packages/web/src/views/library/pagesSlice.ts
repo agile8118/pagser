@@ -1,17 +1,21 @@
-import { alert, request, util, loadingModal, PublicProfileAPI, UserPagesAPI, HistoryAPI, ReadLaterAPI, RatingAPI } from "@pagser/common";
+import { alert, request, util, loadingModal } from "@pagser/common";
+import type { PublicProfileAPI, UserPagesAPI, HistoryAPI, ReadLaterAPI, RatingAPI } from "@pagser/common";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { AppThunk, RootState } from "./store";
 
+// Local view-model stored in Redux. All fields beyond id/contents are optional
+// because different endpoints return different subsets (e.g. draft pages have no photo_url).
 interface IPage {
   id: string;
-  contents: any;
-  photo_url: string | null;
-  url: string;
-  type: "public" | "private";
-  dateVisited: string;
-  updatedAt: string;
-  author: any;
+  contents: { title: string; briefDes: string; };
+  url?: string;
+  type?: "public" | "private";
+  photo_url?: string | null;
+  author?: { username: string; };
+  dateVisited?: string;
+  updatedAt?: string;
+  date?: string;
 }
 
 export type TSortBy = "date-added-asc";
@@ -25,11 +29,32 @@ export type TKind =
   | "user-pages/published"
   | "user-pages/draft";
 
-interface FetchPagesResponse {
-  results?: IPage[];
-  pages?: IPage[];
-  filterBy?: TFilterBy;
-  sortBy?: TSortBy;
+// Union of all actual server response types. Changing a field in any of these
+// shared types will produce a compile error in extractList() below.
+type FetchPagesResponse =
+  | UserPagesAPI.FetchPublishedPagesResponse
+  | UserPagesAPI.FetchDraftPagesResponse
+  | HistoryAPI.FetchHistoryResponse
+  | ReadLaterAPI.FetchResponse
+  | RatingAPI.FetchLikedPagesResponse
+  | PublicProfileAPI.FetchPagesResponse;
+
+// Binds each kind to its concrete response type, enforcing the contract at compile time.
+function extractList(kind: TKind, response: FetchPagesResponse): IPage[] {
+  switch (kind) {
+    case "user-pages/published":
+      return (response as UserPagesAPI.FetchPublishedPagesResponse).results;
+    case "user-pages/draft":
+      return (response as UserPagesAPI.FetchDraftPagesResponse).results;
+    case "history":
+      return (response as HistoryAPI.FetchHistoryResponse).results;
+    case "read-later":
+      return (response as ReadLaterAPI.FetchResponse).pages;
+    case "liked-pages":
+      return (response as RatingAPI.FetchLikedPagesResponse).results;
+    case "PB-pages":
+      return (response as PublicProfileAPI.FetchPagesResponse).pages;
+  }
 }
 
 interface PagesState {
@@ -99,11 +124,10 @@ export const fetchPages =
       auth: true,
     });
 
-    /** @todo: make it so that we always use data.pages */
-    dispatch(setList(response.results || response.pages || []));
+    dispatch(setList(extractList(kind, response)));
 
-    if (filterBy && response.filterBy) dispatch(setFilterBy(response.filterBy));
-    if (sortBy && response.sortBy) dispatch(setSortBy(response.sortBy));
+    if (filterBy && "filterBy" in response && response.filterBy) dispatch(setFilterBy(response.filterBy as TFilterBy));
+    if (sortBy && "sortBy" in response && response.sortBy) dispatch(setSortBy(response.sortBy as TSortBy));
 
     dispatch(setLoading(false));
   };
