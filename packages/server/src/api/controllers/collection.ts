@@ -2,57 +2,9 @@ import type {
   CpeakRequest as Request,
   CpeakResponse as Response,
 } from "cpeak";
-import sharp from "sharp";
-import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { Upload } from "@aws-sdk/lib-storage";
-import crypto from "crypto";
 import { DB } from "../../database/index.js";
 import { ICollection } from "../../database/types.js";
-import { AWS_REGION, S3_BUCKET } from "../../config/keys.js";
 import { CollectionAPI } from "@pagser/common";
-const s3Client = new S3Client({ region: AWS_REGION });
-
-function isAllowedImageType(chunk: Uint8Array): boolean {
-  const isJpeg = chunk[0] === 0xff && chunk[1] === 0xd8 && chunk[2] === 0xff;
-  const isPng =
-    chunk[0] === 0x89 &&
-    chunk[1] === 0x50 &&
-    chunk[2] === 0x4e &&
-    chunk[3] === 0x47;
-  return isJpeg || isPng;
-}
-
-function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const chunks: Uint8Array[] = [];
-    let size = 0;
-    let checkedMagic = false;
-
-    req.on("data", (chunk: Uint8Array) => {
-      size += chunk.length;
-      if (size > maxBytes) {
-        req.destroy();
-        return reject({
-          status: 400,
-          message: `Maximum file size is ${maxBytes / (1024 * 1024)} MB.`,
-        });
-      }
-      if (!checkedMagic) {
-        if (!isAllowedImageType(chunk)) {
-          req.destroy();
-          return reject({
-            status: 400,
-            message: "Only JPEG and PNG files are allowed.",
-          });
-        }
-        checkedMagic = true;
-      }
-      chunks.push(chunk);
-    });
-    req.on("end", () => resolve(Buffer.concat(chunks)));
-    req.on("error", reject);
-  });
-}
 
 // Create a new collection
 const create = async (req: Request, res: Response) => {
@@ -520,66 +472,6 @@ const fetchCreatedFAP = async (req: Request, res: Response) => {
   res.json(body);
 };
 
-// Upload collection cover photo
-const uploadPhoto = async (req: Request, res: Response) => {
-  const collectionId = req.params.id;
-  const userId = req.user.id;
-  const MAX_FILE_SIZE = 8 * 1024 * 1024;
-
-  const collection = await DB.find<ICollection>(
-    `SELECT user_id, photo_key FROM collections WHERE id = $1`,
-    [collectionId],
-  );
-
-  if (!collection || collection.user_id !== parseInt(userId)) {
-    throw { status: 403, message: "Unauthorized" };
-  }
-
-  const prevKey = collection.photo_key;
-
-  const x = Math.round(Number(req.query.x));
-  const y = Math.round(Number(req.query.y));
-  const width = Math.round(Number(req.query.width));
-  const height = Math.round(Number(req.query.height));
-
-  const buffer = await readImageBody(req, MAX_FILE_SIZE);
-
-  const processed = await sharp(buffer)
-    .extract({ left: x, top: y, width, height })
-    .resize(800)
-    .jpeg({ quality: 85 })
-    .toBuffer();
-
-  const key = `images/collections/${crypto.randomUUID()}.jpg`;
-  const upload = new Upload({
-    client: s3Client,
-    params: {
-      Bucket: S3_BUCKET,
-      Key: key,
-      Body: processed,
-      ContentType: "image/jpeg",
-    },
-  });
-  await upload.done();
-  const url = `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
-
-  await DB.update<ICollection>(
-    "collections",
-    { photo_url: url, photo_key: key },
-    "id = $3",
-    [collectionId],
-  );
-
-  if (prevKey) {
-    await s3Client
-      .send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: prevKey }))
-      .catch(() => {});
-  }
-
-  const body: CollectionAPI.UploadPhotoResponse = { message: "image-uploaded", image: url };
-  res.json(body);
-};
-
 const controller = {
   create,
   fetchOne,
@@ -594,7 +486,6 @@ const controller = {
   fetchSaved,
   fetchShared,
   fetchCreatedFAP,
-  uploadPhoto,
 };
 
 export default controller;

@@ -1,0 +1,14 @@
+.tox-tinymce {
+  border-radius: 0.8rem !important;
+  border-color: #ccc !important;
+  border-width: 1px !important;
+}
+
+.tox:not(.tox-tinymce-inline) .tox-editor-header {
+  box-shadow: none !important;
+  border-bottom: 1px solid #ccc !important;
+}
+
+.tox .tox-edit-area__iframe {
+  background-color: #fff;
+}

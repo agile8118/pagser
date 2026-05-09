@@ -6,7 +6,7 @@ import {
   ConfirmModal,
   UploadAttachFile,
 } from "@pagser/reusable";
-import { util, request, loadingModal, alert, PagesAPI } from "@pagser/common";
+import { util, request, loadingModal, alert, PagesAPI, FILE_SIZE_LIMITS } from "@pagser/common";
 import ProgressBar from "./ProgressBar";
 
 interface IFile {
@@ -167,8 +167,8 @@ const AttachFiles = () => {
         <UploadAttachFile
           open={uploadAttachFileMdl}
           header="Attach a File"
-          text="You can upload maximum of 5 files 10MB each for every page."
-          size={10000000}
+          text={`You can upload maximum of 5 files ${FILE_SIZE_LIMITS.ATTACH_FILE / (1024 * 1024)}MB each for every page.`}
+          size={FILE_SIZE_LIMITS.ATTACH_FILE}
           url={`/pages/${util.getParameterByName(
             "id",
             window.location.href

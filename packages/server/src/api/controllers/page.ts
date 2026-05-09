@@ -1,12 +1,11 @@
-import type {
-  CpeakRequest as Request,
-  CpeakResponse as Response,
-} from "cpeak";
+import type { CpeakRequest as Request, CpeakResponse as Response } from "cpeak";
 import crypto from "crypto";
 import {
   S3Client,
   GetObjectCommand,
   DeleteObjectCommand,
+  ListObjectsV2Command,
+  DeleteObjectsCommand,
 } from "@aws-sdk/client-s3";
 import { util, validate, PagesAPI } from "@pagser/common";
 import { cleanHTML, timeSince } from "../../lib/util.js";
@@ -52,7 +51,10 @@ const newDraftPage = async (req: Request, res: Response) => {
     user_id: parseInt(req.user.id),
   });
 
-  const body: PagesAPI.NewDraftPageResponse = { id: newPage.id, message: "created" };
+  const body: PagesAPI.NewDraftPageResponse = {
+    id: newPage.id,
+    message: "created",
+  };
   res.status(201).json(body);
 };
 
@@ -166,7 +168,10 @@ const updateDraftPageData = async (req: Request, res: Response) => {
       await DB.update<IPage>("pages", { type_id: pageType.id }, "id = $2", [
         pageId,
       ]);
-      const r: PagesAPI.UpdateDraftPageResponse = { id: result.id, message: "updated" };
+      const r: PagesAPI.UpdateDraftPageResponse = {
+        id: result.id,
+        message: "updated",
+      };
       res.status(200).json(r);
       return;
     }
@@ -183,7 +188,10 @@ const updateDraftPageData = async (req: Request, res: Response) => {
         [pageId],
       );
 
-      const rc: PagesAPI.UpdateDraftPageResponse = { id: pageId, message: "updated" };
+      const rc: PagesAPI.UpdateDraftPageResponse = {
+        id: pageId,
+        message: "updated",
+      };
       res.status(200).json(rc);
       return;
     }
@@ -211,7 +219,10 @@ const updateDraftPageData = async (req: Request, res: Response) => {
       await DB.update<IPage>("pages", updateFields, `id = $${paramCount}`, [
         pageId,
       ]);
-      const rf: PagesAPI.UpdateDraftPageResponse = { id: pageId, message: "updated" };
+      const rf: PagesAPI.UpdateDraftPageResponse = {
+        id: pageId,
+        message: "updated",
+      };
       res.status(200).json(rf);
       return;
     }
@@ -424,6 +435,10 @@ const fetchPublicPageData = async (req: Request, res: Response) => {
       pages.body,
       pages.url,
       COALESCE(pages.photo_url, pages.cropped_photo_url) as page_photo_url,
+      pages.anonymously,
+      pages.comments_disabled,
+      pages.ratings_disabled,
+      pages.links_disabled,
       pages.created_at,
       pages.user_id,
       users.id as author_id,
@@ -512,6 +527,12 @@ const fetchPublicPageData = async (req: Request, res: Response) => {
         body: page.body,
       },
       photoUrl: page.page_photo_url || null,
+      configurations: {
+        anonymously: page.anonymously,
+        comments: page.comments_disabled,
+        rating: page.ratings_disabled,
+        links: page.links_disabled,
+      },
       date: timeSince(page.created_at),
       likes: parseInt(likes?.count || "0"),
       dislikes: parseInt(dislikes?.count || "0"),
@@ -603,8 +624,8 @@ const fetchPrivatePageData = async (req: Request, res: Response) => {
   let viewer: PagesAPI.Viewer = isOwner
     ? { status: "owner", id: userId }
     : userId
-    ? { status: "authenticated", id: userId }
-    : { status: "spectator", id: undefined };
+      ? { status: "authenticated", id: userId }
+      : { status: "spectator", id: undefined };
 
   if (userId) {
     const existing = await DB.find<any>(
@@ -731,7 +752,10 @@ const fetchEditPageData = async (req: Request, res: Response) => {
     usedUrls = urlResults.map((p: any) => p.url).filter(Boolean);
   }
 
-  const body: PagesAPI.FetchEditPageResponse = { page: { ...page, tags }, usedUrls };
+  const body: PagesAPI.FetchEditPageResponse = {
+    page: { ...page, tags },
+    usedUrls,
+  };
   res.json(body);
 };
 
@@ -753,10 +777,9 @@ const updatePage = async (req: Request, res: Response) => {
     throw { status: 403, message: "Unauthorized" };
   }
 
-  const user = await DB.find<any>(
-    `SELECT username FROM users WHERE id = $1`,
-    [userId],
-  );
+  const user = await DB.find<any>(`SELECT username FROM users WHERE id = $1`, [
+    userId,
+  ]);
 
   const updateData: Record<string, any> = {
     title: pageData.title,
@@ -802,7 +825,11 @@ const updatePage = async (req: Request, res: Response) => {
 
   const finalUrl = updateData.url ?? page.current_url;
 
-  const body: PagesAPI.UpdatePageResponse = { url: finalUrl, type: page.type, username: user?.username };
+  const body: PagesAPI.UpdatePageResponse = {
+    url: finalUrl,
+    type: page.type,
+    username: user?.username,
+  };
   res.json(body);
 };
 
@@ -820,14 +847,20 @@ const deletePage = async (req: Request, res: Response) => {
     throw { status: 403, message: "Unauthorized" };
   }
 
+  const listed = await s3Client
+    .send(
+      new ListObjectsV2Command({
+        Bucket: S3_BUCKET,
+        Prefix: `images/body/${pageId}/`,
+      }),
+    )
+    .catch(() => null);
+
   await Promise.all([
     page.photo_key
       ? s3Client
           .send(
-            new DeleteObjectCommand({
-              Bucket: S3_BUCKET,
-              Key: page.photo_key,
-            }),
+            new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: page.photo_key }),
           )
           .catch(() => {})
       : Promise.resolve(),
@@ -837,6 +870,18 @@ const deletePage = async (req: Request, res: Response) => {
             new DeleteObjectCommand({
               Bucket: S3_BUCKET,
               Key: page.cropped_photo_key,
+            }),
+          )
+          .catch(() => {})
+      : Promise.resolve(),
+    listed?.Contents?.length
+      ? s3Client
+          .send(
+            new DeleteObjectsCommand({
+              Bucket: S3_BUCKET,
+              Delete: {
+                Objects: listed.Contents.map((obj) => ({ Key: obj.Key! })),
+              },
             }),
           )
           .catch(() => {})

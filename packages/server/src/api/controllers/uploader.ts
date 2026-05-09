@@ -4,10 +4,7 @@
  * No multipart parsing — clients send raw binary bodies.
  */
 
-import type {
-  CpeakRequest as Request,
-  CpeakResponse as Response,
-} from "cpeak";
+import type { CpeakRequest as Request, CpeakResponse as Response } from "cpeak";
 import sharp from "sharp";
 import { Transform, PassThrough } from "node:stream";
 import {
@@ -19,9 +16,9 @@ import {
 import { Upload } from "@aws-sdk/lib-storage";
 import crypto from "crypto";
 import { DB } from "../../database/index.js";
-import { IPage, IAttachFile } from "../../database/types.js";
+import { IPage, IAttachFile, IUser, ICollection } from "../../database/types.js";
 import { AWS_REGION, S3_BUCKET } from "../../config/keys.js";
-import { UploaderAPI } from "@pagser/common";
+import { UploaderAPI, ProfileAPI, CollectionAPI, FILE_SIZE_LIMITS } from "@pagser/common";
 
 const s3Client = new S3Client({ region: AWS_REGION });
 
@@ -41,20 +38,27 @@ function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
     const chunks: Uint8Array[] = [];
     let size = 0;
     let checkedMagic = false;
+    let done = false;
+
+    const fail = (err: { status: number; message: string }) => {
+      if (done) return;
+      done = true;
+      req.resume(); // drain so the socket stays alive and the error response can be sent
+      reject(err);
+    };
 
     req.on("data", (chunk: Uint8Array) => {
+      if (done) return;
       size += chunk.length;
       if (size > maxBytes) {
-        req.destroy();
-        return reject({
+        return fail({
           status: 400,
           message: `Maximum file size is ${maxBytes / (1024 * 1024)} MB.`,
         });
       }
       if (!checkedMagic) {
         if (!isAllowedImageType(chunk)) {
-          req.destroy();
-          return reject({
+          return fail({
             status: 400,
             message: "Only JPEG and PNG files are allowed.",
           });
@@ -63,8 +67,10 @@ function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
       }
       chunks.push(chunk);
     });
-    req.on("end", () => resolve(Buffer.concat(chunks)));
-    req.on("error", reject);
+    req.on("end", () => {
+      if (!done) resolve(Buffer.concat(chunks));
+    });
+    req.on("error", (err) => fail({ status: 500, message: err.message }));
   });
 }
 
@@ -93,7 +99,7 @@ async function uploadBufferToS3(
 // Upload a page thumbnail — creates a full-size (1200px wide) and cropped (400x225) variant
 const uploadPagePhoto = async (req: Request, res: Response) => {
   const pageId = req.params.id;
-  const MAX_FILE_SIZE = 8 * 1024 * 1024;
+  const MAX_FILE_SIZE = FILE_SIZE_LIMITS.PAGE_PHOTO;
 
   const x = Math.round(Number(req.query.x));
   const y = Math.round(Number(req.query.y));
@@ -149,14 +155,17 @@ const uploadPagePhoto = async (req: Request, res: Response) => {
       : Promise.resolve(),
   ]);
 
-  const body: UploaderAPI.UploadPagePhotoResponse = { message: "image-uploaded", image: originalUrl };
+  const body: UploaderAPI.UploadPagePhotoResponse = {
+    message: "image-uploaded",
+    image: originalUrl,
+  };
   res.json(body);
 };
 
 // Upload an attach file for a page — streamed directly to S3, no transformation
 const uploadPageAttachFile = async (req: Request, res: Response) => {
   const pageId = req.params.id;
-  const MAX_FILE_SIZE = 10 * 1024 * 1024;
+  const MAX_FILE_SIZE = FILE_SIZE_LIMITS.ATTACH_FILE;
   const filename = decodeURIComponent(String(req.query.filename || ""));
 
   if (!filename || filename.length > 100) {
@@ -243,13 +252,119 @@ const uploadPageAttachFile = async (req: Request, res: Response) => {
     name: filename,
   });
 
-  const body: UploaderAPI.UploadAttachFileResponse = { message: "file uploaded" };
+  const body: UploaderAPI.UploadAttachFileResponse = {
+    message: "file uploaded",
+  };
+  res.json(body);
+};
+
+// Upload an inline body image, resizes to max 1200px wide and stores in S3
+const uploadBodyImage = async (req: Request, res: Response) => {
+  const pageId = req.params.id;
+  const MAX_FILE_SIZE = FILE_SIZE_LIMITS.BODY_IMAGE;
+
+  const page = await DB.find<IPage>("SELECT user_id FROM pages WHERE id = $1", [
+    pageId,
+  ]);
+
+  if (!page || page.user_id !== req.user.id) {
+    throw { status: 403, message: "You don't have permission." };
+  }
+
+  const buffer = await readImageBody(req, MAX_FILE_SIZE);
+
+  const resized = await sharp(buffer)
+    .resize(1200, null, { withoutEnlargement: true })
+    .jpeg({ quality: 85 })
+    .toBuffer();
+
+  const key = `images/body/${pageId}/${crypto.randomUUID()}.jpg`;
+  const url = await uploadBufferToS3(key, resized);
+
+  res.json({ url });
+};
+
+// Upload user profile photo — cropped to 400x400
+const uploadUserPhoto = async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const MAX_FILE_SIZE = FILE_SIZE_LIMITS.USER_PHOTO;
+
+  const user = await DB.find<IUser>(`SELECT photo_key FROM users WHERE id = $1`, [userId]);
+  const prevKey = user?.photo_key;
+
+  const x = Math.round(Number(req.query.x));
+  const y = Math.round(Number(req.query.y));
+  const width = Math.round(Number(req.query.width));
+  const height = Math.round(Number(req.query.height));
+
+  const buffer = await readImageBody(req, MAX_FILE_SIZE);
+
+  const processed = await sharp(buffer)
+    .extract({ left: x, top: y, width, height })
+    .resize(400, 400)
+    .jpeg({ quality: 85 })
+    .toBuffer();
+
+  const key = `images/users/${crypto.randomUUID()}.jpg`;
+  await uploadBufferToS3(key, processed);
+  const url = `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
+
+  await DB.update<IUser>("users", { photo_url: url, photo_key: key }, "id = $3", [userId]);
+
+  if (prevKey) await deleteFromS3(prevKey).catch(() => {});
+
+  const body: ProfileAPI.UploadProfilePhotoResponse = { message: "image-uploaded", image: url };
+  res.json(body);
+};
+
+// Upload collection cover photo — resized to 800px wide
+const uploadCollectionPhoto = async (req: Request, res: Response) => {
+  const collectionId = req.params.id;
+  const userId = req.user.id;
+  const MAX_FILE_SIZE = FILE_SIZE_LIMITS.COLLECTION_PHOTO;
+
+  const collection = await DB.find<ICollection>(
+    `SELECT user_id, photo_key FROM collections WHERE id = $1`,
+    [collectionId],
+  );
+
+  if (!collection || collection.user_id !== parseInt(userId)) {
+    throw { status: 403, message: "Unauthorized" };
+  }
+
+  const prevKey = collection.photo_key;
+
+  const x = Math.round(Number(req.query.x));
+  const y = Math.round(Number(req.query.y));
+  const width = Math.round(Number(req.query.width));
+  const height = Math.round(Number(req.query.height));
+
+  const buffer = await readImageBody(req, MAX_FILE_SIZE);
+
+  const processed = await sharp(buffer)
+    .extract({ left: x, top: y, width, height })
+    .resize(800)
+    .jpeg({ quality: 85 })
+    .toBuffer();
+
+  const key = `images/collections/${crypto.randomUUID()}.jpg`;
+  await uploadBufferToS3(key, processed);
+  const url = `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
+
+  await DB.update<ICollection>("collections", { photo_url: url, photo_key: key }, "id = $3", [collectionId]);
+
+  if (prevKey) await deleteFromS3(prevKey).catch(() => {});
+
+  const body: CollectionAPI.UploadPhotoResponse = { message: "image-uploaded", image: url };
   res.json(body);
 };
 
 const uploader = {
   uploadPagePhoto,
   uploadPageAttachFile,
+  uploadBodyImage,
+  uploadUserPhoto,
+  uploadCollectionPhoto,
 };
 
 export default uploader;

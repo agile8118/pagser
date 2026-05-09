@@ -171,6 +171,7 @@ export const fetchPublicPage = (): AppThunk => async (dispatch) => {
       })
     );
     dispatch(setAttachFiles(response.page.attachFiles));
+    dispatch(setConfigurations(response.page.configurations));
     // From the userSlice
     dispatch(setUserId(response.viewer.id || ""));
     dispatch(setUserStatus(response.viewer.status));

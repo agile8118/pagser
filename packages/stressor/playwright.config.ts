@@ -13,7 +13,7 @@ export default defineConfig({
     reuseExistingServer: true,
     cwd: "../../packages/server",
     env: {
-      DB_DATABASE: "pagser_test",
+      DB_DATABASE: "pagser",
       NODE_ENV: "test",
       PORT: "3082",
     },

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { util, request, loadingModal, alert, PagesAPI } from "@pagser/common";
+import { util, request, loadingModal, alert, PagesAPI, FILE_SIZE_LIMITS } from "@pagser/common";
 import { Loading, Button, ConfirmModal, UploadPhoto } from "@pagser/reusable";
 import ProgressBar from "./ProgressBar";
 
@@ -160,7 +160,7 @@ const PageThumbnail = () => {
           )}/photo?type=draft`}
           minWidth={1200}
           minHeight={675}
-          size={8000000}
+          size={25000000}
           aspectRatio={48 / 27}
           success={(imageUrl) => {
             setPhoto(imageUrl);

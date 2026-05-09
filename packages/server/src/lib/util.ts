@@ -12,7 +12,7 @@ export const timeSince = (date: string | Date): string => {
 };
 
 export const cleanHTML = (html: string) => {
-  return sanitizeHtml(html, {
+  const result = sanitizeHtml(html, {
     allowedTags: [
       "b",
       "i",
@@ -23,24 +23,27 @@ export const cleanHTML = (html: string) => {
       "a",
       "img",
       "pre",
+      "code",
       "ol",
       "ul",
       "li",
       "span",
-      "h1",
       "h2",
       "h3",
       "h4",
       "h5",
       "h6",
     ],
-    allowedAttributes: false,
+    allowedAttributes: {
+      a: ["href", "target", "rel"],
+      img: ["src", "alt", "style"],
+      "*": ["style"],
+    },
     transformTags: {
       h1: "h2",
-      h3: "strong",
-      h4: "strong",
-      h5: "strong",
-      h6: "strong",
+      h4: "h3",
+      h5: "h3",
+      h6: "h3",
     },
     allowedStyles: {
       "*": {
@@ -49,7 +52,14 @@ export const cleanHTML = (html: string) => {
         "text-decoration": [/^/],
         "padding-left": [/^/],
       },
+      img: {
+        float: [/^left$/, /^right$/],
+        margin: [/^/],
+        display: [/^block$/],
+        "max-width": [/^/],
+      },
     },
     allowedSchemes: ["http", "https", "ftp", "mailto", "data"],
   });
+  return result;
 };

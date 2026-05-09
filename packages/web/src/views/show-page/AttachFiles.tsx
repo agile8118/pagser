@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { request, loadingModal } from "@pagser/common";
+import { request, loadingModal, FILE_SIZE_LIMITS } from "@pagser/common";
 import { ConfirmModal, UploadAttachFile, Button } from "@pagser/reusable";
 import {
   fetchAttachFiles,
@@ -89,8 +89,8 @@ const AttachFiles = () => {
           <UploadAttachFile
             open={uploadAttachFilesModalOpen}
             header="Add a File"
-            text="You can upload a maximum of 5 files, 10 MB each, per page."
-            size={10000000}
+            text={`You can upload a maximum of 5 files, ${FILE_SIZE_LIMITS.ATTACH_FILE / (1024 * 1024)} MB each, per page.`}
+            size={FILE_SIZE_LIMITS.ATTACH_FILE}
             url={`/pages/${pageId}/attach-files`}
             success={() => {
               dispatch(fetchAttachFiles("File uploaded successfully."));

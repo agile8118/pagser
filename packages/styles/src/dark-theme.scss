@@ -56,44 +56,9 @@ ol {
   color: #e4e4e5;
 }
 
-.mce-panel {
-  background-color: #494646 !important;
-}
-
-.mce-btn i {
-  text-shadow: none !important;
-}
-
-.mce-label {
-  text-shadow: none !important;
-  color: #e4e4e5 !important;
-}
-
-.mce-window-head .mce-title {
-  color: #e4e4e5;
-}
-
-.mce-textbox {
-  background: #555 !important;
-  color: #e4e4e5 !important;
-}
-
-.mce-listbox button {
-  background: #555 !important;
-  color: #fff !important;
-}
-
-.mce-combobox input {
-  background: #555 !important;
-  color: #e4e4e5 !important;
-}
-
-.mce-combobox input:focus {
-  outline: none;
-}
-
-#tinymce {
-  background: #555 !important;
+// TinyMCE 6 dark mode — oxide-dark skin is applied via JS; just fix the border
+.tox-tinymce {
+  border-color: #555 !important;
 }
 
 /* NEW PAGE */

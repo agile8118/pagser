@@ -142,6 +142,13 @@ export default (app: Cpeak) => {
     Page.removePagePhoto,
   );
 
+  app.route(
+    "post",
+    "/api/pages/:id/body-image",
+    requireAuth,
+    Uploader.uploadBodyImage,
+  );
+
   app.route("get", "/api/pages/:id/attach-files", Page.getAttachFiles);
 
   app.route(
@@ -266,7 +273,7 @@ export default (app: Cpeak) => {
 
   app.route("get", "/api/profile", requireAuth, Profile.fetchUserData);
   app.route("patch", "/api/profile", requireAuth, Profile.updateUserData);
-  app.route("put", "/api/profile/photo", requireAuth, Profile.uploadUserImage);
+  app.route("put", "/api/profile/photo", requireAuth, Uploader.uploadUserPhoto);
 
   // ================================================ //
   // =============== SETTINGS ROUTES =============== //
@@ -325,7 +332,7 @@ export default (app: Cpeak) => {
     "put",
     "/api/collection/photo/:id",
     requireAuth,
-    Collection.uploadPhoto,
+    Uploader.uploadCollectionPhoto,
   );
   app.route(
     "put",

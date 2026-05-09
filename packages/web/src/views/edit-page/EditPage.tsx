@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import TinyMCE from "react-tinymce";
 import { util, request, loadingModal, alert, tagsInput, validate, PagesAPI } from "@pagser/common";
 import { Loading, Button, Input, Textarea } from "@pagser/reusable";
+import RichTextEditor from "../../partials/RichTextEditor";
 
 type TPageType = "public" | "private";
 
@@ -135,19 +135,15 @@ const EditPage = () => {
     if (!page) return false;
     const bodyText = getBodyText(body);
     const minLen = page.type === "public" ? 50 : 1;
-    const tinymceEl = document.querySelector(".mce-tinymce") as HTMLElement;
 
     if (bodyText.length < minLen) {
-      if (tinymceEl) tinymceEl.style.border = "1px solid #e74c3c";
       setBodyError(page.type === "public" ? `Body should be more than ${minLen} characters.` : "Body cannot be blank.");
       return false;
     }
     if (bodyText.length > 200000) {
-      if (tinymceEl) tinymceEl.style.border = "1px solid #e74c3c";
       setBodyError("Body should be less than 200000 characters.");
       return false;
     }
-    if (tinymceEl) tinymceEl.style.border = "1px solid #CACACA";
     setBodyError("");
     return true;
   };
@@ -347,34 +343,11 @@ const EditPage = () => {
           <label htmlFor="bodyInput" className="form__label">
             Page Body{page.type === "private" && " *"}
           </label>
-          <TinyMCE
-            key={page.type}
+          <RichTextEditor
             content={body}
-            config={{
-              skin_url: "/tinymce-skin",
-              plugins: "preview link lists advlist codesample image imagetools",
-              toolbar:
-                "formatselect | bold italic underline | link codesample image | alignleft aligncenter alignright | bullist numlist | outdent indent",
-              block_formats: "Paragraph=p; Header=h2;",
-              menubar: false,
-              statusbar: false,
-              image_dimensions: false,
-              imagetools_toolbar: "rotateleft rotateright | flipv fliph | imageoptions",
-              height: 350,
-            }}
-            onInit={() => {
-              if (localStorage.getItem("theme") === "dark") {
-                const iframe = document.querySelector("iframe") as HTMLIFrameElement;
-                if (iframe?.contentDocument?.children[0]?.children[1]) {
-                  (iframe.contentDocument.children[0].children[1] as HTMLElement).style.background = "#555";
-                  (iframe.contentDocument.children[0].children[1] as HTMLElement).style.color = "#fff";
-                }
-              }
-            }}
-            onChange={(e: any) => {
-              setBody(e.target.getContent());
-            }}
-            onBlur={() => checkBodyValidation()}
+            pageId={page.id?.toString()}
+            onChange={(html) => setBody(html)}
+            onBlur={checkBodyValidation}
           />
           {bodyError && (
             <span className="input-error">
@@ -389,14 +362,14 @@ const EditPage = () => {
             <div className="new-page-final-step__switch">
               <label>Disable Comments</label>
               <button className="btn-i btn-i-blue" onClick={() => setCommentsDisabled(!commentsDisabled)}>
-                <i className={!commentsDisabled ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"} aria-hidden="true" />
+                <i className={commentsDisabled ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"} aria-hidden="true" />
               </button>
             </div>
 
             <div className="new-page-final-step__switch">
               <label>Disable Rating</label>
               <button className="btn-i btn-i-blue" onClick={() => setRatingsDisabled(!ratingsDisabled)}>
-                <i className={!ratingsDisabled ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"} aria-hidden="true" />
+                <i className={ratingsDisabled ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"} aria-hidden="true" />
               </button>
             </div>
 
@@ -404,7 +377,7 @@ const EditPage = () => {
               <div className="new-page-final-step__switch">
                 <label>Do Not Display Related Pages and Tags</label>
                 <button className="btn-i btn-i-blue" onClick={() => setLinksDisabled(!linksDisabled)}>
-                  <i className={!linksDisabled ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"} aria-hidden="true" />
+                  <i className={linksDisabled ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"} aria-hidden="true" />
                 </button>
               </div>
             )}

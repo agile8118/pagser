@@ -71,6 +71,7 @@ export namespace PagesAPI {
       id: string;
       contents: { title: string; briefDescription: string; targets: string; body: string; };
       photoUrl: string | null;
+      configurations: { anonymously: boolean; comments: boolean; rating: boolean; links: boolean; };
       date: string;
       likes: number;
       dislikes: number;

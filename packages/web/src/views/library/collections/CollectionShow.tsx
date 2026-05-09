@@ -8,7 +8,7 @@ import {
   Textarea,
   Loading,
 } from "@pagser/reusable";
-import { loadingModal, alert, request, CollectionAPI, COLLECTION_PLACEHOLDER_IMAGE } from "@pagser/common";
+import { loadingModal, alert, request, CollectionAPI, COLLECTION_PLACEHOLDER_IMAGE, FILE_SIZE_LIMITS } from "@pagser/common";
 
 const CollectionShow = () => {
   const [infoStatus, setInfoStatus] = useState<"normal" | "editing">("normal");
@@ -283,7 +283,7 @@ const CollectionShow = () => {
             url={`/collection/photo/${id}`}
             minWidth={960}
             minHeight={540}
-            size={8000000}
+            size={25000000}
             aspectRatio={16 / 9}
             success={(photo) => setPhoto(photo)}
             onClose={() => {

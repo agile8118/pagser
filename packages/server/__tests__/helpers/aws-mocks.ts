@@ -3,6 +3,8 @@ import {
   S3Client,
   PutObjectCommand,
   DeleteObjectCommand,
+  DeleteObjectsCommand,
+  ListObjectsV2Command,
   HeadBucketCommand,
   CreateBucketCommand,
   GetObjectCommand,
@@ -23,6 +25,8 @@ export function installAwsDefaults() {
 
   s3Mock.on(PutObjectCommand).resolves({});
   s3Mock.on(DeleteObjectCommand).resolves({});
+  s3Mock.on(DeleteObjectsCommand).resolves({});
+  s3Mock.on(ListObjectsV2Command).resolves({ Contents: [] });
   s3Mock.on(HeadBucketCommand).resolves({});
   s3Mock.on(CreateBucketCommand).resolves({});
   s3Mock.on(GetObjectCommand).callsFake(() => ({

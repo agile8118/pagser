@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ConfirmModal, UploadPhoto, Button } from "@pagser/reusable";
+import { FILE_SIZE_LIMITS } from "@pagser/common";
 import {
   deletePhoto,
   setPhotoUrl,
@@ -103,7 +104,7 @@ const Photo = () => {
             url={`/pages/${pageId}/photo`}
             minWidth={1200}
             minHeight={675}
-            size={8000000}
+            size={25000000}
             aspectRatio={48 / 27}
             success={(image) => dispatch(setPhotoUrl(image))}
             onClose={() => {

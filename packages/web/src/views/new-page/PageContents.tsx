@@ -1,10 +1,10 @@
-import React, { useState, useEffect, ReactElement, useReducer } from "react";
-import TinyMCE from "react-tinymce";
+import React, { useState, useEffect, ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
 import { validate, util, request, loadingModal, alert, PagesAPI } from "@pagser/common";
 import { Loading, Button, Input, Textarea } from "@pagser/reusable";
 import ProgressBar from "./ProgressBar";
 import { TType } from "./InitialStep";
+import RichTextEditor from "../../partials/RichTextEditor";
 
 const PageContents = () => {
   const [type, setType] = useState<TType | null>(null);
@@ -226,7 +226,6 @@ const PageContents = () => {
   };
 
   // Check if the Page Body provided by user is valid or not.
-  // This will run by onchange event on TinyMCE input
   const checkPageBodyValidation = () => {
     // Remove all html and extra spaces and then check
     const html = body;
@@ -236,33 +235,23 @@ const PageContents = () => {
     bodyText = bodyText.replace(/\s+/g, " ").trim();
 
     const minLen = type === "public" ? 50 : 1;
-    const tinymceEL = document.querySelector(".mce-tinymce") as HTMLElement;
 
-    if (bodyText.length < minLen && tinymceEL) {
-      tinymceEL.style.border = "1px solid #e74c3c";
-
+    if (bodyText.length < minLen) {
       setBodyError(
         type === "public"
           ? `Body should be more than ${minLen} characters.`
           : "Body cannot be blank.",
       );
-
       return false;
     }
 
-    if (bodyText.length > 20000 && tinymceEL) {
-      tinymceEL.style.border = "1px solid #e74c3c";
+    if (bodyText.length > 20000) {
       setBodyError("Body should be less than 20000 characters.");
       return false;
     }
 
-    if (tinymceEL) {
-      tinymceEL.style.border = "1px solid #CACACA";
-      setBodyError("");
-      return true;
-    }
-
-    return false;
+    setBodyError("");
+    return true;
   };
 
   // Return true or false to indicate if all the inputs are valid or not
@@ -386,44 +375,14 @@ const PageContents = () => {
               <label htmlFor="bodyInput" className="form__label">
                 Page Body{requiredLabel}
               </label>
-              <TinyMCE
-                key={type}
+              <RichTextEditor
                 content={body}
-                config={{
-                  skin_url: "/tinymce-skin",
-                  plugins:
-                    "preview link lists advlist codesample image imagetools",
-                  toolbar:
-                    "formatselect | bold italic underline | link codesample image | alignleft aligncenter alignright | bullist numlist | outdent indent",
-                  block_formats: "Paragraph=p; Header=h2;",
-                  menubar: false,
-                  statusbar: false,
-                  image_dimensions: false,
-                  imagetools_toolbar:
-                    "rotateleft rotateright | flipv fliph | imageoptions",
-                  height: 350,
-                }}
-                onInit={() => {
-                  if (localStorage.getItem("theme") === "dark") {
-                    // @ts-ignore
-                    document.querySelector(
-                      "iframe",
-                      // @ts-ignore
-                    ).contentDocument.children[0].children[1].style.background =
-                      "#555";
-                    // @ts-ignore
-                    document.querySelector(
-                      "iframe",
-                      // @ts-ignore
-                    ).contentDocument.children[0].children[1].style.color =
-                      "#fff";
-                  }
-                }}
-                onChange={(e) => {
-                  setBody(e.target.getContent());
+                pageId={util.getParameterByName("id", window.location.href) || undefined}
+                onChange={(html) => {
+                  setBody(html);
                   setSaved(false);
                 }}
-                onBlur={(e) => {}}
+                onBlur={checkPageBodyValidation}
               />
 
               <span className="input-error">

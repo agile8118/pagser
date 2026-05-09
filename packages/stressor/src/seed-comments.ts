@@ -7,7 +7,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const FIXTURES = path.join(__dirname, "../fixtures");
-const SEED_IMAGES_BASE = path.join(__dirname, "../../server/public/seed-images");
+const SEED_IMAGES_BASE = path.join(
+  __dirname,
+  "../../server/public/seed-images",
+);
 
 const COMMENT_TEXTS: string[] = JSON.parse(
   fs.readFileSync(path.join(FIXTURES, "comments.json"), "utf8"),
@@ -23,7 +26,7 @@ const pool = new Pool({
   port: Number(process.env.DB_PORT ?? 5432),
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE ?? "pagser_test",
+  database: process.env.DB_DATABASE ?? "pagser",
 });
 
 function rand<T>(arr: T[]): T {
@@ -55,9 +58,7 @@ interface CommentRow {
   created_at: Date;
 }
 
-async function insertBatch(
-  rows: CommentRow[],
-): Promise<number[]> {
+async function insertBatch(rows: CommentRow[]): Promise<number[]> {
   const placeholders: string[] = [];
   const values: unknown[] = [];
 
@@ -85,7 +86,10 @@ async function insertBatch(
   return res.rows.map((r) => r.id as number);
 }
 
-async function seedComments(userIds: number[], pageIds: number[]): Promise<void> {
+async function seedComments(
+  userIds: number[],
+  pageIds: number[],
+): Promise<void> {
   const commentsPerPage = Math.ceil(TARGET_COMMENTS / pageIds.length);
   const topLevelPerPage = Math.round(commentsPerPage * 0.8);
   const repliesPerPage = Math.round(commentsPerPage * 0.15);
@@ -147,7 +151,9 @@ async function seedComments(userIds: number[], pageIds: number[]): Promise<void>
     totalInserted += returned.length;
     buffer = [];
   }
-  console.log(`\n  Phase 1 done: ${totalInserted.toLocaleString()} top-level comments.`);
+  console.log(
+    `\n  Phase 1 done: ${totalInserted.toLocaleString()} top-level comments.`,
+  );
 
   // ── Phase 2: reply comments ───────────────────────────────────────────────
   console.log("Phase 2: inserting reply comments…");
@@ -177,7 +183,9 @@ async function seedComments(userIds: number[], pageIds: number[]): Promise<void>
           replyIdsByPage.get(row.page_id)?.push(returned[bufIdx++]);
         }
         replyInserted += returned.length;
-        process.stdout.write(`\r  ${replyInserted.toLocaleString()} replies inserted…`);
+        process.stdout.write(
+          `\r  ${replyInserted.toLocaleString()} replies inserted…`,
+        );
         buffer = [];
       }
     }
@@ -218,7 +226,9 @@ async function seedComments(userIds: number[], pageIds: number[]): Promise<void>
       if (buffer.length === BATCH_SIZE) {
         const returned = await insertBatch(buffer);
         nestedInserted += returned.length;
-        process.stdout.write(`\r  ${nestedInserted.toLocaleString()} nested inserted…`);
+        process.stdout.write(
+          `\r  ${nestedInserted.toLocaleString()} nested inserted…`,
+        );
         buffer = [];
       }
     }
@@ -230,7 +240,9 @@ async function seedComments(userIds: number[], pageIds: number[]): Promise<void>
     buffer = [];
   }
   totalInserted += nestedInserted;
-  console.log(`\n  Phase 3 done: ${nestedInserted.toLocaleString()} nested replies.`);
+  console.log(
+    `\n  Phase 3 done: ${nestedInserted.toLocaleString()} nested replies.`,
+  );
   console.log(`Total comments inserted: ${totalInserted.toLocaleString()}`);
 }
 
@@ -251,9 +263,7 @@ async function updatePhotos(
   // Update user avatars
   for (let i = 0; i < userIds.length; i++) {
     const file =
-      avatarFiles.length > 0
-        ? avatarFiles[i % avatarFiles.length]
-        : null;
+      avatarFiles.length > 0 ? avatarFiles[i % avatarFiles.length] : null;
     const url = file ? `/seed-images/avatars/${file}` : fallbackAvatar;
     await pool.query(
       "UPDATE users SET photo_url = $1, photo_key = NULL WHERE id = $2",
@@ -264,10 +274,7 @@ async function updatePhotos(
 
   // Update page thumbnails
   for (let i = 0; i < pageIds.length; i++) {
-    const file =
-      pageFiles.length > 0
-        ? pageFiles[i % pageFiles.length]
-        : null;
+    const file = pageFiles.length > 0 ? pageFiles[i % pageFiles.length] : null;
     const url = file ? `/seed-images/pages/${file}` : fallbackPage;
     await pool.query(
       `UPDATE pages
@@ -280,39 +287,173 @@ async function updatePhotos(
 }
 
 const COLLECTION_TEMPLATES = [
-  { name: "Engineering Fundamentals",   description: "Core concepts every software engineer should have solid opinions about — databases, networking, testing, and system design." },
-  { name: "Career and Growth",          description: "Honest writing about navigating a tech career — promotions, pivots, burnout, and what nobody tells you at the start." },
-  { name: "Productivity and Deep Work", description: "Systems, tools, and mindset shifts that actually hold up after the honeymoon period wears off." },
-  { name: "Building in Public",         description: "Founders and indie hackers sharing the real numbers, real mistakes, and real timelines." },
-  { name: "Leadership and Management",  description: "What it means to lead a technical team — hiring, feedback, roadmaps, and the conversations everyone avoids." },
-  { name: "Architecture and Scale",     description: "How systems evolve from a single server to something that handles millions of requests." },
-  { name: "Security and Privacy",       description: "Practical security engineering, threat modeling, and making the case for security in organisations." },
-  { name: "DevOps and Reliability",     description: "CI/CD pipelines, on-call culture, incident management, and keeping things running." },
-  { name: "Learning and Writing",       description: "How to learn faster, retain more, communicate clearly, and build habits that compound." },
-  { name: "Frontend and UX",            description: "React, performance, accessibility, and the craft of building interfaces that respect people." },
-  { name: "Open Source Insights",       description: "Lessons from maintaining and contributing to open source projects large and small." },
-  { name: "AI and Machine Learning",    description: "Practical ML engineering, model deployment, and the gap between research and production." },
-  { name: "Side Projects",              description: "People shipping things on evenings and weekends — the wins, the pivots, and the abandoned repos." },
-  { name: "Business and Strategy",      description: "How technology decisions connect to business outcomes, and vice versa." },
-  { name: "Remote Work",                description: "Distributed teams, async communication, and the culture of working from wherever." },
-  { name: "Data and Analytics",         description: "Data pipelines, warehouses, dashboards, and the politics of data-driven decisions." },
-  { name: "Mobile Development",         description: "iOS, Android, and cross-platform development — the quirks, the tooling, and the releases." },
-  { name: "Testing Culture",            description: "Unit tests, integration tests, E2E — when to write them, when to skip them, when to delete them." },
-  { name: "Personal Essays",            description: "Reflections on technology, career, and life that don't fit neatly into a tutorial." },
-  { name: "Tools and Workflows",        description: "The editors, CLIs, and habits that shape how engineers actually spend their days." },
-  { name: "Cloud and Infrastructure",   description: "AWS, GCP, Azure — and the opinions people have formed after paying their bills." },
-  { name: "Community and Culture",      description: "Tech conferences, online communities, and the human side of the industry." },
-  { name: "Health and Sustainability",  description: "Ergonomics, burnout prevention, and staying functional for the long haul." },
-  { name: "Databases Deep Dive",        description: "PostgreSQL, Redis, Cassandra — internals, trade-offs, and war stories from production." },
-  { name: "Emerging Technologies",      description: "WebAssembly, edge computing, new runtimes — early signals worth paying attention to." },
-  { name: "Code Review Culture",        description: "How teams give and receive feedback on code — what works, what doesn't, and why." },
-  { name: "Interviews and Hiring",      description: "Technical interviews from both sides of the table — and better alternatives." },
-  { name: "APIs and Integrations",      description: "REST, GraphQL, webhooks — designing and consuming interfaces that don't make people angry." },
-  { name: "Startup Life",               description: "Equity, runway, pivots, and the emotional reality of building a company." },
-  { name: "Documentation",              description: "Why good docs are rare, how to write them, and how to make a team care about them." },
+  // Space & Astronomy
+  {
+    name: "Deep Space",
+    description:
+      "Black holes, dark matter, galaxy formation — writing that takes you to the edges of the observable universe.",
+  },
+  {
+    name: "Space Exploration",
+    description:
+      "Missions past and future: Mars, the Moon, the outer planets, and the engineering that makes it possible.",
+  },
+  {
+    name: "Cosmology and Origins",
+    description:
+      "The Big Bang, inflation, the Hubble tension — what we know and don't know about how everything began.",
+  },
+  {
+    name: "Amateur Astronomy",
+    description:
+      "Telescopes, dark-sky sites, and the joy of looking up with your own eyes.",
+  },
+  {
+    name: "Astrobiology",
+    description:
+      "The search for life beyond Earth — what we're looking for, where we're looking, and what finding it would mean.",
+  },
+  // Greek Mythology
+  {
+    name: "Greek Mythology Essentials",
+    description:
+      "The gods, the heroes, the monsters — the stories that have shaped Western imagination for three millennia.",
+  },
+  {
+    name: "The Trojan Cycle",
+    description:
+      "Everything from the apple of discord to the wanderings of Odysseus — the greatest story arc of antiquity.",
+  },
+  {
+    name: "Tragedy and the Stage",
+    description:
+      "Sophocles, Aeschylus, Euripides — the plays that invented drama and still perform better than almost anything written since.",
+  },
+  {
+    name: "Myth and Philosophy",
+    description:
+      "How Greek myths encode questions about virtue, fate, justice, and the right way to live.",
+  },
+  {
+    name: "Women in Greek Myth",
+    description:
+      "Medea, Antigone, Clytemnestra, Penelope — the female figures who survive and resist in a tradition dominated by heroes.",
+  },
+  // Literature and Shakespeare
+  {
+    name: "The Shakespeare Tragedies",
+    description:
+      "Hamlet, Lear, Macbeth, Othello — four plays that have never been matched for sustained dramatic intelligence.",
+  },
+  {
+    name: "Victorian Fiction",
+    description:
+      "Dickens, Eliot, Hardy, the Brontes — novels that took the measure of a society in transformation.",
+  },
+  {
+    name: "Poetry Worth Reading",
+    description:
+      "Donne to Keats to Bishop — poems that earn their difficulty and reward close attention.",
+  },
+  {
+    name: "The Novel and Its Forms",
+    description:
+      "What the novel can do that no other form can — and the writers who've pushed those limits.",
+  },
+  {
+    name: "Reading Deeply",
+    description:
+      "On annotation, rereading, slow reading, and the habits that separate readers who remember from readers who forget.",
+  },
+  // North American History
+  {
+    name: "The American Civil War",
+    description:
+      "Causes, campaigns, and consequences — the conflict that remade the United States and left problems unsolved for generations.",
+  },
+  {
+    name: "Canada: Nation in the Making",
+    description:
+      "Confederation, the fur trade, Vimy Ridge, the quiet revolution — the story of a country that built itself differently.",
+  },
+  {
+    name: "Indigenous Histories",
+    description:
+      "The deep history of North America before and after European contact — told from perspectives the textbooks omitted.",
+  },
+  {
+    name: "The Long Twentieth Century",
+    description:
+      "The New Deal, the Cold War, civil rights, Vietnam — the decades that shaped contemporary North America.",
+  },
+  {
+    name: "Colonial Encounters",
+    description:
+      "How European expansion transformed the continent — the trade networks, the diseases, the diplomacy, and the violence.",
+  },
+  // Hockey
+  {
+    name: "NHL History",
+    description:
+      "The Original Six, expansion, the dynasties — a century of professional hockey in North America.",
+  },
+  {
+    name: "Hockey Analytics",
+    description:
+      "Corsi, expected goals, RAPM — how numbers changed the way teams are built and games are understood.",
+  },
+  {
+    name: "The Game at Every Level",
+    description:
+      "From neighbourhood rinks to the Stanley Cup Final — writing about hockey as a lived experience.",
+  },
+  {
+    name: "Women's Hockey",
+    description:
+      "From the first women's leagues to the PWHL — the long fight for a professional game.",
+  },
+  {
+    name: "Great Moments in Hockey",
+    description:
+      "The Miracle on Ice, the Summit Series, overtime goals — the games people remember for a lifetime.",
+  },
+  // Software Engineering
+  {
+    name: "Engineering Fundamentals",
+    description:
+      "Core concepts every software engineer should have solid opinions about — databases, networking, testing, and system design.",
+  },
+  {
+    name: "Career and Growth",
+    description:
+      "Honest writing about navigating a tech career — promotions, pivots, burnout, and what nobody tells you at the start.",
+  },
+  {
+    name: "Architecture and Scale",
+    description:
+      "How systems evolve from a single server to something that handles millions of requests.",
+  },
+  {
+    name: "DevOps and Reliability",
+    description:
+      "CI/CD pipelines, on-call culture, incident management, and keeping things running.",
+  },
+  {
+    name: "Open Source and Community",
+    description:
+      "Lessons from maintaining and contributing to open source projects large and small.",
+  },
+  {
+    name: "Leadership and Management",
+    description:
+      "What it means to lead a technical team — hiring, feedback, roadmaps, and the conversations everyone avoids.",
+  },
 ];
 
-async function seedCollections(userIds: number[], pageIds: number[]): Promise<void> {
+async function seedCollections(
+  userIds: number[],
+  pageIds: number[],
+): Promise<void> {
   const pageFiles = listImages(path.join(SEED_IMAGES_BASE, "pages"));
   const fallback = "/images/pages/placeholder.png";
 
@@ -323,14 +464,17 @@ async function seedCollections(userIds: number[], pageIds: number[]): Promise<vo
     const count = 15 + Math.floor(Math.random() * 16); // 15–30
 
     // Shuffle templates so each user gets a different order
-    const templates = [...COLLECTION_TEMPLATES].sort(() => Math.random() - 0.5).slice(0, count);
+    const templates = [...COLLECTION_TEMPLATES]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, count);
 
     for (let ci = 0; ci < templates.length; ci++) {
       const tmpl = templates[ci];
       const shared = Math.random() < 0.4; // ~40% shared
-      const photoUrl = pageFiles.length > 0
-        ? `/seed-images/pages/${pageFiles[(ui * 30 + ci) % pageFiles.length]}`
-        : fallback;
+      const photoUrl =
+        pageFiles.length > 0
+          ? `/seed-images/pages/${pageFiles[(ui * 30 + ci) % pageFiles.length]}`
+          : fallback;
 
       const res = await pool.query<{ id: number }>(
         `INSERT INTO collections (name, description, user_id, photo_url, photo_key, shared)
@@ -340,7 +484,9 @@ async function seedCollections(userIds: number[], pageIds: number[]): Promise<vo
       const colId = res.rows[0].id;
 
       const pageCount = 8 + Math.floor(Math.random() * 23); // 8–30
-      const shuffled = [...pageIds].sort(() => Math.random() - 0.5).slice(0, pageCount);
+      const shuffled = [...pageIds]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, pageCount);
       for (let pi = 0; pi < shuffled.length; pi++) {
         await pool.query(
           `INSERT INTO collection_pages (collection_id, page_id, order_index) VALUES ($1, $2, $3)`,
@@ -370,7 +516,9 @@ async function seedSubscriptions(userIds: number[]): Promise<void> {
   // Bulk insert in batches of 1000
   for (let i = 0; i < rows.length; i += 1000) {
     const batch = rows.slice(i, i + 1000);
-    const placeholders = batch.map((_, idx) => `($${idx * 2 + 1}, $${idx * 2 + 2})`).join(", ");
+    const placeholders = batch
+      .map((_, idx) => `($${idx * 2 + 1}, $${idx * 2 + 2})`)
+      .join(", ");
     const values = batch.flat();
     await pool.query(
       `INSERT INTO subscriptions (subscriber_id, author_id) VALUES ${placeholders} ON CONFLICT DO NOTHING`,
@@ -380,7 +528,10 @@ async function seedSubscriptions(userIds: number[]): Promise<void> {
   console.log(`  ${rows.length.toLocaleString()} subscription rows inserted.`);
 }
 
-async function seedHistory(userIds: number[], pageIds: number[]): Promise<void> {
+async function seedHistory(
+  userIds: number[],
+  pageIds: number[],
+): Promise<void> {
   console.log(`\nSeeding read history (1–50 pages per user)…`);
   const rows: Array<[number, number, Date]> = [];
 
@@ -394,7 +545,12 @@ async function seedHistory(userIds: number[], pageIds: number[]): Promise<void> 
 
   for (let i = 0; i < rows.length; i += 1000) {
     const batch = rows.slice(i, i + 1000);
-    const placeholders = batch.map((_, idx) => `($${idx * 3 + 1}, $${idx * 3 + 2}, $${idx * 3 + 3}, $${idx * 3 + 3})`).join(", ");
+    const placeholders = batch
+      .map(
+        (_, idx) =>
+          `($${idx * 3 + 1}, $${idx * 3 + 2}, $${idx * 3 + 3}, $${idx * 3 + 3})`,
+      )
+      .join(", ");
     const values = batch.flatMap(([u, p, d]) => [u, p, d]);
     await pool.query(
       `INSERT INTO history (user_id, page_id, created_at, updated_at) VALUES ${placeholders} ON CONFLICT DO NOTHING`,
@@ -404,7 +560,10 @@ async function seedHistory(userIds: number[], pageIds: number[]): Promise<void> 
   console.log(`  ${rows.length.toLocaleString()} history rows inserted.`);
 }
 
-async function seedRatings(userIds: number[], pageIds: number[]): Promise<void> {
+async function seedRatings(
+  userIds: number[],
+  pageIds: number[],
+): Promise<void> {
   console.log(`\nSeeding page likes (10–30 per user)…`);
   const rows: Array<[number, number]> = [];
 
@@ -418,7 +577,9 @@ async function seedRatings(userIds: number[], pageIds: number[]): Promise<void> 
 
   for (let i = 0; i < rows.length; i += 1000) {
     const batch = rows.slice(i, i + 1000);
-    const placeholders = batch.map((_, idx) => `($${idx * 2 + 1}, $${idx * 2 + 2}, TRUE)`).join(", ");
+    const placeholders = batch
+      .map((_, idx) => `($${idx * 2 + 1}, $${idx * 2 + 2}, TRUE)`)
+      .join(", ");
     const values = batch.flat();
     await pool.query(
       `INSERT INTO ratings (user_id, page_id, liked) VALUES ${placeholders} ON CONFLICT DO NOTHING`,
@@ -428,7 +589,10 @@ async function seedRatings(userIds: number[], pageIds: number[]): Promise<void> 
   console.log(`  ${rows.length.toLocaleString()} likes inserted.`);
 }
 
-async function seedReadLater(userIds: number[], pageIds: number[]): Promise<void> {
+async function seedReadLater(
+  userIds: number[],
+  pageIds: number[],
+): Promise<void> {
   console.log(`\nSeeding read later (1–50 pages per user)…`);
   const rows: Array<[number, number]> = [];
 
@@ -442,7 +606,9 @@ async function seedReadLater(userIds: number[], pageIds: number[]): Promise<void
 
   for (let i = 0; i < rows.length; i += 1000) {
     const batch = rows.slice(i, i + 1000);
-    const placeholders = batch.map((_, idx) => `($${idx * 2 + 1}, $${idx * 2 + 2})`).join(", ");
+    const placeholders = batch
+      .map((_, idx) => `($${idx * 2 + 1}, $${idx * 2 + 2})`)
+      .join(", ");
     const values = batch.flat();
     await pool.query(
       `INSERT INTO read_later (user_id, page_id) VALUES ${placeholders} ON CONFLICT DO NOTHING`,
@@ -476,7 +642,9 @@ async function main(): Promise<void> {
   const userIds = usersResult.rows.map((r) => r.id);
   const pageIds = pagesResult.rows.map((r) => r.id);
 
-  console.log(`Found ${userIds.length} users and ${pageIds.length} published pages in DB.`);
+  console.log(
+    `Found ${userIds.length} users and ${pageIds.length} published pages in DB.`,
+  );
 
   if (userIds.length === 0 || pageIds.length === 0) {
     throw new Error("No users or pages found. Run the E2E seed phase first.");
