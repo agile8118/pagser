@@ -15,11 +15,14 @@ elif [ -f .env ]; then
 else
     # Production environment: Load from AWS
     echo "Running in Production: Loading environment variables from AWS SSM..."
-    export $(aws ssm get-parameters-by-path \
+    SSM_VARS=$(aws ssm get-parameters-by-path \
         --path "/pagser/prod/" \
         --with-decryption \
         --query "Parameters[*].[Name,Value]" \
         --output text | awk '{print $1"="$2}' | sed 's|/pagser/prod/||') || exit 1
+    if [ -n "$SSM_VARS" ]; then
+        export $SSM_VARS
+    fi
 fi
 
 # take all remaining arguments and run them as a command
