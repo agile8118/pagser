@@ -19,79 +19,80 @@
       class="navigation__link navigation-btn js--create-page"
       >Create a Page</a
     >
-    <a href="/login" class="navigation__link display-none" id="js--login-md"
-      >Login</a
-    >
 
-    <div
-      class="nav-dropdown nav-dropdown-notification dropdown--close"
-      id="js--nav-dropdown-md-notification"
-      data-role="dropdown"
-      data-dropdown="notification-dropdown-md"
-    >
+    <% if (typeof currentUser !== 'undefined' && currentUser) { %>
       <div
-        class="nav-dropdown__button"
+        class="nav-dropdown nav-dropdown-notification dropdown--close"
+        id="js--nav-dropdown-md-notification"
         data-role="dropdown"
         data-dropdown="notification-dropdown-md"
       >
-        <a
-          href="javascript:void(0);"
+        <div
+          class="nav-dropdown__button"
           data-role="dropdown"
           data-dropdown="notification-dropdown-md"
-          ><i
+        >
+          <a
+            href="javascript:void(0);"
             data-role="dropdown"
             data-dropdown="notification-dropdown-md"
-            class="fa fa-bell-o"
-            aria-hidden="true"
-          ></i>
-        </a>
+            ><i
+              data-role="dropdown"
+              data-dropdown="notification-dropdown-md"
+              class="fa fa-bell-o"
+              aria-hidden="true"
+            ></i>
+          </a>
+        </div>
+        <div class="nav-dropdown__content">
+          You don't have any notifications yet.
+        </div>
       </div>
-      <div class="nav-dropdown__content">
-        You don't have any notifications yet.
-      </div>
-    </div>
 
-    <div
-      class="nav-dropdown dropdown--close"
-      id="js--nav-dropdown-md"
-      data-role="dropdown"
-      data-dropdown="user-dropdown-md"
-    >
       <div
-        class="nav-dropdown__button"
+        class="nav-dropdown dropdown--close"
+        id="js--nav-dropdown-md"
         data-role="dropdown"
         data-dropdown="user-dropdown-md"
       >
-        <a
-          href="javascript:void(0);"
+        <div
+          class="nav-dropdown__button"
           data-role="dropdown"
           data-dropdown="user-dropdown-md"
-          ><img
+        >
+          <a
+            href="javascript:void(0);"
             data-role="dropdown"
             data-dropdown="user-dropdown-md"
-            class="js--user-image"
-            src="<%= USER_PLACEHOLDER_IMAGE %>"
-        /></a>
-      </div>
-      <div class="nav-dropdown__content">
-        <a href="/profile"><i class="fa fa-user"></i> Profile</a>
-        <a href="/settings"><i class="fa fa-cogs"></i> Setting</a>
-        <a
-          href="javascript:void(0);"
-          onclick="handleLogout()"
-          ><i class="fa fa-sign-out"></i> Logout</a
-        >
-        <span class="switch-theme__text">Theme:</span>
-        <div class="switch-theme">
-          <span class="switch-theme__light"></span>
-          <label class="switch">
-            <input type="checkbox" class="js--themeSwitch" />
-            <span class="slider round"></span>
-          </label>
-          <span class="switch-theme__dark"></span>
+            ><img
+              data-role="dropdown"
+              data-dropdown="user-dropdown-md"
+              class="js--user-image"
+              src="<%= currentUser.photo_url || USER_PLACEHOLDER_IMAGE %>"
+          /></a>
+        </div>
+        <div class="nav-dropdown__content">
+          <a href="/profile"><i class="fa fa-user"></i> Profile</a>
+          <a href="/settings"><i class="fa fa-cogs"></i> Setting</a>
+          <a
+            href="javascript:void(0);"
+            onclick="handleLogout()"
+            ><i class="fa fa-sign-out"></i> Logout</a
+          >
+          <span class="switch-theme__text">Theme:</span>
+          <div class="switch-theme">
+            <span class="switch-theme__light"></span>
+            <label class="switch">
+              <input type="checkbox" class="js--themeSwitch" />
+              <span class="slider round"></span>
+            </label>
+            <span class="switch-theme__dark"></span>
+          </div>
         </div>
       </div>
-    </div>
+    <% } else { %>
+      <a href="/login" class="navigation__link" id="js--login-md">Login</a>
+    <% } %>
   </div>
 </nav>
 
@@ -115,85 +116,89 @@
       class="navigation__right-link navigation-btn js--create-page"
       ><i class="fa fa-pencil-square-o"></i
     ></a>
-    <a
-      href="/login"
-      class="navigation__right-link display-none"
-      id="js--login-sm"
-      >Login</a
-    >
 
-    <div
-      class="nav-dropdown nav-dropdown-notification dropdown--close"
-      data-role="dropdown"
-      data-dropdown="notification-dropdown-sm"
-      id="js--nav-dropdown-sm-notification"
-    >
+    <% if (typeof currentUser !== 'undefined' && currentUser) { %>
       <div
-        class="nav-dropdown__button"
+        class="nav-dropdown nav-dropdown-notification dropdown--close"
         data-role="dropdown"
         data-dropdown="notification-dropdown-sm"
+        id="js--nav-dropdown-sm-notification"
       >
-        <a
-          href="javascript:void(0);"
+        <div
+          class="nav-dropdown__button"
           data-role="dropdown"
           data-dropdown="notification-dropdown-sm"
-          ><i
+        >
+          <a
+            href="javascript:void(0);"
             data-role="dropdown"
             data-dropdown="notification-dropdown-sm"
-            class="fa fa-bell-o"
-            aria-hidden="true"
-          ></i>
-        </a>
-      </div>
-      <div class="nav-dropdown__content">
-        You don't have any notifications yet.
-      </div>
-    </div>
-
-    <div
-      class="nav-dropdown dropdown--close"
-      data-role="dropdown"
-      data-dropdown="user-dropdown-sm"
-      id="js--nav-dropdown-sm"
-    >
-      <div
-        class="nav-dropdown__button"
-        data-role="dropdown"
-        data-dropdown="user-dropdown-sm"
-      >
-        <a
-          href="javascript:void(0);"
-          data-role="dropdown"
-          data-dropdown="user-dropdown-sm"
-          ><img
-            data-role="dropdown"
-            data-dropdown="user-dropdown-sm"
-            class="js--user-image"
-            src="<%= USER_PLACEHOLDER_IMAGE %>"
-        /></a>
-      </div>
-      <div class="nav-dropdown__content">
-        <a href="/profile"><i class="fa fa-user"></i> Profile</a>
-        <a href="/settings"><i class="fa fa-cogs"></i> Setting</a>
-        <a
-          href="javascript:void(0);"
-          onclick="handleLogout()"
-          ><i class="fa fa-sign-out"></i> Logout</a
-        >
-        <span class="switch-theme__text">Theme:</span>
-        <div class="switch-theme">
-          <span class="switch-theme__light"></span>
-          <label class="switch">
-            <input type="checkbox" class="js--themeSwitch" />
-            <span class="slider round"></span>
-          </label>
-          <span class="switch-theme__dark"></span>
+            ><i
+              data-role="dropdown"
+              data-dropdown="notification-dropdown-sm"
+              class="fa fa-bell-o"
+              aria-hidden="true"
+            ></i>
+          </a>
+        </div>
+        <div class="nav-dropdown__content">
+          You don't have any notifications yet.
         </div>
       </div>
-    </div>
+
+      <div
+        class="nav-dropdown dropdown--close"
+        data-role="dropdown"
+        data-dropdown="user-dropdown-sm"
+        id="js--nav-dropdown-sm"
+      >
+        <div
+          class="nav-dropdown__button"
+          data-role="dropdown"
+          data-dropdown="user-dropdown-sm"
+        >
+          <a
+            href="javascript:void(0);"
+            data-role="dropdown"
+            data-dropdown="user-dropdown-sm"
+            ><img
+              data-role="dropdown"
+              data-dropdown="user-dropdown-sm"
+              class="js--user-image"
+              src="<%= currentUser.photo_url || USER_PLACEHOLDER_IMAGE %>"
+          /></a>
+        </div>
+        <div class="nav-dropdown__content">
+          <a href="/profile"><i class="fa fa-user"></i> Profile</a>
+          <a href="/settings"><i class="fa fa-cogs"></i> Setting</a>
+          <a
+            href="javascript:void(0);"
+            onclick="handleLogout()"
+            ><i class="fa fa-sign-out"></i> Logout</a
+          >
+          <span class="switch-theme__text">Theme:</span>
+          <div class="switch-theme">
+            <span class="switch-theme__light"></span>
+            <label class="switch">
+              <input type="checkbox" class="js--themeSwitch" />
+              <span class="slider round"></span>
+            </label>
+            <span class="switch-theme__dark"></span>
+          </div>
+        </div>
+      </div>
+    <% } else { %>
+      <a
+        href="/login"
+        class="navigation__right-link"
+        id="js--login-sm"
+        >Login</a
+      >
+    <% } %>
   </div>
 </nav>
 
+<% if (typeof hideSidenav === 'undefined' || !hideSidenav) { %>
 <div class="sidenav sidenav--close" id="js--sidenav">
   <div class="sidenav__section">
     <a href="/home" class="sidenav__link"><i class="fa fa-home"></i>Home</a>
@@ -237,5 +242,6 @@
     <span>&copy; 2020 Pagser, Inc.</span>
   </div>
 </div>
+<% } %>
 
 <div id="modal-root"></div>

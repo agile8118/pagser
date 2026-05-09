@@ -8,21 +8,32 @@ import { DB } from "../database/index.js";
 import { timeSince } from "../lib/util.js";
 import { PAGE_TYPE } from "../database/types.js";
 
+async function getNavUser(req: Request) {
+  const token = req.signedCookies?.token as string | false;
+  if (!token) return null;
+  const result = await req.verifyToken(token as string);
+  if (!result) return null;
+  return await DB.find<{ id: number; photo_url: string | null }>(
+    "SELECT id, photo_url FROM users WHERE id = $1",
+    [result.userId],
+  );
+}
+
 export default (app: Cpeak) => {
-  app.route("get", "/home", (req: Request, res: Response) => {
-    res.render("main");
+  app.route("get", "/home", async (req: Request, res: Response) => {
+    res.render("main", { currentUser: await getNavUser(req) });
   });
 
-  app.route("get", "/feed/*", (req: Request, res: Response) => {
-    res.render("main");
+  app.route("get", "/feed/*", async (req: Request, res: Response) => {
+    res.render("main", { currentUser: await getNavUser(req) });
   });
 
-  app.route("get", "/u/*", (req: Request, res: Response) => {
-    res.render("main");
+  app.route("get", "/u/*", async (req: Request, res: Response) => {
+    res.render("main", { currentUser: await getNavUser(req) });
   });
 
-  app.route("get", "/collection/:id", (req: Request, res: Response) => {
-    res.render("main");
+  app.route("get", "/collection/:id", async (req: Request, res: Response) => {
+    res.render("main", { currentUser: await getNavUser(req) });
   });
 
   const renderPublicProfile = async (req: Request, res: Response) => {
@@ -35,6 +46,7 @@ export default (app: Cpeak) => {
       );
       if (!user) return res.status(404).json({ message: "User not found" });
       res.render("public-profile", {
+        currentUser: await getNavUser(req),
         user: {
           ...user,
           links: {
@@ -54,11 +66,15 @@ export default (app: Cpeak) => {
   app.route("get", "/users/:username/*", renderPublicProfile);
   app.route("get", "/users/:username", renderPublicProfile);
 
-  app.route("get", "/login", (req: Request, res: Response) => {
+  app.route("get", "/login", async (req: Request, res: Response) => {
+    const navUser = await getNavUser(req);
+    if (navUser) { res.redirect("/home"); return; }
     res.render("auth");
   });
 
-  app.route("get", "/register", (req: Request, res: Response) => {
+  app.route("get", "/register", async (req: Request, res: Response) => {
+    const navUser = await getNavUser(req);
+    if (navUser) { res.redirect("/home"); return; }
     res.render("auth");
   });
 
@@ -70,12 +86,12 @@ export default (app: Cpeak) => {
     res.render("auth");
   });
 
-  app.route("get", "/new-page/*", (req: Request, res: Response) => {
-    res.render("new-page");
+  app.route("get", "/new-page/*", async (req: Request, res: Response) => {
+    res.render("new-page", { currentUser: await getNavUser(req) });
   });
 
-  app.route("get", "/new-page", (req: Request, res: Response) => {
-    res.render("new-page");
+  app.route("get", "/new-page", async (req: Request, res: Response) => {
+    res.render("new-page", { currentUser: await getNavUser(req) });
   });
 
   // render a public page
@@ -93,7 +109,7 @@ export default (app: Cpeak) => {
         [url, PAGE_TYPE.publicId],
       );
 
-      if (!page) return res.render("show-page/no-page");
+      if (!page) return res.render("show-page/no-page", { currentUser: await getNavUser(req) });
 
       const tags = await DB.findMany<{ name: string }>(
         `SELECT name FROM tags WHERE page_id = $1`,
@@ -101,6 +117,7 @@ export default (app: Cpeak) => {
       );
 
       res.render("show-page/public", {
+        currentUser: await getNavUser(req),
         page: {
           contents: {
             title: page.title,
@@ -122,37 +139,37 @@ export default (app: Cpeak) => {
     }
   });
 
-  app.route("get", "/public-pages/:url/edit", (req: Request, res: Response) => {
-    res.render("edit-page");
+  app.route("get", "/public-pages/:url/edit", async (req: Request, res: Response) => {
+    res.render("edit-page", { currentUser: await getNavUser(req) });
   });
 
-  app.route("get", "/settings", (req: Request, res: Response) => {
-    res.render("profile");
+  app.route("get", "/settings", async (req: Request, res: Response) => {
+    res.render("profile", { currentUser: await getNavUser(req) });
   });
 
-  app.route("get", "/profile", (req: Request, res: Response) => {
-    res.render("profile");
+  app.route("get", "/profile", async (req: Request, res: Response) => {
+    res.render("profile", { currentUser: await getNavUser(req) });
   });
 
   // render a private page
-  app.route("get", "/:username/:url", (req: Request, res: Response) => {
-    res.render("show-page/private");
+  app.route("get", "/:username/:url", async (req: Request, res: Response) => {
+    res.render("show-page/private", { currentUser: await getNavUser(req) });
   });
 
-  app.route("get", "/:username/:url/edit", (req: Request, res: Response) => {
-    res.render("edit-page");
+  app.route("get", "/:username/:url/edit", async (req: Request, res: Response) => {
+    res.render("edit-page", { currentUser: await getNavUser(req) });
   });
 
-  app.route("get", "/admin/pages/*", (req: Request, res: Response) => {
-    res.render("admin");
+  app.route("get", "/admin/pages/*", async (req: Request, res: Response) => {
+    res.render("admin", { currentUser: await getNavUser(req) });
   });
 
-  app.route("get", "/privacy-policy", (req: Request, res: Response) => {
-    res.render("privacy-policy");
+  app.route("get", "/privacy-policy", async (req: Request, res: Response) => {
+    res.render("privacy-policy", { currentUser: await getNavUser(req) });
   });
 
-  app.route("get", "/terms-of-use", (req: Request, res: Response) => {
-    res.render("terms-of-use");
+  app.route("get", "/terms-of-use", async (req: Request, res: Response) => {
+    res.render("terms-of-use", { currentUser: await getNavUser(req) });
   });
 
   // app.route("get", "*", (req: Request, res: Response) => {

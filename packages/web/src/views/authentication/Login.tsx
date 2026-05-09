@@ -77,8 +77,7 @@ const Login = () => {
         email,
         password,
       })
-      .then((response) => {
-        localStorage.setItem("token", response.data.token);
+      .then(() => {
         window.location.href = `/home`;
       })
       .catch((error) => {

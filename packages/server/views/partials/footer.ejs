@@ -108,7 +108,7 @@
     }
   }
 
-  // If user profile image couldn't render, then show user placeholer default image
+  // If user profile image couldn't render, show placeholder
   var userImages = document.querySelectorAll(".js--user-image");
   for (var i = 0; i < userImages.length; i++) {
     userImages[i].addEventListener("error", function (e) {
@@ -117,11 +117,7 @@
   }
 
   async function handleLogout() {
-    const token = localStorage.getItem('token');
-    if (token) {
-      await fetch('/api/auth', { method: 'DELETE', headers: { authorization: token } });
-      localStorage.removeItem('token');
-    }
+    await fetch('/api/auth', { method: 'DELETE' });
     window.location = '/';
   }
 
@@ -149,43 +145,4 @@
       navItems.classList.add("display-none");
     }
   }
-
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function () {
-    if (this.status === 200) {
-      // If user is authenticated
-      try {
-        document.querySelectorAll(".js--user-image")[0].src = JSON.parse(
-          this.response
-        ).user.photo;
-
-        document.querySelectorAll(".js--user-image")[1].src = JSON.parse(
-          this.response
-        ).user.photo;
-      } catch (e) {}
-    } else if (this.status === 401) {
-      // If user is not authenticated
-      document.querySelectorAll(".js--create-page")[0].href =
-        "/login?redirected=new-page";
-      document.querySelectorAll(".js--create-page")[1].href =
-        "/login?redirected=new-page";
-      document.querySelector("#js--login-md").classList.remove("display-none");
-      document.querySelector("#js--login-sm").classList.remove("display-none");
-      document
-        .querySelector("#js--nav-dropdown-md-notification")
-        .classList.add("display-none");
-      document
-        .querySelector("#js--nav-dropdown-md")
-        .classList.add("display-none");
-      document
-        .querySelector("#js--nav-dropdown-sm-notification")
-        .classList.add("display-none");
-      document
-        .querySelector("#js--nav-dropdown-sm")
-        .classList.add("display-none");
-    }
-  };
-  xhttp.open("POST", "/auth", true);
-  xhttp.setRequestHeader("authorization", localStorage.getItem("token"));
-  xhttp.send();
 </script>

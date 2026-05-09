@@ -136,7 +136,16 @@ export function createApp(opts: AppOptions = {}): Cpeak {
     });
   }
 
-  app.route("get", "/", (req: Request, res: Response) => {
+  app.route("get", "/", async (req: Request, res: Response) => {
+    const token = req.signedCookies?.token as string | false;
+    if (token) {
+      const result = await req.verifyToken(token as string);
+      if (result) {
+        res.writeHead(302, { Location: "/home" });
+        res.end();
+        return;
+      }
+    }
     res.sendFile(path.join(publicPath, "./index.html"), "text/html");
   });
 

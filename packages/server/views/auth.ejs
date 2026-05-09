@@ -343,15 +343,6 @@
         }
       }
 
-      var xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function () {
-        if (this.status === 200) {
-          window.location.href = "/home";
-        }
-      };
-      xhttp.open("POST", "/auth", true);
-      xhttp.setRequestHeader("authorization", localStorage.getItem("token"));
-      xhttp.send();
     </script>
   </body>
 </html>

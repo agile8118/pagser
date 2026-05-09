@@ -21,7 +21,8 @@ export const logTheUserIn: RouteMiddleware = async (req, res, next) => {
 };
 
 export const requireAuth: RouteMiddleware = async (req, res, next) => {
-  const token = req.headers["authorization"] as string | undefined;
+  const token = (req.signedCookies?.token as string | false | undefined)
+    || (req.headers["authorization"] as string | undefined);
   if (!token) throw { status: 401, message: "Unauthorized." };
 
   const result = await req.verifyToken(token);
@@ -32,7 +33,8 @@ export const requireAuth: RouteMiddleware = async (req, res, next) => {
 };
 
 export const optionalAuth: RouteMiddleware = async (req, _res, next) => {
-  const token = req.headers["authorization"] as string | undefined;
+  const token = (req.signedCookies?.token as string | false | undefined)
+    || (req.headers["authorization"] as string | undefined);
   if (token) {
     const result = await req.verifyToken(token);
     if (result) req.user = { id: result.userId };

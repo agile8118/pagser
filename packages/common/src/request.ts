@@ -32,14 +32,8 @@ class Request {
     return new Promise<T>((resolve, reject) => {
       const config: any = {};
 
-      if (options?.auth) {
-        config.headers = {
-          authorization: localStorage.getItem("token"),
-        };
-      }
-
       if (options?.contentType) {
-        config.headers["Content-Type"] = options.contentType;
+        config.headers = { "Content-Type": options.contentType };
       }
 
       axios
@@ -65,16 +59,8 @@ class Request {
 
   get<T = unknown>(url: string, options?: optionsLayout): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-      const config: any = {};
-
-      if (options && options.auth) {
-        config.headers = {
-          authorization: localStorage.getItem("token"),
-        };
-      }
-
       axios
-        .get(`${domain}${url}`, config)
+        .get(`${domain}${url}`)
         .then((response) => {
           resolve(response.data);
         })
@@ -98,14 +84,8 @@ class Request {
     return new Promise<T>((resolve, reject) => {
       const config: any = {};
 
-      if (options?.auth) {
-        config.headers = {
-          authorization: localStorage.getItem("token"),
-        };
-      }
-
       if (options?.contentType) {
-        config.headers["Content-Type"] = options.contentType;
+        config.headers = { "Content-Type": options.contentType };
       }
 
       axios
@@ -133,14 +113,8 @@ class Request {
     return new Promise<T>((resolve, reject) => {
       const config: any = {};
 
-      if (options?.auth) {
-        config.headers = {
-          authorization: localStorage.getItem("token"),
-        };
-      }
-
       if (options?.contentType) {
-        config.headers["Content-Type"] = options.contentType;
+        config.headers = { "Content-Type": options.contentType };
       }
 
       axios
@@ -167,12 +141,6 @@ class Request {
   delete<T = unknown>(url: string, options?: optionsLayout): Promise<T> {
     return new Promise<T>((resolve, reject) => {
       const config: any = {};
-
-      if (options && options.auth) {
-        config.headers = {
-          authorization: localStorage.getItem("token"),
-        };
-      }
 
       if (options && options.data) {
         config.data = options.data;

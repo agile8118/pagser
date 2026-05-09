@@ -60,6 +60,13 @@ const register = async (req: Request, res: Response) => {
 
   // issue a token for the newly registered user
   const token = await req.login({ password, hashedPassword: hash, userId: String(user.id) });
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Lax",
+    signed: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
   const body: AuthAPI.RegisterResponse = { token };
   res.status(201).json(body);
 };
@@ -67,6 +74,13 @@ const register = async (req: Request, res: Response) => {
 // Logs a user in and gives them a token
 const login = async (req: Request, res: Response) => {
   if (req.user && req._token) {
+    res.cookie("token", req._token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      signed: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
     const body: AuthAPI.LoginResponse = { token: req._token };
     res.json(body);
   }
@@ -148,8 +162,10 @@ const getAuth = async (req: Request, res: Response) => {
 };
 
 const logout = async (req: Request, res: Response) => {
-  const token = req.headers["authorization"] as string | undefined;
-  if (token) await req.logout(token);
+  const token = (req.signedCookies?.token as string | false | undefined)
+    || (req.headers["authorization"] as string | undefined);
+  if (token) await req.logout(token as string);
+  res.clearCookie("token");
   const body: AuthAPI.LogoutResponse = { message: ApiMessages.LOGGED_OUT };
   res.status(200).json(body);
 };

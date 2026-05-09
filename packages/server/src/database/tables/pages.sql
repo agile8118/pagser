@@ -7,11 +7,13 @@ CREATE TABLE IF NOT EXISTS pages (
   brief_description TEXT,
   targets TEXT,
   body TEXT,
+
+  -- Configuration
   anonymously BOOLEAN DEFAULT FALSE,
   comments_disabled BOOLEAN DEFAULT FALSE,
   ratings_disabled BOOLEAN DEFAULT FALSE,
-  -- for public pages only:
-  links_disabled BOOLEAN,
+  links_disabled BOOLEAN, -- for public pages only
+
   url VARCHAR(200),
   cropped_photo_key VARCHAR(200),
   cropped_photo_url VARCHAR(200),
