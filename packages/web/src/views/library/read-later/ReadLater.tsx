@@ -116,7 +116,7 @@ const ReadLater = () => {
               type={item.type!}
               authorUsername={item.author?.username}
               onClick={() => {
-                if (status === "editing") selectPage(item.id);
+                if (status === "editing") dispatch(selectPage(item.id));
               }}
             />
           </div>
