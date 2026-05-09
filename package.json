@@ -11,8 +11,8 @@
   "author": "Joseph Heidari <agile.8272@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "test:e2e": "yarn workspace @pagser/web build && playwright test",
-    "test:e2e:headed": "yarn workspace @pagser/web build && playwright test --headed",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
     "playwright": "playwright",
     "seed:master": "yarn workspace @pagser/stressor seed",
     "seed:e2e": "yarn workspace @pagser/stressor seed:e2e",

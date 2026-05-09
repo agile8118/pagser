@@ -84,7 +84,7 @@ const InitialStep = () => {
         </div>
 
         <div className="page-new__types">
-          <label className="control control--radio">
+          <label className="control control--radio" data-testid="type-public">
             Public
             <input
               type="radio"
@@ -103,7 +103,7 @@ const InitialStep = () => {
             will appear on your public profile unless you create them
             anonymously.
           </div>
-          <label className="control control--radio font-weight-400">
+          <label className="control control--radio font-weight-400" data-testid="type-private">
             Private
             <input
               type="radio"

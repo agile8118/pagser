@@ -16,11 +16,21 @@ import {
 import { Upload } from "@aws-sdk/lib-storage";
 import crypto from "crypto";
 import { DB } from "../../database/index.js";
-import { IPage, IAttachFile, IUser, ICollection } from "../../database/types.js";
-import { AWS_REGION, S3_BUCKET } from "../../config/keys.js";
-import { UploaderAPI, ProfileAPI, CollectionAPI, FILE_SIZE_LIMITS } from "@pagser/common";
+import {
+  IPage,
+  IAttachFile,
+  IUser,
+  ICollection,
+} from "../../database/types.js";
+import keys from "../../config/keys.js";
+import {
+  UploaderAPI,
+  ProfileAPI,
+  CollectionAPI,
+  FILE_SIZE_LIMITS,
+} from "@pagser/common";
 
-const s3Client = new S3Client({ region: AWS_REGION });
+const s3Client = new S3Client({ region: keys.awsRegion });
 
 function isAllowedImageType(chunk: Uint8Array): boolean {
   const isJpeg = chunk[0] === 0xff && chunk[1] === 0xd8 && chunk[2] === 0xff;
@@ -75,7 +85,9 @@ function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
 }
 
 async function deleteFromS3(key: string) {
-  await s3Client.send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: key }));
+  await s3Client.send(
+    new DeleteObjectCommand({ Bucket: keys.s3Bucket, Key: key }),
+  );
 }
 
 async function uploadBufferToS3(
@@ -86,14 +98,14 @@ async function uploadBufferToS3(
   const upload = new Upload({
     client: s3Client,
     params: {
-      Bucket: S3_BUCKET,
+      Bucket: keys.s3Bucket,
       Key: key,
       Body: body,
       ContentType: contentType,
     },
   });
   await upload.done();
-  return `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
+  return `https://${keys.s3Bucket}.s3.${keys.awsRegion}.amazonaws.com/${key}`;
 }
 
 // Upload a page thumbnail — creates a full-size (1200px wide) and cropped (400x225) variant
@@ -195,9 +207,9 @@ const uploadPageAttachFile = async (req: Request, res: Response) => {
   }
 
   try {
-    await s3Client.send(new HeadBucketCommand({ Bucket: S3_BUCKET }));
+    await s3Client.send(new HeadBucketCommand({ Bucket: keys.s3Bucket }));
   } catch {
-    await s3Client.send(new CreateBucketCommand({ Bucket: S3_BUCKET }));
+    await s3Client.send(new CreateBucketCommand({ Bucket: keys.s3Bucket }));
   }
 
   const key = `${pageId}/${filename}`;
@@ -205,7 +217,7 @@ const uploadPageAttachFile = async (req: Request, res: Response) => {
 
   const upload = new Upload({
     client: s3Client,
-    params: { Bucket: S3_BUCKET, Key: key, Body: pass },
+    params: { Bucket: keys.s3Bucket, Key: key, Body: pass },
   });
 
   let bytesRead = 0;
@@ -243,7 +255,7 @@ const uploadPageAttachFile = async (req: Request, res: Response) => {
     throw e;
   }
 
-  const url = `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
+  const url = `https://${keys.s3Bucket}.s3.${keys.awsRegion}.amazonaws.com/${key}`;
 
   await DB.insert<IAttachFile>("attach_files", {
     page_id: Number(pageId),
@@ -289,7 +301,10 @@ const uploadUserPhoto = async (req: Request, res: Response) => {
   const userId = req.user.id;
   const MAX_FILE_SIZE = FILE_SIZE_LIMITS.USER_PHOTO;
 
-  const user = await DB.find<IUser>(`SELECT photo_key FROM users WHERE id = $1`, [userId]);
+  const user = await DB.find<IUser>(
+    `SELECT photo_key FROM users WHERE id = $1`,
+    [userId],
+  );
   const prevKey = user?.photo_key;
 
   const x = Math.round(Number(req.query.x));
@@ -307,13 +322,21 @@ const uploadUserPhoto = async (req: Request, res: Response) => {
 
   const key = `images/users/${crypto.randomUUID()}.jpg`;
   await uploadBufferToS3(key, processed);
-  const url = `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
+  const url = `https://${keys.s3Bucket}.s3.${keys.awsRegion}.amazonaws.com/${key}`;
 
-  await DB.update<IUser>("users", { photo_url: url, photo_key: key }, "id = $3", [userId]);
+  await DB.update<IUser>(
+    "users",
+    { photo_url: url, photo_key: key },
+    "id = $3",
+    [userId],
+  );
 
   if (prevKey) await deleteFromS3(prevKey).catch(() => {});
 
-  const body: ProfileAPI.UploadProfilePhotoResponse = { message: "image-uploaded", image: url };
+  const body: ProfileAPI.UploadProfilePhotoResponse = {
+    message: "image-uploaded",
+    image: url,
+  };
   res.json(body);
 };
 
@@ -349,13 +372,21 @@ const uploadCollectionPhoto = async (req: Request, res: Response) => {
 
   const key = `images/collections/${crypto.randomUUID()}.jpg`;
   await uploadBufferToS3(key, processed);
-  const url = `https://${S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${key}`;
+  const url = `https://${keys.s3Bucket}.s3.${keys.awsRegion}.amazonaws.com/${key}`;
 
-  await DB.update<ICollection>("collections", { photo_url: url, photo_key: key }, "id = $3", [collectionId]);
+  await DB.update<ICollection>(
+    "collections",
+    { photo_url: url, photo_key: key },
+    "id = $3",
+    [collectionId],
+  );
 
   if (prevKey) await deleteFromS3(prevKey).catch(() => {});
 
-  const body: CollectionAPI.UploadPhotoResponse = { message: "image-uploaded", image: url };
+  const body: CollectionAPI.UploadPhotoResponse = {
+    message: "image-uploaded",
+    image: url,
+  };
   res.json(body);
 };
 

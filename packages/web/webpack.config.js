@@ -1,14 +1,14 @@
 const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 
-module.exports = {
+module.exports = (env, argv) => ({
   entry: path.join(__dirname, "src", "index.tsx"),
   output: {
     filename: "bundle.js",
     chunkFilename: "[name].bundle.js",
     path: path.resolve(__dirname, "../server/public/scripts"),
   },
-  devtool: "inline-source-map",
+  devtool: argv.mode === "production" ? "source-map" : "inline-source-map",
   module: {
     rules: [
       {
@@ -44,4 +44,4 @@ module.exports = {
       ],
     }),
   ],
-};
+});

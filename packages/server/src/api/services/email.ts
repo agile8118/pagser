@@ -1,7 +1,7 @@
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
-import { AWS_REGION } from "../../config/keys.js";
+import keys from "../../config/keys.js";
 
-const ses = new SESClient({ region: AWS_REGION });
+const ses = new SESClient({ region: keys.awsRegion });
 
 export const FROM_NOREPLY = "Pagser <no-reply@pagser.com>";
 export const FROM_INFO = "Pagser <info@pagser.com>";
@@ -10,7 +10,7 @@ const sendEmail = async (
   to: string,
   subject: string,
   html: string,
-  from = FROM_NOREPLY
+  from = FROM_NOREPLY,
 ) => {
   if (process.env.SKIP_EMAIL === "true") return;
   await ses.send(
@@ -21,7 +21,7 @@ const sendEmail = async (
         Subject: { Data: subject },
         Body: { Html: { Data: html } },
       },
-    })
+    }),
   );
 };
 

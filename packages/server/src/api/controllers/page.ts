@@ -19,9 +19,9 @@ import {
   IAttachFile,
   ITag,
 } from "../../database/types.js";
-import keys, { AWS_REGION, S3_BUCKET } from "../../config/keys.js";
+import keys from "../../config/keys.js";
 
-const s3Client = new S3Client({ region: AWS_REGION });
+const s3Client = new S3Client({ region: keys.awsRegion });
 
 // Create a new draft page
 const newDraftPage = async (req: Request, res: Response) => {
@@ -248,7 +248,7 @@ const removePagePhoto = async (req: Request, res: Response) => {
       ? s3Client
           .send(
             new DeleteObjectCommand({
-              Bucket: S3_BUCKET,
+              Bucket: keys.s3Bucket,
               Key: page.photo_key,
             }),
           )
@@ -258,7 +258,7 @@ const removePagePhoto = async (req: Request, res: Response) => {
       ? s3Client
           .send(
             new DeleteObjectCommand({
-              Bucket: S3_BUCKET,
+              Bucket: keys.s3Bucket,
               Key: page.cropped_photo_key,
             }),
           )
@@ -306,7 +306,7 @@ const getAttachFile = async (req: Request, res: Response) => {
   res.attachment(key);
   const response = await s3Client.send(
     new GetObjectCommand({
-      Bucket: S3_BUCKET,
+      Bucket: keys.s3Bucket,
       Key: key,
     }),
   );
@@ -327,7 +327,7 @@ const deleteAttachFile = async (req: Request, res: Response) => {
 
   await s3Client.send(
     new DeleteObjectCommand({
-      Bucket: S3_BUCKET,
+      Bucket: keys.s3Bucket,
       Key: `${pageId}/${result.name}`,
     }),
   );
@@ -850,7 +850,7 @@ const deletePage = async (req: Request, res: Response) => {
   const listed = await s3Client
     .send(
       new ListObjectsV2Command({
-        Bucket: S3_BUCKET,
+        Bucket: keys.s3Bucket,
         Prefix: `images/body/${pageId}/`,
       }),
     )
@@ -860,7 +860,10 @@ const deletePage = async (req: Request, res: Response) => {
     page.photo_key
       ? s3Client
           .send(
-            new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: page.photo_key }),
+            new DeleteObjectCommand({
+              Bucket: keys.s3Bucket,
+              Key: page.photo_key,
+            }),
           )
           .catch(() => {})
       : Promise.resolve(),
@@ -868,7 +871,7 @@ const deletePage = async (req: Request, res: Response) => {
       ? s3Client
           .send(
             new DeleteObjectCommand({
-              Bucket: S3_BUCKET,
+              Bucket: keys.s3Bucket,
               Key: page.cropped_photo_key,
             }),
           )
@@ -878,7 +881,7 @@ const deletePage = async (req: Request, res: Response) => {
       ? s3Client
           .send(
             new DeleteObjectsCommand({
-              Bucket: S3_BUCKET,
+              Bucket: keys.s3Bucket,
               Delete: {
                 Objects: listed.Contents.map((obj) => ({ Key: obj.Key! })),
               },

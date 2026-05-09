@@ -124,7 +124,7 @@ test.describe("page creation — full wizard (private)", () => {
 
     // ── Step 1: choose page type ──────────────────────────────────────────
     await page.goto("/new-page/initial-step");
-    await page.locator('input[value="private"]').click();
+    await page.getByTestId("type-private").click();
     await page.getByTestId("initial-step-next").click();
     await page.waitForURL("**/new-page/page-contents**");
 
@@ -133,10 +133,10 @@ test.describe("page creation — full wizard (private)", () => {
     await page.locator("#briefDes").fill("Written via the full browser wizard.");
     await page.locator("#targets").fill("QA engineers running E2E tests.");
 
-    // TinyMCE renders inside an iframe — click to focus, then type.
-    const editorFrame = page.frameLocator("iframe").first();
+    const editorFrame = page.frameLocator("iframe[id$='_ifr']");
+    await editorFrame.locator("body").waitFor({ state: "visible" });
     await editorFrame.locator("body").click();
-    await page.keyboard.type("This is the body of the full wizard page.");
+    await editorFrame.locator("body").pressSequentially("This is the body of the full wizard page.");
 
     await page.getByTestId("page-contents-next").click();
     await page.waitForURL("**/new-page/page-thumbnail**");

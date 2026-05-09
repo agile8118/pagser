@@ -1,7 +1,8 @@
 import axios from "axios";
 
 import alert from "./alert";
-import { domain } from "./keys";
+
+const domain = "/api";
 
 interface optionsLayout {
   auth?: boolean;
