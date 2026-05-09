@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SubscriptionThumbnail from "./SubscriptionThumbnail";
-import { loadingModal, alert, request, SubscriptionAPI } from "@pagser/common";
+import { loadingModal, alert, request, SubscriptionAPI, USER_PLACEHOLDER_IMAGE } from "@pagser/common";
 import { Loading } from "@pagser/reusable";
 
 interface ISubscription {
@@ -41,7 +41,7 @@ const Subscriptions = () => {
           name={item.name}
           username={item.username}
           headline={item.headline || ""}
-          image={item.photo_url || ""}
+          image={item.photo_url || USER_PLACEHOLDER_IMAGE}
         />
       );
     });

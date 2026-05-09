@@ -562,7 +562,7 @@ const fetchPrivatePageData = async (req: Request, res: Response) => {
   });
 
   const author = await DB.find<{ id: number }>(
-    `SELECT id FROM users WHERE username = $1`,
+    `SELECT id FROM users WHERE LOWER(username) = LOWER($1)`,
     [username],
   );
 
@@ -624,6 +624,14 @@ const fetchPrivatePageData = async (req: Request, res: Response) => {
     : userId
       ? { status: "authenticated", id: userId }
       : { status: "spectator", id: undefined };
+
+  if (userId && !isOwner) {
+    const subscribed = await DB.find<any>(
+      `SELECT id FROM subscriptions WHERE subscriber_id = $1 AND author_id = $2`,
+      [userId, page.user_id],
+    );
+    if (subscribed) (viewer as any).subscribed = true;
+  }
 
   if (userId) {
     const existing = await DB.find<any>(
@@ -697,7 +705,7 @@ const fetchEditPageData = async (req: Request, res: Response) => {
       );
     } else {
       const author = await DB.find<{ id: number }>(
-        `SELECT id FROM users WHERE username = $1`,
+        `SELECT id FROM users WHERE LOWER(username) = LOWER($1)`,
         [username],
       );
 

@@ -31,15 +31,16 @@ const Actions = (props: IProps) => {
   const dispatch = useDispatch<any>();
 
   useEffect(() => {
-    if (props.type && props.type === "public") {
+    if (props.type === "public") {
       dispatch(fetchPublicPage());
     }
+  }, []);
 
-    // Send a view request to server
-    setTimeout(() => {
-      if (pageId) sendViewRequest(pageId);
-    }, 15000);
-  }, [loading]);
+  useEffect(() => {
+    if (!pageId) return;
+    const timer = setTimeout(() => sendViewRequest(pageId), 15000);
+    return () => clearTimeout(timer);
+  }, [pageId]);
 
   useEffect(() => {
     if (
