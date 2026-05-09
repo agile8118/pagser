@@ -29,9 +29,9 @@ interface IAuthor {
 
 export interface IConfigurations {
   anonymously?: boolean;
-  rating?: boolean;
-  comments?: boolean;
-  links?: boolean;
+  comments_disabled?: boolean;
+  ratings_disabled?: boolean;
+  links_disabled?: boolean;
 }
 
 interface IRatings {
@@ -77,9 +77,9 @@ const initialState: PageState = {
   },
   configurations: {
     anonymously: false,
-    rating: false,
-    comments: false,
-    links: false,
+    comments_disabled: false,
+    ratings_disabled: false,
+    links_disabled: false,
   },
   date: "",
   ratings: {
@@ -171,7 +171,12 @@ export const fetchPublicPage = (): AppThunk => async (dispatch) => {
       })
     );
     dispatch(setAttachFiles(response.page.attachFiles));
-    dispatch(setConfigurations(response.page.configurations));
+    dispatch(setConfigurations({
+      anonymously: response.page.anonymously,
+      comments_disabled: response.page.comments_disabled,
+      ratings_disabled: response.page.ratings_disabled,
+      links_disabled: response.page.links_disabled,
+    }));
     // From the userSlice
     dispatch(setUserId(response.viewer.id || ""));
     dispatch(setUserStatus(response.viewer.status));
@@ -197,7 +202,12 @@ export const fetchPrivatePage = (): AppThunk => async (dispatch) => {
     dispatch(setLoading(false));
     dispatch(setId(response.page.id));
     dispatch(setContents(response.page.contents));
-    dispatch(setConfigurations(response.page.configurations));
+    dispatch(setConfigurations({
+      anonymously: response.page.anonymously,
+      comments_disabled: response.page.comments_disabled,
+      ratings_disabled: response.page.ratings_disabled,
+      links_disabled: response.page.links_disabled,
+    }));
     dispatch(setPhotoUrl(response.page.photoUrl || ""));
     dispatch(
       setAuthor({

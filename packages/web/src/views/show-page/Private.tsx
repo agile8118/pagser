@@ -35,7 +35,7 @@ const Private = () => {
   };
 
   const renderComment = () => {
-    if (configurations.comments) {
+    if (!configurations.comments_disabled) {
       return <Comments />;
     } else {
       return (
@@ -47,7 +47,7 @@ const Private = () => {
   };
 
   const renderRatings = () => {
-    if (configurations.rating) {
+    if (!configurations.ratings_disabled) {
       return <Ratings />;
     } else {
       return (

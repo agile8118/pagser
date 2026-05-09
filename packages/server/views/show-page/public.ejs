@@ -64,14 +64,14 @@
           <div id="attach-files"></div>
           <!-- react container -->
 
-          <% if (!page.configurations.anonymously) { %>
+          <% if (!page.anonymously) { %>
           <div id="author"></div>
           <!-- react container -->
           <% } else { %>
           <p class="normal-paragraph disabled-message">
             This page has been created anonymously.
           </p>
-          <% } %> <% if (page.configurations.rating) { %>
+          <% } %> <% if (!page.ratings_disabled) { %>
           <div id="rating"></div>
           <!-- react container -->
           <% } else { %>
@@ -82,7 +82,7 @@
         </div>
       </div>
 
-      <% if (page.configurations.comments) { %>
+      <% if (!page.comments_disabled) { %>
       <div id="comments"></div>
       <!-- react container -->
       <% } else { %>

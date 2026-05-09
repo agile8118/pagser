@@ -208,10 +208,10 @@ const updateDraftPageData = async (req: Request, res: Response) => {
 
       // update the page
       const updateFields: Partial<IPage> = {
-        anonymously: page.configurations.anonymously,
-        comments_disabled: page.configurations.comments,
-        ratings_disabled: page.configurations.rating,
-        links_disabled: page.configurations.links,
+        anonymously: page.anonymously,
+        comments_disabled: page.comments_disabled,
+        ratings_disabled: page.ratings_disabled,
+        links_disabled: page.links_disabled,
       };
       if (page.type === "private") updateFields.url = page.url;
 
@@ -527,12 +527,10 @@ const fetchPublicPageData = async (req: Request, res: Response) => {
         body: page.body,
       },
       photoUrl: page.page_photo_url || null,
-      configurations: {
-        anonymously: page.anonymously,
-        comments: page.comments_disabled,
-        rating: page.ratings_disabled,
-        links: page.links_disabled,
-      },
+      anonymously: page.anonymously,
+      comments_disabled: page.comments_disabled,
+      ratings_disabled: page.ratings_disabled,
+      links_disabled: page.links_disabled,
       date: timeSince(page.created_at),
       likes: parseInt(likes?.count || "0"),
       dislikes: parseInt(dislikes?.count || "0"),
@@ -658,12 +656,10 @@ const fetchPrivatePageData = async (req: Request, res: Response) => {
         body: page.body,
       },
       photoUrl: page.page_photo_url || null,
-      configurations: {
-        anonymously: page.anonymously,
-        comments: page.comments_disabled,
-        rating: page.ratings_disabled,
-        links: page.links_disabled,
-      },
+      anonymously: page.anonymously,
+      comments_disabled: page.comments_disabled,
+      ratings_disabled: page.ratings_disabled,
+      links_disabled: page.links_disabled,
       date: timeSince(page.created_at),
       likes: parseInt(likes?.count || "0"),
       dislikes: parseInt(dislikes?.count || "0"),
@@ -786,10 +782,10 @@ const updatePage = async (req: Request, res: Response) => {
     brief_description: pageData.briefDes,
     body: cleanHTML(pageData.body),
     targets: pageData.targets || "",
-    anonymously: pageData.configurations?.anonymously ?? false,
-    comments_disabled: pageData.configurations?.comments ?? false,
-    ratings_disabled: pageData.configurations?.rating ?? false,
-    links_disabled: pageData.configurations?.links ?? false,
+    anonymously: pageData.anonymously ?? false,
+    comments_disabled: pageData.comments_disabled ?? false,
+    ratings_disabled: pageData.ratings_disabled ?? false,
+    links_disabled: pageData.links_disabled ?? false,
   };
 
   if (

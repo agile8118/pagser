@@ -226,42 +226,6 @@ const pageContents = (req: Request, res: Response, next: NextFunction) => {
 };
 
 /** @todo: use for edit page */
-// Validate page configurations (anonymously, comments, rating, links)
-const pageConfigurations = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  if (req.params.stage !== "final-step") return next();
-
-  const type = req.body?.page?.type;
-  const configurations = req.body?.page?.configurations;
-
-  if (!configurations) {
-    throw { status: 400, message: ApiMessages.INVALID_PAGE_CONFIG };
-  }
-
-  const anonymously = configurations.title;
-  const comments = configurations.targets;
-  const rating = configurations.briefDes;
-  const links = configurations.links; // could be undefined
-
-  const linksCondition =
-    type === "public" ? typeof links === "boolean" : true;
-
-  if (
-    typeof anonymously !== "boolean" ||
-    typeof comments !== "boolean" ||
-    typeof rating !== "boolean" ||
-    !linksCondition
-  ) {
-    throw { status: 400, message: ApiMessages.INVALID_PAGE_CONFIG };
-  }
-
-  next();
-};
-
-/** @todo: use for edit page */
 // Validate the page tags for public pages
 const publicPageTags = (req: Request, res: Response, next: NextFunction) => {
   if (req.params.stage !== "final-step") return next();
@@ -315,7 +279,6 @@ const validator = {
   isStage,
   pageType,
   pageContents,
-  pageConfigurations,
   publicPageTags,
   privatePageUrl,
 };

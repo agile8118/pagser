@@ -9,10 +9,10 @@ import FinalStepPrivate from "./FinalStepPrivate";
 
 const FinalStep = () => {
   const [type, setType] = useState<string | null>(null);
-  const [comments, setComments] = useState<boolean | null>(null);
-  const [rating, setRating] = useState<boolean | null>(null);
+  const [commentsDisabled, setCommentsDisabled] = useState<boolean | null>(null);
+  const [ratingsDisabled, setRatingsDisabled] = useState<boolean | null>(null);
   const [anonymously, setAnonymously] = useState<boolean | null>(null);
-  const [links, setLinks] = useState<boolean | null>(null);
+  const [linksDisabled, setLinksDisabled] = useState<boolean | null>(null);
   const [tags, setTags] = useState("");
   const [username, setUsername] = useState<string | null>(null);
   const [url, setUrl] = useState<string | null>(null);
@@ -33,15 +33,11 @@ const FinalStep = () => {
           },
         );
 
-        console.log(response);
         setType(response.page.type);
-        setComments(response.page.comments_disabled);
-        setRating(response.page.ratings_disabled);
-
-        console.log("-----");
-        console.log(response.page.anonymously);
+        setCommentsDisabled(response.page.comments_disabled);
+        setRatingsDisabled(response.page.ratings_disabled);
         setAnonymously(response.page.anonymously);
-        setLinks(response.page.links_disabled);
+        setLinksDisabled(response.page.links_disabled);
 
         // We are getting the tags in a format of an array, but in order for our
         // tag input to work, we need to convert it into a string. So something like
@@ -77,9 +73,9 @@ const FinalStep = () => {
   } else if (type === "public") {
     content = (
       <FinalStepPublic
-        comments={comments || false}
-        rating={rating || false}
-        links={links || false}
+        commentsDisabled={commentsDisabled || false}
+        ratingsDisabled={ratingsDisabled || false}
+        linksDisabled={linksDisabled || false}
         anonymously={anonymously || false}
         tags={tags}
       />
@@ -88,8 +84,8 @@ const FinalStep = () => {
     content = (
       <FinalStepPrivate
         username={username || ""}
-        comments={comments || false}
-        rating={rating || false}
+        commentsDisabled={commentsDisabled || false}
+        ratingsDisabled={ratingsDisabled || false}
         anonymously={anonymously || false}
         url={url || ""}
         usedUrls={usedUrls}

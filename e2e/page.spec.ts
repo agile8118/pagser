@@ -97,7 +97,9 @@ async function goToFinalStep(
     data: {
       page: {
         type: "private",
-        configurations: { comments: false, rating: false, anonymously: false },
+        comments_disabled: false,
+        ratings_disabled: false,
+        anonymously: false,
         url,
       },
     },
@@ -152,9 +154,9 @@ test.describe("page creation — full wizard (private)", () => {
     // ── Step 5: verify defaults, set URL, publish ─────────────────────────
     await page.waitForSelector('[data-testid="toggle-comments"]');
 
-    // Default state: comments on, ratings on, anonymous off.
-    expect(await isToggleOn(page, "toggle-comments")).toBe(true);
-    expect(await isToggleOn(page, "toggle-rating")).toBe(true);
+    // Default state: not disabled → toggles off; anonymous off.
+    expect(await isToggleOn(page, "toggle-comments")).toBe(false);
+    expect(await isToggleOn(page, "toggle-rating")).toBe(false);
     expect(await isToggleOn(page, "toggle-anonymously")).toBe(false);
 
     // Fill the URL slug via the browser input.
@@ -189,8 +191,8 @@ test.describe("page creation — private page configurations", () => {
     const pageId = await createDraftWithContent(page, user.token);
     await goToFinalStep(page, user.token, pageId, "comments-on-page");
 
-    // Default: comments NOT disabled → icon shows toggle-on.
-    expect(await isToggleOn(page, "toggle-comments")).toBe(true);
+    // Default: comments NOT disabled → icon shows toggle-off.
+    expect(await isToggleOn(page, "toggle-comments")).toBe(false);
 
     await page.getByTestId("final-step-publish").click();
     await page.waitForURL("**/new-page/message**", { timeout: 15_000 });
@@ -209,12 +211,12 @@ test.describe("page creation — private page configurations", () => {
     const pageId = await createDraftWithContent(page, user.token);
     await goToFinalStep(page, user.token, pageId, "comments-off-page");
 
-    // Toggle comments OFF (disable them).
+    // Toggle comments to disabled.
     await page.getByTestId("toggle-comments").click();
     await page.waitForResponse((r) =>
       r.url().includes("/new-page/final-step") && r.request().method() === "PATCH",
     );
-    expect(await isToggleOn(page, "toggle-comments")).toBe(false);
+    expect(await isToggleOn(page, "toggle-comments")).toBe(true);
 
     await page.getByTestId("final-step-publish").click();
     await page.waitForURL("**/new-page/message**", { timeout: 15_000 });
@@ -236,7 +238,7 @@ test.describe("page creation — private page configurations", () => {
     const pageId = await createDraftWithContent(page, user.token);
     await goToFinalStep(page, user.token, pageId, "ratings-on-page");
 
-    expect(await isToggleOn(page, "toggle-rating")).toBe(true);
+    expect(await isToggleOn(page, "toggle-rating")).toBe(false);
 
     await page.getByTestId("final-step-publish").click();
     await page.waitForURL("**/new-page/message**", { timeout: 15_000 });
@@ -259,7 +261,7 @@ test.describe("page creation — private page configurations", () => {
     await page.waitForResponse((r) =>
       r.url().includes("/new-page/final-step") && r.request().method() === "PATCH",
     );
-    expect(await isToggleOn(page, "toggle-rating")).toBe(false);
+    expect(await isToggleOn(page, "toggle-rating")).toBe(true);
 
     await page.getByTestId("final-step-publish").click();
     await page.waitForURL("**/new-page/message**", { timeout: 15_000 });
@@ -331,26 +333,26 @@ test.describe("page creation — private page configurations", () => {
     await page.waitForResponse((r) =>
       r.url().includes("/new-page/final-step") && r.request().method() === "PATCH",
     );
-    expect(await isToggleOn(page, "toggle-comments")).toBe(false);
+    expect(await isToggleOn(page, "toggle-comments")).toBe(true);
 
     await page.getByTestId("toggle-comments").click();
     await page.waitForResponse((r) =>
       r.url().includes("/new-page/final-step") && r.request().method() === "PATCH",
     );
-    expect(await isToggleOn(page, "toggle-comments")).toBe(true);
+    expect(await isToggleOn(page, "toggle-comments")).toBe(false);
 
     // Ratings: disable then re-enable.
     await page.getByTestId("toggle-rating").click();
     await page.waitForResponse((r) =>
       r.url().includes("/new-page/final-step") && r.request().method() === "PATCH",
     );
-    expect(await isToggleOn(page, "toggle-rating")).toBe(false);
+    expect(await isToggleOn(page, "toggle-rating")).toBe(true);
 
     await page.getByTestId("toggle-rating").click();
     await page.waitForResponse((r) =>
       r.url().includes("/new-page/final-step") && r.request().method() === "PATCH",
     );
-    expect(await isToggleOn(page, "toggle-rating")).toBe(true);
+    expect(await isToggleOn(page, "toggle-rating")).toBe(false);
 
     // Anonymous: enable then disable.
     await page.getByTestId("toggle-anonymously").click();
@@ -405,8 +407,8 @@ test.describe("page creation — private page configurations", () => {
       r.url().includes("/new-page/final-step") && r.request().method() === "PATCH",
     );
 
-    expect(await isToggleOn(page, "toggle-comments")).toBe(false);
-    expect(await isToggleOn(page, "toggle-rating")).toBe(false);
+    expect(await isToggleOn(page, "toggle-comments")).toBe(true);
+    expect(await isToggleOn(page, "toggle-rating")).toBe(true);
     expect(await isToggleOn(page, "toggle-anonymously")).toBe(true);
 
     await page.getByTestId("final-step-publish").click();

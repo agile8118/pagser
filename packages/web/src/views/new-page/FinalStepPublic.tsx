@@ -12,17 +12,17 @@ import {
 import { useNavigate } from "react-router-dom";
 
 interface IProps {
-  comments: boolean;
-  rating: boolean;
+  commentsDisabled: boolean;
+  ratingsDisabled: boolean;
   anonymously: boolean;
-  links: boolean;
+  linksDisabled: boolean;
   tags: string;
 }
 
 const FinalStepPublic = (props: IProps) => {
-  const [comments, setComments] = useState(props.comments);
-  const [rating, setRating] = useState(props.rating);
-  const [links, setLinks] = useState(props.links);
+  const [commentsDisabled, setCommentsDisabled] = useState(props.commentsDisabled);
+  const [ratingsDisabled, setRatingsDisabled] = useState(props.ratingsDisabled);
+  const [linksDisabled, setLinksDisabled] = useState(props.linksDisabled);
   const [anonymously, setAnonymously] = useState(props.anonymously);
   const [tags, setTags] = useState(props.tags);
   const [tagsError, setTagsError] = useState("");
@@ -49,7 +49,7 @@ const FinalStepPublic = (props: IProps) => {
     updatePage(() => {
       loadingModal();
     });
-  }, [comments, rating, links, anonymously]);
+  }, [commentsDisabled, ratingsDisabled, linksDisabled, anonymously]);
 
   useEffect(() => {
     if (tags) {
@@ -62,13 +62,11 @@ const FinalStepPublic = (props: IProps) => {
     try {
       const page = {
         type: "public",
-        configurations: {
-          comments: comments,
-          rating: rating,
-          links: links,
-          anonymously: anonymously,
-        },
-        tags: tags.split(","), // the server needs the tags in a format of an array
+        comments_disabled: commentsDisabled,
+        ratings_disabled: ratingsDisabled,
+        links_disabled: linksDisabled,
+        anonymously: anonymously,
+        tags: tags.split(","),
       };
 
       await request.patch(
@@ -107,14 +105,13 @@ const FinalStepPublic = (props: IProps) => {
   ) => {
     switch (role) {
       case "comments":
-        setComments(!comments);
+        setCommentsDisabled(!commentsDisabled);
         break;
       case "rating":
-        setRating(!rating);
+        setRatingsDisabled(!ratingsDisabled);
         break;
       case "links":
-        setLinks(!links);
-
+        setLinksDisabled(!linksDisabled);
         break;
       case "anonymously":
         setAnonymously(!anonymously);
@@ -198,7 +195,7 @@ const FinalStepPublic = (props: IProps) => {
             >
               <i
                 className={
-                  !comments ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"
+                  commentsDisabled ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"
                 }
                 aria-hidden="true"
               />
@@ -223,7 +220,7 @@ const FinalStepPublic = (props: IProps) => {
             >
               <i
                 className={
-                  !rating ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"
+                  ratingsDisabled ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"
                 }
                 aria-hidden="true"
               />
@@ -248,7 +245,7 @@ const FinalStepPublic = (props: IProps) => {
             >
               <i
                 className={
-                  !links ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"
+                  linksDisabled ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"
                 }
                 aria-hidden="true"
               />

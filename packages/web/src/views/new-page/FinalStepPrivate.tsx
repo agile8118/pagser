@@ -5,16 +5,16 @@ import { useNavigate } from "react-router-dom";
 
 interface IProps {
   username: string;
-  comments: boolean;
-  rating: boolean;
+  commentsDisabled: boolean;
+  ratingsDisabled: boolean;
   anonymously: boolean;
   url: string;
   usedUrls: string[];
 }
 
 const FinalStepPrivate = (props: IProps) => {
-  const [comments, setComments] = useState(props.comments);
-  const [rating, setRating] = useState(props.rating);
+  const [commentsDisabled, setCommentsDisabled] = useState(props.commentsDisabled);
+  const [ratingsDisabled, setRatingsDisabled] = useState(props.ratingsDisabled);
   const [anonymously, setAnonymously] = useState(props.anonymously);
   const [url, setUrl] = useState(props.url);
   const [urlError, setUrlError] = useState("");
@@ -27,7 +27,7 @@ const FinalStepPrivate = (props: IProps) => {
     updatePage(() => {
       loadingModal();
     });
-  }, [rating, comments, anonymously]);
+  }, [ratingsDisabled, commentsDisabled, anonymously]);
 
   useEffect(() => {
     // check for URL validation on change
@@ -38,10 +38,10 @@ const FinalStepPrivate = (props: IProps) => {
   const onSwitchClicked = (role: "comments" | "rating" | "anonymously") => {
     switch (role) {
       case "comments":
-        setComments(!comments);
+        setCommentsDisabled(!commentsDisabled);
         break;
       case "rating":
-        setRating(!rating);
+        setRatingsDisabled(!ratingsDisabled);
         break;
       case "anonymously":
         setAnonymously(!anonymously);
@@ -67,11 +67,9 @@ const FinalStepPrivate = (props: IProps) => {
     const page = {
       id: util.getParameterByName("id", window.location.href),
       type: "private",
-      configurations: {
-        comments: comments,
-        rating: rating,
-        anonymously: anonymously,
-      },
+      comments_disabled: commentsDisabled,
+      ratings_disabled: ratingsDisabled,
+      anonymously: anonymously,
       url: url,
     };
 
@@ -173,7 +171,7 @@ const FinalStepPrivate = (props: IProps) => {
             >
               <i
                 className={
-                  !comments ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"
+                  commentsDisabled ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"
                 }
                 aria-hidden="true"
               />
@@ -198,7 +196,7 @@ const FinalStepPrivate = (props: IProps) => {
             >
               <i
                 className={
-                  !rating ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"
+                  ratingsDisabled ? "fa fa-2x fa-toggle-on" : "fa fa-2x fa-toggle-off"
                 }
                 aria-hidden="true"
               />

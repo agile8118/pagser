@@ -126,11 +126,9 @@ export default (app: Cpeak) => {
             body: page.body || "",
           },
           tags: tags.map((t) => t.name).join(","),
-          configurations: {
-            anonymously: page.anonymously,
-            rating: !page.ratings_disabled,
-            comments: !page.comments_disabled,
-          },
+          anonymously: page.anonymously,
+          comments_disabled: page.comments_disabled,
+          ratings_disabled: page.ratings_disabled,
         },
         timeAgo: timeSince(page.created_at),
       });

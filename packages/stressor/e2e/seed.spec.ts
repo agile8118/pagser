@@ -41,16 +41,16 @@ const PASSWORD = "Aa1!aaaa";
 
 // 10 config combinations cycling across all 250 pages
 const CONFIGS = [
-  { type: "public", configurations: { comments: false, rating: false, anonymously: false, links: false } },
-  { type: "public", configurations: { comments: true, rating: false, anonymously: false, links: false } },
-  { type: "public", configurations: { comments: false, rating: true, anonymously: false, links: false } },
-  { type: "public", configurations: { comments: false, rating: false, anonymously: true, links: false } },
-  { type: "public", configurations: { comments: true, rating: true, anonymously: false, links: true } },
-  { type: "private", configurations: { comments: false, rating: false, anonymously: false, links: false } },
-  { type: "private", configurations: { comments: true, rating: false, anonymously: false, links: false } },
-  { type: "private", configurations: { comments: false, rating: true, anonymously: false, links: false } },
-  { type: "private", configurations: { comments: false, rating: false, anonymously: true, links: false } },
-  { type: "private", configurations: { comments: true, rating: true, anonymously: true, links: false } },
+  { type: "public", comments_disabled: false, ratings_disabled: false, anonymously: false, links_disabled: false },
+  { type: "public", comments_disabled: true, ratings_disabled: false, anonymously: false, links_disabled: false },
+  { type: "public", comments_disabled: false, ratings_disabled: true, anonymously: false, links_disabled: false },
+  { type: "public", comments_disabled: false, ratings_disabled: false, anonymously: true, links_disabled: false },
+  { type: "public", comments_disabled: true, ratings_disabled: true, anonymously: false, links_disabled: true },
+  { type: "private", comments_disabled: false, ratings_disabled: false, anonymously: false, links_disabled: false },
+  { type: "private", comments_disabled: true, ratings_disabled: false, anonymously: false, links_disabled: false },
+  { type: "private", comments_disabled: false, ratings_disabled: true, anonymously: false, links_disabled: false },
+  { type: "private", comments_disabled: false, ratings_disabled: false, anonymously: true, links_disabled: false },
+  { type: "private", comments_disabled: true, ratings_disabled: true, anonymously: true, links_disabled: false },
 ] as const;
 
 test("seed database with 50 users and 250 pages", async ({ request }) => {
@@ -164,7 +164,10 @@ test("seed database with 50 users and 250 pages", async ({ request }) => {
       const finalBody: Record<string, unknown> = {
         page: {
           type: config.type,
-          configurations: config.configurations,
+          comments_disabled: config.comments_disabled,
+          ratings_disabled: config.ratings_disabled,
+          anonymously: config.anonymously,
+          links_disabled: config.links_disabled,
           ...(config.type === "public"
             ? { tags: template.tags.slice(0, 4) }
             : { url: `${userData.username}-p${pi + 1}` }),

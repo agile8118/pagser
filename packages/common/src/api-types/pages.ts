@@ -71,7 +71,10 @@ export namespace PagesAPI {
       id: string;
       contents: { title: string; briefDescription: string; targets: string; body: string; };
       photoUrl: string | null;
-      configurations: { anonymously: boolean; comments: boolean; rating: boolean; links: boolean; };
+      anonymously: boolean;
+      comments_disabled: boolean;
+      ratings_disabled: boolean;
+      links_disabled: boolean;
       date: string;
       likes: number;
       dislikes: number;
@@ -87,7 +90,10 @@ export namespace PagesAPI {
       id: string;
       contents: { title: string; briefDescription: string; targets: string; body: string; };
       photoUrl: string | null;
-      configurations: { anonymously: boolean; comments: boolean; rating: boolean; links: boolean; };
+      anonymously: boolean;
+      comments_disabled: boolean;
+      ratings_disabled: boolean;
+      links_disabled: boolean;
       date: string;
       likes: number;
       dislikes: number;
@@ -118,7 +124,10 @@ export namespace PagesAPI {
     page: {
       title: string; briefDes: string; body: string; targets?: string;
       tags?: string[]; url?: string;
-      configurations?: { anonymously: boolean; comments: boolean; rating: boolean; links: boolean; };
+      anonymously?: boolean;
+      comments_disabled?: boolean;
+      ratings_disabled?: boolean;
+      links_disabled?: boolean;
     };
   }
   export interface UpdatePageResponse { url: string; type: "public" | "private"; username: string; }
