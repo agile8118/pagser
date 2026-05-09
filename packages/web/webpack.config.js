@@ -1,4 +1,5 @@
 const path = require("path");
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   entry: path.join(__dirname, "src", "index.tsx"),
@@ -33,5 +34,14 @@ module.exports = {
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
   },
-  plugins: [],
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, "../../node_modules/tinymce"),
+          to: path.resolve(__dirname, "../server/public/tinymce"),
+        },
+      ],
+    }),
+  ],
 };

@@ -25,6 +25,7 @@ build/
 /dist
 dist/
 packages/server/public/scripts/
+packages/server/public/tinymce/
 
 # test coverage
 coverage/
