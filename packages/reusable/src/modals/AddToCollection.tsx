@@ -21,7 +21,7 @@ interface ICollection {
 const CollectionModal = (props: IProps) => {
   const [name, setName] = useState("");
   const [status, setStatus] = useState<"normal" | "loading" | "creating">(
-    "normal"
+    "normal",
   ); // We'll show different elements depending on the value
   const [collections, setCollections] = useState<ICollection[]>([]);
 
@@ -39,7 +39,7 @@ const CollectionModal = (props: IProps) => {
       `/collections/created/${props.pageId}`,
       {
         auth: true,
-      }
+      },
     )) as any;
 
     setStatus("normal");
@@ -55,7 +55,7 @@ const CollectionModal = (props: IProps) => {
       { name },
       {
         auth: true,
-      }
+      },
     )) as any;
 
     // Add the page in the newly created collection
@@ -71,14 +71,17 @@ const CollectionModal = (props: IProps) => {
       null,
       {
         auth: true,
-      }
+      },
     )) as any;
 
     // Show a right message to user based on server response
     if (response.selected)
       alert(`Page successfully added to "${clName}" collection.`, "success");
     else
-      alert(`Page successfully removed from "${clName}" collection.`, "success");
+      alert(
+        `Page successfully removed from "${clName}" collection.`,
+        "success",
+      );
 
     // Fetch collections again
     fetchCollections();
@@ -103,7 +106,7 @@ const CollectionModal = (props: IProps) => {
           </div>
         ))}
       {collections && status === "normal" && (
-        <div className="margin-bottom-08">
+        <div className="margin-bottom-08 margin-top-1">
           <Button
             color="blue"
             outlined={true}

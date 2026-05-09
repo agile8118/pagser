@@ -65,10 +65,6 @@ const PageContents = () => {
   }, [title, body, briefDes, targets, type, saved]);
 
   useEffect(() => {
-    checkPageBodyValidation();
-  }, [body]);
-
-  useEffect(() => {
     checkTargetsValidation();
   }, [targets]);
 

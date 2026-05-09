@@ -7,8 +7,13 @@ module.exports = (env, argv) => ({
     filename: "bundle.js",
     chunkFilename: "[name].bundle.js",
     path: path.resolve(__dirname, "../server/public/scripts"),
+    publicPath: "/scripts/",
   },
-  devtool: argv.mode === "production" ? "source-map" : "inline-source-map",
+  devtool: argv.mode === "production" ? "source-map" : "eval-cheap-module-source-map",
+  optimization: {
+    moduleIds: "deterministic",
+    chunkIds: "deterministic",
+  },
   module: {
     rules: [
       {

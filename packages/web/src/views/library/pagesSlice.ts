@@ -120,16 +120,18 @@ export const fetchPages =
         ? `/users/${window.location.pathname.split("/")[2]}/pages`
         : `/${kind}?sortBy=${sortBy}&filterBy=${filterBy}`;
 
-    const response = await request.get<FetchPagesResponse>(url, {
-      auth: true,
-    });
+    try {
+      const response = await request.get<FetchPagesResponse>(url, {
+        auth: true,
+      });
 
-    dispatch(setList(extractList(kind, response)));
+      dispatch(setList(extractList(kind, response)));
 
-    if (filterBy && "filterBy" in response && response.filterBy) dispatch(setFilterBy(response.filterBy as TFilterBy));
-    if (sortBy && "sortBy" in response && response.sortBy) dispatch(setSortBy(response.sortBy as TSortBy));
-
-    dispatch(setLoading(false));
+      if (filterBy && "filterBy" in response && response.filterBy) dispatch(setFilterBy(response.filterBy as TFilterBy));
+      if (sortBy && "sortBy" in response && response.sortBy) dispatch(setSortBy(response.sortBy as TSortBy));
+    } finally {
+      dispatch(setLoading(false));
+    }
   };
 
 // Sends a request to server to remove pages from a list, or delete draft pages

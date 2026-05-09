@@ -89,6 +89,7 @@
       document.querySelector("#pagserLogoMd").src =
         "/images/pagser-logo-light.svg";
       localStorage.setItem("theme", "dark");
+      window.dispatchEvent(new CustomEvent("pagser:themechange", { detail: "dark" }));
     }
 
     if (theme === "light") {
@@ -104,6 +105,7 @@
         document.querySelector("#pagserLogoSm").src = "/images/pagser-logo.svg";
         document.querySelector("#pagserLogoMd").src = "/images/pagser-logo.svg";
         localStorage.setItem("theme", "light");
+        window.dispatchEvent(new CustomEvent("pagser:themechange", { detail: "light" }));
       }
     }
   }

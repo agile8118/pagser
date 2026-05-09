@@ -40,7 +40,7 @@ const SideNav = () => {
       const index = sections.indexOf(
         `${window.location.pathname.split("/")[2]}/${
           window.location.pathname.split("/")[3]
-        }`
+        }`,
       );
       return sections[index] || "history/pages";
     }
@@ -49,7 +49,7 @@ const SideNav = () => {
       const index = sections.indexOf(
         `${window.location.pathname.split("/")[2]}/${
           window.location.pathname.split("/")[3]
-        }`
+        }`,
       );
       return sections[index] || "pages/published";
     }
@@ -207,7 +207,7 @@ const SideNav = () => {
             <a href="/privacy-policy">Privacy Policy</a>
           </li>
         </ul>
-        <span>&copy; 2022 Pagser.com</span>
+        <span>&copy; 2026 Pagser.com</span>
       </div>
     </div>
   );

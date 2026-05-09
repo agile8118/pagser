@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { request, UploaderAPI } from "@pagser/common";
 
@@ -17,8 +17,16 @@ const RichTextEditor = ({
   pageId,
   placeholder,
 }: Props) => {
-  const initialContent = useRef(content);
-  const isDark = localStorage.getItem("theme") === "dark";
+  const [isDark, setIsDark] = useState(localStorage.getItem("theme") === "dark");
+  const currentContent = useRef(content);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      setIsDark((e as CustomEvent).detail === "dark");
+    };
+    window.addEventListener("pagser:themechange", handler);
+    return () => window.removeEventListener("pagser:themechange", handler);
+  }, []);
 
   const imagesUploadHandler = async (blobInfo: any): Promise<string> => {
     const file: File = blobInfo.blob();
@@ -36,8 +44,9 @@ const RichTextEditor = ({
 
   return (
     <Editor
+      key={isDark ? "dark" : "light"}
       tinymceScriptSrc="/tinymce/tinymce.min.js"
-      initialValue={initialContent.current}
+      initialValue={currentContent.current}
       onEditorChange={(value) => onChange(value)}
       onBlur={() => onBlur?.()}
       init={{
@@ -85,8 +94,9 @@ const RichTextEditor = ({
         link_default_target: "_blank",
         link_assume_external_targets: true,
         placeholder: placeholder || "Write your page content here...",
-        content_style:
-          "body { font-family: Lato, Helvetica, Arial, sans-serif; font-size: 16px; color: #555; line-height: 1.75; }",
+        content_style: isDark
+          ? "body { font-family: Lato, Helvetica, Arial, sans-serif; font-size: 16px; color: #e4e4e5; line-height: 1.75; }"
+          : "body { font-family: Lato, Helvetica, Arial, sans-serif; font-size: 16px; color: #555; line-height: 1.75; }",
       }}
     />
   );
