@@ -8,7 +8,7 @@
     "compile:dark": "sass src/dark-theme.scss ../server/public/dark-style.css --style=compressed --no-source-map",
     "concat:css": "concat -o ../server/public/style.concat.css ../server/public/style.comp.css",
     "prefix:css": "postcss --use autoprefixer -b \"last 10 versions\" ../server/public/style.concat.css -o ../server/public/style.prefix.css",
-    "compress:css": "sass ../server/public/style.prefix.css ../server/public/styles.css --style=compressed --no-source-map",
+    "compress:css": "sass ../server/public/style.prefix.css ../server/public/style.css --style=compressed --no-source-map",
     "cleanup": "rm ../server/public/style.prefix.css ../server/public/style.concat.css ../server/public/style.comp.css",
     "build": "npm-run-all compile:sass compile:dark concat:css prefix:css compress:css cleanup"
   },

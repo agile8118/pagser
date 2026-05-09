@@ -14,6 +14,7 @@
     "build": "cd packages/common && yarn build && cd ../reusable && yarn build && cd ../web && yarn build && cd ../styles && yarn build && cd ../server && yarn build",
     "setup": "NODE_ENV=development yarn install && yarn build && cd packages/server && yarn seed",
     "start": "cd packages/server && yarn prod && echo 'Server started with PM2. Run `pm2 logs` to view logs.'",
+    "seed": "cd packages/server && yarn seed",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "playwright": "playwright",
