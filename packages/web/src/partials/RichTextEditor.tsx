@@ -60,7 +60,7 @@ const RichTextEditor = ({
           "autolink",
         ],
         toolbar:
-          "blocks | bold italic underline | alignleft aligncenter alignright | bullist numlist | codesample link image",
+          "blocks | bold italic underline | alignleft aligncenter alignright | bullist numlist | codesample link image | indent outdent",
         block_formats: "Heading=h2; Subheading=h3; Paragraph=p;",
         codesample_global_prismjs: true,
         codesample_languages: [

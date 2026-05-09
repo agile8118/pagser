@@ -97,9 +97,7 @@ const Photo = () => {
             open={uploadPhotoModalOpen}
             header="Upload Page Photo"
             text="Upload a beautiful photo to be set as a featured image of your page:"
-            cropMsg="Choose an area to be shown as for the page thumbnail, this won't
-                crop your image, this is just the area that will be shown as the
-                thumbnail."
+            cropMsg="Choose an area to use as the page thumbnail. This won't crop your image."
             inputLabelName="Choose a photo"
             url={`/pages/${pageId}/photo`}
             minWidth={1200}

@@ -63,7 +63,7 @@ const VerifyEmail = (props: IProps) => {
       })
       .then((response) => {
         setLoading(false);
-        setAlertMessage("New code has been sent to your email.");
+        setAlertMessage("A new code has been sent to your email.");
         setAlertType("success");
         resetDigits();
       })
@@ -118,7 +118,7 @@ const VerifyEmail = (props: IProps) => {
       })
       .then((response) => {
         props.onEmailChange(changedEmail);
-        setAlertMessage("New code has been sent to your email.");
+        setAlertMessage("A new code has been sent to your email.");
         setAlertType("success");
         setChangeEmailMdl(false);
         setChangedEmail("");
@@ -145,7 +145,7 @@ const VerifyEmail = (props: IProps) => {
       });
   };
 
-  // Move to the specified diget
+  // Move to the specified digit
   const moveDigit = (number) => {};
 
   // Check if all digits are entered
@@ -298,7 +298,7 @@ const VerifyEmail = (props: IProps) => {
           setChangeEmailMdl(false);
         }}
       >
-        <p>Put your email address here and we will send a new code to that.</p>
+        <p>Enter your new email address and we'll send a new code to it.</p>
         <form
           onSubmit={(event) => {
             event.preventDefault();

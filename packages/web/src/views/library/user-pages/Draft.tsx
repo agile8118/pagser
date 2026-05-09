@@ -115,9 +115,9 @@ const Published = () => {
       >
         <p>
           Are you sure you want to delete the selected draft page
-          {selectedPages.length > 1 ? "s " : ""}
+          {selectedPages.length > 1 ? "s" : ""}
           ? <br /> You have selected {selectedPages.length} draft page
-          {selectedPages.length > 1 ? "s " : ""} and you cannot undo the action.
+          {selectedPages.length > 1 ? "s" : ""} and you cannot undo the action.
         </p>
       </ConfirmModal>
       <div className="row">

@@ -130,7 +130,7 @@ const Login = () => {
           setForgotPassMdl(false);
         }}
       >
-        <p>Put your email address here and we'll send you the instructions.</p>
+        <p>Enter your email address and we'll send you a reset link.</p>
         <form
           onSubmit={(event) => {
             event.preventDefault();
@@ -171,7 +171,7 @@ const Login = () => {
           >
             Register
           </div>
-          <div className="auth__options--login--active">login</div>
+          <div className="auth__options--login--active">Login</div>
         </div>
 
         <div className="auth__content">

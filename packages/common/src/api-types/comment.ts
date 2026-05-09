@@ -26,6 +26,7 @@ export namespace CommentAPI {
     toName: string;
     inReplyTo: string;
     inReplyToCommentReply: number | null;
+    inReplyToUser?: string;
     readByPageOwner: boolean;
     lovedByPageOwner: boolean;
   }

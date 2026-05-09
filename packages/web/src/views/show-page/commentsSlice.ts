@@ -266,7 +266,8 @@ export const addComment =
   (
     comment: string,
     inReplyTo: string | null = null,
-    inReplyToCommentReply: string | null = null
+    inReplyToCommentReply: string | null = null,
+    inReplyToUserName: string | null = null
   ): AppThunk =>
   async (dispatch, getState) => {
     loadingModal("Adding your comment...");
@@ -281,7 +282,10 @@ export const addComment =
       );
 
       if (response.inReplyTo) {
-        dispatch(setNewReply(response.comment));
+        dispatch(setNewReply({
+          ...(response.comment as any),
+          inReplyToUser: inReplyToCommentReply && inReplyToUserName ? inReplyToUserName : undefined,
+        }));
 
         dispatch(
           changeCommentStatus({
@@ -352,7 +356,7 @@ export const editComment =
       })
     );
 
-    alert("Your comment updated successfully.", "success");
+    alert("Your comment was updated successfully.", "success");
 
     loadingModal();
   };

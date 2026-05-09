@@ -126,7 +126,7 @@ const ReadLater = () => {
       if (filterBy === "public") {
         return (
           <p className="a-13">
-            You don't have any public page on your read later list.
+            You don't have any public page in your read later list.
           </p>
         );
       }
@@ -134,7 +134,7 @@ const ReadLater = () => {
       if (filterBy === "private") {
         return (
           <p className="a-13">
-            You don't have any private page on your read later list.
+            You don't have any private page in your read later list.
           </p>
         );
       }

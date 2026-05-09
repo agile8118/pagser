@@ -96,7 +96,7 @@ const Pages = () => {
       if (filterBy === "public") {
         return (
           <p className="a-13">
-            You don't have any public page on your history.
+            You don't have any public page in your history.
           </p>
         );
       }
@@ -104,7 +104,7 @@ const Pages = () => {
       if (filterBy === "private") {
         return (
           <p className="a-13">
-            You don't have any private page on your history.
+            You don't have any private page in your history.
           </p>
         );
       }

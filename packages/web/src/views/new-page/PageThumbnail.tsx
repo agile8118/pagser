@@ -55,7 +55,7 @@ const PageThumbnail = () => {
       alert("Photo was successfully removed.", "success");
     } catch (e) {
       loadingModal();
-      alert("There was problem with removing the photo.", "error");
+      alert("There was a problem removing the photo.", "error");
     }
   };
 

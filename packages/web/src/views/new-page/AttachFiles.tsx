@@ -167,7 +167,7 @@ const AttachFiles = () => {
         <UploadAttachFile
           open={uploadAttachFileMdl}
           header="Attach a File"
-          text={`You can upload maximum of 5 files ${FILE_SIZE_LIMITS.ATTACH_FILE / (1024 * 1024)}MB each for every page.`}
+          text={`You can upload a maximum of 5 files, up to ${FILE_SIZE_LIMITS.ATTACH_FILE / (1024 * 1024)}MB each.`}
           size={FILE_SIZE_LIMITS.ATTACH_FILE}
           url={`/pages/${util.getParameterByName(
             "id",
@@ -185,8 +185,8 @@ const AttachFiles = () => {
 
         <p className="a-18 italic">
           {files.length
-            ? "You can always add/remove attach files after you publish your page."
-            : "You can always add/remove attach files after you publish your page. You can also skip this for now and do it later."}
+            ? "You can always add or remove attached files after you publish your page."
+            : "You can always add or remove attached files after you publish your page. You can also skip this for now and do it later."}
         </p>
 
         {/* Next button */}

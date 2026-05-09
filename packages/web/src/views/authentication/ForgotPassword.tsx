@@ -51,7 +51,7 @@ const ForgotPassword = () => {
 
     if (fieldName === "confirmPassword") {
       if (validate.isEmpty(value)) {
-        setConfirmPasswordError("Please choose a password.");
+        setConfirmPasswordError("Please confirm your password.");
       }
     }
   };
@@ -207,8 +207,7 @@ const ForgotPassword = () => {
   if (status === "success") {
     EL = (
       <div className="middle-box middle-box--absolute middle-box--success">
-        You have successfully reset your password. Now you can go ahead and
-        login to your account with your new password.
+        Your password has been reset. You can now log in with your new password.
       </div>
     );
   }

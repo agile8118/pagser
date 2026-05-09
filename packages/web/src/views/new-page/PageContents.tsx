@@ -316,7 +316,7 @@ const PageContents = () => {
                 }}
                 placeholder="Choose a title for your page."
                 maxLength={50}
-                help="this is some text to help you understand the input better."
+                help="A short, descriptive title for your page."
                 error={titleError}
                 onBlur={(value) => {
                   checkTitleValidation(value);
@@ -337,7 +337,7 @@ const PageContents = () => {
                   setSaved(false);
                 }}
                 placeholder="Describe briefly what your page is all about."
-                help="this is some text to help you understand the input better."
+                help="A short summary shown in page previews and search results."
                 maxLength={300}
                 error={briefDesError}
                 onBlur={() => {
@@ -359,7 +359,7 @@ const PageContents = () => {
                   setSaved(false);
                 }}
                 placeholder="Describe briefly who this page is for."
-                help="this is some text to help you understand the input better."
+                help="Describe who this page is intended for."
                 maxLength={300}
                 error={targetsError}
                 onBlur={() => {

@@ -143,7 +143,7 @@ const CollectionShow = () => {
         }
       );
 
-      alert("Collection info was updated successfully", "success");
+      alert("Collection info was updated successfully.", "success");
 
       setInfoStatus("normal");
       setName(inputName);
@@ -421,7 +421,7 @@ const CollectionShow = () => {
 
         {pages.length > 0 && (
           <p>
-            All the pages you have saved on this collection will be removed from
+            All the pages you have saved in this collection will be removed from
             your library if you don't have them saved somewhere else.
           </p>
         )}
@@ -429,7 +429,7 @@ const CollectionShow = () => {
         {btn === "stop-sharing" && (
           <p>
             This collection is being shared for others. If you delete the
-            collection all the people that have saved your collection won't be
+            collection all the people who have saved your collection won't be
             able to access it any longer.
           </p>
         )}
@@ -450,7 +450,7 @@ const CollectionShow = () => {
         <p>Are you sure you want to make your collection private?</p>
 
         <p>
-          If you stop the collection from being shared, all the people that have
+          If you stop the collection from being shared, all the people who have
           saved your collection won't be able to access it and the collection
           won't be shown on your public profile any longer until you make it
           public again.

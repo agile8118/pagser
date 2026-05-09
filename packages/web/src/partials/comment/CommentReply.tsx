@@ -126,7 +126,7 @@ const CommentReply = (props: IProps) => {
           // ref={addReplyInput}
           toName={props.toName}
           onSubmit={(text) => {
-            dispatch(addComment(text, props.parentCommentId, props.id));
+            dispatch(addComment(text, props.parentCommentId, props.id, props.author.name));
           }}
           onCancel={() => {
             dispatch(

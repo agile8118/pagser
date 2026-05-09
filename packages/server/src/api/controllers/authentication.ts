@@ -108,7 +108,7 @@ const forgotPassword = async (req: Request, res: Response) => {
   res.status(200).json(body);
 };
 
-// Using the token that waws sent in their email address, reset their password and update the database
+// Using the token that was sent to their email address, reset their password and update the database
 const resetPassword = async (req: Request, res: Response) => {
   const password = req.body.password;
   const userId = req.body.user_id;

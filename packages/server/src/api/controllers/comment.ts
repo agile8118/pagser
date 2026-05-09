@@ -162,9 +162,12 @@ const fetchReplies = async (req: Request, res: Response) => {
       users.name,
       users.username,
       users.photo_url,
+      ru.name AS in_reply_to_user_name,
       (SELECT COUNT(*) FROM ratings WHERE comment_id = c.id AND liked = true) as like_count
     FROM comments c
     JOIN users ON c.user_id = users.id
+    LEFT JOIN comments rc ON c.in_reply_to_comment_reply = rc.id
+    LEFT JOIN users ru ON rc.user_id = ru.id
     WHERE c.in_reply_to = $1
     ORDER BY c.created_at ASC
     `,
@@ -187,6 +190,7 @@ const fetchReplies = async (req: Request, res: Response) => {
     toName: "",
     inReplyTo: String(commentId),
     inReplyToCommentReply: r.in_reply_to_comment_reply,
+    inReplyToUser: r.in_reply_to_user_name || undefined,
     readByPageOwner: r.read_by_page_owner,
     lovedByPageOwner: r.loved_by_page_owner,
   }));

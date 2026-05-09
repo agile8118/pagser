@@ -166,7 +166,7 @@ const Info = () => {
                 maxLength={50}
                 label="Headline"
                 error={headlineError}
-                placeholder="Describe yourself in few words"
+                placeholder="Describe yourself in a few words"
                 value={headline}
                 onChange={(value) => {
                   setHeadline(value);
@@ -227,7 +227,7 @@ const Info = () => {
                   <input
                     maxLength={100}
                     type="text"
-                    placeholder="Youtube Profile"
+                    placeholder="YouTube Profile"
                     value={youtube}
                     className="form__input"
                     onChange={(event) => {

@@ -293,7 +293,7 @@ const Register = () => {
                 navigate("/login");
               }}
             >
-              login
+              Login
             </div>
           </div>
 
