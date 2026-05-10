@@ -5,6 +5,14 @@
   align-items: center;
   color: $color-text;
 
+  @media only screen and (max-width: 450px) {
+    flex-direction: column;
+
+    &__actions {
+      margin-bottom: 1rem;
+    }
+  }
+
   &__label {
     border-radius: 5px;
     background: $color-blue;

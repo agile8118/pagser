@@ -170,7 +170,7 @@ export default (app: Cpeak) => {
     res.render("terms-of-use", { currentUser: await getNavUser(req) });
   });
 
-  // app.route("get", "*", (req: Request, res: Response) => {
-  //   res.json({ message: "Page Not Found!" });
-  // });
+  app.route("get", "*", (req: Request, res: Response) => {
+    res.json({ message: "Page Not Found!" });
+  });
 };

@@ -150,9 +150,6 @@ const Private = () => {
       </div>
 
       {renderComment()}
-      <br />
-      <br />
-      <br />
     </div>
   );
 };

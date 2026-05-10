@@ -52,14 +52,18 @@ export function createApp(opts: AppOptions = {}): Cpeak {
 
     app.beforeEach(swagger(swaggerDocument as object));
     app.beforeEach(
-      serveStatic(swaggerUiDist.getAbsoluteFSPath(), undefined, {
+      serveStatic(swaggerUiDist.getAbsoluteFSPath(), {
         prefix: "/api-docs",
       }),
     );
   }
 
   const publicPath = new URL("../public", import.meta.url).pathname;
-  app.beforeEach(serveStatic(publicPath));
+  app.beforeEach(
+    serveStatic(publicPath, {
+      live: process.env.NODE_ENV === "production" ? false : true,
+    }),
+  );
 
   app.beforeEach(parseJSON());
 

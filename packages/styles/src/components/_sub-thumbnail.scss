@@ -2,6 +2,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @media (max-width: 500px) {
+    flex-direction: column;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .btn {
+    white-space: nowrap;
+
+    @media (max-width: 500px) {
+      align-self: center;
+    }
+  }
+
   font-size: 1.6rem;
   width: 100%;
   border-radius: 7px;

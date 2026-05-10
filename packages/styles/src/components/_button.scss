@@ -16,15 +16,15 @@
   font-family: inherit;
 
   &:hover {
-      color: inherit;
+    color: inherit;
   }
 
   &-rounded {
-      border-radius: 500px !important;
+    border-radius: 500px !important;
   }
 
   &-block {
-      width: 100%;
+    width: 100%;
   }
 
   &__icon-left {
@@ -49,47 +49,47 @@
   }
 
   &:focus {
-      box-shadow: 0 0 0 3px rgba(#e1e0e0, 0.3);
+    box-shadow: 0 0 0 3px rgba(#e1e0e0, 0.3);
   }
 
   &:disabled {
-      cursor: not-allowed;
+    cursor: not-allowed;
+    background: #ebebe4;
+    border-color: #ccc;
+    color: #757575;
+
+    &:hover {
       background: #ebebe4;
       border-color: #ccc;
       color: #757575;
-
-      &:hover {
-        background: #ebebe4;
-        border-color: #ccc;
-        color: #757575;
-      }
+    }
   }
 
   &-outlined {
-      background-color: transparent;
-      color: #5c5b5b;
-      border: 1px solid #5c5b5b;
+    background-color: transparent;
+    color: #5c5b5b;
+    border: 1px solid #5c5b5b;
 
-      &:hover,
-      &:active {
-          background-color: #5c5b5b;
-          color: #fff;
+    &:hover,
+    &:active {
+      background-color: #5c5b5b;
+      color: #fff;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(#5c5b5b, 0.3);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      border-color: lighten(#5c5b5b, 20%);
+      background-color: #fff;
+      color: lighten(#5c5b5b, 20%);
+
+      &:hover {
+        border-color: lighten(#5c5b5b, 20%);
       }
-
-      &:focus {
-          box-shadow: 0 0 0 3px rgba(#5c5b5b, 0.3);
-      }
-
-      &:disabled {
-          cursor: not-allowed;
-          border-color: lighten(#5c5b5b, 20%);
-          background-color: #fff;
-          color: lighten(#5c5b5b, 20%);
-
-          &:hover {
-              border-color: lighten(#5c5b5b, 20%);
-          }
-      }
+    }
   }
 }
 
@@ -98,56 +98,54 @@
   background-color: $color-blue;
   border: 1px solid $color-dark-blue;
 
-
   &:hover {
-      color: #fff;
-      background-color: darken($color-blue, 5%);
-      border-color: darken($color-blue, 5%);
+    color: #fff;
+    background-color: darken($color-blue, 5%);
+    border-color: darken($color-blue, 5%);
   }
 
   &:focus {
-      box-shadow: 0 0 0 3px rgba($color-blue, 0.3);
+    box-shadow: 0 0 0 3px rgba($color-blue, 0.3);
   }
 
   &:disabled {
-      cursor: not-allowed;
+    cursor: not-allowed;
+    background: lighten($color-blue, 20%);
+    border-color: lighten($color-blue, 20%);
+
+    &:hover {
       background: lighten($color-blue, 20%);
       border-color: lighten($color-blue, 20%);
-
-      &:hover {
-          background: lighten($color-blue, 20%);
-          border-color: lighten($color-blue, 20%);
-      }
+    }
   }
 
   &-outlined {
+    background-color: transparent;
+    color: $color-blue;
+    border: 1px solid $color-blue;
+
+    &:hover,
+    &:active {
+      background-color: $color-blue;
+      color: #fff;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba($color-blue, 0.3);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      border-color: lighten($color-blue, 20%);
       background-color: transparent;
-      color: $color-blue;
-      border: 1px solid $color-blue;
+      color: lighten($color-blue, 20%);
 
-      &:hover,
-      &:active {
-          background-color: $color-blue;
-          color: #fff;
+      &:hover {
+        border-color: lighten($color-blue, 20%);
       }
-
-      &:focus {
-          box-shadow: 0 0 0 3px rgba($color-blue, 0.3);
-      }
-
-      &:disabled {
-          cursor: not-allowed;
-          border-color: lighten($color-blue, 20%);
-          background-color: transparent;
-          color: lighten($color-blue, 20%);
-
-          &:hover {
-              border-color: lighten($color-blue, 20%);
-          }
-      }
+    }
   }
 }
-
 
 .button-gray {
   background-color: $color-gray;
@@ -155,51 +153,51 @@
   border: 1px solid $color-gray;
 
   &:hover {
-      color: #fff;
-      background-color: darken($color-gray, 5%);
-      border-color: darken($color-gray, 5%);
+    color: #fff;
+    background-color: darken($color-gray, 5%);
+    border-color: darken($color-gray, 5%);
   }
 
   &:focus {
-      box-shadow: 0 0 0 3px rgba($color-gray, 0.3);
+    box-shadow: 0 0 0 3px rgba($color-gray, 0.3);
   }
 
   &:disabled {
-      cursor: not-allowed;
+    cursor: not-allowed;
+    background: lighten($color-gray, 20%);
+    border-color: lighten($color-gray, 20%);
+
+    &:hover {
       background: lighten($color-gray, 20%);
       border-color: lighten($color-gray, 20%);
-
-      &:hover {
-          background: lighten($color-gray, 20%);
-          border-color: lighten($color-gray, 20%);
-      }
+    }
   }
 
   &-outlined {
-      background-color: transparent;
-      color: $color-gray;
-      border: 1px solid $color-gray;
+    background-color: transparent;
+    color: $color-gray;
+    border: 1px solid $color-gray;
 
-      &:hover,
-      &:active {
-          background-color: $color-gray;
-          color: #fff;
+    &:hover,
+    &:active {
+      background-color: $color-gray;
+      color: #fff;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba($color-gray, 0.3);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      border-color: lighten($color-gray, 20%);
+      background-color: #fff;
+      color: lighten($color-gray, 20%);
+
+      &:hover {
+        border-color: lighten($color-gray, 20%);
       }
-
-      &:focus {
-          box-shadow: 0 0 0 3px rgba($color-gray, 0.3);
-      }
-
-      &:disabled {
-          cursor: not-allowed;
-          border-color: lighten($color-gray, 20%);
-          background-color: #fff;
-          color: lighten($color-gray, 20%);
-
-          &:hover {
-              border-color: lighten($color-gray, 20%);
-          }
-      }
+    }
   }
 }
 
@@ -209,51 +207,51 @@
   border: 1px solid $color-red;
 
   &:hover {
-      color: #fff;
-      background-color: darken($color-red, 5%);
-      border-color: darken($color-red, 5%);
+    color: #fff;
+    background-color: darken($color-red, 5%);
+    border-color: darken($color-red, 5%);
   }
 
   &:focus {
-      box-shadow: 0 0 0 3px rgba($color-red, 0.3);
+    box-shadow: 0 0 0 3px rgba($color-red, 0.3);
   }
 
   &:disabled {
-      cursor: not-allowed;
+    cursor: not-allowed;
+    background: lighten($color-red, 20%);
+    border-color: lighten($color-red, 20%);
+
+    &:hover {
       background: lighten($color-red, 20%);
       border-color: lighten($color-red, 20%);
-
-      &:hover {
-          background: lighten($color-red, 20%);
-          border-color: lighten($color-red, 20%);
-      }
+    }
   }
 
   &-outlined {
-      background-color: transparent;
-      color: $color-red;
-      border: 1px solid $color-red;
+    background-color: transparent;
+    color: $color-red;
+    border: 1px solid $color-red;
 
-      &:hover,
-      &:active {
-          background-color: $color-red;
-          color: #fff;
+    &:hover,
+    &:active {
+      background-color: $color-red;
+      color: #fff;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba($color-red, 0.3);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      border-color: lighten($color-red, 20%);
+      background-color: #fff;
+      color: lighten($color-red, 20%);
+
+      &:hover {
+        border-color: lighten($color-red, 20%);
       }
-
-      &:focus {
-          box-shadow: 0 0 0 3px rgba($color-red, 0.3);
-      }
-
-      &:disabled {
-          cursor: not-allowed;
-          border-color: lighten($color-red, 20%);
-          background-color: #fff;
-          color: lighten($color-red, 20%);
-
-          &:hover {
-              border-color: lighten($color-red, 20%);
-          }
-      }
+    }
   }
 }
 
@@ -263,51 +261,51 @@
   border: 1px solid $color-green;
 
   &:hover {
-      color: #fff;
-      background-color: darken($color-green, 5%);
-      border-color: darken($color-green, 5%);
+    color: #fff;
+    background-color: darken($color-green, 5%);
+    border-color: darken($color-green, 5%);
   }
 
   &:focus {
-      box-shadow: 0 0 0 3px rgba($color-green, 0.3);
+    box-shadow: 0 0 0 3px rgba($color-green, 0.3);
   }
 
   &:disabled {
-      cursor: not-allowed;
+    cursor: not-allowed;
+    background: lighten($color-green, 20%);
+    border-color: lighten($color-green, 20%);
+
+    &:hover {
       background: lighten($color-green, 20%);
       border-color: lighten($color-green, 20%);
-
-      &:hover {
-          background: lighten($color-green, 20%);
-          border-color: lighten($color-green, 20%);
-      }
+    }
   }
 
   &-outlined {
-      background-color: transparent;
-      color: $color-green;
-      border: 1px solid $color-green;
+    background-color: transparent;
+    color: $color-green;
+    border: 1px solid $color-green;
 
-      &:hover,
-      &:active {
-          background-color: $color-green;
-          color: #fff;
+    &:hover,
+    &:active {
+      background-color: $color-green;
+      color: #fff;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba($color-green, 0.3);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      border-color: lighten($color-green, 20%);
+      background-color: #fff;
+      color: lighten($color-green, 20%);
+
+      &:hover {
+        border-color: lighten($color-green, 20%);
       }
-
-      &:focus {
-          box-shadow: 0 0 0 3px rgba($color-green, 0.3);
-      }
-
-      &:disabled {
-          cursor: not-allowed;
-          border-color: lighten($color-green, 20%);
-          background-color: #fff;
-          color: lighten($color-green, 20%);
-
-          &:hover {
-              border-color: lighten($color-green, 20%);
-          }
-      }
+    }
   }
 }
 
@@ -317,7 +315,6 @@
   font-size: 1.4rem;
   border-radius: 0.5rem;
 }
-
 
 .button-big {
   font-size: 2rem;
@@ -342,18 +339,16 @@
 
   &:hover,
   &:focus {
-      text-decoration: underline !important;
+    text-decoration: underline !important;
   }
 
-
-
   &:disabled {
-      cursor: not-allowed;
-      text-decoration: none;
+    cursor: not-allowed;
+    text-decoration: none;
 
-      &:hover {
-          text-decoration: none;
-      }
+    &:hover {
+      text-decoration: none;
+    }
   }
 }
 
@@ -361,15 +356,15 @@
   color: $color-default;
 
   &:hover {
-      color: $color-default;
+    color: $color-default;
   }
 
   &:disabled {
-      background: lighten($color-default, 20%);
+    background: lighten($color-default, 20%);
 
-      &:hover {
-          background: lighten($color-default, 20%);
-      }
+    &:hover {
+      background: lighten($color-default, 20%);
+    }
   }
 }
 
@@ -377,21 +372,19 @@
   color: $color-text;
 
   &:hover {
-      color: $color-text;
+    color: $color-text;
   }
 
   &:disabled {
-      background: lighten($color-text, 20%);
+    background: lighten($color-text, 20%);
 
-      &:hover {
-          background: lighten($color-text, 20%);
-      }
+    &:hover {
+      background: lighten($color-text, 20%);
+    }
   }
 }
 
-
 // LEGACY
-
 
 // ** normal buttons  ** //
 .btn {
@@ -650,7 +643,7 @@
 
 .lined-btns-2 {
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
   font-size: 1.6rem;
   color: $color-text;
 
@@ -667,7 +660,7 @@
     text-align: center;
 
     &:not(:last-child) {
-      margin-right: 22rem;
+      // margin-right: 22rem;
     }
 
     &:hover {

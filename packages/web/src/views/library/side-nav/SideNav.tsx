@@ -5,8 +5,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectSection, setSection, TSection } from "./sideNavSlice";
 
 const SideNav = () => {
-  (document.querySelector("body") as HTMLBodyElement).style.marginLeft =
-    "24rem";
+  const isMobile = window.innerWidth <= 700; // change this in packages/styles/src/base/_base.scss as well
+
+  if (!isMobile) {
+    (document.querySelector("body") as HTMLBodyElement).style.marginLeft =
+      "24rem";
+  }
   const dispatch = useDispatch();
   const section = useSelector(selectSection);
 
@@ -65,7 +69,10 @@ const SideNav = () => {
   }, []);
 
   return (
-    <div className="sidenav sidenav--open" id="js--sidenav">
+    <div
+      className={`sidenav ${isMobile ? "sidenav--close" : "sidenav--open"}`}
+      id="js--sidenav"
+    >
       <div className="sidenav__section">
         <Link
           to="/home"

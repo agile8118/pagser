@@ -24,6 +24,7 @@ body {
   position: relative;
   padding-top: 6rem;
 
+  // change int packages/web/src/views/library/side-nav/SideNav.tsx as well
   @media only screen and (max-width: 700px) {
     margin-left: 0 !important;
   }

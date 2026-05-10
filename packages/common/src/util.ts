@@ -2,11 +2,10 @@ interface IUtil {
   getParameterByName: (name: string, url?: string) => string | null;
   convertToUrl: (string: string) => string;
   randomText: (length: number) => string;
-  isBottom: (el: HTMLElement) => boolean;
   pageUrl: (
     url: string,
     username: string,
-    type: "public" | "private"
+    type: "public" | "private",
   ) => string;
   timeSince: (date: string | Date) => string;
 }
@@ -44,10 +43,6 @@ util.randomText = (length: number) => {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
-};
-
-util.isBottom = (el: HTMLElement) => {
-  return el.getBoundingClientRect().bottom <= window.innerHeight;
 };
 
 util.pageUrl = (url: string, username: string, type: "public" | "private") => {

@@ -203,7 +203,7 @@ ol {
 }
 
 .navigation a {
-  color: #fff;
+  color: #fff !important;
 }
 
 .navigation__link {
@@ -252,6 +252,35 @@ ol {
 
 .nav-dropdown-slider__button--active {
   background-color: #2c2c33;
+}
+
+/* NAVIGATION-BTN (Create a Page) hover — keep it a darker blue, not dark */
+.navigation-btn:hover,
+.navigation-btn:focus {
+  background-color: #1e6fa8 !important;
+  color: #fff !important;
+}
+
+/* NAVIGATION ADDITIONS */
+.nav-dropdown-notification .nav-dropdown__button a {
+  color: #e4e4e5;
+}
+
+.nav-dropdown-notification .nav-dropdown__content {
+  color: #e4e4e5;
+}
+
+.nav-dropdown-slider__content a {
+  color: #e4e4e5;
+}
+
+.nav-dropdown-slider__content a:hover {
+  background-color: #2c2c33;
+  color: #fff;
+}
+
+.switch-theme__text {
+  color: #e4e4e5;
 }
 
 /* FOOTER */
@@ -479,13 +508,6 @@ ol {
   background-color: #555358;
 }
 
-/* NAVIGATION-BTN (Create a Page) hover — keep it a darker blue, not dark */
-.navigation-btn:hover,
-.navigation-btn:focus {
-  background-color: #1e6fa8 !important;
-  color: #fff !important;
-}
-
 /* PLACEHOLDER TEXT — covers every input/textarea in dark mode */
 input::placeholder,
 textarea::placeholder {
@@ -579,6 +601,16 @@ textarea::placeholder {
 
 .btn-icon {
   color: #dcdcdd;
+}
+
+.btn-i {
+  color: #dcdcdd;
+}
+
+.btn-i:hover,
+.btn-i:active,
+.btn-i:focus {
+  color: #fff;
 }
 
 .btn-icon:hover,
@@ -1005,28 +1037,6 @@ input:checked + .slider {
 
 .mdl .mdl__close {
   color: #aaa;
-}
-
-/* NAVIGATION ADDITIONS */
-.nav-dropdown-notification .nav-dropdown__button a {
-  color: #e4e4e5;
-}
-
-.nav-dropdown-notification .nav-dropdown__content {
-  color: #e4e4e5;
-}
-
-.nav-dropdown-slider__content a {
-  color: #e4e4e5;
-}
-
-.nav-dropdown-slider__content a:hover {
-  background-color: #2c2c33;
-  color: #fff;
-}
-
-.switch-theme__text {
-  color: #e4e4e5;
 }
 
 /* HEADER-NAV / COLLECTION-SHOW */

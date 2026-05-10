@@ -1,6 +1,12 @@
-import React, { ReactElement, useState, useEffect, useRef, useCallback } from "react";
+import React, {
+  ReactElement,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loadingModal, alert, util } from "@pagser/common";
+import { loadingModal, alert } from "@pagser/common";
 import { ConfirmModal, Button, Loading, Textarea } from "@pagser/reusable";
 
 import {
@@ -40,9 +46,15 @@ const Comments = () => {
   const commentsLengthRef = useRef(comments.length);
   const totalCountRef = useRef(totalCount);
 
-  useEffect(() => { loadingRef.current = loading; }, [loading]);
-  useEffect(() => { commentsLengthRef.current = comments.length; }, [comments.length]);
-  useEffect(() => { totalCountRef.current = totalCount; }, [totalCount]);
+  useEffect(() => {
+    loadingRef.current = loading;
+  }, [loading]);
+  useEffect(() => {
+    commentsLengthRef.current = comments.length;
+  }, [comments.length]);
+  useEffect(() => {
+    totalCountRef.current = totalCount;
+  }, [totalCount]);
 
   useEffect(() => {
     if (!pageLoading) {
@@ -51,9 +63,12 @@ const Comments = () => {
   }, [pageLoading]);
 
   const trackScrolling = useCallback(() => {
-    const wrappedElement = document.getElementById("comments2") as HTMLElement;
+    // console.log("scrolling");
+    const nearBottom =
+      window.scrollY + window.innerHeight >=
+      document.documentElement.scrollHeight - 200;
     if (
-      util.isBottom(wrappedElement) &&
+      nearBottom &&
       !loadingRef.current &&
       commentsLengthRef.current < totalCountRef.current
     ) {
@@ -62,9 +77,15 @@ const Comments = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    document.addEventListener("scroll", trackScrolling);
-    return () => document.removeEventListener("scroll", trackScrolling);
+    window.addEventListener("scroll", trackScrolling);
+    return () => window.removeEventListener("scroll", trackScrolling);
   }, [trackScrolling]);
+
+  useEffect(() => {
+    if (!loading) {
+      trackScrolling();
+    }
+  }, [loading, trackScrolling]);
 
   // Render the list of comments
   const renderComments = () => {
@@ -155,7 +176,7 @@ const Comments = () => {
             deleteComment(confirmationModalCommentId, () => {
               setConfirmationModalCommentId("");
               setConfirmationModalOpen(false);
-            })
+            }),
           )
         }
         onCancel={() => {
