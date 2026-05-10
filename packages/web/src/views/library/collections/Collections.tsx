@@ -30,7 +30,7 @@ const Collections = () => {
   const [description, setDescription] = useState("");
   const [savedCollections, setSavedCollections] = useState<ICollection[]>([]);
   const [createdCollections, setCreatedCollections] = useState<ICollection[]>(
-    []
+    [],
   );
   const [sortByCC, setSortByCC] = useState("date-created"); // created collections
   const [sortBySC, setSortBySC] = useState("date-added"); // saved collections
@@ -52,7 +52,7 @@ const Collections = () => {
         { name: name, description: description },
         {
           auth: true,
-        }
+        },
       );
       loadingModal();
       alert("Your collection was created successfully.", "success");
@@ -67,7 +67,7 @@ const Collections = () => {
   // Fetches the list of collection from the server, either those that the user has created or saved
   const fetchCollections = async (
     kind: "created" | "saved" | "created-saved",
-    sortBy?: string
+    sortBy?: string,
   ) => {
     switch (kind) {
       case "created-saved":
@@ -83,12 +83,13 @@ const Collections = () => {
     }
 
     try {
-      const response = await request.get<CollectionAPI.FetchCreatedAndSavedResponse>(
-        `/collections/${kind}?sortBy=${sortBy}`,
-        {
-          auth: true,
-        }
-      );
+      const response =
+        await request.get<CollectionAPI.FetchCreatedAndSavedResponse>(
+          `/collections/${kind}?sortBy=${sortBy}`,
+          {
+            auth: true,
+          },
+        );
 
       switch (kind) {
         case "created-saved":
@@ -110,7 +111,7 @@ const Collections = () => {
   };
 
   const renderCollections = (
-    kind: "savedCollections" | "createdCollections"
+    kind: "savedCollections" | "createdCollections",
   ) => {
     let list: ICollection[] = [];
     if (kind === "savedCollections") {
@@ -124,22 +125,18 @@ const Collections = () => {
 
     return list.map((cl) => {
       return (
-        <div
+        <Collection
           key={cl.id}
-          className="col-lg-1-of-5 col-md-1-of-5 col-sm-1-of-3 col-xs-1-of-2 col-xxs-1-of-1"
-        >
-          <Collection
-            id={String(cl.id)}
-            name={cl.name}
-            img={cl.photo_secure_url || ""}
-            desc={cl.description || ""}
-            pageNum={cl.pages_count}
-            author={cl.user?.name || ""}
-            onClick={() => {
-              dispatch(setSection(""));
-            }}
-          />
-        </div>
+          id={String(cl.id)}
+          name={cl.name}
+          img={cl.photo_secure_url || ""}
+          desc={cl.description || ""}
+          pageNum={cl.pages_count}
+          author={cl.user?.name || ""}
+          onClick={() => {
+            dispatch(setSection(""));
+          }}
+        />
       );
     });
   };
@@ -227,7 +224,9 @@ const Collections = () => {
           </div>
         )}
         {!loadingCreated && (
-          <div className="row">{renderCollections("createdCollections")}</div>
+          <div className="collection-container">
+            {renderCollections("createdCollections")}
+          </div>
         )}
       </div>
       <div className="row">
@@ -267,7 +266,9 @@ const Collections = () => {
           </div>
         )}
         {!loadingSaved && (
-          <div className="row">{renderCollections("savedCollections")}</div>
+          <div className="collection-container">
+            {renderCollections("savedCollections")}
+          </div>
         )}
       </div>
     </React.Fragment>

@@ -1,9 +1,16 @@
+.collection-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2.5rem;
+  margin-bottom: 3rem;
+}
+
 .collection-thumbnail a:hover .collection-thumbnail__view-label {
   display: flex;
 }
 
 .collection-thumbnail {
-  height: 19rem;
+  width: 100%;
 
   &__photo {
     position: relative;

@@ -40,28 +40,26 @@ const Collections = () => {
 
     return collections.map((cl) => {
       return (
-        <div
+        <Collection
           key={cl.id}
-          className="col-lg-1-of-5 col-md-1-of-5 col-sm-1-of-3 col-xs-1-of-2 col-xxs-1-of-1"
-        >
-          <Collection
-            id={cl.id}
-            name={cl.name}
-            img={cl.photo?.secure_url || ""}
-            desc={cl.description}
-            pageNum={cl.pageCount}
-            author={cl.user?.username}
-            refresh={true}
-            target="_blank"
-          />
-        </div>
+          id={cl.id}
+          name={cl.name}
+          img={cl.photo?.secure_url || ""}
+          desc={cl.description}
+          pageNum={cl.pageCount}
+          author={cl.user?.username}
+          refresh={true}
+          target="_blank"
+        />
       );
     });
   };
 
   return (
     <div className="pb-main">
-      <div className="row">{renderCollections()}</div>
+      <div className="row">
+        <div className="collection-container">{renderCollections()}</div>
+      </div>
     </div>
   );
 };
