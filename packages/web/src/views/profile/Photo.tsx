@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { UploadPhoto } from "@pagser/reusable";
-import { request, USER_PLACEHOLDER_IMAGE, ProfileAPI } from "@pagser/common";
+import { request, USER_PLACEHOLDER_IMAGE, ProfileAPI, FILE_SIZE_LIMITS } from "@pagser/common";
 
 const Photo = () => {
   const [photo, setPhoto] = useState(USER_PLACEHOLDER_IMAGE);
@@ -68,7 +68,7 @@ const Photo = () => {
         url="/profile/photo"
         minWidth={250}
         minHeight={250}
-        size={5000000}
+        size={FILE_SIZE_LIMITS.USER_PHOTO}
         aspectRatio={1 / 1}
         success={(photo) => {
           setPhoto(photo);

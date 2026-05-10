@@ -102,7 +102,7 @@ const Photo = () => {
             url={`/pages/${pageId}/photo`}
             minWidth={1200}
             minHeight={675}
-            size={25000000}
+            size={FILE_SIZE_LIMITS.PAGE_PHOTO}
             aspectRatio={48 / 27}
             success={(image) => dispatch(setPhotoUrl(image))}
             onClose={() => {

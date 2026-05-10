@@ -283,7 +283,7 @@ const CollectionShow = () => {
             url={`/collection/photo/${id}`}
             minWidth={960}
             minHeight={540}
-            size={25000000}
+            size={FILE_SIZE_LIMITS.COLLECTION_PHOTO}
             aspectRatio={16 / 9}
             success={(photo) => setPhoto(photo)}
             onClose={() => {
