@@ -1,11 +1,12 @@
-import { truncateAll, closeDb } from "./helpers/db.js";
+import { pool } from "../src/database/index.js";
+import { truncateAll } from "../src/database/schema.js";
 import { installAwsDefaults } from "./helpers/aws-mocks.js";
 
 beforeEach(async () => {
-  await truncateAll();
+  await truncateAll(pool);
   installAwsDefaults();
 });
 
 after(async () => {
-  await closeDb();
+  await pool.end();
 });

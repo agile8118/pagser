@@ -3,10 +3,9 @@
 import "./helpers/aws-mocks.js";
 
 // Now safe to import anything that touches the AWS SDK or DB pool.
-import { setupTestDb } from "./helpers/db.js";
+import { pool } from "../src/database/index.js";
+import { applySchema } from "../src/database/schema.js";
 import { installAwsDefaults } from "./helpers/aws-mocks.js";
 
-// Top-level await is allowed in ESM and runs before any spec is parsed by Mocha
-// because the loader processes this file before discovering specs.
-await setupTestDb();
+await applySchema(pool);
 installAwsDefaults();

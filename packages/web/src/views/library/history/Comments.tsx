@@ -128,6 +128,9 @@ const Comments = () => {
           <Loading />
         </div>
       )}
+      {!loading && comments.length === 0 && (
+        <p className="a-13">You haven't commented on any pages yet.</p>
+      )}
       {!loading && renderComments()}
     </div>
   );

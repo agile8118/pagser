@@ -12,8 +12,12 @@ app.listen(PORT, () => {
       PORT +
       "\n----------------------------------",
   );
+
   console.log("--------------------------------");
   console.log("Server has started on", PORT);
-  console.log("View the API docs here:", `http://localhost:${PORT}/api-docs`);
+  console.log(
+    "View the API docs here:",
+    `http://${app.address().address}:${app.address().port}/api-docs`,
+  );
   console.log("--------------------------------");
 });

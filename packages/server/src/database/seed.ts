@@ -1,39 +1,9 @@
 import { Pool } from "pg";
 import keys from "../config/keys.js";
 import { hashPassword } from "cpeak";
-import { applySchema } from "./schema.js";
+import { createDatabase, applySchema } from "./schema.js";
 
 // Create the database if it doesn't exist
-async function createDatabase() {
-  const adminPool = new Pool({
-    user: keys.dbUser,
-    host: keys.dbHost,
-    database: "postgres", // default DB
-    password: keys.dbPassword,
-    port: Number(keys.dbPort),
-    ssl:
-      process.env.NODE_ENV_DB === "production"
-        ? {
-            rejectUnauthorized: false,
-          }
-        : false,
-  });
-
-  const result = await adminPool.query(
-    `
-    SELECT 1 FROM pg_database WHERE datname = $1
-  `,
-    [keys.dbDatabase],
-  );
-
-  if (result.rowCount === 0) {
-    await adminPool.query(`CREATE DATABASE ${keys.dbDatabase};`);
-    console.log(`[postgres] created database: ${keys.dbDatabase}`);
-  }
-
-  await adminPool.end();
-}
-
 await createDatabase();
 
 const pool = new Pool({
