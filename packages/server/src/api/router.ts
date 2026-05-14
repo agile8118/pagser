@@ -29,8 +29,22 @@ import {
   logTheUserIn,
   optionalAuth,
 } from "./services/guards.js";
+import { DB } from "../database/index.js";
 
 export default (app: Cpeak) => {
+  app.route("get", "/api/me", async (req: Request, res: Response) => {
+    const token = (req.signedCookies?.token as string | false | undefined)
+      || (req.headers["authorization"] as string | undefined);
+    if (!token) return res.json(null);
+    const result = await req.verifyToken(token);
+    if (!result) return res.json(null);
+    const user = await DB.find<{ id: number; photo_url: string | null }>(
+      "SELECT id, photo_url FROM users WHERE id = $1",
+      [result.userId],
+    );
+    res.json(user || null);
+  });
+
   // ================================================ //
   // ============= AUTHENTICATION ROUTES =========== //
   // ================================================ //

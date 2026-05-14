@@ -45,7 +45,7 @@ const CommentActions = React.forwardRef((props: IProps, ref: any) => {
         <Dropdown
           type="mini"
           className="btn-i btn-i-big btn-i-blue comment__ellipsis"
-          num={props.id}
+
           onChange={(name) => {
             if (name === "edit") props.onEdit();
             if (name === "delete") props.onDelete();

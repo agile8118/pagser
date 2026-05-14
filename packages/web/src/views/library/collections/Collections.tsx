@@ -9,8 +9,6 @@ import {
 } from "@pagser/reusable";
 import { alert, request, loadingModal, CollectionAPI } from "@pagser/common";
 import Collection from "../../../partials/CollectionThumbnail";
-import { useDispatch } from "react-redux";
-import { setSection } from "../side-nav/sideNavSlice";
 
 interface ICollection {
   id: number;
@@ -34,8 +32,6 @@ const Collections = () => {
   );
   const [sortByCC, setSortByCC] = useState("date-created"); // created collections
   const [sortBySC, setSortBySC] = useState("date-added"); // saved collections
-
-  const dispatch = useDispatch<any>();
 
   useEffect(() => {
     document.title = "Collections | Pagser";
@@ -133,9 +129,7 @@ const Collections = () => {
           desc={cl.description || ""}
           pageNum={cl.pages_count}
           author={cl.user?.name || ""}
-          onClick={() => {
-            dispatch(setSection(""));
-          }}
+          onClick={() => {}}
         />
       );
     });
@@ -187,7 +181,7 @@ const Collections = () => {
           <div className="header-nav__actions">
             {createdCollections.length > 1 && (
               <Dropdown
-                num="1"
+
                 select={sortByCC}
                 onChange={(name) => {
                   fetchCollections("created", name);
@@ -235,7 +229,7 @@ const Collections = () => {
           <div className="header-nav__actions">
             {/* {savedCollections.length > 1 && (
                 <Dropdown
-                  num="2"
+
                   select={sortBySC}
                   onChange={(name) => {
                     this.fetchCollections("saved", name);

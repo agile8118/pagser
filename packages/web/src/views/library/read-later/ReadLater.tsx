@@ -45,7 +45,7 @@ const ReadLater = () => {
         <React.Fragment>
           {pages.length > 1 && (
             <Dropdown
-              num="1"
+
               select={sortBy}
               onChange={(name) => {
                 fetchPages("read-later", filterBy, name as TSortBy);
@@ -73,7 +73,7 @@ const ReadLater = () => {
           )}
 
           <Dropdown
-            num="2"
+
             select={filterBy}
             onChange={(name) => {
               dispatch(fetchPages("read-later", name as TFilterBy, sortBy));

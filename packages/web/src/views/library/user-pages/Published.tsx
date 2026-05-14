@@ -26,7 +26,7 @@ const Published = () => {
     if (filterBy === "all" && pages.length === 0) return "";
     return (
       <Dropdown
-        num="1"
+
         select={filterBy}
         onChange={(name) => {
           dispatch(fetchPages("user-pages/published", name as TFilterBy));

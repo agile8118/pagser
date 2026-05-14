@@ -1,7 +1,6 @@
-import React, { ReactElement } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 interface IProps {
-  num: string;
   children: any;
   onChange: (value: string) => void;
   select?: string;
@@ -9,48 +8,39 @@ interface IProps {
   className?: string;
 }
 
-const Dropdown = ({
-  num,
-  children,
-  onChange,
-  select,
-  type,
-  className = "btn-text",
-}: IProps) => {
-  // Make the button based on passed children
-  let button = (
-    <button
-      className={className}
-      onClick={() => {}}
-      data-role="dropdown"
-      data-dropdown={num}
-    >
+const Dropdown = ({ children, onChange, select, type, className = "btn-text" }: IProps) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const button = (
+    <button className={className} onClick={() => setOpen((o) => !o)}>
       {children[0].props.children}
-      <i
-        className={children[0].props["data-icon-class"]}
-        aria-hidden="true"
-        data-role="dropdown"
-        data-dropdown={num}
-      />
+      <i className={children[0].props["data-icon-class"]} aria-hidden="true" />
     </button>
   );
 
-  // Make list items based on passed children
-  let items = children.map(({ props }) => {
+  const items = children.map(({ props }) => {
     if (props["data-role-name"] === "item") {
-      let className =
-        select === props["data-name"]
-          ? "dropdown__item dropdown__item--active"
-          : "dropdown__item";
-
       return (
         <a
-          className={className}
-          data-role="dropdown"
-          data-dropdown={num}
+          className={
+            select === props["data-name"]
+              ? "dropdown__item dropdown__item--active"
+              : "dropdown__item"
+          }
           href="javascript:void(0)"
           key={props["data-name"]}
-          onClick={() => onChange(props["data-name"])}
+          onClick={() => { onChange(props["data-name"]); setOpen(false); }}
         >
           {props.children}
         </a>
@@ -60,20 +50,11 @@ const Dropdown = ({
 
   return (
     <div
-      className={`dropdown ${
-        type === "mini" && "dropdown-mini"
-      } dropdown--close`}
-      data-role="dropdown"
-      data-dropdown={num}
+      ref={ref}
+      className={`dropdown${type === "mini" ? " dropdown-mini" : ""} ${open ? "dropdown--open" : "dropdown--close"}`}
     >
       {button}
-      <div
-        className="dropdown__content"
-        data-role="dropdown"
-        data-dropdown={num}
-      >
-        {items}
-      </div>
+      <div className="dropdown__content">{items}</div>
     </div>
   );
 };

@@ -1,6 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
+import Nav from "./partials/Nav";
+
+// Patch pushState so any navigation (React Router <Link>, NavLink, etc.) fires popstate.
+// SideNav and other listeners use popstate to track the current URL.
+const _pushState = window.history.pushState.bind(window.history);
+window.history.pushState = (...args) => {
+  _pushState(...args);
+  window.dispatchEvent(new PopStateEvent("popstate"));
+};
 
 // import Authentication from "./views/authentication";
 const Authentication = React.lazy(
@@ -38,6 +47,9 @@ const EditPage = React.lazy(
 // // import ShowPrivate from "./views/show-page/Private";
 
 import { store as showPageStore } from "./views/show-page/store";
+
+const navRoot = document.getElementById("nav-root");
+if (navRoot) ReactDOM.createRoot(navRoot).render(<Nav />);
 
 const container = document.querySelector(".react-container") as HTMLElement;
 const containerName = container ? container.getAttribute("name") : null;

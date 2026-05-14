@@ -8,8 +8,6 @@ import {
 import { Provider } from "react-redux";
 import { store } from "./store";
 
-import SideNav from "./side-nav/SideNav";
-
 import Home from "./home/Home";
 import Dashboard from "./dashboard/Dashboard";
 import Analytics from "./analytics/Analytics";
@@ -28,7 +26,6 @@ function Library() {
   return (
     <Provider store={store}>
       <Router>
-        <SideNav />
         <Routes>
           <Route path="/feed/subscriptions" element={<Subscriptions />} />
           <Route path="/feed/history/pages" element={<HistoryPages />} />

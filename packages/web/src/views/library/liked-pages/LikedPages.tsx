@@ -36,7 +36,7 @@ const LikedPages = () => {
     if (filterBy === "all" && pages.length === 0) return "";
     return (
       <Dropdown
-        num="1"
+
         select={filterBy}
         onChange={(name) => {
           dispatch(fetchPages("liked-pages", name as TFilterBy, sortBy));

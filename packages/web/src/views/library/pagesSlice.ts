@@ -154,7 +154,7 @@ export const removePages =
 
     loadingModal();
 
-    if (getState().sideNav.section === "pages/draft") {
+    if (window.location.pathname === "/u/pages/draft") {
       alert("Draft Page(s) successfully deleted.", "success");
     } else {
       alert("Page(s) successfully removed from your list.", "success");

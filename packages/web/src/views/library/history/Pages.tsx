@@ -43,7 +43,7 @@ const Pages = () => {
     if (status === "normal")
       return (
         <Dropdown
-          num="1"
+
           select={filterBy}
           onChange={(name) => {
             dispatch(fetchPages("history", name as TFilterBy, sortBy));
