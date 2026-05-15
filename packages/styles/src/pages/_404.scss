@@ -1,0 +1,58 @@
+.body-404 {
+  background-color: $color-grey-light-1;
+  padding-bottom: 16rem;
+}
+
+@keyframes not-found-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(2rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8rem 2rem 10rem;
+  animation: not-found-fade-up 0.4s ease both;
+
+  &__number {
+    font-size: 20rem;
+    font-weight: 700;
+    line-height: 1;
+    // letter-spacing: -1rem;
+    margin-bottom: 0.5rem;
+    user-select: none;
+    color: transparent;
+    -webkit-text-stroke: 3px $color-blue;
+
+    @include respond(sm) {
+      font-size: 13rem;
+      -webkit-text-stroke-width: 2px;
+    }
+  }
+
+  &__title {
+    font-size: 2rem;
+    font-weight: 400;
+    color: $color-text-light;
+    margin-bottom: 1.2rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  &__subtitle {
+    font-size: 1.7rem;
+    color: $color-text-light;
+    max-width: 44rem;
+    margin-bottom: 4rem;
+    line-height: 1.7;
+  }
+}

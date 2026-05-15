@@ -311,6 +311,13 @@ export default (app: Cpeak) => {
   });
 
   app.fallback((req: Request, res: Response) => {
-    res.status(404).json({ message: "Page Not Found!" });
+    if (req.url?.startsWith("/api/")) {
+      return res.status(404).json({ message: "API route not found." });
+    }
+
+    res.status(404).render(getPath("404.html"), {
+      pageTitle: "Page Not Found | Pagser",
+      metaDescription: "",
+    });
   });
 };
