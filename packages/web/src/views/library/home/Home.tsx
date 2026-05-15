@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 // this component should just link to other places:
 // CREATE A NEW PAGE
@@ -7,6 +7,10 @@ import React from "react";
 // IF YOU HAVE WRITTEN A PAGE: TALK ABOUT ANALYTICS
 
 export default () => {
+  useEffect(() => {
+    document.title = "Home | Pagser";
+  }, []);
+
   return (
     <div className="row">
       <div className="header-nav margin-top-2">

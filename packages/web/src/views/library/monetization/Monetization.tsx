@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 export default () => {
+  useEffect(() => {
+    document.title = "Monetization | Pagser";
+  }, []);
+
   return (
     <div className="row">
       <div className="header-nav margin-top-2">

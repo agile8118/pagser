@@ -1,6 +1,9 @@
 /* GENERAL */
 body,
-.body-grey {
+.body-grey,
+.body-profile,
+.body-new-page,
+.body-edit-page {
   background-color: #424047;
 }
 
@@ -827,6 +830,14 @@ input:checked + .slider {
 .btn-text:focus,
 .btn-text:active {
   color: #92c3f7;
+}
+
+.btn-text-red {
+  color: #e74c3c;
+}
+.btn-text-red:hover,
+.btn-text-red:focus {
+  color: #c0392b;
 }
 
 .btn-text--red {
