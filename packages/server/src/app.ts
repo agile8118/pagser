@@ -1,6 +1,7 @@
 import cpeak, {
   serveStatic,
   parseJSON,
+  render,
   swagger,
   auth,
   cookieParser,
@@ -11,7 +12,6 @@ import type {
   CpeakRequest as Request,
   CpeakResponse as Response,
 } from "cpeak";
-import ejs from "ejs";
 import swaggerUiDist from "swagger-ui-dist";
 import path from "path";
 import YAML from "yamljs";
@@ -21,11 +21,6 @@ import templatesRouter from "./templates/router.js";
 import log from "./lib/log.js";
 import keys from "./config/keys.js";
 import { DB } from "./database/index.js";
-import {
-  USER_PLACEHOLDER_IMAGE,
-  PAGE_PLACEHOLDER_IMAGE,
-  COLLECTION_PLACEHOLDER_IMAGE,
-} from "@pagser/common";
 
 process.env.TZ = "GMT";
 
@@ -66,27 +61,11 @@ export function createApp(opts: AppOptions = {}): Cpeak {
   );
 
   app.beforeEach(parseJSON());
+  app.beforeEach(render({ live: process.env.NODE_ENV !== "production" }));
 
   if (enableCors) {
     app.beforeEach(cors({ origin: "https://pagser.com" }));
   }
-
-  // For rendering EJS templates
-  const locals = {
-    USER_PLACEHOLDER_IMAGE,
-    PAGE_PLACEHOLDER_IMAGE,
-    COLLECTION_PLACEHOLDER_IMAGE,
-  };
-
-  app.beforeEach((req, res, next) => {
-    res.render = async (view: string, data?: Record<string, unknown>) => {
-      const filePath = path.join(path.resolve(), "./views", view + ".ejs");
-      const html = await ejs.renderFile(filePath, { ...locals, ...data });
-      res.setHeader("Content-Type", "text/html");
-      res.end(html);
-    };
-    next();
-  });
 
   app.beforeEach(
     auth({
@@ -139,19 +118,6 @@ export function createApp(opts: AppOptions = {}): Cpeak {
       next();
     });
   }
-
-  app.route("get", "/", async (req: Request, res: Response) => {
-    const token = req.signedCookies?.token as string | false;
-    if (token) {
-      const result = await req.verifyToken(token as string);
-      if (result) {
-        res.writeHead(302, { Location: "/home" });
-        res.end();
-        return;
-      }
-    }
-    res.sendFile(path.join(publicPath, "./index.html"), "text/html");
-  });
 
   // Test-only routes (registered before apiRouter to beat the wildcard routes)
   if (process.env.NODE_ENV === "test") testRouter(app);

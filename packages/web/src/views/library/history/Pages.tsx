@@ -120,7 +120,7 @@ const Pages = () => {
         setConfirmationModalOpen(true);
       }}
     >
-      Remove
+      Remove <i className="fa fa-trash" aria-hidden="true" />
     </button>
   );
 
@@ -131,7 +131,7 @@ const Pages = () => {
         dispatch(setStatus("normal"));
       }}
     >
-      Done
+      Done <i className="fa fa-check" aria-hidden="true" />
     </button>
   );
 

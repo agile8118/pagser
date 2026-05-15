@@ -73,7 +73,7 @@ const Published = () => {
         setConfirmationModalOpen(true);
       }}
     >
-      Delete
+      Delete <i className="fa fa-trash" aria-hidden="true" />
     </button>
   );
 
@@ -84,7 +84,7 @@ const Published = () => {
         dispatch(setStatus("normal"));
       }}
     >
-      Done
+      Done <i className="fa fa-check" aria-hidden="true" />
     </button>
   );
 

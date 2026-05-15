@@ -184,6 +184,7 @@ const Collections = () => {
 
                 select={sortByCC}
                 onChange={(name) => {
+                  setSortByCC(name);
                   fetchCollections("created", name);
                 }}
               >

@@ -34,6 +34,34 @@ body {
   background-color: $color-grey-light-1;
 }
 
+.body-main {
+  .react-container { margin-top: 3rem; }
+  padding-bottom: 16rem;
+}
+
+.body-profile {
+  background-color: $color-grey-light-1;
+  padding-bottom: 10rem;
+}
+
+.body-new-page {
+  background-color: $color-grey-light-1;
+  padding-bottom: 15rem;
+}
+
+.body-edit-page {
+  background-color: $color-grey-light-1;
+  padding-bottom: 15rem;
+}
+
+.body-privacy-policy {
+  padding-bottom: 16rem;
+}
+
+.body-terms-of-use {
+  padding-bottom: 6rem;
+}
+
 img {
   max-width: 100%;
   height: auto;

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <include src="./partials/head.html" />
+  <body>
+    <include src="./partials/header.html" />
+
+    <div class="react-container" name="show-public">
+      <div class="row">
+        <div class="page">
+          <div class="page__header">
+            <div id="actions"></div>
+            <h1 class="page__header__title">{{ pageTitle }}</h1>
+            <span class="page__header__time">{{ timeAgo }}</span>
+          </div>
+
+          <div id="photo"></div>
+
+          <div class="page__contents">
+            <div class="page__information">
+              <div>
+                <strong>What's this page about?</strong>
+                <p>{{ pageBriefDes }}</p>
+              </div>
+              <div>
+                <strong>Who's this page for?</strong>
+                <p>{{ pageTargets }}</p>
+              </div>
+            </div>
+            <hr />
+            <div class="page__body">{{{ pageBody }}}</div>
+          </div>
+
+          <div class="page__tags">
+            {{{ tagsHtml }}}
+          </div>
+
+          <div id="attach-files"></div>
+
+          {{{ authorSection }}}
+          {{{ ratingSection }}}
+        </div>
+      </div>
+
+      {{{ commentsSection }}}
+
+      <div
+        class="cupertino-modal-container cupertino-modal-container--light display-none"
+        id="loading-modal"
+      >
+        <div class="cupertino-modal cupertino-modal--loading">
+          <div class="cupertino-modal__content">
+            <h3 id="loading-modal-message"></h3>
+          </div>
+          <div class="center-content">
+            <div class="lds-css ng-scope">
+              <div class="lds-spinner">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <include src="./partials/footer.html" />
+  </body>
+</html>

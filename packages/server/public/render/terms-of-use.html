@@ -1,34 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-    />
-    <link
-      href="https://fonts.googleapis.com/css?family=Lato:100,300,300i,400"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/fonts/font-awesome.min.css" />
-    <link rel="stylesheet" href="/style.css" />
-    <title>Terms of Use | Pagser</title>
-
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="manifest" href="/site.webmanifest" />
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
-    <meta name="apple-mobile-web-app-title" content="Pagser" />
-    <meta name="application-name" content="Pagser" />
-    <meta name="msapplication-TileColor" content="#2d89ef" />
-    <meta name="theme-color" content="#ffffff" />
-  </head>
-
-  <body>
-    <%- include("partials/header") %>
-    <br /><br /><br />
-    <div class="container-big" style="padding: 0 2rem">
+  <include src="./partials/head.html" />
+  <body class="body-terms-of-use">
+    <include src="./partials/header.html" />
+    <div class="container-big margin-top-3" style="padding: 0 2rem">
       <h2 class="heading-secondary margin-top-4 margin-bottom-2">
         Pagser Terms of Service
       </h2>
@@ -42,9 +17,7 @@
         prohibited from using or accessing this site. The materials contained in
         this website are protected by applicable copyright and trademark law.
       </p>
-      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">
-        2. Use License
-      </h3>
+      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">2. Use License</h3>
       <ol type="a">
         <li>
           Permission is granted to temporarily download one copy of the
@@ -53,22 +26,10 @@
           license, not a transfer of title, and under this license you may not:
           <ol type="i">
             <li>modify or copy the materials;</li>
-            <li>
-              use the materials for any commercial purpose, or for any public
-              display (commercial or non-commercial);
-            </li>
-            <li>
-              attempt to decompile or reverse engineer any software contained on
-              Pagser's website;
-            </li>
-            <li>
-              remove any copyright or other proprietary notations from the
-              materials; or
-            </li>
-            <li>
-              transfer the materials to another person or "mirror" the materials
-              on any other server.
-            </li>
+            <li>use the materials for any commercial purpose, or for any public display (commercial or non-commercial);</li>
+            <li>attempt to decompile or reverse engineer any software contained on Pagser's website;</li>
+            <li>remove any copyright or other proprietary notations from the materials; or</li>
+            <li>transfer the materials to another person or "mirror" the materials on any other server.</li>
           </ol>
         </li>
         <li>
@@ -79,9 +40,7 @@
           possession whether in electronic or printed format.
         </li>
       </ol>
-      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">
-        3. Disclaimer
-      </h3>
+      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">3. Disclaimer</h3>
       <ol type="a">
         <li>
           The materials on Pagser's website are provided on an 'as is' basis.
@@ -98,9 +57,7 @@
           or on any sites linked to this site.
         </li>
       </ol>
-      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">
-        4. Limitations
-      </h3>
+      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">4. Limitations</h3>
       <p class="normal-paragraph margin-bottom-2">
         In no event shall Pagser or its suppliers be liable for any damages
         (including, without limitation, damages for loss of data or profit, or
@@ -111,9 +68,7 @@
         implied warranties, or limitations of liability for consequential or
         incidental damages, these limitations may not apply to you.
       </p>
-      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">
-        5. Accuracy of materials
-      </h3>
+      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">5. Accuracy of materials</h3>
       <p class="normal-paragraph margin-bottom-2">
         The materials appearing on Pagser's website could include technical,
         typographical, or photographic errors. Pagser does not warrant that any
@@ -129,25 +84,20 @@
         of any link does not imply endorsement by Pagser of the site. Use of any
         such linked website is at the user's own risk.
       </p>
-      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">
-        7. Modifications
-      </h3>
+      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">7. Modifications</h3>
       <p class="normal-paragraph margin-bottom-2">
         Pagser may revise these terms of service for its website at any time
         without notice. By using this website you are agreeing to be bound by
         the then current version of these terms of service.
       </p>
-      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">
-        8. Governing Law
-      </h3>
+      <h3 class="heading-tertiary margin-bottom-1 margin-top-3">8. Governing Law</h3>
       <p class="normal-paragraph margin-bottom-2">
         These terms and conditions are governed by and construed in accordance
         with the laws of Austin and you irrevocably submit to the exclusive
         jurisdiction of the courts in that State or location.
       </p>
     </div>
-    <br /><br /><br /><br />
 
-    <%- include("partials/footer") %>
+    <include src="./partials/footer.html" />
   </body>
 </html>

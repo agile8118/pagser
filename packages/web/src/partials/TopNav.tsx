@@ -20,6 +20,8 @@ function TopNav({ onHamburgerClick }: Props) {
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const notifDropdownRef = useRef<HTMLDivElement>(null);
+  const userDropdownRefSm = useRef<HTMLDivElement>(null);
+  const notifDropdownRefSm = useRef<HTMLDivElement>(null);
 
   const hideCreatePage = window.location.pathname.includes("/new-page");
 
@@ -33,12 +35,15 @@ function TopNav({ onHamburgerClick }: Props) {
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (userDropdownRef.current && !userDropdownRef.current.contains(e.target as Node)) {
-        setUserDropdownOpen(false);
-      }
-      if (notifDropdownRef.current && !notifDropdownRef.current.contains(e.target as Node)) {
-        setNotifDropdownOpen(false);
-      }
+      const outsideUser =
+        (!userDropdownRef.current || !userDropdownRef.current.contains(e.target as Node)) &&
+        (!userDropdownRefSm.current || !userDropdownRefSm.current.contains(e.target as Node));
+      if (outsideUser) setUserDropdownOpen(false);
+
+      const outsideNotif =
+        (!notifDropdownRef.current || !notifDropdownRef.current.contains(e.target as Node)) &&
+        (!notifDropdownRefSm.current || !notifDropdownRefSm.current.contains(e.target as Node));
+      if (outsideNotif) setNotifDropdownOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -171,6 +176,7 @@ function TopNav({ onHamburgerClick }: Props) {
           {!authLoading && (user ? (
             <>
               <div
+                ref={notifDropdownRefSm}
                 className={`nav-dropdown nav-dropdown-notification ${notifDropdownOpen ? "dropdown--open" : "dropdown--close"}`}
               >
                 <div className="nav-dropdown__button" onClick={() => { setNotifDropdownOpen((o) => !o); setUserDropdownOpen(false); }}>
@@ -184,6 +190,7 @@ function TopNav({ onHamburgerClick }: Props) {
               </div>
 
               <div
+                ref={userDropdownRefSm}
                 className={`nav-dropdown ${userDropdownOpen ? "dropdown--open" : "dropdown--close"}`}
               >
                 <div className="nav-dropdown__button" onClick={() => { setUserDropdownOpen((o) => !o); setNotifDropdownOpen(false); }}>

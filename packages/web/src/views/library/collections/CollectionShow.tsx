@@ -527,7 +527,7 @@ const CollectionShow = () => {
                         disabled={selectedPages.length === 0}
                         onClick={() => setConfRemovePagesMdl(true)}
                       >
-                        Remove
+                        Remove <i className="fa fa-trash" aria-hidden="true" />
                       </button>
                       <button
                         className="btn-text"
@@ -536,7 +536,7 @@ const CollectionShow = () => {
                           setSelectedPages([]);
                         }}
                       >
-                        Done
+                        Done <i className="fa fa-check" aria-hidden="true" />
                       </button>
                     </React.Fragment>
                   )}

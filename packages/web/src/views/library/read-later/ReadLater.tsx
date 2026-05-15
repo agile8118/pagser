@@ -48,7 +48,7 @@ const ReadLater = () => {
 
               select={sortBy}
               onChange={(name) => {
-                fetchPages("read-later", filterBy, name as TSortBy);
+                dispatch(fetchPages("read-later", filterBy, name as TSortBy));
               }}
             >
               <div
@@ -150,7 +150,7 @@ const ReadLater = () => {
         setConfirmationModalOpen(true);
       }}
     >
-      Remove
+      Remove <i className="fa fa-trash" aria-hidden="true" />
     </button>
   );
 
@@ -161,7 +161,7 @@ const ReadLater = () => {
         dispatch(setStatus("normal"));
       }}
     >
-      Done
+      Done <i className="fa fa-check" aria-hidden="true" />
     </button>
   );
 
