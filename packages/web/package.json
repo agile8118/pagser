@@ -24,7 +24,7 @@
     "react-router-dom": "^6.3.0",
     "redux": "^4.2.0",
     "redux-thunk": "^2.4.1",
-    "tinymce": "6"
+    "tinymce": "7"
   },
   "devDependencies": {
     "@babel/core": "^7.18.9",
