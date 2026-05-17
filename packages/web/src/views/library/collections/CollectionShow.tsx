@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import NotFound from "../../../partials/NotFound";
 import PageThumbnail from "../../../partials/PageThumbnail";
 import {
   UploadPhoto,
@@ -22,6 +23,7 @@ const CollectionShow = () => {
     "save"
   );
   const [loading, setLoading] = useState(false);
+  const [notFound, setNotFound] = useState(false);
   const [id, setId] = useState("");
   const [inputName, setInputName] = useState("");
   const [inputDesc, setInputDesc] = useState("");
@@ -48,6 +50,7 @@ const CollectionShow = () => {
     try {
       const response = await request.get<CollectionAPI.FetchOneResponse>(`/collection/${id}`, {
         auth: true,
+        alert: false,
       });
 
       document.title = `${response.collection.name || ""} | Pagser`;
@@ -61,9 +64,11 @@ const CollectionShow = () => {
       setAuthor(response.collection.user.name);
       setPages(response.collection.pages);
     } catch (e: any) {
-      if (e.status === 403) {
-        navigate("/u/collections");
-        alert("You are not authorized to view this collection.", "error");
+      if (e.status === 404 || e.status === 403 || e.status === 401) {
+        if (e.status !== 404) console.log("Unauthorized access attempt:", e);
+        setNotFound(true);
+      } else {
+        request.handleError(e);
       }
     }
     setLoading(false);
@@ -403,6 +408,8 @@ const CollectionShow = () => {
       </div>
     );
   }
+
+  if (notFound) return <NotFound />;
 
   return (
     <React.Fragment>

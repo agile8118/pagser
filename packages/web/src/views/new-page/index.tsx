@@ -12,6 +12,7 @@ import PageThumbnail from "./PageThumbnail";
 import AttachFiles from "./AttachFiles";
 import FinalStep from "./FinalStep";
 import Message from "./Message";
+import NotFound from "../../partials/NotFound";
 
 function NewPage() {
   return (
@@ -29,6 +30,8 @@ function NewPage() {
           path="/new-page"
           element={<Navigate to="/new-page/initial-step" replace />}
         />
+
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );

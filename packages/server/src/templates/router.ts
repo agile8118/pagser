@@ -27,11 +27,14 @@ export default (app: Cpeak) => {
         return;
       }
     }
-    res.sendFile(path.join(publicPath, "./landing/index.html"), "text/html");
+    return res.sendFile(
+      path.join(publicPath, "./landing/index.html"),
+      "text/html",
+    );
   });
 
   app.route("get", "/home", (req: Request, res: Response) => {
-    res.render(getPath("app.html"), {
+    return res.render(getPath("app.html"), {
       pageTitle: "Pagser",
       bodyClass: "body-main",
       metaDescription: "",
@@ -40,7 +43,7 @@ export default (app: Cpeak) => {
   });
 
   app.route("get", "/feed/*", (req: Request, res: Response) => {
-    res.render(getPath("app.html"), {
+    return res.render(getPath("app.html"), {
       pageTitle: "Pagser",
       bodyClass: "body-main",
       metaDescription: "",
@@ -49,7 +52,7 @@ export default (app: Cpeak) => {
   });
 
   app.route("get", "/u/*", (req: Request, res: Response) => {
-    res.render(getPath("app.html"), {
+    return res.render(getPath("app.html"), {
       pageTitle: "Pagser",
       bodyClass: "body-main",
       metaDescription: "",
@@ -58,7 +61,7 @@ export default (app: Cpeak) => {
   });
 
   app.route("get", "/collection/:id", (req: Request, res: Response) => {
-    res.render(getPath("app.html"), {
+    return res.render(getPath("app.html"), {
       pageTitle: "Pagser",
       bodyClass: "body-main",
       metaDescription: "",
@@ -74,7 +77,11 @@ export default (app: Cpeak) => {
          FROM users WHERE username = $1`,
         [req.params.username],
       );
-      if (!user) return res.status(404).json({ message: "User not found" });
+      if (!user)
+        return res.status(404).render(getPath("404.html"), {
+          pageTitle: "Page Not Found | Pagser",
+          metaDescription: "",
+        });
 
       const linksHtml = [
         user.links_website
@@ -94,7 +101,7 @@ export default (app: Cpeak) => {
           : "",
       ].join("");
 
-      res.render(getPath("public-profile.html"), {
+      return res.render(getPath("public-profile.html"), {
         pageTitle: `${user.name} - ${user.headline} | Pagser`,
         metaDescription: user.biography || "",
         name: user.name || "",
@@ -105,12 +112,13 @@ export default (app: Cpeak) => {
         linksHtml,
       });
     } catch (e) {
-      res.status(500).json({ message: "Internal server error" });
+      return res.status(500).json({ message: "Internal server error" });
     }
   };
 
-  app.route("get", "/users/:username/*", renderPublicProfile);
   app.route("get", "/users/:username", renderPublicProfile);
+  app.route("get", "/users/:username/pages", renderPublicProfile);
+  app.route("get", "/users/:username/collections", renderPublicProfile);
 
   app.route("get", "/login", async (req: Request, res: Response) => {
     const token = req.signedCookies?.token as string | false;
@@ -121,7 +129,7 @@ export default (app: Cpeak) => {
         return;
       }
     }
-    res.render(getPath("auth.html"), {
+    return res.render(getPath("auth.html"), {
       pageTitle: "Create Account | Pagser",
       metaDescription: "",
     });
@@ -136,28 +144,28 @@ export default (app: Cpeak) => {
         return;
       }
     }
-    res.render(getPath("auth.html"), {
+    return res.render(getPath("auth.html"), {
       pageTitle: "Create Account | Pagser",
       metaDescription: "",
     });
   });
 
   app.route("get", "/forgot-password", (req: Request, res: Response) => {
-    res.render(getPath("auth.html"), {
+    return res.render(getPath("auth.html"), {
       pageTitle: "Create Account | Pagser",
       metaDescription: "",
     });
   });
 
   app.route("get", "/verify-email", (req: Request, res: Response) => {
-    res.render(getPath("auth.html"), {
+    return res.render(getPath("auth.html"), {
       pageTitle: "Create Account | Pagser",
       metaDescription: "",
     });
   });
 
   app.route("get", "/new-page/*", (req: Request, res: Response) => {
-    res.render(getPath("app.html"), {
+    return res.render(getPath("app.html"), {
       pageTitle: "Create a page | Pagser",
       bodyClass: "body-new-page",
       metaDescription: "",
@@ -167,7 +175,7 @@ export default (app: Cpeak) => {
   });
 
   app.route("get", "/new-page", (req: Request, res: Response) => {
-    res.render(getPath("app.html"), {
+    return res.render(getPath("app.html"), {
       pageTitle: "Create a page | Pagser",
       bodyClass: "body-new-page",
       metaDescription: "",
@@ -221,7 +229,7 @@ export default (app: Cpeak) => {
           ? `<p class="normal-paragraph disabled-message-comments center-content">Comments are disabled for this page.</p>`
           : `<div id="comments"></div>`;
 
-        res.render(getPath("show-page-public.html"), {
+        return res.render(getPath("show-page-public.html"), {
           pageTitle: page.title || "",
           metaDescription: page.brief_description || "",
           pageBriefDes: page.brief_description || "",
@@ -234,13 +242,13 @@ export default (app: Cpeak) => {
           commentsSection,
         });
       } catch (e) {
-        res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Internal server error" });
       }
     },
   );
 
   app.route("get", "/public-pages/:url/edit", (req: Request, res: Response) => {
-    res.render(getPath("app.html"), {
+    return res.render(getPath("app.html"), {
       pageTitle: "Edit Page | Pagser",
       bodyClass: "body-edit-page",
       metaDescription: "",
@@ -250,7 +258,7 @@ export default (app: Cpeak) => {
   });
 
   app.route("get", "/settings", (req: Request, res: Response) => {
-    res.render(getPath("app.html"), {
+    return res.render(getPath("app.html"), {
       pageTitle: "Pagser",
       bodyClass: "body-profile",
       metaDescription: "",
@@ -259,7 +267,7 @@ export default (app: Cpeak) => {
   });
 
   app.route("get", "/profile", (req: Request, res: Response) => {
-    res.render(getPath("app.html"), {
+    return res.render(getPath("app.html"), {
       pageTitle: "Pagser",
       bodyClass: "body-profile",
       metaDescription: "",
@@ -268,8 +276,8 @@ export default (app: Cpeak) => {
   });
 
   // render a private page
-  app.route("get", "/:username/:url", (req: Request, res: Response) => {
-    res.render(getPath("app.html"), {
+  app.route("get", "/:username/:url", async (req: Request, res: Response) => {
+    return res.render(getPath("app.html"), {
       pageTitle: "Pagser",
       bodyClass: "",
       metaDescription: "",
@@ -278,7 +286,7 @@ export default (app: Cpeak) => {
   });
 
   app.route("get", "/:username/:url/edit", (req: Request, res: Response) => {
-    res.render(getPath("app.html"), {
+    return res.render(getPath("app.html"), {
       pageTitle: "Edit Page | Pagser",
       bodyClass: "body-edit-page",
       metaDescription: "",
@@ -288,7 +296,7 @@ export default (app: Cpeak) => {
   });
 
   app.route("get", "/admin/pages/*", (req: Request, res: Response) => {
-    res.render(getPath("app.html"), {
+    return res.render(getPath("app.html"), {
       pageTitle: "Pagser",
       bodyClass: "body-main",
       metaDescription: "",
@@ -297,14 +305,14 @@ export default (app: Cpeak) => {
   });
 
   app.route("get", "/privacy-policy", (req: Request, res: Response) => {
-    res.render(getPath("privacy-policy.html"), {
+    return res.render(getPath("privacy-policy.html"), {
       pageTitle: "Privacy Policy | Pagser",
       metaDescription: "",
     });
   });
 
   app.route("get", "/terms-of-use", (req: Request, res: Response) => {
-    res.render(getPath("terms-of-use.html"), {
+    return res.render(getPath("terms-of-use.html"), {
       pageTitle: "Terms of Use | Pagser",
       metaDescription: "",
     });
@@ -315,7 +323,7 @@ export default (app: Cpeak) => {
       return res.status(404).json({ message: "API route not found." });
     }
 
-    res.status(404).render(getPath("404.html"), {
+    return res.status(404).render(getPath("404.html"), {
       pageTitle: "Page Not Found | Pagser",
       metaDescription: "",
     });

@@ -21,6 +21,7 @@ import UserPagesPublished from "./user-pages/Published";
 import UserPagesDraft from "./user-pages/Draft";
 import Collections from "./collections/Collections";
 import CollectionShow from "./collections/CollectionShow";
+import NotFound from "../../partials/NotFound";
 
 function Library() {
   return (
@@ -46,6 +47,8 @@ function Library() {
           <Route path="/u/dashboard" element={<Dashboard />} />
           <Route path="/u/analytics" element={<Analytics />} />
           <Route path="/u/monetization" element={<Monetization />} />
+
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </Provider>

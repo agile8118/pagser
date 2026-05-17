@@ -57,11 +57,12 @@ export function createApp(opts: AppOptions = {}): Cpeak {
   app.beforeEach(
     serveStatic(publicPath, {
       live: process.env.NODE_ENV === "production" ? false : true,
+      exclude: ["render"],
     }),
   );
 
   app.beforeEach(parseJSON());
-  app.beforeEach(render({ live: process.env.NODE_ENV !== "production" }));
+  app.beforeEach(render());
 
   if (enableCors) {
     app.beforeEach(cors({ origin: "https://pagser.com" }));
@@ -129,6 +130,11 @@ export function createApp(opts: AppOptions = {}): Cpeak {
 
   // Error handler
   app.handleErr((error: any, req: any, res: any) => {
+    if (error && error.clientDisconnect) {
+      // do nothing
+      return;
+    }
+
     if (error && error.status) {
       res.status(error.status).json({ message: error.message });
     } else {

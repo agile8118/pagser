@@ -10,6 +10,7 @@ import {
   selectConfigurations,
   IConfigurations,
 } from "./pageSlice";
+import NotFound from "../../partials/NotFound";
 import Actions from "./Actions";
 import Author from "./Author";
 import Ratings from "./Ratings";
@@ -107,18 +108,7 @@ const Private = () => {
     );
   }
 
-  // not found
-  if (pageId === "0") {
-    (document.querySelector("body") as HTMLElement).classList.add("body-grey");
-    (document.querySelector("title") as HTMLElement).innerHTML =
-      "Page Not Found | Pagser";
-    return (
-      <h3 className="a-1 center-content">
-        Sorry, no page with this URL was found. <br /> The author may have
-        deleted it.
-      </h3>
-    );
-  }
+  if (pageId === "0") return <NotFound />;
 
   return (
     <div>

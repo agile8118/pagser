@@ -12,19 +12,16 @@ interface optionsLayout {
 }
 
 class Request {
-  // Show user the correct error message upon unsuccessful requests
+  // Show user the correct error message upon unsuccessful requests.
+  // Accepts either a raw axios error (e.response.data) or a rejected errObj (e.message).
   handleError(e: any, alertMsg = true) {
-    if (e.response && e.response.data && e.response.data.message) {
-      if (alertMsg) {
-        let message =
-          typeof e.response.data.message === "string"
-            ? e.response.data.message
-            : e.response.data.message[0];
-
-        alert(message, "error");
-      }
+    if (!alertMsg) return;
+    const data = e.response?.data ?? e.message;
+    const message = data?.message;
+    if (message) {
+      alert(typeof message === "string" ? message : message[0], "error");
     } else {
-      if (alertMsg) alert("An unexpected error occurred.", "error");
+      alert("An unexpected error occurred.", "error");
     }
   }
 

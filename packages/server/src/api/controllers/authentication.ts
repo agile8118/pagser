@@ -1,7 +1,4 @@
-import type {
-  CpeakRequest as Request,
-  CpeakResponse as Response,
-} from "cpeak";
+import type { CpeakRequest as Request, CpeakResponse as Response } from "cpeak";
 import crypto from "crypto";
 import sendEmail from "../services/email.js";
 import { DB } from "../../database/index.js";
@@ -11,7 +8,9 @@ import keys from "../../config/keys.js";
 
 // Sends a message to client to indicate that the username is available
 const usernameAvailability = (req: Request, res: Response) => {
-  const body: AuthAPI.UsernameAvailabilityResponse = { message: ApiMessages.USERNAME_AVAILABLE };
+  const body: AuthAPI.UsernameAvailabilityResponse = {
+    message: ApiMessages.USERNAME_AVAILABLE,
+  };
   res.status(200).json(body);
 };
 
@@ -59,11 +58,15 @@ const register = async (req: Request, res: Response) => {
   });
 
   // issue a token for the newly registered user
-  const token = await req.login({ password, hashedPassword: hash, userId: String(user.id) });
+  const token = await req.login({
+    password,
+    hashedPassword: hash,
+    userId: String(user.id),
+  });
   res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "Lax",
+    sameSite: "lax",
     signed: true,
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
@@ -77,7 +80,7 @@ const login = async (req: Request, res: Response) => {
     res.cookie("token", req._token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Lax",
+      sameSite: "lax",
       signed: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -90,10 +93,9 @@ const login = async (req: Request, res: Response) => {
 const forgotPassword = async (req: Request, res: Response) => {
   const email = req.body.email;
 
-  const user = await DB.find<any>(
-    `SELECT id FROM users WHERE email = $1`,
-    [email],
-  );
+  const user = await DB.find<any>(`SELECT id FROM users WHERE email = $1`, [
+    email,
+  ]);
 
   if (!user) throw { status: 404, message: ApiMessages.NO_EMAIL_FOUND };
 
@@ -118,7 +120,9 @@ const forgotPassword = async (req: Request, res: Response) => {
   );
 
   await sendEmail(email, "Reset your password", html);
-  const body: AuthAPI.ForgotPasswordResponse = { message: ApiMessages.RESET_LINK_SENT };
+  const body: AuthAPI.ForgotPasswordResponse = {
+    message: ApiMessages.RESET_LINK_SENT,
+  };
   res.status(200).json(body);
 };
 
@@ -141,7 +145,9 @@ const resetPassword = async (req: Request, res: Response) => {
   // update user password
   await DB.update("users", { password: hash }, `id = $2`, [userId]);
 
-  const body: AuthAPI.ResetPasswordResponse = { message: ApiMessages.PASSWORD_UPDATED };
+  const body: AuthAPI.ResetPasswordResponse = {
+    message: ApiMessages.PASSWORD_UPDATED,
+  };
   res.status(200).json(body);
 };
 
@@ -154,7 +160,9 @@ const getAuth = async (req: Request, res: Response) => {
     );
 
     if (!user) throw { status: 401, message: "Unauthorized." };
-    const body: AuthAPI.GetAuthResponse = { user: { id: user.id, photo: user.photo_url ?? null } };
+    const body: AuthAPI.GetAuthResponse = {
+      user: { id: user.id, photo: user.photo_url ?? null },
+    };
     res.status(200).json(body);
   } else {
     res.status(400).json({});
@@ -162,8 +170,9 @@ const getAuth = async (req: Request, res: Response) => {
 };
 
 const logout = async (req: Request, res: Response) => {
-  const token = (req.signedCookies?.token as string | false | undefined)
-    || (req.headers["authorization"] as string | undefined);
+  const token =
+    (req.signedCookies?.token as string | false | undefined) ||
+    (req.headers["authorization"] as string | undefined);
   if (token) await req.logout(token as string);
   res.clearCookie("token");
   const body: AuthAPI.LogoutResponse = { message: ApiMessages.LOGGED_OUT };

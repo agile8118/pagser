@@ -196,6 +196,7 @@ export const fetchPrivatePage = (): AppThunk => async (dispatch) => {
       }`,
       {
         auth: true,
+        alert: false,
       }
     );
 
@@ -233,8 +234,12 @@ export const fetchPrivatePage = (): AppThunk => async (dispatch) => {
     dispatch(setUserSubscribed(response.viewer.subscribed || false));
     dispatch(setUserReadLater(response.viewer.readLater || false));
   } catch (e: any) {
-    if (e.status === 404) {
-      dispatch(setId("0")); // zero indicates not found
+    dispatch(setLoading(false));
+    if (e.status === 404 || e.status === 403 || e.status === 401) {
+      if (e.status !== 404) console.log("Unauthorized access attempt:", e);
+      dispatch(setId("0")); // zero indicates not found / not authorized
+    } else {
+      request.handleError(e);
     }
   }
 };

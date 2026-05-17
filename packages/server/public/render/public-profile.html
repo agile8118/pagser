@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-  <include src="./partials/head.html" />
+  <cpeak include="./partials/head.html" />
   <body>
-    <include src="./partials/header.html" />
+    <cpeak include="./partials/header.html" />
 
     <div class="pb-banner">
       <div class="row">
@@ -16,7 +16,7 @@
         <div class="pb-left-items">
           <img src="{{ photoUrl }}" alt="user image" id="user-image" onerror="this.src='{{ photoFallback }}'" />
           <div class="pb-left-items__link">
-            {{{ linksHtml }}}
+            <cpeak html={linksHtml} />
           </div>
         </div>
       </div>
@@ -58,6 +58,6 @@
       </div>
     </div>
 
-    <include src="./partials/footer.html" />
+    <cpeak include="./partials/footer.html" />
   </body>
 </html>

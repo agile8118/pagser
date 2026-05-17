@@ -12,6 +12,7 @@ import Header from "./Header";
 import Home from "./Home";
 import Pages from "./Pages";
 import Collections from "./Collections";
+import NotFound from "../../partials/NotFound";
 
 function PublicProfile() {
   return (

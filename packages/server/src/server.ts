@@ -15,9 +15,9 @@ app.listen(PORT, () => {
 
   console.log("--------------------------------");
   console.log("Server has started on", PORT);
-  console.log(
-    "View the API docs here:",
-    `http://${app.address().address}:${app.address().port}/api-docs`,
-  );
+  const addr = app.address();
+  if (addr && typeof addr !== "string") {
+    console.log("View the API docs here:", `http://${addr.address}:${addr.port}/api-docs`);
+  }
   console.log("--------------------------------");
 });

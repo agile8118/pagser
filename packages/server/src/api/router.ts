@@ -2,7 +2,6 @@ import type {
   Cpeak,
   CpeakRequest as Request,
   CpeakResponse as Response,
-  HandleErr,
 } from "cpeak";
 
 // Controllers
@@ -24,17 +23,14 @@ import Analytics from "./controllers/analytics.js";
 // Middleware
 import validator from "./middleware/validator.js";
 import authorization from "./middleware/authorization.js";
-import {
-  requireAuth,
-  logTheUserIn,
-  optionalAuth,
-} from "./services/guards.js";
+import { requireAuth, logTheUserIn, optionalAuth } from "./services/guards.js";
 import { DB } from "../database/index.js";
 
 export default (app: Cpeak) => {
   app.route("get", "/api/me", async (req: Request, res: Response) => {
-    const token = (req.signedCookies?.token as string | false | undefined)
-      || (req.headers["authorization"] as string | undefined);
+    const token =
+      (req.signedCookies?.token as string | false | undefined) ||
+      (req.headers["authorization"] as string | undefined);
     if (!token) return res.json(null);
     const result = await req.verifyToken(token);
     if (!result) return res.json(null);
@@ -82,7 +78,13 @@ export default (app: Cpeak) => {
     Authentication.register,
   );
 
-  app.route("post", "/api/login", validator.loginCredentials, logTheUserIn, Authentication.login);
+  app.route(
+    "post",
+    "/api/login",
+    validator.loginCredentials,
+    logTheUserIn,
+    Authentication.login,
+  );
   app.route("delete", "/api/auth", Authentication.logout);
 
   app.route(
@@ -419,5 +421,4 @@ export default (app: Cpeak) => {
     requireAuth,
     Page.fetchEditPageData,
   );
-
 };

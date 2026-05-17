@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-  <include src="./partials/head.html" />
+  <cpeak include="./partials/head.html" />
   <body>
-    <include src="./partials/header.html" />
+    <cpeak include="./partials/header.html" />
 
     <div class="react-container" name="show-public">
       <div class="row">
@@ -27,21 +27,21 @@
               </div>
             </div>
             <hr />
-            <div class="page__body">{{{ pageBody }}}</div>
+            <div class="page__body"><cpeak html={pageBody} /></div>
           </div>
 
           <div class="page__tags">
-            {{{ tagsHtml }}}
+            <cpeak html={tagsHtml} />
           </div>
 
           <div id="attach-files"></div>
 
-          {{{ authorSection }}}
-          {{{ ratingSection }}}
+          <cpeak html={authorSection} />
+          <cpeak html={ratingSection} />
         </div>
       </div>
 
-      {{{ commentsSection }}}
+      <cpeak html={commentsSection} />
 
       <div
         class="cupertino-modal-container cupertino-modal-container--light display-none"
@@ -73,6 +73,6 @@
       </div>
     </div>
 
-    <include src="./partials/footer.html" />
+    <cpeak include="./partials/footer.html" />
   </body>
 </html>

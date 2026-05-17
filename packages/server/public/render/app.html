@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en">
-  <include src="./partials/head.html" />
+  <cpeak include="./partials/head.html" />
   <body class="{{ bodyClass }}">
-    <include src="./partials/header.html" />
+    <cpeak include="./partials/header.html" />
 
-    {{{ reactContainer }}}
+    <cpeak html={reactContainer} />
 
     <div
       class="cupertino-modal-container cupertino-modal-container--light display-none"
@@ -35,6 +35,6 @@
       </div>
     </div>
 
-    <include src="./partials/footer.html" />
+    <cpeak include="./partials/footer.html" />
   </body>
 </html>
