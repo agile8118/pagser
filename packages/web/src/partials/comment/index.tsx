@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
-import { useDispatch } from "react-redux";
-import { USER_PLACEHOLDER_IMAGE } from "@pagser/common";
+import { useDispatch, useSelector } from "react-redux";
+import { USER_PLACEHOLDER_IMAGE, alert } from "@pagser/common";
+import { selectStatus } from "../../views/show-page/userSlice";
 import CommentReply from "./CommentReply";
 import CommentActions from "./CommentActions";
 import CommentBody from "./CommentBody";
@@ -35,6 +36,7 @@ interface IProps {
 
 const Comment = (props: IProps) => {
   const dispatch = useDispatch<any>();
+  const userStatus = useSelector(selectStatus);
 
   const addReplyInput = useRef();
 
@@ -153,6 +155,10 @@ const Comment = (props: IProps) => {
             status={props.status}
             likes={props.likes}
             onReply={() => {
+              if (userStatus === "spectator") {
+                alert("Please log in to reply to a comment.");
+                return;
+              }
               dispatch(
                 changeCommentStatus({
                   commentId: props.id,

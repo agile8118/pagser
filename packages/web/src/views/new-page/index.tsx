@@ -31,7 +31,10 @@ function NewPage() {
           element={<Navigate to="/new-page/initial-step" replace />}
         />
 
-        <Route path="*" element={<NotFound />} />
+        <Route
+          path="*"
+          element={<Navigate to="/new-page/initial-step" replace />}
+        />
       </Routes>
     </Router>
   );

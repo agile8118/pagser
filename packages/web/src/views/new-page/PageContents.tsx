@@ -1,6 +1,6 @@
 import React, { useState, useEffect, ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
-import { validate, util, request, loadingModal, alert, PagesAPI } from "@pagser/common";
+import { validate, util, request, loadingModal, alert, redirectToLogin, PagesAPI } from "@pagser/common";
 import { Loading, Button, Input, Textarea } from "@pagser/reusable";
 import ProgressBar from "./ProgressBar";
 import { TType } from "./InitialStep";
@@ -33,7 +33,7 @@ const PageContents = () => {
         // Get the current page data from server and set those data in inputs
         const response = await request.get<PagesAPI.FetchDraftPageContentsResponse>(
           `/new-page/page-contents/${pageId}`,
-          { auth: true },
+          { auth: true, alert: false },
         );
 
         // This is logged correctly!
@@ -46,7 +46,7 @@ const PageContents = () => {
         setBriefDes(response.page.brief_description || "");
       } catch (e: any) {
         if (e.status === 401) {
-          window.location.href = "/login?redirected=new-page";
+          redirectToLogin("Please log in to create a new page.");
         } else {
           navigate(`/new-page/initial-step`);
         }

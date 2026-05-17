@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { util, request, loadingModal, alert, tagsInput, validate, PagesAPI } from "@pagser/common";
+import { util, request, loadingModal, alert, tagsInput, validate, redirectToLogin, PagesAPI } from "@pagser/common";
 import { Loading, Button, Input, Textarea } from "@pagser/reusable";
 import RichTextEditor from "../../partials/RichTextEditor";
 
@@ -53,7 +53,7 @@ const EditPage = () => {
           apiUrl = `/${username}/${urlSlug}/edit`;
         }
 
-        const response = await request.get<PagesAPI.FetchEditPageResponse>(apiUrl, { auth: true });
+        const response = await request.get<PagesAPI.FetchEditPageResponse>(apiUrl, { auth: true, alert: false });
         const p = response.page;
 
         setPage(p);
@@ -77,7 +77,7 @@ const EditPage = () => {
         }
       } catch (e: any) {
         if (e.status === 401) {
-          window.location.href = `/login`;
+          redirectToLogin("Please log in to edit this page.");
         } else {
           setLoadError(true);
         }
@@ -220,7 +220,7 @@ const EditPage = () => {
             tags: page.type === "public" ? tags.split(",").filter(Boolean) : undefined,
           },
         },
-        { auth: true }
+        { auth: true, alert: false }
       );
 
       loadingModal();
@@ -232,7 +232,11 @@ const EditPage = () => {
       }
     } catch (e: any) {
       loadingModal();
-      alert("An error occurred while saving. Please try again.", "error");
+      if (e.status === 401) {
+        redirectToLogin("Please log in to edit this page.");
+      } else {
+        alert("An error occurred while saving. Please try again.", "error");
+      }
     } finally {
       setSubmitLoading(false);
     }

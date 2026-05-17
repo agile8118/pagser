@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { util, request, PagesAPI } from "@pagser/common";
+import { util, request, redirectToLogin, PagesAPI } from "@pagser/common";
 import { useNavigate } from "react-router-dom";
 import { Loading } from "@pagser/reusable";
 import ProgressBar from "./ProgressBar";
@@ -55,7 +55,7 @@ const FinalStep = () => {
         setUsedUrls(response.urls.map((u) => u.url ?? "").filter(Boolean) as string[]);
       } catch (error: any) {
         if (error.status === 401) {
-          window.location.href = "/login?redirected=new-page";
+          redirectToLogin("Please log in to create a new page.");
         } else {
           navigate(`/new-page/initial-step`);
         }

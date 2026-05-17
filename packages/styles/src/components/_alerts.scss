@@ -69,48 +69,47 @@
   color: #fff;
 
   @media only screen and (max-width: 500px) {
-      width: 90%;
+    width: 90%;
   }
 
   &--error {
-      background-color: $color-red;
-      color: #fff;
+    background-color: $color-red;
+    color: #fff;
   }
 
   &--success {
-      background-color: $color-green;
-      color: #fff;
+    background-color: $color-green;
+    color: #fff;
   }
 
   p {
-      margin: 0;
+    margin: 0;
   }
 
   button {
-      background: none;
-      border: none;
-      color: inherit;
-      font-weight: bold;
-      margin-left: 1.5rem;
-      font-size: 120%;
-      cursor: pointer;
+    background: none;
+    border: none;
+    color: inherit;
+    font-weight: bold;
+    margin-left: 1.5rem;
+    font-size: 120%;
+    cursor: pointer;
 
-      &:hover {
-          color: #ecf0f3;
-      }
+    &:hover {
+      color: #ecf0f3;
+    }
   }
 
   &--open {
-      display: flex;
-      animation: stack-message-open 0.2s;
+    display: flex;
+    animation: stack-message-open 0.2s;
   }
 
   &--close {
-      display: none;
-      animation: stack-message-close 0.4s;
+    display: none;
+    animation: stack-message-close 0.4s;
   }
 }
-
 
 .alert {
   border-radius: 5px;
@@ -131,7 +130,7 @@
     align-items: center;
   }
 
-  &--normall {
+  &--normal {
     background-color: #5f6063;
     display: flex;
     align-items: center;

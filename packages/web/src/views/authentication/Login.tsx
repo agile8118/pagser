@@ -9,7 +9,7 @@ import {
   Button,
   Input,
 } from "@pagser/reusable";
-import { util, request } from "@pagser/common";
+import { request } from "@pagser/common";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -24,25 +24,22 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const redirectedFrom = util.getParameterByName(
-      "redirected",
-      window.location.href
-    );
-    switch (redirectedFrom) {
-      case "new-page":
-        setAlertMessage(
-          "Please log in to create a new page."
-        );
-        setAlertType("normal");
-        break;
-      case "admin":
-        setAlertMessage("Please log in to access the admin area.");
-        setAlertType("normal");
-        break;
-      case "access":
-        setAlertMessage("Please log in to proceed.");
-        setAlertType("normal");
-        break;
+    const fromSession = sessionStorage.getItem("loginMessage");
+    if (fromSession) {
+      sessionStorage.removeItem("loginMessage");
+      setAlertMessage(fromSession);
+      setAlertType("normal");
+      return;
+    }
+
+    const fromCookie = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("loginMessage="))
+      ?.split("=")[1];
+    if (fromCookie) {
+      document.cookie = "loginMessage=; Max-Age=0; Path=/";
+      setAlertMessage(decodeURIComponent(fromCookie));
+      setAlertType("normal");
     }
   }, []);
 
@@ -55,7 +52,7 @@ const Login = () => {
       })
       .then((response) => {
         setAlertMessage(
-          `Instructions on how to reset your password were sent to ${email}`
+          `Instructions on how to reset your password were sent to ${email}`,
         );
         setAlertType("success");
         setForgotPassMdl(false);

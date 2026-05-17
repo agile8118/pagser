@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { util, request, loadingModal, alert, PagesAPI, FILE_SIZE_LIMITS } from "@pagser/common";
+import { util, request, loadingModal, alert, redirectToLogin, PagesAPI, FILE_SIZE_LIMITS } from "@pagser/common";
 import { Loading, Button, ConfirmModal, UploadPhoto } from "@pagser/reusable";
 import ProgressBar from "./ProgressBar";
 
@@ -22,14 +22,14 @@ const PageThumbnail = () => {
             "id",
             window.location.href
           )}`,
-          { auth: true }
+          { auth: true, alert: false }
         );
 
         setPhoto(response?.page?.photo_url || "");
         setLoading(false);
       } catch (e: any) {
         if (e.status === 401) {
-          window.location.href = "/login?redirected=new-page";
+          redirectToLogin("Please log in to create a new page.");
         } else {
           navigate(`/new-page/initial-step`);
         }

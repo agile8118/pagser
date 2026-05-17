@@ -16,6 +16,21 @@ function getPath(name: string) {
   return path.join(renderDir, name);
 }
 
+const redirectToLogin = (res: Response) => {
+  res.setHeader("Set-Cookie", "loginMessage=Please log in to access this page.; Path=/; Max-Age=60; SameSite=Strict");
+  res.writeHead(302, { Location: "/login" });
+  res.end();
+};
+
+const requireTemplateAuth = async (req: Request, res: Response, next: Function) => {
+  const token = req.signedCookies?.token as string | undefined;
+  if (token) {
+    const result = await req.verifyToken(token);
+    if (result) return next();
+  }
+  redirectToLogin(res);
+};
+
 export default (app: Cpeak) => {
   app.route("get", "/", async (req: Request, res: Response) => {
     const token = req.signedCookies?.token as string | false;
@@ -33,7 +48,7 @@ export default (app: Cpeak) => {
     );
   });
 
-  app.route("get", "/home", (req: Request, res: Response) => {
+  app.route("get", "/home", requireTemplateAuth, (req: Request, res: Response) => {
     return res.render(getPath("app.html"), {
       pageTitle: "Pagser",
       bodyClass: "body-main",
@@ -42,7 +57,7 @@ export default (app: Cpeak) => {
     });
   });
 
-  app.route("get", "/feed/*", (req: Request, res: Response) => {
+  app.route("get", "/feed/*", requireTemplateAuth, (req: Request, res: Response) => {
     return res.render(getPath("app.html"), {
       pageTitle: "Pagser",
       bodyClass: "body-main",
@@ -51,7 +66,7 @@ export default (app: Cpeak) => {
     });
   });
 
-  app.route("get", "/u/*", (req: Request, res: Response) => {
+  app.route("get", "/u/*", requireTemplateAuth, (req: Request, res: Response) => {
     return res.render(getPath("app.html"), {
       pageTitle: "Pagser",
       bodyClass: "body-main",
@@ -60,7 +75,7 @@ export default (app: Cpeak) => {
     });
   });
 
-  app.route("get", "/collection/:id", (req: Request, res: Response) => {
+  app.route("get", "/collection/:id", requireTemplateAuth, (req: Request, res: Response) => {
     return res.render(getPath("app.html"), {
       pageTitle: "Pagser",
       bodyClass: "body-main",
@@ -164,7 +179,7 @@ export default (app: Cpeak) => {
     });
   });
 
-  app.route("get", "/new-page/*", (req: Request, res: Response) => {
+  app.route("get", "/new-page/*", requireTemplateAuth, (req: Request, res: Response) => {
     return res.render(getPath("app.html"), {
       pageTitle: "Create a page | Pagser",
       bodyClass: "body-new-page",
@@ -174,7 +189,7 @@ export default (app: Cpeak) => {
     });
   });
 
-  app.route("get", "/new-page", (req: Request, res: Response) => {
+  app.route("get", "/new-page", requireTemplateAuth, (req: Request, res: Response) => {
     return res.render(getPath("app.html"), {
       pageTitle: "Create a page | Pagser",
       bodyClass: "body-new-page",
@@ -247,7 +262,7 @@ export default (app: Cpeak) => {
     },
   );
 
-  app.route("get", "/public-pages/:url/edit", (req: Request, res: Response) => {
+  app.route("get", "/public-pages/:url/edit", requireTemplateAuth, (req: Request, res: Response) => {
     return res.render(getPath("app.html"), {
       pageTitle: "Edit Page | Pagser",
       bodyClass: "body-edit-page",
@@ -257,7 +272,7 @@ export default (app: Cpeak) => {
     });
   });
 
-  app.route("get", "/settings", (req: Request, res: Response) => {
+  app.route("get", "/settings", requireTemplateAuth, (req: Request, res: Response) => {
     return res.render(getPath("app.html"), {
       pageTitle: "Pagser",
       bodyClass: "body-profile",
@@ -266,7 +281,7 @@ export default (app: Cpeak) => {
     });
   });
 
-  app.route("get", "/profile", (req: Request, res: Response) => {
+  app.route("get", "/profile", requireTemplateAuth, (req: Request, res: Response) => {
     return res.render(getPath("app.html"), {
       pageTitle: "Pagser",
       bodyClass: "body-profile",
@@ -285,7 +300,7 @@ export default (app: Cpeak) => {
     });
   });
 
-  app.route("get", "/:username/:url/edit", (req: Request, res: Response) => {
+  app.route("get", "/:username/:url/edit", requireTemplateAuth, (req: Request, res: Response) => {
     return res.render(getPath("app.html"), {
       pageTitle: "Edit Page | Pagser",
       bodyClass: "body-edit-page",
@@ -295,7 +310,7 @@ export default (app: Cpeak) => {
     });
   });
 
-  app.route("get", "/admin/pages/*", (req: Request, res: Response) => {
+  app.route("get", "/admin/pages/*", requireTemplateAuth, (req: Request, res: Response) => {
     return res.render(getPath("app.html"), {
       pageTitle: "Pagser",
       bodyClass: "body-main",

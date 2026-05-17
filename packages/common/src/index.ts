@@ -6,6 +6,7 @@ import alert from "./alert";
 import tagsInput from "./tagsInput";
 
 export { validate, util, request, loadingModal, alert, tagsInput };
+export { default as redirectToLogin } from "./redirectToLogin";
 export {
   USER_PLACEHOLDER_IMAGE,
   PAGE_PLACEHOLDER_IMAGE,

@@ -626,6 +626,12 @@ const fetchPrivatePageData = async (req: Request, res: Response) => {
       : { status: "spectator", id: undefined };
 
   if (userId && !isOwner) {
+    const readLater = await DB.find<any>(
+      `SELECT id FROM read_later WHERE user_id = $1 AND page_id = $2`,
+      [userId, page.id],
+    );
+    if (readLater) (viewer as any).readLater = true;
+
     const subscribed = await DB.find<any>(
       `SELECT id FROM subscriptions WHERE subscriber_id = $1 AND author_id = $2`,
       [userId, page.user_id],

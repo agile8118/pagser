@@ -22,7 +22,7 @@ const Ratings = () => {
       const response = await request.patch<RatingAPI.RatePageResponse>(
         `/rate/page/${pageId}`,
         { rate: action },
-        { auth: true }
+        { auth: true, alert: false }
       );
 
       dispatch(setRatings(response));
@@ -30,7 +30,7 @@ const Ratings = () => {
       if (e.status === 401) {
         alert("Please login to rate a page.");
       } else {
-        alert("An unknown error occurred.");
+        request.handleError(e);
       }
     }
     loadingModal();

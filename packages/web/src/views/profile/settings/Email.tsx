@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { request, alert, SettingsAPI } from "@pagser/common";
+import { request, alert, redirectToLogin, SettingsAPI } from "@pagser/common";
 import { Loading, Input, Button } from "@pagser/reusable";
 
 const Email = () => {
@@ -12,11 +12,12 @@ const Email = () => {
       try {
         const response = await request.get<SettingsAPI.GetEmailResponse>(`/settings/email`, {
           auth: true,
+          alert: false,
         });
         setEmail(response.email);
       } catch (e: any) {
         if (e.status === 401) {
-          window.location.href = "/login?redirected=admin";
+          redirectToLogin("Please log in to access your profile.");
         }
       }
 

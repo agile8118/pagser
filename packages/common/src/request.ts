@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import alert from "./alert";
+import redirectToLogin from "./redirectToLogin";
 
 const domain = "/api";
 
@@ -14,7 +15,14 @@ interface optionsLayout {
 class Request {
   // Show user the correct error message upon unsuccessful requests.
   // Accepts either a raw axios error (e.response.data) or a rejected errObj (e.message).
+  // When alertMsg is false (alert: false was passed), 401 is also suppressed so the
+  // caller can handle it silently (e.g. show NotFound instead of redirecting).
   handleError(e: any, alertMsg = true) {
+    const status = e.response?.status ?? e.status;
+    if (status === 401) {
+      if (alertMsg) redirectToLogin("You need to be logged in to proceed.");
+      return;
+    }
     if (!alertMsg) return;
     const data = e.response?.data ?? e.message;
     const message = data?.message;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { util, request, PagesAPI } from "@pagser/common";
+import { util, request, redirectToLogin, PagesAPI } from "@pagser/common";
 import { Loading, Button } from "@pagser/reusable";
 import ProgressBar from "./ProgressBar";
 
@@ -31,7 +31,7 @@ const InitialStep = () => {
         setLoading(false);
       } catch (e: any) {
         if (e?.status === 401) {
-          window.location.href = "/login?redirected=new-page";
+          redirectToLogin("Please log in to create a new page.");
         }
       }
     })();

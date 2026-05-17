@@ -278,6 +278,7 @@ export const addComment =
         { text: comment, inReplyTo, inReplyToCommentReply },
         {
           auth: true,
+          alert: false,
         }
       );
 
@@ -301,8 +302,8 @@ export const addComment =
         dispatch(setNewComment(response.comment));
         alert("Your comment was added successfully.", "success");
       }
-    } catch (e) {
-      alert("An unknown error occurred.", "error");
+    } catch (e: any) {
+      request.handleError(e);
     }
 
     loadingModal();
@@ -328,11 +329,20 @@ export const fetchReplies =
 export const likeComment =
   (commentId: string, inReplyTo?: string): AppThunk =>
   async (dispatch, getState) => {
-    const response = await request.patch<RatingAPI.RateCommentResponse>(`/rate/comment/${commentId}`, null, {
-      auth: true,
-    });
+    try {
+      const response = await request.patch<RatingAPI.RateCommentResponse>(`/rate/comment/${commentId}`, null, {
+        auth: true,
+        alert: false,
+      });
 
-    dispatch(setLikes({ likes: response.likes, inReplyTo, commentId }));
+      dispatch(setLikes({ likes: response.likes, inReplyTo, commentId }));
+    } catch (e: any) {
+      if (e.status === 401) {
+        alert("Please log in to like a comment.");
+      } else {
+        request.handleError(e);
+      }
+    }
   };
 
 // Sends a request to server to edit a comment

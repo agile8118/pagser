@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Loading, Input, Button, Textarea } from "@pagser/reusable";
-import { alert, validate, request, ProfileAPI } from "@pagser/common";
+import { alert, validate, request, redirectToLogin, ProfileAPI } from "@pagser/common";
 import Photo from "./Photo";
 
 const Info = () => {
@@ -27,7 +27,7 @@ const Info = () => {
 
     (async () => {
       try {
-        const response = await request.get<ProfileAPI.GetProfileResponse>(`/profile`, { auth: true });
+        const response = await request.get<ProfileAPI.GetProfileResponse>(`/profile`, { auth: true, alert: false });
         const user = response.user;
 
         setName(user.name || "");
@@ -41,7 +41,7 @@ const Info = () => {
         setFacebook(user.links.facebook);
       } catch (e: any) {
         if (e.status === 401) {
-          window.location.href = "/login?redirected=admin";
+          redirectToLogin("Please log in to access your profile.");
         }
       }
       setLoading(false);

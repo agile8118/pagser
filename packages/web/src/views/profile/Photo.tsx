@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { UploadPhoto } from "@pagser/reusable";
-import { request, USER_PLACEHOLDER_IMAGE, ProfileAPI, FILE_SIZE_LIMITS } from "@pagser/common";
+import { request, redirectToLogin, USER_PLACEHOLDER_IMAGE, ProfileAPI, FILE_SIZE_LIMITS } from "@pagser/common";
 
 const Photo = () => {
   const [photo, setPhoto] = useState(USER_PLACEHOLDER_IMAGE);
@@ -16,7 +16,7 @@ const Photo = () => {
       _isMounted = true;
       try {
         // Get the user photo from server
-        const response = await request.get<ProfileAPI.GetProfileResponse>(`/profile`, { auth: true });
+        const response = await request.get<ProfileAPI.GetProfileResponse>(`/profile`, { auth: true, alert: false });
 
         const user = response.user;
         if (_isMounted) {
@@ -24,7 +24,7 @@ const Photo = () => {
         }
       } catch (e: any) {
         if (e.status === 401) {
-          window.location.href = "/login?redirected=admin";
+          redirectToLogin("Please log in to access your profile.");
         }
       }
     })();

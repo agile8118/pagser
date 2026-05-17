@@ -74,7 +74,8 @@ const Actions = (props: IProps) => {
             }}
           >
             <p className="margin-bottom-08">
-              Are you sure you want to delete your page? Comments and likes will also be deleted.
+              Are you sure you want to delete your page? Comments and likes will
+              also be deleted.
             </p>
 
             <form
@@ -143,7 +144,11 @@ const Actions = (props: IProps) => {
       <button
         className="btn-i btn-i-blue btn-i-big"
         onClick={() => {
-          dispatch(toggleReadLater(pageId));
+          if (status === "spectator") {
+            alert("Please log in to add pages to read later list.");
+          } else {
+            dispatch(toggleReadLater(pageId));
+          }
         }}
       >
         <i className={rlBtnClass} />
@@ -171,8 +176,6 @@ const Actions = (props: IProps) => {
           className="btn-i btn-i-blue btn-i-big"
           onClick={() => {
             if (status === "spectator") {
-              console.log("DSd");
-
               alert("Please log in to add pages to collections.");
             } else {
               setAddToCollectionModal(true);

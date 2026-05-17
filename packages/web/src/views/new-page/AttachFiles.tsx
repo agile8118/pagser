@@ -6,7 +6,7 @@ import {
   ConfirmModal,
   UploadAttachFile,
 } from "@pagser/reusable";
-import { util, request, loadingModal, alert, PagesAPI, FILE_SIZE_LIMITS } from "@pagser/common";
+import { util, request, loadingModal, alert, redirectToLogin, PagesAPI, FILE_SIZE_LIMITS } from "@pagser/common";
 import ProgressBar from "./ProgressBar";
 
 interface IFile {
@@ -47,7 +47,7 @@ const AttachFiles = () => {
       if (msg) alert(msg, "success");
     } catch (error: any) {
       if (error.status === 401) {
-        window.location.href = "/login?redirected=new-page";
+        redirectToLogin("Please log in to create a new page.");
       } else {
         navigate(`/new-page/initial-step`);
       }

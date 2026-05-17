@@ -253,6 +253,7 @@ export const toggleReadLater =
 
       const response = await request.patch<ReadLaterAPI.ToggleResponse>(`/read-later/${id}`, null, {
         auth: true,
+        alert: false,
       });
 
       loadingModal();
@@ -266,11 +267,7 @@ export const toggleReadLater =
       dispatch(setUserReadLater(response.readLater));
     } catch (e: any) {
       loadingModal();
-      if (e.status === 401) {
-        alert("Please login to be able to add pages to the read later list.");
-      } else {
-        alert("An unknown error occurred.");
-      }
+      request.handleError(e);
     }
   };
 
