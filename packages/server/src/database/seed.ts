@@ -49,9 +49,9 @@ await pool.query(
   `
   INSERT INTO users (name, username, email, password, verified)
   VALUES
-  ('Joseph', 'joseph', 'agile.8272@gmail.com', $1, true),
-  ('Rogers Brown', 'rgGamer', 'pokhraph@gmail.com', $1, true),
-  ('David Miller', 'davidChef', 'antwonders@gmail.com', $1, true)
+  ('Joseph', 'joseph', 'joseph.test@pagser.local', $1, true),
+  ('Rogers Brown', 'rgGamer', 'rogers.test@pagser.local', $1, true),
+  ('David Miller', 'davidChef', 'david.test@pagser.local', $1, true)
   `,
   [hashedPassword],
 );
