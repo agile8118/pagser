@@ -7,12 +7,7 @@
 import type { CpeakRequest as Request, CpeakResponse as Response } from "cpeak";
 import sharp from "sharp";
 import { Transform, PassThrough } from "node:stream";
-import {
-  S3Client,
-  DeleteObjectCommand,
-  CreateBucketCommand,
-  HeadBucketCommand,
-} from "@aws-sdk/client-s3";
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 import crypto from "crypto";
 import { DB } from "../../database/index.js";
@@ -204,12 +199,6 @@ const uploadPageAttachFile = async (req: Request, res: Response) => {
       status: 400,
       message: "You have already uploaded a file with this name for the page.",
     };
-  }
-
-  try {
-    await s3Client.send(new HeadBucketCommand({ Bucket: keys.s3Bucket }));
-  } catch {
-    await s3Client.send(new CreateBucketCommand({ Bucket: keys.s3Bucket }));
   }
 
   const key = `${pageId}/${filename}`;

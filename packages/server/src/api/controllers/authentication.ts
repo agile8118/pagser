@@ -1,6 +1,6 @@
 import type { CpeakRequest as Request, CpeakResponse as Response } from "cpeak";
 import crypto from "crypto";
-import sendEmail from "../services/email.js";
+import sendEmail from "../services/email/index.js";
 import { DB } from "../../database/index.js";
 import { IUser } from "../../database/types.js";
 import { ApiMessages, AuthAPI } from "@pagser/common";
@@ -18,14 +18,6 @@ const usernameAvailability = (req: Request, res: Response) => {
 const sendCode = async (req: Request, res: Response) => {
   const email = req.body.email;
   const code = Math.floor(Math.random() * 90000) + 10000; // generates a 5 digit number
-  const html = `
-  <strong>Please verify your email address by entering this code:</strong>
-  <h1 style="letter-spacing: 4px;">${code}</h1>
-  <div style="text-align:center;margin-top: 20px;font-size: 12px;color: #555;">
-    If you did not request to create an account at pagser.com with this email address,
-    please ignore this email.
-  </div>
-  `;
 
   await DB.delete("email_codes", "email = $1", [email]);
   await DB.insert("email_codes", {
@@ -33,7 +25,10 @@ const sendCode = async (req: Request, res: Response) => {
     code,
     expires_at: new Date(Date.now() + 10 * 60 * 1000),
   });
-  await sendEmail(email, "Verify your email address", html);
+  await sendEmail(email, "Verify your email address", {
+    htmlFile: "verify-email",
+    templateData: { code },
+  });
   const body: AuthAPI.SendCodeResponse = { message: ApiMessages.CODE_SENT };
   res.status(200).json(body);
 };
@@ -101,16 +96,6 @@ const forgotPassword = async (req: Request, res: Response) => {
 
   const code = crypto.randomBytes(18).toString("hex");
   const link = `${keys.domain}/forgot-password?t=${code}&i=${user.id}`;
-  const html = `
-  <strong>Please click on the link below to reset your password: </strong>
-  <br />
-  <a href="${link}">${link}</a>
-  <div style="margin-top: 0.5rem;">
-    <em>Link is valid for just 10 minutes.</em>
-  </div>
-  <div style="text-align:center;margin-top: 20px;font-size: 12px;color: #555;">
-    If you didn't request a password reset, feel free to ignore this email.
-  </div>`;
 
   await DB.update(
     "users",
@@ -119,7 +104,7 @@ const forgotPassword = async (req: Request, res: Response) => {
     [email],
   );
 
-  await sendEmail(email, "Reset your password", html);
+  await sendEmail(email, "Reset your password", { htmlFile: "reset-password", templateData: { link } });
   const body: AuthAPI.ForgotPasswordResponse = {
     message: ApiMessages.RESET_LINK_SENT,
   };
