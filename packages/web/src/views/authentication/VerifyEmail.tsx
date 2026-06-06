@@ -98,6 +98,8 @@ const VerifyEmail = (props: IProps) => {
           setAlertMessage(
             "The code is invalid. Please enter the exact code we sent to your email. You can resend the code if needed.",
           );
+        } else if (errorMsg === ApiMessages.TOO_MANY_ATTEMPTS) {
+          setAlertMessage(ApiMessages.TOO_MANY_ATTEMPTS);
         } else {
           setAlertMessage("Something went wrong, please try again.");
         }

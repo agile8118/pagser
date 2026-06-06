@@ -135,12 +135,27 @@ const userEmailVerificationCode = async (
   const userEmailVerificationCode = req.body.userEmailVerificationCode;
   const email = req.body.email;
 
-  const row = await DB.find<{ code: number }>(
-    "SELECT code FROM email_codes WHERE email = $1 AND expires_at > NOW()",
+  const row = await DB.find<{ code: number; attempts: number }>(
+    "SELECT code, attempts FROM email_codes WHERE email = $1 AND expires_at > NOW()",
     [email],
   );
 
-  if (!row || row.code !== Number(userEmailVerificationCode)) {
+  if (!row) throw { status: 400, message: ApiMessages.INVALID_CODE };
+
+  if (row.attempts >= 5) {
+    await DB.delete("email_codes", "email = $1", [email]);
+    throw { status: 429, message: ApiMessages.TOO_MANY_ATTEMPTS };
+  }
+
+  if (row.code !== Number(userEmailVerificationCode)) {
+    await DB.query(
+      "UPDATE email_codes SET attempts = attempts + 1 WHERE email = $1",
+      [email],
+    );
+    if (row.attempts + 1 >= 5) {
+      await DB.delete("email_codes", "email = $1", [email]);
+      throw { status: 429, message: ApiMessages.TOO_MANY_ATTEMPTS };
+    }
     throw { status: 400, message: ApiMessages.INVALID_CODE };
   }
 
