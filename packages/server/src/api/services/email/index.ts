@@ -1,5 +1,5 @@
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
-import { renderToString } from "cpeak";
+import { render } from "cpeak";
 import keys from "../../../config/keys.js";
 
 const ses = new SESClient({ region: keys.awsRegion });
@@ -22,7 +22,7 @@ const sendEmail = async (
   const htmlStr =
     typeof html === "string"
       ? html
-      : await renderToString(
+      : await render.string(
           `${TEMPLATES_DIR}/${html.htmlFile}.html`,
           html.templateData,
         );

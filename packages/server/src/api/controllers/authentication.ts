@@ -25,10 +25,12 @@ const sendCode = async (req: Request, res: Response) => {
     code,
     expires_at: new Date(Date.now() + 10 * 60 * 1000),
   });
+
   await sendEmail(email, "Verify your email address", {
     htmlFile: "verify-email",
-    templateData: { code },
+    templateData: { title: "Verify your email address", code: code },
   });
+
   const body: AuthAPI.SendCodeResponse = { message: ApiMessages.CODE_SENT };
   res.status(200).json(body);
 };
@@ -104,7 +106,11 @@ const forgotPassword = async (req: Request, res: Response) => {
     [email],
   );
 
-  await sendEmail(email, "Reset your password", { htmlFile: "reset-password", templateData: { link } });
+  await sendEmail(email, "Reset your password", {
+    htmlFile: "reset-password",
+    templateData: { title: "Reset your password", link: link },
+  });
+
   const body: AuthAPI.ForgotPasswordResponse = {
     message: ApiMessages.RESET_LINK_SENT,
   };
