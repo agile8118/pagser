@@ -106,7 +106,7 @@ export function createApp(opts: AppOptions = {}): Cpeak {
             " -- " +
             req.method +
             " " +
-            req.originalUrl +
+            req.url +
             " " +
             statusCode +
             " " +

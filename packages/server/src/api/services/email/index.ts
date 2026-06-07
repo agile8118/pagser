@@ -5,8 +5,8 @@ import keys from "../../../config/keys.js";
 const ses = new SESClient({ region: keys.awsRegion });
 const TEMPLATES_DIR = new URL("templates", import.meta.url).pathname;
 
-export const FROM_NOREPLY = "Pagser <no-reply@pagser.com>";
-export const FROM_INFO = "Pagser <info@pagser.com>";
+export const FROM_NOREPLY = "Pagser <no-reply@udcc-demo.com>";
+export const FROM_INFO = "Pagser <info@udcc-demo.com>";
 
 type HtmlTemplate = { htmlFile: string; templateData: Record<string, unknown> };
 

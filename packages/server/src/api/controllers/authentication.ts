@@ -3,7 +3,12 @@ import crypto from "crypto";
 import sendEmail from "../services/email/index.js";
 import { DB } from "../../database/index.js";
 import { IUser } from "../../database/types.js";
-import { ApiMessages, AuthAPI, CODE_EXPIRY_MINUTES, RESET_LINK_EXPIRY_HOURS } from "@pagser/common";
+import {
+  ApiMessages,
+  AuthAPI,
+  CODE_EXPIRY_MINUTES,
+  RESET_LINK_EXPIRY_HOURS,
+} from "@pagser/common";
 import keys from "../../config/keys.js";
 
 // Sends a message to client to indicate that the username is available
@@ -139,7 +144,8 @@ const resetPassword = async (req: Request, res: Response) => {
   if (!user || !user.token_date) throw { status: 400, message: "invalid link" };
 
   const expiry =
-    new Date(user.token_date).getTime() + RESET_LINK_EXPIRY_HOURS * 60 * 60 * 1000;
+    new Date(user.token_date).getTime() +
+    RESET_LINK_EXPIRY_HOURS * 60 * 60 * 1000;
   if (Date.now() > expiry)
     throw { status: 400, message: "Reset link has expired." };
 

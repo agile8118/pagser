@@ -4,7 +4,7 @@ import type {
   Next as NextFunction,
 } from "cpeak";
 import vl from "validator";
-import { validate, ApiMessages } from "@pagser/common";
+import { validate, ApiMessages, RESET_LINK_EXPIRY_HOURS } from "@pagser/common";
 import { DB } from "../../database/index.js";
 import { IUser, PAGE_STATUS, PAGE_TYPE } from "../../database/types.js";
 
@@ -181,7 +181,7 @@ const passwordResetToken = async (
 
   const tokenDate = new Date(user.token_date);
 
-  if (Date.now() - tokenDate.getTime() > 600000) {
+  if (Date.now() - tokenDate.getTime() > RESET_LINK_EXPIRY_HOURS * 60 * 60 * 1000) {
     throw { status: 400, message: ApiMessages.LINK_EXPIRED };
   }
 
