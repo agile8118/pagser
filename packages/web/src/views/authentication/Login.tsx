@@ -59,7 +59,10 @@ const Login = () => {
         setLoadingForgotPassword(false);
       })
       .catch((error) => {
-        setAlertMessage(`No account with the email ${email} was found.`);
+        setAlertMessage(
+          error.response?.data?.message ??
+            "Something went wrong on our end. Please try again.",
+        );
         setAlertType("error");
         setForgotPassMdl(false);
         setLoadingForgotPassword(false);
@@ -79,7 +82,10 @@ const Login = () => {
       })
       .catch((error) => {
         setLoading(false);
-        setAlertMessage("Incorrect password or email address.");
+        setAlertMessage(
+          error.response?.data?.message ??
+            "Something went wrong on our end. Please try again.",
+        );
         setAlertType("error");
       });
   };

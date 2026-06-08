@@ -1,12 +1,17 @@
+import path from "path";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { render } from "cpeak";
-import keys from "../../../config/keys.js";
 
-const ses = new SESClient({ region: keys.awsRegion });
-const TEMPLATES_DIR = new URL("templates", import.meta.url).pathname;
+const ses = new SESClient({ region: "us-east-1" });
 
-export const FROM_NOREPLY = "Pagser <no-reply@udcc-demo.com>";
-export const FROM_INFO = "Pagser <info@udcc-demo.com>";
+// cwd is always packages/server
+const TEMPLATES_DIR = path.join(
+  path.resolve(),
+  "src/api/services/email/templates",
+);
+
+export const FROM_NOREPLY = "Pagser <no-reply@pagser.udcc-demo.com>";
+export const FROM_INFO = "Pagser <info@pagser.udcc-demo.com>";
 
 type HtmlTemplate = { htmlFile: string; templateData: Record<string, unknown> };
 

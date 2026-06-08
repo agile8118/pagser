@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { validate, util, ApiMessages } from "@pagser/common";
+import { validate, util } from "@pagser/common";
 import { Input, Button } from "@pagser/reusable";
 
 const ForgotPassword = () => {
@@ -112,18 +112,11 @@ const ForgotPassword = () => {
       })
       .catch((error) => {
         setLoading(false);
-        if (error.response.data.message === ApiMessages.INVALID_LINK) {
-          setStatus("error");
-          setMessage(
-            "The link is invalid. Please make sure you are using the exact link we sent to your email."
-          );
-        }
-        if (error.response.data.message === ApiMessages.LINK_EXPIRED) {
-          setStatus("error");
-          setMessage(
-            "The link has expired. Please request a password reset."
-          );
-        }
+        setStatus("error");
+        setMessage(
+          error.response?.data?.message ??
+            "Something went wrong on our end. Please try again.",
+        );
       });
   };
 

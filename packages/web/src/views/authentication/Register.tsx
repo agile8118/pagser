@@ -101,7 +101,9 @@ const Register = () => {
           if (error.response?.status === 422) {
             setUsernameError(`${value} is already taken. Please choose another username.`);
           } else {
-            setUsernameError("Please choose a valid username.");
+            setUsernameError(
+              error.response?.data?.message ?? "Something went wrong, please try again.",
+            );
           }
         });
 
