@@ -39,7 +39,7 @@
     "@pagser/common": "1.0.0",
     "cpeak": "^2.9.2",
     "pg": "^8.20.0",
-    "sanitize-html": "^2.7.1",
+    "sanitize-html": "^2.12.1",
     "sharp": "^0.34.5",
     "validator": "^13.7.0",
     "yamljs": "^0.3.0"
