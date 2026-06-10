@@ -857,6 +857,11 @@ const deletePage = async (req: Request, res: Response) => {
     throw { status: 403, message: "Unauthorized" };
   }
 
+  const attachFiles = await DB.findMany<IAttachFile>(
+    `SELECT key FROM attach_files WHERE page_id = $1`,
+    [pageId],
+  );
+
   const listed = await s3Client
     .send(
       new ListObjectsV2Command({
@@ -899,8 +904,22 @@ const deletePage = async (req: Request, res: Response) => {
           )
           .catch(() => {})
       : Promise.resolve(),
+    attachFiles.length
+      ? s3Client
+          .send(
+            new DeleteObjectsCommand({
+              Bucket: storageBucket,
+              Delete: {
+                Objects: attachFiles.map((f) => ({ Key: f.key })),
+              },
+            }),
+          )
+          .catch(() => {})
+      : Promise.resolve(),
   ]);
 
+  await DB.delete(`attach_files`, `page_id = $1`, [pageId]);
+  await DB.delete(`tags`, `page_id = $1`, [pageId]);
   await DB.delete(`pages`, `id = $1`, [pageId]);
 
   const body: PagesAPI.DeletePageResponse = { message: "success" };
