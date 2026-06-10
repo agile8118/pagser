@@ -7,7 +7,7 @@ export async function makeAttachFile(opts: {
   key?: string;
   url?: string;
 }): Promise<IAttachFile> {
-  const key = opts.key ?? `${opts.pageId}/${opts.name}`;
+  const key = opts.key ?? `attach-files/${opts.pageId}/${opts.name}`;
   const url = opts.url ?? `https://s3.local/${key}`;
   return DB.insert<IAttachFile>("attach_files", {
     page_id: Number(opts.pageId),

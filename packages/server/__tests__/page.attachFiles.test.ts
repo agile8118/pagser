@@ -59,7 +59,7 @@ describe("Page attach files", () => {
         [page.id],
       );
       assert.equal(row?.name, "notes.txt");
-      assert.equal(row?.key, `${page.id}/notes.txt`);
+      assert.equal(row?.key, `attach-files/${page.id}/notes.txt`);
     });
   });
 
@@ -107,7 +107,7 @@ describe("Page attach files", () => {
 
       const dels = s3Mock.commandCalls(DeleteObjectCommand);
       const keys = dels.map((d) => d.args[0].input.Key);
-      assert.ok(keys.includes(`${page.id}/gone.pdf`));
+      assert.ok(keys.includes(`attach-files/${page.id}/gone.pdf`));
     });
   });
 });
