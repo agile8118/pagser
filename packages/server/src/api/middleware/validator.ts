@@ -4,7 +4,7 @@ import type {
   Next as NextFunction,
 } from "cpeak";
 import vl from "validator";
-import { validate, ApiMessages } from "@pagser/common";
+import { validate, ApiMessages, RESET_LINK_EXPIRY_HOURS } from "@pagser/common";
 import { DB } from "../../database/index.js";
 import { IUser, PAGE_STATUS, PAGE_TYPE } from "../../database/types.js";
 
@@ -135,12 +135,27 @@ const userEmailVerificationCode = async (
   const userEmailVerificationCode = req.body.userEmailVerificationCode;
   const email = req.body.email;
 
-  const row = await DB.find<{ code: number }>(
-    "SELECT code FROM email_codes WHERE email = $1 AND expires_at > NOW()",
+  const row = await DB.find<{ code: number; attempts: number }>(
+    "SELECT code, attempts FROM email_codes WHERE email = $1 AND expires_at > NOW()",
     [email],
   );
 
-  if (!row || row.code !== Number(userEmailVerificationCode)) {
+  if (!row) throw { status: 400, message: ApiMessages.INVALID_CODE };
+
+  if (row.attempts >= 5) {
+    await DB.delete("email_codes", "email = $1", [email]);
+    throw { status: 429, message: ApiMessages.TOO_MANY_ATTEMPTS };
+  }
+
+  if (row.code !== Number(userEmailVerificationCode)) {
+    await DB.query(
+      "UPDATE email_codes SET attempts = attempts + 1 WHERE email = $1",
+      [email],
+    );
+    if (row.attempts + 1 >= 5) {
+      await DB.delete("email_codes", "email = $1", [email]);
+      throw { status: 429, message: ApiMessages.TOO_MANY_ATTEMPTS };
+    }
     throw { status: 400, message: ApiMessages.INVALID_CODE };
   }
 
@@ -166,7 +181,7 @@ const passwordResetToken = async (
 
   const tokenDate = new Date(user.token_date);
 
-  if (Date.now() - tokenDate.getTime() > 600000) {
+  if (Date.now() - tokenDate.getTime() > RESET_LINK_EXPIRY_HOURS * 60 * 60 * 1000) {
     throw { status: 400, message: ApiMessages.LINK_EXPIRED };
   }
 

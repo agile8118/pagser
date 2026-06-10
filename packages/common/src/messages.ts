@@ -1,3 +1,5 @@
+import { CODE_EXPIRY_MINUTES, RESET_LINK_EXPIRY_HOURS } from "./constants";
+
 export const ApiMessages = {
   USERNAME_AVAILABLE: "ok",
 
@@ -8,10 +10,12 @@ export const ApiMessages = {
   INVALID_EMAIL: "Please enter a valid email address.",
   EMAIL_IN_USE: "This email is already in use.",
   CREDENTIALS_REQUIRED: "Email and password are required.",
+  INCORRECT_CREDENTIALS: "Incorrect password or email address.",
   INVALID_PASSWORD: "Password must be 8 to 30 characters and include letters and numbers.",
   INVALID_CODE: "The verification code is invalid or has expired.",
-  INVALID_LINK: "This link is invalid.",
-  LINK_EXPIRED: "This link has expired. Password reset links are valid for 10 minutes.",
+  TOO_MANY_ATTEMPTS: "Too many incorrect attempts. Please request a new code.",
+  INVALID_LINK: "This link is invalid. Please make sure you're using the exact link we sent to your email.",
+  LINK_EXPIRED: `This link has expired. Please request a new password reset — links are valid for ${RESET_LINK_EXPIRY_HOURS} hours.`,
   INVALID_PAGE_STAGE: "Invalid page stage.",
   INVALID_PAGE_TYPE: "Invalid page type.",
   INVALID_PAGE_CONTENTS: "Some page content is invalid. Please review your title, description, and body.",

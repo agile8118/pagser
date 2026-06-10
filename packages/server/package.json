@@ -37,7 +37,7 @@
     "@aws-sdk/client-ses": "^3.1042.0",
     "@aws-sdk/lib-storage": "^3.1041.0",
     "@pagser/common": "1.0.0",
-    "cpeak": "^2.9.0",
+    "cpeak": "^2.9.2",
     "pg": "^8.20.0",
     "sanitize-html": "^2.7.1",
     "sharp": "^0.34.5",

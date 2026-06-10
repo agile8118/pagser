@@ -1,156 +1,70 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Verify your email address</title>
-  </head>
-  <body
+<!-- Header -->
+<cpeak include="partials/_header.html" />
+
+<!-- Title -->
+<h1
+  style="
+    margin: 0 0 16px;
+    font-size: 22px;
+    font-weight: 600;
+    color: #333;
+    font-family: Arial, Helvetica, sans-serif;
+  "
+>
+  {{ title }}
+</h1>
+
+<!-- Intro -->
+<p
+  style="
+    margin: 0 0 28px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #666;
+    font-family: Arial, Helvetica, sans-serif;
+  "
+>
+  Enter the code below to verify your email address and complete your Pagser
+  account setup.
+</p>
+
+<!-- Code box -->
+<div style="text-align: center; margin-bottom: 28px">
+  <div
     style="
-      margin: 0;
-      padding: 0;
-      background: #eef0f2;
-      font-family: Arial, Helvetica, sans-serif;
+      display: inline-block;
+      background: #f7f8f9;
+      border: 1px solid #dde1e5;
+      border-radius: 8px;
+      padding: 20px 40px;
     "
   >
-    <table
-      width="100%"
-      cellpadding="0"
-      cellspacing="0"
-      style="background: #eef0f2"
+    <span
+      style="
+        font-size: 36px;
+        font-weight: 700;
+        color: #333;
+        letter-spacing: 20px;
+        font-family: Arial, Helvetica, sans-serif;
+      "
+      >{{ code }}</span
     >
-      <tr>
-        <td align="center">
-          <table
-            width="100%"
-            cellpadding="0"
-            cellspacing="0"
-            style="
-              max-width: 100%;
-              background: #ffffff;
-              border-radius: 4px;
-              overflow: hidden;
-              border: 1px solid #dde1e5;
-            "
-          >
-            <!-- Header -->
-            <tr>
-              <td style="padding: 28px 40px; border-bottom: 1px solid #eef0f2">
-                <span
-                  style="
-                    font-size: 15px;
-                    font-weight: 700;
-                    color: #4a8fb5;
-                    letter-spacing: 4px;
-                    font-family: Arial, Helvetica, sans-serif;
-                    text-transform: uppercase;
-                  "
-                  >PAGSER</span
-                >
-              </td>
-            </tr>
+  </div>
+</div>
 
-            <!-- Body -->
-            <tr>
-              <td
-                style="
-                  padding: 40px 40px 36px;
-                  font-family: Arial, Helvetica, sans-serif;
-                "
-              >
-                <h1
-                  style="
-                    margin: 0 0 16px;
-                    font-size: 22px;
-                    font-weight: 600;
-                    color: #333;
-                    font-family: Arial, Helvetica, sans-serif;
-                  "
-                >
-                  Verify your email address
-                </h1>
-                <p
-                  style="
-                    margin: 0 0 28px;
-                    font-size: 14px;
-                    line-height: 1.7;
-                    color: #666;
-                    font-family: Arial, Helvetica, sans-serif;
-                  "
-                >
-                  Enter the code below to verify your email address and complete
-                  your Pagser account setup.
-                </p>
+<!-- Disclaimer -->
+<p
+  style="
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.7;
+    color: #aaa;
+    font-family: Arial, Helvetica, sans-serif;
+  "
+>
+  This code expires in {{ expiresIn }}. If you didn't request to create a Pagser
+  account, you can safely ignore this email.
+</p>
 
-                <!-- Code box -->
-                <div style="text-align: center; margin-bottom: 28px">
-                  <div
-                    style="
-                      display: inline-block;
-                      background: #f7f8f9;
-                      border: 1px solid #dde1e5;
-                      border-radius: 8px;
-                      padding: 20px 40px;
-                    "
-                  >
-                    <span
-                      style="
-                        font-size: 36px;
-                        font-weight: 700;
-                        color: #333;
-                        letter-spacing: 20px;
-                        font-family: Arial, Helvetica, sans-serif;
-                      "
-                      >{{ code }}</span
-                    >
-                  </div>
-                </div>
-
-                <!-- Disclaimer -->
-                <p
-                  style="
-                    margin: 0;
-                    font-size: 12px;
-                    line-height: 1.7;
-                    color: #aaa;
-                    font-family: Arial, Helvetica, sans-serif;
-                  "
-                >
-                  This code expires in 10&nbsp;minutes. If you didn't request to
-                  create a Pagser account, you can safely ignore this email.
-                </p>
-              </td>
-            </tr>
-
-            <!-- Footer -->
-            <tr>
-              <td
-                style="
-                  padding: 20px 40px;
-                  background: #f7f8f9;
-                  border-top: 1px solid #eef0f2;
-                "
-              >
-                <p
-                  style="
-                    margin: 0;
-                    font-size: 11px;
-                    color: #bbb;
-                    font-family: Arial, Helvetica, sans-serif;
-                  "
-                >
-                  &copy; 2026 Pagser &nbsp;&middot;&nbsp;
-                  <a
-                    href="https://pagser.com"
-                    style="color: #bbb; text-decoration: none"
-                    >pagser.com</a
-                  >
-                </p>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </body>
-</html>
+<!-- Footer -->
+<cpeak include="partials/_footer.html" />

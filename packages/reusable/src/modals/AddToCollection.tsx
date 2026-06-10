@@ -185,8 +185,7 @@ const CollectionModal = (props: IProps) => {
 
       {!collections.length && status === "normal" && (
         <div className="u-text-center margin-top-1-5">
-          <em>You don't have any collections.</em>
-
+          <em>You don't have any collections.</em>{" "}
           <em>Create one by clicking on the button above.</em>
         </div>
       )}

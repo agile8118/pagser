@@ -1,3 +1,6 @@
+export const CODE_EXPIRY_MINUTES = 10;
+export const RESET_LINK_EXPIRY_HOURS = 2;
+
 export const USER_PLACEHOLDER_IMAGE = "/images/users/placeholder.png";
 export const PAGE_PLACEHOLDER_IMAGE = "/images/pages/placeholder.svg";
 export const COLLECTION_PLACEHOLDER_IMAGE =

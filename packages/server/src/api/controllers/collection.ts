@@ -2,9 +2,14 @@ import type {
   CpeakRequest as Request,
   CpeakResponse as Response,
 } from "cpeak";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { DB } from "../../database/index.js";
 import { ICollection } from "../../database/types.js";
 import { CollectionAPI } from "@pagser/common";
+import {
+  storageClient as s3Client,
+  storageBucket,
+} from "../services/storage.js";
 
 // Create a new collection
 const create = async (req: Request, res: Response) => {
@@ -283,7 +288,7 @@ const deleteCollection = async (req: Request, res: Response) => {
   const collectionId = req.params.id;
 
   const collection = await DB.find<ICollection>(
-    `SELECT user_id FROM collections WHERE id = $1`,
+    `SELECT user_id, photo_key FROM collections WHERE id = $1`,
     [collectionId],
   );
 
@@ -292,6 +297,17 @@ const deleteCollection = async (req: Request, res: Response) => {
   }
 
   await DB.delete(`collections`, `id = $1`, [collectionId]);
+
+  if (collection.photo_key) {
+    await s3Client
+      .send(
+        new DeleteObjectCommand({
+          Bucket: storageBucket,
+          Key: collection.photo_key,
+        }),
+      )
+      .catch(() => {});
+  }
 
   const body: CollectionAPI.DeleteCollectionResponse = { message: "success" };
   res.json(body);

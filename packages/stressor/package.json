@@ -7,9 +7,12 @@
     "seed:e2e": "playwright test",
     "seed:db": "tsx src/seed-comments.ts",
     "seed": "yarn seed:e2e && yarn seed:db",
-    "download-images": "tsx src/download-images.ts"
+    "download-images": "tsx src/download-images.ts",
+    "bench:body-image": "node src/autocannon/body-image.mjs --url http://localhost:3080 --connections 10 --duration 20 --page-id 1 --rate 2",
+    "bench:attach-files": "node src/autocannon/attach-files.mjs --url http://localhost:3080 --connections 10 --duration 20 --page-id 1 --rate 10"
   },
   "dependencies": {
+    "autocannon": "^7.15.0",
     "pg": "^8.11.0"
   },
   "devDependencies": {

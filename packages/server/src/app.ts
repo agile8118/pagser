@@ -23,6 +23,7 @@ import keys from "./config/keys.js";
 import { DB } from "./database/index.js";
 
 process.env.TZ = "GMT";
+process.title = "node-pagser";
 
 export interface AppOptions {
   enableCors?: boolean;
@@ -106,7 +107,7 @@ export function createApp(opts: AppOptions = {}): Cpeak {
             " -- " +
             req.method +
             " " +
-            req.originalUrl +
+            req.url +
             " " +
             statusCode +
             " " +

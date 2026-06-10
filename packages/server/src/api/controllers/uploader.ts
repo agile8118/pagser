@@ -7,7 +7,7 @@
 import type { CpeakRequest as Request, CpeakResponse as Response } from "cpeak";
 import sharp from "sharp";
 import { Transform, PassThrough } from "node:stream";
-import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 import crypto from "crypto";
 import { DB } from "../../database/index.js";
@@ -17,15 +17,17 @@ import {
   IUser,
   ICollection,
 } from "../../database/types.js";
-import keys from "../../config/keys.js";
+import {
+  storageClient as s3Client,
+  storageBucket,
+  getPublicUrl,
+} from "../services/storage.js";
 import {
   UploaderAPI,
   ProfileAPI,
   CollectionAPI,
   FILE_SIZE_LIMITS,
 } from "@pagser/common";
-
-const s3Client = new S3Client({ region: keys.awsRegion });
 
 function isAllowedImageType(chunk: Uint8Array): boolean {
   const isJpeg = chunk[0] === 0xff && chunk[1] === 0xd8 && chunk[2] === 0xff;
@@ -81,7 +83,7 @@ function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
 
 async function deleteFromS3(key: string) {
   await s3Client.send(
-    new DeleteObjectCommand({ Bucket: keys.s3Bucket, Key: key }),
+    new DeleteObjectCommand({ Bucket: storageBucket, Key: key }),
   );
 }
 
@@ -93,14 +95,14 @@ async function uploadBufferToS3(
   const upload = new Upload({
     client: s3Client,
     params: {
-      Bucket: keys.s3Bucket,
+      Bucket: storageBucket,
       Key: key,
       Body: body,
       ContentType: contentType,
     },
   });
   await upload.done();
-  return `https://${keys.s3Bucket}.s3.${keys.awsRegion}.amazonaws.com/${key}`;
+  return getPublicUrl(key);
 }
 
 // Upload a page thumbnail — creates a full-size (1200px wide) and cropped (400x225) variant
@@ -201,12 +203,12 @@ const uploadPageAttachFile = async (req: Request, res: Response) => {
     };
   }
 
-  const key = `${pageId}/${filename}`;
+  const key = `attach-files/${pageId}/${filename}`;
   const pass = new PassThrough();
 
   const upload = new Upload({
     client: s3Client,
-    params: { Bucket: keys.s3Bucket, Key: key, Body: pass },
+    params: { Bucket: storageBucket, Key: key, Body: pass },
   });
 
   let bytesRead = 0;
@@ -244,7 +246,7 @@ const uploadPageAttachFile = async (req: Request, res: Response) => {
     throw e;
   }
 
-  const url = `https://${keys.s3Bucket}.s3.${keys.awsRegion}.amazonaws.com/${key}`;
+  const url = getPublicUrl(key);
 
   await DB.insert<IAttachFile>("attach_files", {
     page_id: Number(pageId),
@@ -311,7 +313,7 @@ const uploadUserPhoto = async (req: Request, res: Response) => {
 
   const key = `images/users/${crypto.randomUUID()}.jpg`;
   await uploadBufferToS3(key, processed);
-  const url = `https://${keys.s3Bucket}.s3.${keys.awsRegion}.amazonaws.com/${key}`;
+  const url = getPublicUrl(key);
 
   await DB.update<IUser>(
     "users",
@@ -361,7 +363,7 @@ const uploadCollectionPhoto = async (req: Request, res: Response) => {
 
   const key = `images/collections/${crypto.randomUUID()}.jpg`;
   await uploadBufferToS3(key, processed);
-  const url = `https://${keys.s3Bucket}.s3.${keys.awsRegion}.amazonaws.com/${key}`;
+  const url = getPublicUrl(key);
 
   await DB.update<ICollection>(
     "collections",

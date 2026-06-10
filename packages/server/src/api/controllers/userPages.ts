@@ -2,10 +2,98 @@ import type {
   CpeakRequest as Request,
   CpeakResponse as Response,
 } from "cpeak";
+import {
+  DeleteObjectCommand,
+  DeleteObjectsCommand,
+  ListObjectsV2Command,
+} from "@aws-sdk/client-s3";
 import { DB } from "../../database/index.js";
-import { PAGE_STATUS, PAGE_TYPE } from "../../database/types.js";
+import {
+  PAGE_STATUS,
+  PAGE_TYPE,
+  IPage,
+  IAttachFile,
+} from "../../database/types.js";
 import { timeSince } from "../../lib/util.js";
 import { UserPagesAPI } from "@pagser/common";
+import {
+  storageClient as s3Client,
+  storageBucket,
+} from "../services/storage.js";
+
+// Removes a page's S3/R2 objects (photo, cropped photo, body images, attach
+// files) and its attach_files/tags rows, which would otherwise FK-block the
+// page row's deletion.
+const cleanupPageFiles = async (pageId: number) => {
+  const page = await DB.find<IPage>(
+    `SELECT photo_key, cropped_photo_key FROM pages WHERE id = $1`,
+    [pageId],
+  );
+
+  const attachFiles = await DB.findMany<IAttachFile>(
+    `SELECT key FROM attach_files WHERE page_id = $1`,
+    [pageId],
+  );
+
+  const listed = await s3Client
+    .send(
+      new ListObjectsV2Command({
+        Bucket: storageBucket,
+        Prefix: `images/body/${pageId}/`,
+      }),
+    )
+    .catch(() => null);
+
+  await Promise.all([
+    page?.photo_key
+      ? s3Client
+          .send(
+            new DeleteObjectCommand({
+              Bucket: storageBucket,
+              Key: page.photo_key,
+            }),
+          )
+          .catch(() => {})
+      : Promise.resolve(),
+    page?.cropped_photo_key
+      ? s3Client
+          .send(
+            new DeleteObjectCommand({
+              Bucket: storageBucket,
+              Key: page.cropped_photo_key,
+            }),
+          )
+          .catch(() => {})
+      : Promise.resolve(),
+    listed?.Contents?.length
+      ? s3Client
+          .send(
+            new DeleteObjectsCommand({
+              Bucket: storageBucket,
+              Delete: {
+                Objects: listed.Contents.map((obj) => ({ Key: obj.Key! })),
+              },
+            }),
+          )
+          .catch(() => {})
+      : Promise.resolve(),
+    attachFiles.length
+      ? s3Client
+          .send(
+            new DeleteObjectsCommand({
+              Bucket: storageBucket,
+              Delete: {
+                Objects: attachFiles.map((f) => ({ Key: f.key })),
+              },
+            }),
+          )
+          .catch(() => {})
+      : Promise.resolve(),
+  ]);
+
+  await DB.delete(`attach_files`, `page_id = $1`, [pageId]);
+  await DB.delete(`tags`, `page_id = $1`, [pageId]);
+};
 
 // Fetch published pages for the current user
 const fetchPublishedPages = async (req: Request, res: Response) => {
@@ -97,6 +185,16 @@ const deleteDraftPages = async (req: Request, res: Response) => {
   }
 
   const placeholders = ids.map((_, i) => `$${i + 1}`).join(",");
+
+  const matched = await DB.findMany<IPage>(
+    `SELECT id FROM pages WHERE id IN (${placeholders}) AND user_id = $${ids.length + 1} AND status_id = $${ids.length + 2}`,
+    [...ids, userId, PAGE_STATUS.draftId],
+  );
+
+  for (const page of matched) {
+    await cleanupPageFiles(Number(page.id));
+  }
+
   const query = `
     DELETE FROM pages
     WHERE id IN (${placeholders}) AND user_id = $${ids.length + 1} AND status_id = $${ids.length + 2}
@@ -118,6 +216,16 @@ const deletePublishedPages = async (req: Request, res: Response) => {
   }
 
   const placeholders = ids.map((_, i) => `$${i + 1}`).join(",");
+
+  const matched = await DB.findMany<IPage>(
+    `SELECT id FROM pages WHERE id IN (${placeholders}) AND user_id = $${ids.length + 1} AND status_id = $${ids.length + 2}`,
+    [...ids, userId, PAGE_STATUS.publishedId],
+  );
+
+  for (const page of matched) {
+    await cleanupPageFiles(Number(page.id));
+  }
+
   const query = `
     DELETE FROM pages
     WHERE id IN (${placeholders}) AND user_id = $${ids.length + 1} AND status_id = $${ids.length + 2}

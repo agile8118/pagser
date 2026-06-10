@@ -3,7 +3,12 @@ import crypto from "crypto";
 import sendEmail from "../services/email/index.js";
 import { DB } from "../../database/index.js";
 import { IUser } from "../../database/types.js";
-import { ApiMessages, AuthAPI } from "@pagser/common";
+import {
+  ApiMessages,
+  AuthAPI,
+  CODE_EXPIRY_MINUTES,
+  RESET_LINK_EXPIRY_HOURS,
+} from "@pagser/common";
 import keys from "../../config/keys.js";
 
 // Sends a message to client to indicate that the username is available
@@ -17,18 +22,24 @@ const usernameAvailability = (req: Request, res: Response) => {
 // Send a code to the user email address to verify that user owns the email
 const sendCode = async (req: Request, res: Response) => {
   const email = req.body.email;
-  const code = Math.floor(Math.random() * 90000) + 10000; // generates a 5 digit number
+  const code = crypto.randomInt(10000, 100000);
 
   await DB.delete("email_codes", "email = $1", [email]);
   await DB.insert("email_codes", {
     email,
     code,
-    expires_at: new Date(Date.now() + 10 * 60 * 1000),
+    expires_at: new Date(Date.now() + CODE_EXPIRY_MINUTES * 60 * 1000),
   });
+
   await sendEmail(email, "Verify your email address", {
     htmlFile: "verify-email",
-    templateData: { code },
+    templateData: {
+      title: "Verify your email address",
+      code,
+      expiresIn: `${CODE_EXPIRY_MINUTES} minutes`,
+    },
   });
+
   const body: AuthAPI.SendCodeResponse = { message: ApiMessages.CODE_SENT };
   res.status(200).json(body);
 };
@@ -94,7 +105,7 @@ const forgotPassword = async (req: Request, res: Response) => {
 
   if (!user) throw { status: 404, message: ApiMessages.NO_EMAIL_FOUND };
 
-  const code = crypto.randomBytes(18).toString("hex");
+  const code = crypto.randomBytes(32).toString("hex");
   const link = `${keys.domain}/forgot-password?t=${code}&i=${user.id}`;
 
   await DB.update(
@@ -104,7 +115,15 @@ const forgotPassword = async (req: Request, res: Response) => {
     [email],
   );
 
-  await sendEmail(email, "Reset your password", { htmlFile: "reset-password", templateData: { link } });
+  await sendEmail(email, "Reset your password", {
+    htmlFile: "reset-password",
+    templateData: {
+      title: "Reset your password",
+      link,
+      expiresIn: `${RESET_LINK_EXPIRY_HOURS} hours`,
+    },
+  });
+
   const body: AuthAPI.ForgotPasswordResponse = {
     message: ApiMessages.RESET_LINK_SENT,
   };
@@ -117,12 +136,18 @@ const resetPassword = async (req: Request, res: Response) => {
   const userId = req.body.user_id;
 
   // find the user
-  const user = await DB.find(
+  const user = await DB.find<IUser>(
     "SELECT token_code, token_date FROM users WHERE id = $1",
     [userId],
   );
 
-  if (!user) throw { status: 400, message: "invalid link" };
+  if (!user || !user.token_date) throw { status: 400, message: "invalid link" };
+
+  const expiry =
+    new Date(user.token_date).getTime() +
+    RESET_LINK_EXPIRY_HOURS * 60 * 60 * 1000;
+  if (Date.now() > expiry)
+    throw { status: 400, message: "Reset link has expired." };
 
   // hash the user password, the second argument is 'salt round'
   const hash = await req.hashPassword({ password });
