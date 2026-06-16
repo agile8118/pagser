@@ -9,7 +9,8 @@
     "seed": "yarn seed:e2e && yarn seed:db",
     "download-images": "tsx src/download-images.ts",
     "bench:body-image": "node src/autocannon/body-image.mjs --url http://localhost:3080 --connections 10 --duration 20 --page-id 1 --rate 2",
-    "bench:attach-files": "node src/autocannon/attach-files.mjs --url http://localhost:3080 --connections 10 --duration 20 --page-id 1 --rate 10"
+    "bench:attach-files": "node src/autocannon/attach-files.mjs --url http://localhost:3080 --connections 10 --duration 20 --page-id 1 --rate 10",
+    "bench:page-photo": "node src/autocannon/page-photo.mjs --url http://localhost:3080 --page-id 3 --connections 3 --rate 1 --duration 300"
   },
   "dependencies": {
     "autocannon": "^7.15.0",
