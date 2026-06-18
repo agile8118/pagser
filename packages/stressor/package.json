@@ -18,6 +18,6 @@
   "devDependencies": {
     "@playwright/test": "^1.59.1",
     "@types/pg": "^8.11.0",
-    "tsx": "^4.19.0"
+    "tsx": "^4.22.4"
   }
 }
