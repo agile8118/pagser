@@ -10,6 +10,7 @@ const { values: args } = parseArgs({
   options: {
     url: { type: "string", default: "http://localhost:3080" },
     connections: { type: "string", default: "10" },
+    amount: { type: "string" },
     duration: { type: "string", default: "20" },
     "page-id": { type: "string" },
     token: { type: "string" },
@@ -44,7 +45,7 @@ const endpoint = `${args.url}/api/pages/${args["page-id"]}/body-image`;
 
 console.log(`Image:    ${args.image} (${(imageBuffer.length / 1024).toFixed(1)} KB)`);
 console.log(`Endpoint: POST ${endpoint}`);
-console.log(`Config:   ${args.connections} connections, ${args.duration}s\n`);
+console.log(`Config:   ${args.connections} connections, ${args.amount ? args.amount + " requests" : args.duration + "s"}\n`);
 
 await new Promise((resolve, reject) => {
   const instance = autocannon(
@@ -57,6 +58,7 @@ await new Promise((resolve, reject) => {
       },
       body: imageBuffer,
       connections: Number(args.connections),
+      amount: args.amount ? Number(args.amount) : undefined,
       duration: Number(args.duration),
       overallRate: args.rate ? Number(args.rate) : undefined,
     },

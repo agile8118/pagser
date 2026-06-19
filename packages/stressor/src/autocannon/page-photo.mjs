@@ -10,6 +10,7 @@ const { values: args } = parseArgs({
   options: {
     url: { type: "string", default: "http://localhost:3080" },
     connections: { type: "string", default: "1" },
+    amount: { type: "string" },
     duration: { type: "string", default: "60" },
     "page-id": { type: "string" },
     x: { type: "string", default: "77" },
@@ -49,7 +50,7 @@ const endpoint = `${args.url}/api/pages/${args["page-id"]}/photo?x=${args.x}&y=$
 
 console.log(`Image:    ${args.image} (${(imageBuffer.length / 1024 / 1024).toFixed(1)} MB)`);
 console.log(`Endpoint: POST ${endpoint}`);
-console.log(`Config:   ${args.connections} connections, ${args.duration}s, rate=${args.rate}/s\n`);
+console.log(`Config:   ${args.connections} connections, ${args.amount ? args.amount + " requests" : args.duration + "s"}, rate=${args.rate}/s\n`);
 
 await new Promise((resolve, reject) => {
   const instance = autocannon(
@@ -62,6 +63,7 @@ await new Promise((resolve, reject) => {
       },
       body: imageBuffer,
       connections: Number(args.connections),
+      amount: args.amount ? Number(args.amount) : undefined,
       duration: Number(args.duration),
       overallRate: Number(args.rate),
     },
