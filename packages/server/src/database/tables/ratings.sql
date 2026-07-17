@@ -10,3 +10,7 @@ CREATE TABLE IF NOT EXISTS ratings (
   CONSTRAINT fk_page FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE,
   CONSTRAINT fk_comment FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE
 );
+
+-- Like counts per comment and per page
+CREATE INDEX IF NOT EXISTS idx_ratings_comment_id ON ratings (comment_id);
+CREATE INDEX IF NOT EXISTS idx_ratings_page_id ON ratings (page_id);
