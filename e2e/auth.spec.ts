@@ -62,8 +62,8 @@ test.describe("auth flow", () => {
     await expect(page).toHaveURL(/\/home$/);
 
     // ── 4. Logout ─────────────────────────────────────────────────────────
-    await page.locator('[data-dropdown="user-dropdown-md"]').first().click();
-    await page.getByText("Logout").first().click();
+    await page.getByTestId("topnav-user-dropdown-md").click();
+    await page.getByTestId("topnav-logout-md").click();
 
     await page.waitForURL("**/", { timeout: 5_000 });
     await expect(page).toHaveURL(/\/$/);

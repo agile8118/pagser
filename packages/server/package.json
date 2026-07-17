@@ -14,10 +14,10 @@
     "build": "tsc -p .",
     "dev": "./env.sh tsx watch ./src/index.ts",
     "prod": "./env.sh pm2 start ecosystem.config.cjs",
-    "test": "./env.sh DB_DATABASE=pagser_test NODE_ENV=test mocha",
-    "test:seed": "./env.sh DB_DATABASE=pagser_test NODE_ENV=test tsx ./src/database/seed.ts",
-    "test:watch": "./env.sh DB_DATABASE=pagser_test NODE_ENV=test mocha --watch",
-    "test:coverage": "./env.sh DB_DATABASE=pagser_test NODE_ENV=test c8 mocha"
+    "test": "./env.sh DB_TARGET=test NODE_ENV=test mocha",
+    "test:seed": "./env.sh DB_TARGET=test NODE_ENV=test tsx ./src/database/seed.ts",
+    "test:watch": "./env.sh DB_TARGET=test NODE_ENV=test mocha --watch",
+    "test:coverage": "./env.sh DB_TARGET=test NODE_ENV=test c8 mocha"
   },
   "c8": {
     "include": [

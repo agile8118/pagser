@@ -1,10 +1,10 @@
 import { createDatabase } from "../src/database/schema.js";
 
-const DB_NAME = process.env.DB_DATABASE;
+const DB_TARGET = process.env.DB_TARGET;
 
-if (!DB_NAME || DB_NAME !== "pagser_test") {
+if (DB_TARGET !== "test" && DB_TARGET !== "playwright") {
   console.error(
-    `[setup] Tests must run with DB_DATABASE=pagser_test (got: "${DB_NAME}"). ` +
+    `[setup] Refusing to run against the regular database (DB_TARGET: "${DB_TARGET}"). ` +
     `Use: npm test`
   );
   process.exit(1);

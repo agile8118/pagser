@@ -8,15 +8,10 @@ export default defineConfig({
     baseURL: "http://localhost:3082",
   },
   webServer: {
-    command: "tsx ./src/index.ts",
+    command: "./env.sh DB_TARGET=playwright NODE_ENV=test PORT=3082 SKIP_EMAIL=true tsx ./src/index.ts",
     url: "http://localhost:3082",
     reuseExistingServer: true,
     cwd: "../../packages/server",
-    env: {
-      DB_DATABASE: "pagser",
-      NODE_ENV: "test",
-      PORT: "3082",
-    },
     timeout: 30_000,
   },
 });

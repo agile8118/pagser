@@ -115,7 +115,7 @@ function TopNav({ onHamburgerClick }: Props) {
                 ref={userDropdownRef}
                 className={`nav-dropdown ${userDropdownOpen ? "dropdown--open" : "dropdown--close"}`}
               >
-                <div className="nav-dropdown__button" onClick={() => { setUserDropdownOpen((o) => !o); setNotifDropdownOpen(false); }}>
+                <div data-testid="topnav-user-dropdown-md" className="nav-dropdown__button" onClick={() => { setUserDropdownOpen((o) => !o); setNotifDropdownOpen(false); }}>
                   <a href="javascript:void(0);">
                     <img
                       className="js--user-image"
@@ -127,7 +127,7 @@ function TopNav({ onHamburgerClick }: Props) {
                 <div className="nav-dropdown__content">
                   <a href="/profile"><i className="fa fa-user" /> Profile</a>
                   <a href="/settings"><i className="fa fa-cogs" /> Setting</a>
-                  <a href="javascript:void(0);" onClick={handleLogout}>
+                  <a data-testid="topnav-logout-md" href="javascript:void(0);" onClick={handleLogout}>
                     <i className="fa fa-sign-out" /> Logout
                   </a>
                   <span className="switch-theme__text">Theme:</span>
@@ -193,7 +193,7 @@ function TopNav({ onHamburgerClick }: Props) {
                 ref={userDropdownRefSm}
                 className={`nav-dropdown ${userDropdownOpen ? "dropdown--open" : "dropdown--close"}`}
               >
-                <div className="nav-dropdown__button" onClick={() => { setUserDropdownOpen((o) => !o); setNotifDropdownOpen(false); }}>
+                <div data-testid="topnav-user-dropdown-sm" className="nav-dropdown__button" onClick={() => { setUserDropdownOpen((o) => !o); setNotifDropdownOpen(false); }}>
                   <a href="javascript:void(0);">
                     <img
                       className="js--user-image"
@@ -205,7 +205,7 @@ function TopNav({ onHamburgerClick }: Props) {
                 <div className="nav-dropdown__content">
                   <a href="/profile"><i className="fa fa-user" /> Profile</a>
                   <a href="/settings"><i className="fa fa-cogs" /> Setting</a>
-                  <a href="javascript:void(0);" onClick={handleLogout}>
+                  <a data-testid="topnav-logout-sm" href="javascript:void(0);" onClick={handleLogout}>
                     <i className="fa fa-sign-out" /> Logout
                   </a>
                   <span className="switch-theme__text">Theme:</span>
