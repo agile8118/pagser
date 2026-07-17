@@ -63,7 +63,7 @@ function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
       if (size > maxBytes) {
         return fail({
           status: 400,
-          message: `Maximum file size is ${maxBytes / (1024 * 1024)} MB.`,
+          message: `Maximum file size is ${maxBytes / 1_000_000} MB.`,
         });
       }
       if (!checkedMagic) {
@@ -125,6 +125,7 @@ const uploadPagePhoto = async (req: Request, res: Response) => {
 
   const buffer = await readImageBody(req, MAX_FILE_SIZE);
 
+  // 50 megapixels should be enough for any reasonable photo, prevents DoS with huge images
   const originalBuf = await sharp(buffer, { limitInputPixels: 50_000_000 })
     .resize(1200, null, { withoutEnlargement: true })
     .jpeg({ quality: 85 })
@@ -226,7 +227,7 @@ const uploadPageAttachFile = async (req: Request, res: Response) => {
             pass.destroy();
             return callback(
               new Error(
-                `Maximum file size is ${MAX_FILE_SIZE / (1024 * 1024)} MB.`,
+                `Maximum file size is ${MAX_FILE_SIZE / 1_000_000} MB.`,
               ),
             );
           }
@@ -242,7 +243,7 @@ const uploadPageAttachFile = async (req: Request, res: Response) => {
     if (failed) {
       throw {
         status: 400,
-        message: `Maximum file size is ${MAX_FILE_SIZE / (1024 * 1024)} MB.`,
+        message: `Maximum file size is ${MAX_FILE_SIZE / 1_000_000} MB.`,
       };
     }
     throw e;
