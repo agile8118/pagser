@@ -9,6 +9,7 @@
 // No file uploads or media processing here — APIs only. Needs a seeded
 // database (yarn seed from stressor package) since tokens and page URLs come from the manifest.
 // Pass --rate for a paced run (e.g. --rate 500), omit it to push max load.
+// Pass --compression-enabled to send Accept-Encoding like a real browser would.
 
 import autocannon from "autocannon";
 import { readFileSync } from "fs";
@@ -23,6 +24,7 @@ const { values: args } = parseArgs({
     url: { type: "string", default: "http://localhost:3080" },
     duration: { type: "string", default: "30" },
     rate: { type: "string" },
+    "compression-enabled": { type: "boolean", default: false },
     manifest: {
       type: "string",
       default: path.join(__dirname, "../../fixtures/.seed-manifest.json"),
@@ -56,6 +58,9 @@ if (publicPages.length === 0 || tokens.length === 0) {
 
 const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const json = { "content-type": "application/json" };
+const encodingHeaders = args["compression-enabled"]
+  ? { "accept-encoding": "gzip, deflate, br" }
+  : {};
 
 // ── Startup checks ─────────────────────────────────────────────────────────
 // Tokens in the manifest go stale whenever the DB is reset after seeding.
@@ -88,8 +93,8 @@ if (commentablePages.length === 0) {
 const anonReadRequests = Array.from({ length: 100 }, () => {
   const page = rand(publicPages);
   return Math.random() < 0.5
-    ? { method: "GET", path: `/api/public-pages/${page.url}` }
-    : { method: "GET", path: `/api/comments/${page.id}?portion=${1 + Math.floor(Math.random() * 3)}` };
+    ? { method: "GET", path: `/api/public-pages/${page.url}`, headers: { ...encodingHeaders } }
+    : { method: "GET", path: `/api/comments/${page.id}?portion=${1 + Math.floor(Math.random() * 3)}`, headers: { ...encodingHeaders } };
 });
 
 const authReadRequests = Array.from({ length: 100 }, () => {
@@ -101,13 +106,13 @@ const authReadRequests = Array.from({ length: 100 }, () => {
       : roll < 0.75
         ? "/api/user-pages/published"
         : "/api/history";
-  return { method: "GET", path: path_, headers: { authorization: token } };
+  return { method: "GET", path: path_, headers: { authorization: token, ...encodingHeaders } };
 });
 
 const commentPostRequests = Array.from({ length: 100 }, (_, i) => ({
   method: "POST",
   path: `/api/comment/${rand(commentablePages).id}`,
-  headers: { authorization: rand(tokens), ...json },
+  headers: { authorization: rand(tokens), ...json, ...encodingHeaders },
   body: JSON.stringify({ text: `bench: mixed-load comment ${i} — lorem ipsum dolor sit amet.` }),
 }));
 
@@ -121,7 +126,7 @@ const pageCreateRequests = [
     body: JSON.stringify({ page: { type: "private" } }),
     setupRequest: (req, ctx) => {
       ctx.token = rand(tokens);
-      return { ...req, headers: { authorization: ctx.token, ...json } };
+      return { ...req, headers: { authorization: ctx.token, ...json, ...encodingHeaders } };
     },
     onResponse: (status, body, ctx) => {
       ctx.pageId = status === 201 ? JSON.parse(body).id : null;
@@ -143,7 +148,7 @@ const pageCreateRequests = [
     setupRequest: (req, ctx) => ({
       ...req,
       path: `/api/new-page/page-contents/${ctx.pageId}`,
-      headers: { authorization: ctx.token, ...json },
+      headers: { authorization: ctx.token, ...json, ...encodingHeaders },
     }),
   },
   {
@@ -151,7 +156,7 @@ const pageCreateRequests = [
     setupRequest: (req, ctx) => ({
       ...req,
       path: `/api/new-page/final-step/${ctx.pageId}`,
-      headers: { authorization: ctx.token, ...json },
+      headers: { authorization: ctx.token, ...json, ...encodingHeaders },
       body: JSON.stringify({
         page: { type: "private", url: `bench-${Date.now()}-${slugCounter++}` },
       }),
@@ -162,7 +167,7 @@ const pageCreateRequests = [
     setupRequest: (req, ctx) => ({
       ...req,
       path: `/api/new-page/${ctx.pageId}`,
-      headers: { authorization: ctx.token, ...json },
+      headers: { authorization: ctx.token, ...json, ...encodingHeaders },
     }),
   },
 ];
@@ -203,5 +208,5 @@ const results = await Promise.all(buckets.map(run));
 
 for (const { name, res } of results) {
   console.log(`\n${name} (${res.connections} connections):`);
-  console.log(autocannon.printResult(res));
+  console.log(autocannon.printResult(res, { renderStatusCodes: true }));
 }
