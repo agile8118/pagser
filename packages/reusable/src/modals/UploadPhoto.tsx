@@ -93,12 +93,19 @@ const UploadPhoto = (props: IProps) => {
     // @ts-ignore
     const cropper = new Cropper(image, {
       aspectRatio: aspect,
-      viewMode: 3,
-      background: false,
-      modal: false,
-      zoomable: false,
       minCropBoxWidth: minW,
       minCropBoxHeight: minH,
+      viewMode: 1,
+      dragMode: "move",
+      autoCropArea: 1,
+      background: true,
+      guides: true,
+      center: true,
+      highlight: true,
+      cropBoxMovable: false,
+      cropBoxResizable: false,
+      zoomable: true,
+      modal: false,
       cropend: () => {
         setCropData({
           x: cropper.getData().x,

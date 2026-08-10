@@ -29,6 +29,9 @@ import {
   FILE_SIZE_LIMITS,
 } from "@pagser/common";
 
+sharp.cache(false);
+sharp.concurrency(1);
+
 function isAllowedImageType(chunk: Uint8Array): boolean {
   const isJpeg = chunk[0] === 0xff && chunk[1] === 0xd8 && chunk[2] === 0xff;
   const isPng =
@@ -60,7 +63,7 @@ function readImageBody(req: Request, maxBytes: number): Promise<Buffer> {
       if (size > maxBytes) {
         return fail({
           status: 400,
-          message: `Maximum file size is ${maxBytes / (1024 * 1024)} MB.`,
+          message: `Maximum file size is ${maxBytes / 1_000_000} MB.`,
         });
       }
       if (!checkedMagic) {
@@ -122,17 +125,17 @@ const uploadPagePhoto = async (req: Request, res: Response) => {
 
   const buffer = await readImageBody(req, MAX_FILE_SIZE);
 
-  const [originalBuf, croppedBuf] = await Promise.all([
-    sharp(buffer)
-      .resize(1200, null, { withoutEnlargement: true })
-      .jpeg({ quality: 85 })
-      .toBuffer(),
-    sharp(buffer)
-      .extract({ left: x, top: y, width, height })
-      .resize(400, 225)
-      .jpeg({ quality: 85 })
-      .toBuffer(),
-  ]);
+  // 50 megapixels should be enough for any reasonable photo, prevents DoS with huge images
+  const originalBuf = await sharp(buffer, { limitInputPixels: 50_000_000 })
+    .resize(1200, null, { withoutEnlargement: true })
+    .jpeg({ quality: 85 })
+    .toBuffer();
+
+  const croppedBuf = await sharp(buffer, { limitInputPixels: 50_000_000 })
+    .extract({ left: x, top: y, width, height })
+    .resize(400, 225)
+    .jpeg({ quality: 85 })
+    .toBuffer();
 
   const originalKey = `images/pages/${crypto.randomUUID()}.jpg`;
   const croppedKey = `images/pages/${crypto.randomUUID()}.jpg`;
@@ -224,7 +227,7 @@ const uploadPageAttachFile = async (req: Request, res: Response) => {
             pass.destroy();
             return callback(
               new Error(
-                `Maximum file size is ${MAX_FILE_SIZE / (1024 * 1024)} MB.`,
+                `Maximum file size is ${MAX_FILE_SIZE / 1_000_000} MB.`,
               ),
             );
           }
@@ -240,7 +243,7 @@ const uploadPageAttachFile = async (req: Request, res: Response) => {
     if (failed) {
       throw {
         status: 400,
-        message: `Maximum file size is ${MAX_FILE_SIZE / (1024 * 1024)} MB.`,
+        message: `Maximum file size is ${MAX_FILE_SIZE / 1_000_000} MB.`,
       };
     }
     throw e;
@@ -276,7 +279,7 @@ const uploadBodyImage = async (req: Request, res: Response) => {
 
   const buffer = await readImageBody(req, MAX_FILE_SIZE);
 
-  const resized = await sharp(buffer)
+  const resized = await sharp(buffer, { limitInputPixels: 50_000_000 })
     .resize(1200, null, { withoutEnlargement: true })
     .jpeg({ quality: 85 })
     .toBuffer();
@@ -305,7 +308,7 @@ const uploadUserPhoto = async (req: Request, res: Response) => {
 
   const buffer = await readImageBody(req, MAX_FILE_SIZE);
 
-  const processed = await sharp(buffer)
+  const processed = await sharp(buffer, { limitInputPixels: 50_000_000 })
     .extract({ left: x, top: y, width, height })
     .resize(400, 400)
     .jpeg({ quality: 85 })
@@ -355,7 +358,7 @@ const uploadCollectionPhoto = async (req: Request, res: Response) => {
 
   const buffer = await readImageBody(req, MAX_FILE_SIZE);
 
-  const processed = await sharp(buffer)
+  const processed = await sharp(buffer, { limitInputPixels: 50_000_000 })
     .extract({ left: x, top: y, width, height })
     .resize(800)
     .jpeg({ quality: 85 })

@@ -1,4 +1,5 @@
 import { Pool } from "pg";
+import keys from "../../server/src/config/keys.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -22,11 +23,11 @@ const TARGET_COMMENTS = 200_000;
 const BATCH_SIZE = 1_000;
 
 const pool = new Pool({
-  host: process.env.DB_HOST ?? "localhost",
-  port: Number(process.env.DB_PORT ?? 5432),
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE ?? "pagser",
+  host: keys.dbHost,
+  port: keys.dbPort,
+  user: keys.dbUser,
+  password: keys.dbPassword,
+  database: keys.dbDatabase,
 });
 
 function rand<T>(arr: T[]): T {

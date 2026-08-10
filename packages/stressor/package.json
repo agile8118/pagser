@@ -4,12 +4,18 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "setup:db": "cd ../server && ./env.sh DB_TARGET=playwright tsx ./src/database/seed.ts",
     "seed:e2e": "playwright test",
-    "seed:db": "tsx src/seed-comments.ts",
+    "seed:db": "cd ../server && ./env.sh DB_TARGET=playwright tsx ../stressor/src/seed-comments.ts",
     "seed": "yarn seed:e2e && yarn seed:db",
     "download-images": "tsx src/download-images.ts",
     "bench:body-image": "node src/autocannon/body-image.mjs --url http://localhost:3080 --connections 10 --duration 20 --page-id 1 --rate 2",
-    "bench:attach-files": "node src/autocannon/attach-files.mjs --url http://localhost:3080 --connections 10 --duration 20 --page-id 1 --rate 10"
+    "bench:attach-files": "node src/autocannon/attach-files.mjs --url http://localhost:3080 --connections 10 --duration 20 --page-id 1 --rate 10",
+    "bench:page-photo": "node src/autocannon/page-photo.mjs --url http://localhost:3080 --page-id 3",
+    "bench:comments": "node src/autocannon/comments.mjs --url http://localhost:3080 --connections 10 --duration 20 --page-id 3 --portion 2",
+    "bench:mix": "node src/autocannon/mix.mjs --url http://localhost:3080 --duration 30",
+    "bench:ssr": "node src/autocannon/ssr.mjs --url http://localhost:3080 --connections 10 --duration 30",
+    "bench:login": "node src/autocannon/login.mjs --url http://localhost:3080 --connections 10 --duration 20"
   },
   "dependencies": {
     "autocannon": "^7.15.0",

@@ -97,6 +97,10 @@ const InputFile = ({
                   onChange(e, fileName, imgUrl);
                 }
               };
+              image.onerror = function () {
+                URL.revokeObjectURL(imgUrl);
+                onError("The image could not be loaded. The file may be corrupted or too large to process.");
+              };
               image.src = imgUrl;
               break;
             default:

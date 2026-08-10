@@ -16,3 +16,10 @@ CREATE TABLE IF NOT EXISTS comments (
   CONSTRAINT fk_in_reply_to FOREIGN KEY (in_reply_to) REFERENCES comments(id) ON DELETE CASCADE,
   CONSTRAINT fk_in_reply_to_reply FOREIGN KEY (in_reply_to_comment_reply) REFERENCES comments(id) ON DELETE SET NULL
 );
+
+-- Top-level comment listing and total count per page
+CREATE INDEX IF NOT EXISTS idx_comments_page_toplevel
+  ON comments (page_id, created_at DESC) WHERE in_reply_to IS NULL;
+
+-- Reply lookups and per-comment reply counts
+CREATE INDEX IF NOT EXISTS idx_comments_in_reply_to ON comments (in_reply_to);

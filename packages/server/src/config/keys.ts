@@ -8,16 +8,21 @@ const getEnv = (key: string): string => {
 
 const getOptionalEnv = (key: string): string => process.env[key] || "";
 
+// DB_TARGET picks the database: unset → DB_*, "test" → DB_TEST_*, "playwright" → DB_PLAYWRIGHT_*
+const DB = process.env.DB_TARGET
+  ? `DB_${process.env.DB_TARGET.toUpperCase()}`
+  : "DB";
+
 export default {
   domain: getEnv("DOMAIN"),
   cookieSecret: getEnv("COOKIE_SECRET"),
   tokenSecret: getEnv("TOKEN_SECRET"),
   // Postgres
-  dbUser: getEnv("DB_USER"),
-  dbHost: getEnv("DB_HOST"),
-  dbDatabase: getEnv("DB_DATABASE"),
-  dbPassword: getEnv("DB_PASSWORD"),
-  dbPort: Number(getEnv("DB_PORT")),
+  dbUser: getEnv(`${DB}_USER`),
+  dbHost: getEnv(`${DB}_HOST`),
+  dbDatabase: getEnv(`${DB}_DATABASE`),
+  dbPassword: getEnv(`${DB}_PASSWORD`),
+  dbPort: Number(getEnv(`${DB}_PORT`)),
   // AWS
   awsRegion: getEnv("AWS_REGION"),
   s3Bucket: getEnv("S3_BUCKET"),

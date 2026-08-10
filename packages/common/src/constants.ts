@@ -7,9 +7,9 @@ export const COLLECTION_PLACEHOLDER_IMAGE =
   "/images/collection-placeholder.svg";
 
 export const FILE_SIZE_LIMITS = {
-  PAGE_PHOTO: 25 * 1024 * 1024, // 25 MB
-  BODY_IMAGE: 25 * 1024 * 1024, // 25 MB
-  USER_PHOTO: 25 * 1024 * 1024, // 25 MB
-  COLLECTION_PHOTO: 25 * 1024 * 1024, // 25 MB
-  ATTACH_FILE: 50 * 1024 * 1024, // 50 MB
+  PAGE_PHOTO: 25 * 1000 * 1000, // 25 MB
+  BODY_IMAGE: 25 * 1000 * 1000, // 25 MB
+  USER_PHOTO: 25 * 1000 * 1000, // 25 MB
+  COLLECTION_PHOTO: 25 * 1000 * 1000, // 25 MB
+  ATTACH_FILE: 50 * 1000 * 1000, // 50 MB
 };

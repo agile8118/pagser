@@ -26,3 +26,6 @@ CREATE TABLE IF NOT EXISTS pages (
   CONSTRAINT fk_page_types FOREIGN KEY (type_id) REFERENCES page_types(id),
   CONSTRAINT fk_page_status FOREIGN KEY (status_id) REFERENCES page_statuses(id)
 );
+
+-- Public page lookups by slug, also guarantees slugs stay unique
+CREATE UNIQUE INDEX IF NOT EXISTS idx_pages_url ON pages (url);
